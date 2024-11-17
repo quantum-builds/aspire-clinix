@@ -2,9 +2,10 @@ import { AspireClinixIcon } from "@/assets";
 import Image from "next/image";
 import HeroMenu from "./HeroMenu";
 import Link from "next/link";
-const HeroSection = () => {
+
+export default function HeroSection() {
   return (
-    <>
+    <div className="flex flex-col h-screen relative">
       <header className="flex justify-between items-center h-[200px] px-[8%] leading-[27.27px] tracking-widest text-2xl">
         <HeroMenu />
         <Image
@@ -25,8 +26,6 @@ const HeroSection = () => {
         <p>HOLISTIC WELLNESS IS A JOURNEY</p>
         <p>THAT STARTS HERE</p>
       </div>
-    </>
+    </div>
   );
-};
-
-export default HeroSection;
+}

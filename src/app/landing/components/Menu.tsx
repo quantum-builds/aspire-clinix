@@ -67,7 +67,7 @@ interface MenuProps {
   setMenuStatus: Dispatch<SetStateAction<boolean>>;
 }
 
-const Menu: React.FC<MenuProps> = ({ menuStatus, setMenuStatus }) => {
+export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const handleCategoryClick = (category: string) => {
     setActiveCategory((prevCategory) =>
@@ -126,6 +126,4 @@ const Menu: React.FC<MenuProps> = ({ menuStatus, setMenuStatus }) => {
       </ul>
     </nav>
   );
-};
-
-export default Menu;
+}
