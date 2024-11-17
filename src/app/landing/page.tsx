@@ -1,4 +1,5 @@
 import AboutUsSection from "./components/AboutUsSection";
+import Footer from "./components/Footer";
 import HeroSection from "./components/HeroSection";
 import ServiceDetailSection from "./components/ServiceDetailsSection";
 import ServiceSection from "./components/ServicesSection";
@@ -157,6 +158,7 @@ export default function BookTreatment() {
         services={WELLNESS_SERVICE.services}
       />
       <SupplementSection />
+      <Footer />
     </div>
   );
 }
