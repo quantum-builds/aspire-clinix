@@ -12,8 +12,12 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        opus: ["Opus", "sans-serif"],
+        gillSans: ["GillSans", "sans-serif"],
+      },
     },
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar"), require("tailwind-scrollbar-hide")],
 };
 export default config;
