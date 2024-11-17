@@ -13,7 +13,7 @@ export default function ServiceDetailSection({
   services,
 }: ServiceDetailProps) {
   return (
-    <div className="flex h-screen pl-[130px] pt-[195px] pb-[150px] gap-[190px]">
+    <div className="flex h-screen pl-[130px] pt-[70px] pb-[44px] gap-[190px]">
       <div className="w-[30%] flex flex-col gap-[30px]">
         <p className="text-[64px] leading-72.64px]">{title}</p>
         {description && (
