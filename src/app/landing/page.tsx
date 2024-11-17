@@ -2,6 +2,7 @@ import AboutUsSection from "./components/AboutUsSection";
 import HeroSection from "./components/HeroSection";
 import ServiceDetailSection from "./components/ServiceDetailsSection";
 import ServiceSection from "./components/ServicesSection";
+import SupplementSection from "./components/SupplementSection";
 
 const DENTAL_SERVICES = {
   title: "Aspire Dental",
@@ -155,6 +156,7 @@ export default function BookTreatment() {
         description={WELLNESS_SERVICE.description}
         services={WELLNESS_SERVICE.services}
       />
+      <SupplementSection />
     </div>
   );
 }
