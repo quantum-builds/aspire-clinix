@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import ServiceDetailCard from "./ServiceDetailCard";
 
 interface ServiceDetailSliderProp {
@@ -62,25 +62,28 @@ export default function ServiceDetailSlider({
     scrollStartLeft.current = scrollThumbOffset; // Store the current offset
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging || !containerRef.current) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging || !containerRef.current) return;
 
-    const container = containerRef.current;
+      const container = containerRef.current;
 
-    // Calculate drag distance and new scroll position
-    const dragDistance = e.clientX - dragStartX.current;
-    const newOffset = Math.min(
-      Math.max(scrollStartLeft.current + dragDistance, 0),
-      customScrollbarWidth - thumbWidth
-    );
+      // Calculate drag distance and new scroll position
+      const dragDistance = e.clientX - dragStartX.current;
+      const newOffset = Math.min(
+        Math.max(scrollStartLeft.current + dragDistance, 0),
+        customScrollbarWidth - thumbWidth
+      );
 
-    setScrollThumbOffset(newOffset);
+      setScrollThumbOffset(newOffset);
 
-    // Scroll the container proportionally
-    const scrollPercentage = newOffset / (customScrollbarWidth - thumbWidth);
-    container.scrollLeft =
-      scrollPercentage * (container.scrollWidth - container.clientWidth);
-  };
+      // Scroll the container proportionally
+      const scrollPercentage = newOffset / (customScrollbarWidth - thumbWidth);
+      container.scrollLeft =
+        scrollPercentage * (container.scrollWidth - container.clientWidth);
+    },
+    [isDragging, customScrollbarWidth, thumbWidth]
+  );
 
   const handleMouseUp = () => {
     setIsDragging(false);
@@ -99,11 +102,10 @@ export default function ServiceDetailSlider({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging]);
+  }, [isDragging, handleMouseMove]);
 
   return (
     <div className="w-[70%] mr-1 flex flex-col gap-[75px]">
-      {/* Scrollable Container */}
       <div
         ref={containerRef}
         className="flex gap-[60px] overflow-x-auto whitespace-nowrap w-full h-full scrollbar-hide"
@@ -119,7 +121,6 @@ export default function ServiceDetailSlider({
         ))}
       </div>
 
-      {/* Custom Scrollbar */}
       <div className=" h-3 bg-gray-200 rounded-full">
         <div
           ref={scrollThumbRef}

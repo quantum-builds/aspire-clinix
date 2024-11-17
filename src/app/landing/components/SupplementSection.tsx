@@ -1,8 +1,6 @@
 import Link from "next/link";
 
-interface SupplementSectionProp {}
-
-export default function SupplementSection({}: SupplementSectionProp) {
+export default function SupplementSection() {
   return (
     <div className="flex flex-col justify-center items-center h-screen bg-[#D9D9D9] gap-[20px]">
       <p className="text-[64px] leading-{72.64px}">Our Supplements</p>
