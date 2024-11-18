@@ -1,5 +1,4 @@
-"use client";
-import ServiceDetailSlider from "./ServiceDetailSlider";
+import ServiceDetailSlider from "../../components/ServiceDetailSlider";
 
 interface ServiceDetailProps {
   title: string;
@@ -13,7 +12,7 @@ export default function ServiceDetailSection({
   services,
 }: ServiceDetailProps) {
   return (
-    <div className="flex h-screen pl-[130px] pt-[70px] pb-[44px] gap-[190px]">
+    <div className="flex h-screen pl-[130px] pt-[190px] pb-[118px] gap-[190px]">
       <div className="w-[30%] flex flex-col gap-[30px]">
         <p className="text-[64px] leading-72.64px]">{title}</p>
         {description && (
@@ -22,7 +21,13 @@ export default function ServiceDetailSection({
           </p>
         )}
       </div>
-      <ServiceDetailSlider services={services} />
+      <div className="w-[70%] ">
+        <ServiceDetailSlider
+          services={services}
+          card_width={57.1}
+          is_dentistry={false}
+        />
+      </div>
     </div>
   );
 }
