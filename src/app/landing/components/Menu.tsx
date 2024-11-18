@@ -82,7 +82,7 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
       } transition-transform duration-500 ease-in-out font-gillSans`}
     >
       <Image
-        className="absolute right-12 top-14"
+        className="absolute right-12 top-14 cursor-pointer"
         src={ArrowLeftIcon}
         alt="Close Menu"
         onClick={() => setMenuStatus(false)}
@@ -103,6 +103,7 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
                     handleCategoryClick(categoryData.category);
                   }}
                   alt="Menu Action"
+                  className="cursor-pointer"
                 />
               )}
             </div>
