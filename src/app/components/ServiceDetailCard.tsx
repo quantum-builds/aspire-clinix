@@ -1,10 +1,11 @@
 import Link from "next/link";
 
 interface ServiceDetailCardProps {
-  title: string;
+  title: string | null;
   description: string | null;
   path: string;
   card_width: number;
+  button_text: string;
 }
 
 export default function ServiceDetailCard({
@@ -12,6 +13,7 @@ export default function ServiceDetailCard({
   description,
   path,
   card_width,
+  button_text,
 }: ServiceDetailCardProps) {
   return (
     <div
@@ -40,7 +42,7 @@ export default function ServiceDetailCard({
             className="absolute font-gillSans bottom-0 right-0 bg-white py-6 px-8 text-base tracking-widest"
             style={{ lineHeight: "18.18px" }}
           >
-            Learn More
+            {button_text}
           </button>
         </Link>
       </div>

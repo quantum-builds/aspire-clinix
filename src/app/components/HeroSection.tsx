@@ -7,7 +7,7 @@ interface HeroSectionProps {
   title: string;
   description?: string | null;
   title_text_size: number;
-  title_line_hieght: number;
+  title_line_height: number;
   desc_text_size?: number | null;
   desc_line_height?: number | null;
   content_width?: number | null;
@@ -19,7 +19,7 @@ export default function HeroSection({
   title,
   description,
   title_text_size,
-  title_line_hieght,
+  title_line_height,
   desc_text_size,
   desc_line_height,
   content_width,
@@ -61,7 +61,7 @@ export default function HeroSection({
           className="text-center"
           style={{
             fontSize: `${title_text_size}px`,
-            lineHeight: `${title_line_hieght}px`,
+            lineHeight: `${title_line_height}px`,
           }}
         >
           {title}

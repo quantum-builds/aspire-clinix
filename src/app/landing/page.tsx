@@ -172,6 +172,7 @@ const ABOUT_US_SECTION_DATA = {
   description_text_size: 40,
   description_leading_height: 45.4,
   has_button: true,
+  button_text: "Our Philosophy",
   background_color: "#382F26",
   text_color: "#C9BCA9",
   description_width: 60,
@@ -203,6 +204,7 @@ export default function LandingPage() {
           ABOUT_US_SECTION_DATA.description_leading_height
         }
         has_button={ABOUT_US_SECTION_DATA.has_button}
+        button_text={ABOUT_US_SECTION_DATA.button_text}
         background_color={ABOUT_US_SECTION_DATA.background_color}
         text_color={ABOUT_US_SECTION_DATA.text_color}
         description_width={ABOUT_US_SECTION_DATA.description_width}

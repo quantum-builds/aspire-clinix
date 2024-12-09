@@ -5,6 +5,7 @@ interface AboutUsSectionProps {
   description_text_size: number;
   description_leading_height: number;
   has_button: boolean | null;
+  button_text: string | null;
   background_color: string;
   text_color: string;
   description_width: number;
@@ -14,6 +15,7 @@ export default function AboutUsSection({
   description_text_size,
   description_leading_height,
   has_button,
+  button_text,
   background_color,
   text_color,
   description_width,
@@ -36,8 +38,13 @@ export default function AboutUsSection({
 
       {has_button && (
         <Link href={"/"}>
-          <button className="text-[#382F26] bg-[#C9BCA9] text-[20px] rounded-[20px] py-[24px] px-[40px] leading-[22.7px]">
-            Our Philosophy
+          <button
+            className=" text-black text-[20px] rounded-[20px] py-[24px] px-[40px] leading-[22.7px]"
+            style={{
+              backgroundColor: text_color,
+            }}
+          >
+            {button_text}
           </button>
         </Link>
       )}

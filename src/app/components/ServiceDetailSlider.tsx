@@ -59,10 +59,6 @@ export default function ServiceDetailSlider({
     console.log(`thumbWidht ${thumbWidth}`);
   }, [thumbWidth]);
 
-  // useEffect(() => {
-  //   console.log(`containerRef ${containerRef.current}`);
-  // }, [containerRef]);
-
   const handleThumbMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
@@ -121,6 +117,7 @@ export default function ServiceDetailSlider({
             description={service.description}
             path={service.path}
             card_width={card_width}
+            button_text={"Learn More"}
           />
         ))}
       </div>
