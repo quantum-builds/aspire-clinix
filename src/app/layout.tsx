@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="font-opus text-[#382F26]">{children}</body>
     </html>
   );
 }

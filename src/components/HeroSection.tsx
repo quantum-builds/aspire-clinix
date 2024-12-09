@@ -1,6 +1,7 @@
 import { AspireClinixIcon } from "@/assets";
 import Image from "next/image";
 
+
 export default function HeroSection() {
   return (
     <div className="flex flex-col h-screen">
