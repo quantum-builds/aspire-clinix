@@ -20,15 +20,24 @@ const SOCIAL_ICONS = [
 interface FooterProps {
   background_color: string;
   input_background_color: string;
+  customClasses?: string;
+  inputProps?: {
+    borderColor?: string;
+    textColor?: string;
+    placeholderColor?: string;
+    arrowColor?: string;
+  };
 }
 
 export default function Footer({
   background_color,
   input_background_color,
+  customClasses,
+  inputProps = {},
 }: FooterProps) {
   return (
     <footer
-      className="w-full flex flex-wrap justify-between text-xl px-[150px] py-[40px] gap-[40px]"
+      className={`w-full flex flex-wrap justify-between text-xl px-[150px] py-[40px] gap-[40px] ${customClasses}`}
       style={{ backgroundColor: background_color }}
     >
       {/* Contact Information */}
@@ -38,6 +47,7 @@ export default function Footer({
           alt="Aspire Clinic Logo"
           width={189}
           height={88}
+          className="filter grayscale-0 invert"
         />
         <address className="not-italic flex flex-col gap-[15px] font-gillSans">
           <p>hello@aspireclinic.co.uk</p>
@@ -51,7 +61,7 @@ export default function Footer({
       {/* Newsletter Signup */}
       <div className="flex flex-col gap-[60px] w-full sm:w-auto">
         <p className="text-[20px]">Sign up to our newsletter</p>
-        <EmailInput background_color={input_background_color} />
+        <EmailInput background_color={input_background_color} {...inputProps} />
       </div>
 
       {/* Quick Links */}
@@ -79,6 +89,7 @@ export default function Footer({
                 alt={icon.alt}
                 width={icon.width}
                 height={icon.height}
+                className="filter grayscale-0 invert"
               />
             </Link>
           ))}

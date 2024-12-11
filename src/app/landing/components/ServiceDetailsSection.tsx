@@ -1,4 +1,4 @@
-import ServiceDetailSlider from "../../components/ServiceDetailSlider";
+import ServiceDetailSlider from "../../../components/ServiceDetailSlider";
 
 interface ServiceDetailProps {
   title: string;

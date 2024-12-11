@@ -1,7 +1,7 @@
-import AboutUsSection from "../components/AboutUsSection";
-import Footer from "../components/Footer";
-import HeroSection from "../components/HeroSection";
-import DentistryDeatilSection from "./components/DentistryDetailSection";
+import AboutUsSection from "../../components/AboutUsSection";
+import Footer from "../../components/Footer";
+import HeroSection from "../../components/HeroSection";
+import DentistryDetailSection from '../../components/DentistryDetailSection';
 
 const HERO_SECTION_DATA = {
   title: "DENTISTRY",
@@ -117,7 +117,7 @@ export default function Denistry() {
         text_color={ABOUT_US_SECTION_DATA.text_color}
         description_width={ABOUT_US_SECTION_DATA.description_width}
       />
-      <DentistryDeatilSection services={DENTISTRY_SERVICES.services} />
+      <DentistryDetailSection services={DENTISTRY_SERVICES.services} />
       <Footer
         background_color={FOOTET_DATA.background_color}
         input_background_color={FOOTET_DATA.input_background_color}

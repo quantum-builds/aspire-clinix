@@ -1,12 +1,12 @@
-import ServiceDetailSlider from "@/app/components/ServiceDetailSlider";
+import ServiceDetailSlider from "@/components/ServiceDetailSlider";
 
-interface DentistryDeatilSectionProps {
+interface DentistryDetailSectionProps {
   services: Array<{ title: string; description: string | null; path: string }>;
 }
 
-export default function DentistryDeatilSection({
+export default function DentistryDetailSection({
   services,
-}: DentistryDeatilSectionProps) {
+}: DentistryDetailSectionProps) {
   return (
     <div className=" h-screen pl-[130px] pt-[190px] pb-[118px] gap-[190px]">
       <ServiceDetailSlider

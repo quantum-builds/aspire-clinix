@@ -1,11 +1,14 @@
 import Link from "next/link";
 
 interface ServiceDetailCardProps {
-  title: string | null;
-  description: string | null;
+  title?: string | null;
+  description?: string | null;
   path: string;
   card_width: number;
   button_text: string;
+  card_height?: number;
+  className?: string;
+  doc_name?: string;
 }
 
 export default function ServiceDetailCard({
@@ -14,11 +17,16 @@ export default function ServiceDetailCard({
   path,
   card_width,
   button_text,
+  card_height,
+  className,
+  doc_name,
 }: ServiceDetailCardProps) {
   return (
     <div
-      className="bg-[#B4B4B4] h-full flex-shrink-0 relative"
-      style={{ width: `${card_width}%` }}
+      className={`bg-[#B4B4B4] h-full flex-shrink-0 relative  ${
+        className || ""
+      } `}
+      style={{ width: `${card_width}%`, height: card_height }}
     >
       <div className="flex flex-col gap-[20px] w-[63%] absolute bottom-[8%] left-[6%]">
         <p
@@ -46,6 +54,11 @@ export default function ServiceDetailCard({
           </button>
         </Link>
       </div>
+      {doc_name && (
+        <div className="absolute bottom-[-30px] left-0 w-full">
+          <p className="text-lg font-semibold">{doc_name}</p>
+        </div>
+      )}
     </div>
   );
 }

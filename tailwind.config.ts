@@ -11,6 +11,8 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        feeguide: " #ECE8E3",
+        feeguidedark: "#DCD4C9",
       },
       fontFamily: {
         opus: ["Opus", "sans-serif"],

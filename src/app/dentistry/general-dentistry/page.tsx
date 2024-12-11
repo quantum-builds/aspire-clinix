@@ -1,8 +1,8 @@
-import HeroSection from "@/app/components/HeroSection";
+import HeroSection from "@/components/HeroSection";
 import GeneralDentistryService from "./components/GeneralDentistryService";
-import { title } from "process";
-import AboutUsSection from "@/app/components/AboutUsSection";
-import Footer from "@/app/components/Footer";
+import AboutUsSection from "@/components/AboutUsSection";
+import Footer from "@/components/Footer";
+import ServiceDetailCard from "@/components/ServiceDetailCard";
 
 const HERO_SECTION_DATA = {
   title: "General Dentistry",
@@ -51,6 +51,29 @@ const ABOUT_US_SECTION_DATA = {
   text_color: "#EBEBEB",
   description_width: 60,
 };
+const CARD_DATA = [
+  {
+    path: "/path1",
+    card_width: 550,
+    button_text: "Read Bio",
+    card_height: 513,
+    doc_name: "Dr. Richard Porter",
+  },
+  {
+    path: "/path2",
+    card_width: 550,
+    button_text: "Read Bio",
+    card_height: 513,
+    doc_name: "Dr. Raheel Malik",
+  },
+  {
+    path: "/path3",
+    card_width: 550,
+    button_text: "Read Bio",
+    card_height: 513,
+    doc_name: "Dr. Raheel Malik",
+  },
+];
 
 const FOOTET_DATA = {
   background_color: "#D9D9D9",
@@ -91,6 +114,24 @@ export default function GeneralDentistry() {
         text_color={ABOUT_US_SECTION_DATA.text_color}
         description_width={ABOUT_US_SECTION_DATA.description_width}
       />
+      <div className="flex flex-col justify-center items-center mt-20 mt- pb-32">
+        <h1 className="text-[52px] font-bold mb-8 relative right-96">
+          Meet the team
+        </h1>
+        <div className="flex flex-row gap-8 justify-center">
+          {CARD_DATA.map((card, index) => (
+            <ServiceDetailCard
+              key={index}
+              path={card.path}
+              card_width={card.card_width}
+              card_height={card.card_height}
+              button_text={card.button_text}
+              doc_name={card.doc_name}
+            />
+          ))}
+        </div>
+      </div>
+
       <Footer
         background_color={FOOTET_DATA.background_color}
         input_background_color={FOOTET_DATA.input_background_color}
