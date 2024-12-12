@@ -28,8 +28,8 @@ export default function PriceList({
     >
       <div className="w-[80%] py-10">
         <div className="flex justify-between mb-4">
-          <h1 className="text-3xl text-left font-normal">{title}</h1>
-          <h5 className="text-right text-xl font-normal">{prices}</h5>
+          <h1 className="text-3xl text-left font-normal font-opus">{title}</h1>
+          <h5 className="text-right text-xl font-normal font-opus">{prices}</h5>
         </div>
 
         <div>

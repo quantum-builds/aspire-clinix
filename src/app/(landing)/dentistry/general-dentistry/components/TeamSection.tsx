@@ -2,16 +2,15 @@ import { constants } from "crypto";
 
 const TEAM_SECTION_DATA = [
   {
-    
-    button_text: "Read Bio",
+    buttonText: "Read Bio",
     member_name: "Dr. Richard Porter",
   },
   {
-    button_text: "Read Bio",
+    buttonText: "Read Bio",
     member_name: "Dr. Raheel Malik",
   },
   {
-    button_text: "Read Bio",
+    buttonText: "Read Bio",
     member_name: "Dr. Raheel Malik",
   },
 ];

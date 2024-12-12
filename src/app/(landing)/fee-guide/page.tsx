@@ -5,24 +5,22 @@ import DentalImplants from "./components/DentalImplants";
 import DentureAndBridges from "./components/DenturesAndBridges";
 import FillingsAndExtractions from "./components/FillingsAndExtractions";
 import InvisalignAndRetainer from "./components/InvisalignAndRetainer";
-import Footer from "@/components/Footer";
+
 export default function FeeGuidePage() {
-  const backgroundColor = " #1D120C";
-  const inputBackgroundColor = "#1D120C";
   const heroBackgroundColor = "#1D120C";
-  const heroButtonColor = "#ECE8E3";
+  const herobuttonColor = "#ECE8E3";
 
   return (
     <div className="flex flex-col w-full h-full">
       <HeroSection
         title="Dental Treatment Fee Guide"
-        title_text_size={48}
-        title_line_height={60}
-        desc_text_size={18}
-        desc_line_height={28}
+        titleTextSize={48}
+        titleLineHeight={60}
+        descTextSize={18}
+        descLineHeight={28}
         description="Explore our fee structure and treatment options."
-        background_color={heroBackgroundColor}
-        button_color={heroButtonColor}
+        backgroundColor={heroBackgroundColor}
+        buttonColor={herobuttonColor}
         textColor="white"
       />
       <CheckupAndRoutine />
@@ -35,17 +33,6 @@ export default function FeeGuidePage() {
 
       <DentureAndBridges />
       <ConsultationCosts />
-      <Footer
-        background_color={backgroundColor}
-        input_background_color={inputBackgroundColor}
-        customClasses="text-white"
-        inputProps={{
-          borderColor: "white",
-          textColor: "white",
-          placeholderColor: "white",
-          arrowColor: "white",
-        }}
-      />
     </div>
   );
 }

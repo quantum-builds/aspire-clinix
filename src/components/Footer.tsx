@@ -1,4 +1,4 @@
-import { AspireClinixIcon, InstagramIcon, LinkedinIcon, XIcon } from "@/assets";
+import { AspireLightLogo, InstagramIcon, LinkedinIcon, XIcon } from "@/assets";
 import Image from "next/image";
 import EmailInput from "./EmailInput";
 import Link from "next/link";
@@ -18,54 +18,46 @@ const SOCIAL_ICONS = [
 ];
 
 interface FooterProps {
-  background_color: string;
-  input_background_color: string;
+  backgroundColor: string;
+  inputBackgroundColor: string;
   customClasses?: string;
-  inputProps?: {
-    borderColor?: string;
-    textColor?: string;
-    placeholderColor?: string;
-    arrowColor?: string;
-  };
 }
 
 export default function Footer({
-  background_color,
-  input_background_color,
+  backgroundColor,
+  inputBackgroundColor,
   customClasses,
-  inputProps = {},
 }: FooterProps) {
   return (
     <footer
       className={`w-full flex flex-wrap justify-between text-xl px-[150px] py-[40px] gap-[40px] ${customClasses}`}
-      style={{ backgroundColor: background_color }}
+      style={{ backgroundColor: backgroundColor }}
     >
       {/* Contact Information */}
       <div className="flex flex-col gap-[60px] w-full sm:w-auto">
         <Image
-          src={AspireClinixIcon}
+          src={AspireLightLogo}
           alt="Aspire Clinic Logo"
           width={189}
           height={88}
-          className="filter grayscale-0 invert"
         />
-        <address className="not-italic flex flex-col gap-[15px] font-gillSans">
+        <address className="not-italic text-white flex flex-col gap-[15px] font-gillSans">
           <p>hello@aspireclinic.co.uk</p>
           <p>27 Mortimer Street</p>
           <p>W1N 7RJ, London, UK</p>
           <p>0207 333 333</p>
         </address>
-        <p className="text-[16px]">Copyright 2024 Aspire Clinic</p>
+        <p className="text-[16px] text-white">Copyright 2024 Aspire Clinic</p>
       </div>
 
       {/* Newsletter Signup */}
-      <div className="flex flex-col gap-[60px] w-full sm:w-auto">
+      <div className="flex text-white flex-col gap-[60px] w-full sm:w-auto">
         <p className="text-[20px]">Sign up to our newsletter</p>
-        <EmailInput background_color={input_background_color} {...inputProps} />
+        <EmailInput backgroundColor={inputBackgroundColor} />
       </div>
 
       {/* Quick Links */}
-      <div className="flex flex-col pl-[30px] gap-[60px] w-full sm:w-auto">
+      <div className="flex text-white flex-col pl-[30px] gap-[60px] w-full sm:w-auto">
         <p>Quick Links</p>
         <ul className="flex flex-col gap-[10px]">
           {IN_PAGE_NAV_LINKS.map((link, index) => (
@@ -79,7 +71,7 @@ export default function Footer({
       </div>
 
       {/* Social Media Links */}
-      <div className="flex flex-col pl-[30px] gap-[20px] w-full sm:w-auto">
+      <div className="flex text-white flex-col pl-[30px] gap-[20px] w-full sm:w-auto">
         <p>Connect with us</p>
         <div className="flex justify-between">
           {SOCIAL_ICONS.map((icon, index) => (

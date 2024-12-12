@@ -5,7 +5,7 @@ interface ServiceDetailCardProps {
   description?: string | null;
   path: string;
   card_width: number;
-  button_text: string;
+  buttonText: string;
   card_height?: number;
   className?: string;
   doc_name?: string;
@@ -16,7 +16,7 @@ export default function ServiceDetailCard({
   description,
   path,
   card_width,
-  button_text,
+  buttonText,
   card_height,
   className,
   doc_name,
@@ -30,7 +30,7 @@ export default function ServiceDetailCard({
     >
       <div className="flex flex-col gap-[20px] w-[63%] absolute bottom-[8%] left-[6%]">
         <p
-          className="text-4xl whitespace-normal"
+          className="text-4xl whitespace-normal font-opus"
           style={{ lineHeight: "40.86px" }}
         >
           {title}
@@ -50,7 +50,7 @@ export default function ServiceDetailCard({
             className="absolute font-gillSans bottom-0 right-0 bg-white py-6 px-8 text-base tracking-widest"
             style={{ lineHeight: "18.18px" }}
           >
-            {button_text}
+            {buttonText}
           </button>
         </Link>
       </div>

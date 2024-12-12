@@ -1,4 +1,4 @@
-import ServiceDetailSlider from "../../../components/ServiceDetailSlider";
+import ServiceDetailSlider from "../../../../components/ServiceDetailSlider";
 
 interface ServiceDetailProps {
   title: string;
@@ -14,7 +14,7 @@ export default function ServiceDetailSection({
   return (
     <div className="flex h-screen pl-[130px] pt-[190px] pb-[118px] gap-[190px]">
       <div className="w-[30%] flex flex-col gap-[30px]">
-        <p className="text-[64px] leading-72.64px]">{title}</p>
+        <p className="text-[64px] leading-72.64px] font-opus">{title}</p>
         {description && (
           <p className="text-[24px] text-[#382F26] leading-[27.27px] tracking-{10%} font-gillSans">
             {description}

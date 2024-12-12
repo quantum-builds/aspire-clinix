@@ -117,7 +117,7 @@ export default function ServiceDetailSlider({
             description={service.description}
             path={service.path}
             card_width={card_width}
-            button_text={"Learn More"}
+            buttonText={"Learn More"}
           />
         ))}
       </div>

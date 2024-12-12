@@ -1,10 +1,10 @@
 import Image from "next/image";
-import { AspireClinixIcon } from "@/assets";
+import { AspireDarkLogo } from "@/assets";
 
 export default function AspireLogo() {
   return (
     <Image
-      src={AspireClinixIcon}
+      src={AspireDarkLogo}
       alt="Aspire Clinic"
       width={189}
       height={88}

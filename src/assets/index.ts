@@ -1,4 +1,6 @@
-export { default as AspireClinixIcon } from "./aspire-clinix-icon.png";
+export { default as AspireDarkLogo } from "./aspire-dark-logo.png";
+export { default as AspireLightLogo } from "@/assets/aspire-light-logo.png";
+export { default as ArrowLight } from "@/assets/arrow-light.svg";
 export { default as InstagramIcon } from "./instagram-icon.svg";
 export { default as LinkedinIcon } from "./linkedin-icon.svg";
 export { default as XIcon } from "./x-ixon.svg";

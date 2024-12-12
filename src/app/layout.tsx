@@ -1,5 +1,16 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import localFont from "next/font/local";
+
+const gillSans = localFont({
+  src: "../app/fonts/GillSans.otf",
+  variable: "--font-gill-sans",
+});
+
+const opus = localFont({
+  src: "../app/fonts/Opus.ttf",
+  variable: "--font-opus",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,7 +24,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-opus text-[#382F26]">{children}</body>
+      <body className={`text-[#382F26] ${opus.variable}  ${gillSans.variable}`}>
+        {children}
+      </body>
     </html>
   );
 }

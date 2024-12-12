@@ -9,14 +9,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
         feeguide: " #ECE8E3",
         feeguidedark: "#DCD4C9",
       },
       fontFamily: {
-        opus: ["Opus", "sans-serif"],
-        gillSans: ["GillSans", "sans-serif"],
+        opus: ["var(--font-opus)"],
+        gillSans: ["var(--font-gill-sans)"],
       },
     },
   },

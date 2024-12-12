@@ -14,7 +14,9 @@ export default function GeneralDentistryService({
       {container_side === "left" ? (
         <>
           <div className="w-[37%] flex flex-col items-start justify-center gap-[67px]">
-            <p className="text-[52px] leading-[59.02px] font-bold">{title}</p>
+            <h2 className="text-[52px] leading-[59.02px] font-bold font-opus">
+              {title}
+            </h2>
             <p className="text-[24px] leading-[27.27px] tracking-widest font-gillSans">
               {description}
             </p>
@@ -25,7 +27,9 @@ export default function GeneralDentistryService({
         <>
           <div className="flex-1"></div>
           <div className="w-[37%] flex flex-col items-start justify-center gap-[67px]">
-            <p className="text-[52px] leading-[59.02px] font-bold">{title}</p>
+            <h2 className="text-[52px] leading-[59.02px] font-bold font-opus">
+              {title}
+            </h2>
             <p className="text-[24px] leading-[27.27px] tracking-widest font-gillSans">
               {description}
             </p>
