@@ -4,7 +4,7 @@ import FormInput from "@/components/ui/FormInput";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import CheckboxInput from "@/components/ui/CheckboxInput";
+import { CheckboxInput } from "@/components/ui/CheckboxInput";
 import { useState } from "react";
 import Button from "@/components/ui/Button";
 
@@ -40,10 +40,27 @@ const formSchema = z.object({
   referralPassword: z
     .string()
     .min(6, "Referral's password must be at least 6 characters long."),
-  checkboxes: z.array(z.string()).optional(),
+  referralDetails: z.array(z.string()).optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
+
+const REFERRAL_DETAIL = {
+  name: "referralDetails",
+  options: [
+    { label: "Implants", value: "implants" },
+    { label: "Periodontology", value: "periodontology" },
+    { label: "Oral Surgery", value: "oralSurgery" },
+    { label: "Dentures", value: "dentures" },
+    { label: "Root Canal", value: "rootCanal" },
+    { label: "Paediatric Dentistry", value: "paediatricDentistry" },
+    { label: "Orthodontics", value: "orthodontics" },
+    {
+      label: "Treatment planning & Advice",
+      value: "treatmentPlanningAndAdvice",
+    },
+  ],
+};
 
 export default function ReferralForm() {
   const {
@@ -51,28 +68,9 @@ export default function ReferralForm() {
     control,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(formSchema) });
+
   const onSubmit = (data: FormData) => {
     console.log(data);
-  };
-
-  const options = [
-    "Implants",
-    "Periodontology",
-    "Oral Surgery",
-    "Dentures",
-    "Root Canal",
-    "Paediatric Dentistry",
-    "Orthodontics",
-    "Treatment planning & Advice",
-  ];
-  const newOptions = ["Yes", "No"];
-  const [selectedOption, setSelectedOption] = useState<string[]>([]);
-  const handleOptionChange = (value: string) => {
-    setSelectedOption((prev) =>
-      prev.includes(value)
-        ? prev.filter((item) => item !== value)
-        : [...prev, value]
-    );
   };
 
   return (
@@ -142,13 +140,15 @@ export default function ReferralForm() {
           <div className="mt-6">
             <h2 className="text-[24px] font-normal">Medical History</h2>
           </div>
-          <CheckboxInput
-            options={options}
-            name="root"
-            selectedOption={selectedOption || []}
-            onChange={handleOptionChange}
-            title="Referral Details"
-          />
+          {REFERRAL_DETAIL.options.map((option) => (
+            <CheckboxInput
+              key={option.value}
+              name={REFERRAL_DETAIL.name}
+              label={option.label}
+              value={option.value}
+              control={control}
+            />
+          ))}
           <div className="mt-5">
             <label htmlFor="other" className="text-[22px] font-normal">
               Other
@@ -226,16 +226,6 @@ export default function ReferralForm() {
                 backgroundColor="#ECE8E3"
                 marginTop="50px"
                 padding="8px"
-              />
-            </div>
-            <div className="mt-6">
-              <CheckboxInput
-                options={newOptions}
-                name="root"
-                selectedOption={selectedOption}
-                onChange={handleOptionChange}
-                description="Would you like to attend the treatment appointment with the
-                  patient and shadow the dentist?"
               />
             </div>
           </div>

@@ -1,46 +1,40 @@
+"use client";
+import { Controller } from "react-hook-form";
+
 interface CheckboxInputProps {
   name: string;
-  options: string[];
-  selectedOption: string[];
-  onChange: (value: string) => void;
-  title?: string;
-  description?: string;
+  label: string;
+  value: string;
+  control: any;
 }
-export default function CheckboxInput({
+
+export function CheckboxInput({
   name,
-  options,
-  selectedOption,
-  onChange,
-  title,
-  description,
+  label,
+  value,
+  control,
 }: CheckboxInputProps) {
   return (
-    <div className="mt-20 font-opus">
-      {title && <h3 className="text-[24px] font-normal">{title}</h3>}
-      {description && (
-        <p className="text-sm text-gray-600 mb-4">{description}</p>
-      )}
-      <div className="grid grid-cols-2 gap-5 mt-8">
-        {options.map((option) => (
-          <div key={option} className="flex items-center mb-2">
-            <input
-              type="checkbox"
-              id={`${name}-${option}`}
-              name={name}
-              value={option}
-              checked={selectedOption.includes(option)}
-              onChange={() => onChange(option)}
-              className="bg-[#ECE8E3] text-[#ECE8E3] form-radio h-[27px] w-[27px] border-[0.75px] border-[#000000] rounded-[5px]"
-            />
-            <label
-              htmlFor={`${name}-${option}`}
-              className="flex items-center space-x-5 text-[22px] font-normal ml-5"
-            >
-              {option}
-            </label>
-          </div>
-        ))}
-      </div>
+    <div className="flex items-center gap-2 mb-4">
+      <Controller
+        name={name}
+        control={control}
+        render={({ field }) => (
+          <input
+            type="checkbox"
+            checked={field.value?.includes(value) || false}
+            onChange={(e) => {
+              const isChecked = e.target.checked;
+              field.onChange(
+                isChecked
+                  ? [...(field.value || []), value]
+                  : field.value.filter((item: string) => item !== value)
+              );
+            }}
+          />
+        )}
+      />
+      <label className="text-lg">{label}</label>
     </div>
   );
 }
