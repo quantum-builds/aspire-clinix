@@ -156,7 +156,7 @@ const WELLNESS_SERVICE = {
 
 const HERO_SECTION_DATA = {
   title: "HOLISTIC WELLNESS IS A JOURNEY THAT STARTS HERE",
-  titleTextSize: 70,
+  // titleTextSize: 70,
   titleLineHeight: 79.45,
   decription: null,
   descTextSize: null,
@@ -173,7 +173,7 @@ const ABOUT_US_SECTION_DATA = {
   descriptionLeadingHeight: 45.4,
   hasButton: true,
   buttonText: "Our Philosophy",
-  backgroundColor: "#382F26",
+  backgroundColor: "#1D120C",
   textColor: "#C9BCA9",
   descriptionWidth: 60,
 };
@@ -183,8 +183,8 @@ export default function LandingPage() {
     <div id="landing" className="flex flex-col">
       <HeroSection
         title={HERO_SECTION_DATA.title}
-        titleTextSize={HERO_SECTION_DATA.titleTextSize}
-        titleLineHeight={HERO_SECTION_DATA.titleLineHeight}
+        // titleTextSize={HERO_SECTION_DATA.titleTextSize}
+        // titleLineHeight={HERO_SECTION_DATA.titleLineHeight}
         description={HERO_SECTION_DATA.decription}
         descTextSize={HERO_SECTION_DATA.descTextSize}
         descLineHeight={HERO_SECTION_DATA.descLineHeight}

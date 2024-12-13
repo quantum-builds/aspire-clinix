@@ -22,14 +22,14 @@ export default function AboutUsSection({
 }: AboutUsSectionProps) {
   return (
     <div
-      className={`flex flex-col justify-center items-center gap-[60px] h-[72vh] font-opus`}
+      className={`flex flex-col justify-center items-center gap-[60px] min-h-screen font-opus`}
       style={{ backgroundColor: backgroundColor }}
     >
       <p
-        className={`text-center w-[${descriptionWidth}%]`}
+        className={`text-center w-[${descriptionWidth}%] text-[16px] sm:text-[30px] md:text-[${descriptionTextSize}]`}
         style={{
           color: textColor,
-          fontSize: `${descriptionTextSize}px`,
+          // fontSize: `${descriptionTextSize}px`,
           lineHeight: `${descriptionLeadingHeight}px`,
         }}
       >

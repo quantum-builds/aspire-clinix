@@ -13,12 +13,16 @@ export default function PriceItemList({
 }: PriceListItemProps) {
   return (
     <div
-      className={`flex justify-between items-center py-2 border-t border-black 
+      className={`flex justify-between items-center py-1 border-t border-black font-gillSans 
                 ${lineTop ? "border-t" : ""}
                 ${lineBottom ? "border-b" : ""}`}
     >
-      <p className="text-left text-xl font-normal w-[65%]">{description}</p>
-      <h1 className="text-right text-xl font-normal w-[25%]">{price}</h1>
+      <p className="text-left text-[16px] text-[#382F26] py-1 max-h-screen sm:text-[20px] lg:text-[30px] font-normal w-[65%]">
+        {description}
+      </p>
+      <h1 className="text-right text-[16px] sm:text-[20px] font-normal w-[25%] lg:text-[30px]">
+        {price}
+      </h1>
     </div>
   );
 }

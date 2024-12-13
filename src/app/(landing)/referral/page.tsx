@@ -5,7 +5,7 @@ export default function ReferralPage() {
   const heroBackgroundColor = "#DCD4C9";
   const herobuttonColor = "#ECE8E3";
   return (
-    <div>
+    <div className="bg-[#ECE8E3]">
       <HeroSection
         title="Dental Treatment Fee Guide"
         titleTextSize={48}

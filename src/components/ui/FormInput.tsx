@@ -8,6 +8,11 @@ interface FormInputProps<T extends FieldValues> {
   type?: string;
   errorMessage?: string;
   className?: string;
+  backgroundColor: string;
+  marginTop: string;
+  inputMarginTop?: string;
+  padding?: string;
+  labelTextSize?: string;
 }
 const FormInput = <T extends FieldValues>({
   name,
@@ -16,17 +21,26 @@ const FormInput = <T extends FieldValues>({
   placeholder,
   type,
   className,
+  backgroundColor,
+  marginTop,
+  inputMarginTop,
+  padding,
+  labelTextSize,
 }: FormInputProps<T>) => {
   const {
     field,
     fieldState: { error },
   } = useController({ name, control });
   return (
-    <div style={{ marginBottom: "1rem" }} className={className}>
+    <div className={className} style={{ marginTop: `${marginTop}` }}>
       <label
         htmlFor={name}
-        style={{ display: "block", marginBottom: "0.5rem" }}
-        className="text-[24px] my-10 font-opus"
+        style={{
+          display: "block",
+          marginBottom: "0.5rem",
+          fontSize: `${labelTextSize}`,
+        }}
+        className="text-[24px] font-normal font-opus"
       >
         {label}
       </label>
@@ -37,11 +51,13 @@ const FormInput = <T extends FieldValues>({
         placeholder={placeholder}
         style={{
           width: "100%",
-          padding: "0.5rem",
           border: error ? "1px solid red" : "1px solid #000000",
           borderRadius: "10px",
+          backgroundColor: `${backgroundColor}`,
+          marginTop: `${inputMarginTop}`,
+          padding: `${padding}`,
         }}
-        className="bg-[#ECE8E3] font-opus"
+        className="font-opus px-3 outline-none"
       />
       {error && (
         <span style={{ color: "red", fontSize: "0.875rem" }}>
