@@ -1,3 +1,4 @@
+import { Dentist } from "@/assets";
 import Link from "next/link";
 
 interface ServiceDetailCardProps {
@@ -23,11 +24,10 @@ export default function ServiceDetailCard({
 }: ServiceDetailCardProps) {
   return (
     <div
-      className={`bg-[#B4B4B4] h-full flex-shrink-0 relative  ${
+      className={` h-full flex-shrink-0 relative  ${
         className || ""
-      } lg:w-[52.2%] md:w-[50%] sm:w-[100%] w-[80%] `}
-      style={{ height: card_height }}
-      // style={{ width: `${card_width}%`, height: card_height }}
+      } lg:w-[52.2%] md:w-[50%] sm:w-[100%] w-[80%] bg-cover bg-center bg-no-repeat`}
+      style={{ height: card_height, backgroundImage: `url(${Dentist.src})` }}
     >
       <div className="flex flex-col gap-[20px] w-[63%] absolute bottom-[8%] left-[6%]">
         <p

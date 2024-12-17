@@ -16,7 +16,7 @@ export default function EmailInput({
 }: EmailInputProp) {
   return (
     <div
-      className="flex items-center border px-6 py-3 rounded-[10px] w-[190px] h-[40px] lg:w-[312px] md:w-[215px] md:h-[42px] lg:h-[52px]"
+      className="flex items-center border px-6 py-3 md:text-[16px] text-[10px] rounded-[10px] w-[220px] h-[40px] lg:w-[312px] md:w-[215px] md:h-[42px] lg:h-[52px]"
       style={{ borderColor: borderColor }}
     >
       <input

@@ -6,7 +6,7 @@ export default function SupplementSection() {
       <p className="text-[18px] md:text-[64px] leading-{72.64px} font-opus">
         Our Supplements
       </p>
-      <div className="flex flex-col items-center justify-center gap-[5px] text-[16px] md:text-[32px] text-[#382F26] leading-{36.36px} font-gillSans">
+      <div className="flex flex-col items-center justify-center gap-[5px] text-[16px] lg:text-[32px] md:text-[28px] text-[#382F26] leading-{36.36px} font-gillSans">
         <p>Lorem ipsum odor amet, consectetuer adipiscing elit.</p>
         <p>
           Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat

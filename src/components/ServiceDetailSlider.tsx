@@ -123,7 +123,7 @@ export default function ServiceDetailSlider({
       </div>
 
       <div
-        className={`h-3 bg-gray-200 rounded-full ${
+        className={`h-3 bg-[#F1F5F9] rounded-full ${
           is_dentistry ? "mx-auto w-[50%]" : "w-full"
         }`}
       >

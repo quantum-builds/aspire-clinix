@@ -24,7 +24,7 @@ interface FooterProps {
 export default function Footer({ inputBackgroundColor }: FooterProps) {
   return (
     <footer className="bg-[#1D120C]">
-      <div className="grid gap-12 md:gap-20 ml-4 lg:ml-0 md:ml-2 md:grid-cols-4 justify-items-start md:justify-items-center py-12">
+      <div className="grid gap-12 md:gap-20  ml-4 lg:ml-0 md:pl-2 md:grid-cols-4 justify-items-start md:justify-items-center py-12">
         {/* Logo and Address Section */}
         <div className="flex flex-col items-start">
           <Image
@@ -34,7 +34,7 @@ export default function Footer({ inputBackgroundColor }: FooterProps) {
             height={88}
             className="w-[100px] h-[50px] lg:w-[189px] lg:h-[88px] md:w-[120px] md:h-[50px]"
           />
-          <address className="not-italic text-[16px] sm:text-[20px] text-white flex flex-col items-start font-gillSans mt-4">
+          <address className="not-italic  md:text-[16px] text-[16px] sm:text-[20px] text-white flex flex-col items-start font-gillSans mt-4">
             <p>hello@aspireclinic.co.uk</p>
             <p>27 Mortimer Street</p>
             <p>W1N 7RJ, London, UK</p>
@@ -43,7 +43,7 @@ export default function Footer({ inputBackgroundColor }: FooterProps) {
         </div>
 
         {/* Newsletter Signup Section */}
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col  items-start">
           <p className="text-[16px] sm:text-[20px] text-white font-normal font-opus mb-4 md:mb-8">
             Sign up to our newsletter
           </p>
@@ -71,10 +71,10 @@ export default function Footer({ inputBackgroundColor }: FooterProps) {
 
         {/* Social Icons Section */}
         <div className="flex flex-col items-start">
-          <p className="text-[16px] sm:text-[20px] text-white font-normal font-opus mb-4">
+          <p className="text-[16px] lg:text-[20px] text-white font-normal font-opus mb-4">
             Connect with us
           </p>
-          <div className="flex gap-6">
+          <div className="flex pr-2  gap-6">
             {SOCIAL_ICONS.map((icon, index) => (
               <Link key={index} href={icon.path} aria-label={icon.alt}>
                 <Image
