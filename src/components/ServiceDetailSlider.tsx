@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import ServiceDetailCard from "./ServiceDetailCard";
 
 interface ServiceDetailSliderProp {
-  card_width: number;
+  card_width?: number;
   is_dentistry: boolean;
   services: Array<{ title: string; description: string | null; path: string }>;
 }
@@ -104,9 +104,9 @@ export default function ServiceDetailSlider({
   }, [isDragging, handleMouseMove]);
 
   return (
-    <div className="w-full h-full flex flex-col gap-[75px]">
+    <div className="w-full h-full flex flex-col gap-2 md:gap-[40px]">
       <div
-        className="flex gap-[60px] overflow-x-auto whitespace-nowrap w-full h-full scrollbar-hide"
+        className="flex gap-2 md:gap-[60px] overflow-x-auto whitespace-nowrap w-full h-full scrollbar-hide"
         onScroll={handleContainerScroll}
         ref={containerRef}
       >

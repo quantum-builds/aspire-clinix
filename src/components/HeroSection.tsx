@@ -6,9 +6,6 @@ import Link from "next/link";
 interface HeroSectionProps {
   title: string;
   description?: string | null;
-  titleTextSize?: number;
-  titleLineHeight?: number;
-  descTextSize?: number | null;
   descLineHeight?: number | null;
   contentWidth?: number | null;
   backgroundColor: string;
@@ -19,9 +16,6 @@ interface HeroSectionProps {
 export default function HeroSection({
   title,
   description,
-  titleTextSize,
-  titleLineHeight,
-  descTextSize,
   descLineHeight,
   contentWidth,
   backgroundColor,
@@ -34,21 +28,23 @@ export default function HeroSection({
       style={{ backgroundColor }}
     >
       {/* Header Section */}
-      <header className="flex justify-between w-full items-center h-[200px] px-4 sm:px-[8%] leading-[27.27px] tracking-widest text-lg sm:text-2xl">
+      <header className="flex justify-between w-full items-center h-[200px] px-2 sm:px-[8%] leading-[27.27px] tracking-widest text-lg sm:text-2xl">
         <HeroMenu />
         <Image
           src={AspireDarkLogo}
           alt="Aspire Clinix"
-          width={189}
+          width={80}
           height={88}
-          className="ml-4 sm:ml-64"
+          className="flex justify-center items-center md:ml-12 w-[80px] h-[40px] sm:w-[189px] sm:h-[88px]"
         />
         <Link href="/book-treatment" scroll={false}>
           <button
-            className="px-4 sm:px-[19px] py-2 sm:py-[28px] rounded-md sm:rounded-[20px] text-sm sm:text-[20px] font-normal font-opus"
+            className="px-1 flex justify-center items-center sm:px-[19px] py-2 sm:py-[28px] sm:ml-10 md:ml-1 rounded-md sm:rounded-[20px] text-sm sm:text-[20px] font-normal font-opus"
             style={{ backgroundColor: buttonColor }}
           >
-            BOOK A TREATMENT
+            {/* BOOK A TREATMENT */}
+            <span className="block sm:hidden">Appointment</span>
+            <span className="hidden sm:block">BOOK A TREATMENT</span>
           </button>
         </Link>
       </header>
@@ -60,10 +56,8 @@ export default function HeroSection({
       >
         {/* Title */}
         <p
-          className="text-center font-opus text-sm font-normal sm:text-[18px] md:text-[40px] md:leading-[70px] lg:text-[70px] lg:leading-[100px]"
+          className="text-center font-opus text-[16px] font-normal md:text-[64px] md:leading-[70px] lg:text-[70px] lg:leading-[100px]"
           style={{
-            fontSize: `${titleTextSize}px`,
-            lineHeight: `${titleLineHeight}px`,
             color: textColor,
           }}
         >
@@ -71,11 +65,10 @@ export default function HeroSection({
         </p>
 
         {/* Description */}
-        {description && descTextSize && descLineHeight && (
+        {description && descLineHeight && (
           <p
-            className="text-center font-sans text-xs sm:text-sm md:text-base px-4 sm:px-0"
+            className="text-center font-gillSans text-[16px] md:text-[32px] px-4 sm:px-5px"
             style={{
-              fontSize: `${descTextSize}px`,
               lineHeight: `${descLineHeight}px`,
               color: textColor,
             }}

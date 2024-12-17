@@ -47,7 +47,7 @@ const ABOUT_US_SECTION_DATA = {
   descriptionLeadingHeight: 45.4,
   hasButton: true,
   buttonText: "Fee Guide",
-  backgroundColor: "#ADADAD",
+  backgroundColor: "#1D120C",
   textColor: "#EBEBEB",
   descriptionWidth: 60,
 };
@@ -80,10 +80,7 @@ export default function GeneralDentistry() {
     <div className="flex flex-col" id="dentistry">
       <HeroSection
         title={HERO_SECTION_DATA.title}
-        titleTextSize={HERO_SECTION_DATA.titleTextSize}
-        titleLineHeight={HERO_SECTION_DATA.titleLineHeight}
         description={HERO_SECTION_DATA.decription}
-        descTextSize={HERO_SECTION_DATA.descTextSize}
         descLineHeight={HERO_SECTION_DATA.descLineHeight}
         contentWidth={HERO_SECTION_DATA.contentWidth}
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
@@ -110,10 +107,11 @@ export default function GeneralDentistry() {
         descriptionWidth={ABOUT_US_SECTION_DATA.descriptionWidth}
       />
       <div className="flex flex-col justify-center items-center mt-20 mt- pb-32">
-        <h1 className="text-[52px] font-bold mb-8 relative right-96">
+        <h1 className="text-22px md:text-[52px] font-bold mb-8 relative right-96">
           Meet the team
         </h1>
-        <div className="flex flex-row gap-8 justify-center">
+        {/* <div className="flex flex-row gap-8 justify-center"> */}
+        <div className="flex flex-col sm:flex-row md:flex-row gap-8 justify-center items-center">
           {CARD_DATA.map((card, index) => (
             <ServiceDetailCard
               key={index}

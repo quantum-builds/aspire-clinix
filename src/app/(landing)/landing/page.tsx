@@ -7,7 +7,8 @@ import SupplementSection from "./components/SupplementSection";
 
 const DENTAL_SERVICES = {
   title: "Aspire Dental",
-  description: null,
+  description:
+    "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit.",
   services: [
     {
       title: "General Dentistry",
@@ -156,7 +157,6 @@ const WELLNESS_SERVICE = {
 
 const HERO_SECTION_DATA = {
   title: "HOLISTIC WELLNESS IS A JOURNEY THAT STARTS HERE",
-  // titleTextSize: 70,
   titleLineHeight: 79.45,
   decription: null,
   descTextSize: null,
@@ -183,10 +183,7 @@ export default function LandingPage() {
     <div id="landing" className="flex flex-col">
       <HeroSection
         title={HERO_SECTION_DATA.title}
-        // titleTextSize={HERO_SECTION_DATA.titleTextSize}
-        // titleLineHeight={HERO_SECTION_DATA.titleLineHeight}
         description={HERO_SECTION_DATA.decription}
-        descTextSize={HERO_SECTION_DATA.descTextSize}
         descLineHeight={HERO_SECTION_DATA.descLineHeight}
         contentWidth={HERO_SECTION_DATA.contentWidth}
         backgroundColor={HERO_SECTION_DATA.backgroundColor}

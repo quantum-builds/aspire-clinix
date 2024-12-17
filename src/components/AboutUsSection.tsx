@@ -29,7 +29,6 @@ export default function AboutUsSection({
         className={`text-center w-[${descriptionWidth}%] text-[16px] sm:text-[30px] md:text-[${descriptionTextSize}]`}
         style={{
           color: textColor,
-          // fontSize: `${descriptionTextSize}px`,
           lineHeight: `${descriptionLeadingHeight}px`,
         }}
       >
