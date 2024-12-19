@@ -38,7 +38,7 @@ export default function AboutUsSection({
       {hasButton && (
         <Link href={"/"}>
           <button
-            className=" text-black font-opus text-[20px] rounded-[20px] py-[24px] px-[40px] leading-[22.7px]"
+            className=" text-black font-opus text-[20px] flex justify-center items-center md:rounded-[20px] rounded-[5px] md:w-[232px] w-[155px] h-[50px] md:h-[77px]"
             style={{
               backgroundColor: textColor,
             }}

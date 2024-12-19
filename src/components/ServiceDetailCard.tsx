@@ -37,7 +37,7 @@ export default function ServiceDetailCard({
         </p>
         {description && (
           <p
-            className="text-[#382F26] font-gillSans w-80 text-base whitespace-normal tracking-widest"
+            className="text-[#382F26] font-gillSans w-80 mb-7 text-base whitespace-normal tracking-widest"
             style={{ lineHeight: "18.18px" }}
           >
             {description}
@@ -47,7 +47,7 @@ export default function ServiceDetailCard({
       <div>
         <Link href={path}>
           <button
-            className="absolute font-gillSans bottom-0 rounded-tl-2xl right-0 bg-white py-6 px-1 md:px-8 text-base tracking-widest"
+            className="absolute font-gillSans bottom-0 rounded-tl-2xl w-[150px] h-[65px] right-0 bg-white text-base tracking-widest"
             style={{ lineHeight: "18.18px" }}
           >
             {buttonText}

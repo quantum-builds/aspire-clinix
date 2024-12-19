@@ -12,6 +12,7 @@ const config: Config = {
       colors: {
         feeguide: " #ECE8E3",
         feeguidedark: "#DCD4C9",
+        menuBar: "#C9BCA9",
       },
       fontFamily: {
         opus: ["var(--font-opus)"],

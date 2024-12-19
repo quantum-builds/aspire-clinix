@@ -8,7 +8,7 @@ export default function DentistryDetailSection({
   services,
 }: DentistryDetailSectionProps) {
   return (
-    <div className="pl-[130px] pt-[190px] pb-[118px] gap-[190px] bg-[#ECE8E3]">
+    <div className="md:pl-[130px] md:pt-[190px] pb-3 md:pb-[118px] bg-[#ECE8E3]">
       <ServiceDetailSlider services={services} is_dentistry={true} />
     </div>
   );
