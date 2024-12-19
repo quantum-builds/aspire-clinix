@@ -3,7 +3,7 @@ import { useController, Control, FieldValues, Path } from "react-hook-form";
 interface FormInputProps<T extends FieldValues> {
   name: Path<T>;
   label: string;
-  control: Control<T>;
+  control?: Control<T>;
   placeholder?: string;
   type?: string;
   errorMessage?: string;

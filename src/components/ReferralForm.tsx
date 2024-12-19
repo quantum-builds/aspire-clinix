@@ -96,7 +96,7 @@ export default function ReferralForm() {
   };
 
   return (
-    <div className="bg-[#ECE8E3] w-full py-16 font-opus my-10">
+    <div className="bg-[#ECE8E3] w-full  h-full py-16 font-opus ">
       <div className="max-w-[80%] mx-auto">
         <div className="my-5">
           <h1 className="text-[52px] font-normal">Referral Form</h1>

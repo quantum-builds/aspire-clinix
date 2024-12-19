@@ -26,7 +26,7 @@ export default function AboutUsSection({
       style={{ backgroundColor: backgroundColor }}
     >
       <p
-        className={`text-center w-[${descriptionWidth}%] text-[16px] sm:text-[30px] md:text-[${descriptionTextSize}]`}
+        className={`text-center w-[${descriptionWidth}%] text-[16px] sm:text-[30px] md:text-[${descriptionTextSize}] font-opus`}
         style={{
           color: textColor,
           lineHeight: `${descriptionLeadingHeight}px`,
@@ -38,7 +38,7 @@ export default function AboutUsSection({
       {hasButton && (
         <Link href={"/"}>
           <button
-            className=" text-black text-[20px] rounded-[20px] py-[24px] px-[40px] leading-[22.7px]"
+            className=" text-black font-opus text-[20px] rounded-[20px] py-[24px] px-[40px] leading-[22.7px]"
             style={{
               backgroundColor: textColor,
             }}

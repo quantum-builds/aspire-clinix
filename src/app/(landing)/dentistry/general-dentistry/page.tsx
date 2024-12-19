@@ -1,6 +1,7 @@
 import HeroSection from "@/components/HeroSection";
 import GeneralDentistryService from "./components/GeneralDentistryService";
 import AboutUsSection from "@/components/AboutUsSection";
+import { Dentist } from "@/assets";
 
 import ServiceDetailCard from "@/components/ServiceDetailCard";
 
@@ -8,11 +9,11 @@ const HERO_SECTION_DATA = {
   title: "General Dentistry",
   titleTextSize: 64,
   titleLineHeight: 72.64,
-  decription:
+  description:
     "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit.",
   descTextSize: 32,
   descLineHeight: 36.36,
-  contentWidth: 60,
+  contentWidth: 100,
   backgroundColor: "#D9D9D9",
   buttonColor: "#EBEBEB",
 };
@@ -23,6 +24,7 @@ const GENERAL_DENTISTRY_SERVICE = [
     description:
       "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
     container_side: "left",
+    imagePath: Dentist,
   },
 
   {
@@ -30,6 +32,7 @@ const GENERAL_DENTISTRY_SERVICE = [
     description:
       "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
     container_side: "right",
+    imagePath: Dentist,
   },
 
   {
@@ -37,6 +40,7 @@ const GENERAL_DENTISTRY_SERVICE = [
     description:
       "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
     container_side: "left",
+    imagePath: Dentist,
   },
 ];
 
@@ -54,23 +58,23 @@ const ABOUT_US_SECTION_DATA = {
 const CARD_DATA = [
   {
     path: "/path1",
-    card_width: 550,
+    card_width: 424,
     buttonText: "Read Bio",
-    card_height: 513,
+    card_height: 480,
     doc_name: "Dr. Richard Porter",
   },
   {
     path: "/path2",
-    card_width: 550,
+    card_width: 424,
     buttonText: "Read Bio",
-    card_height: 513,
+    card_height: 480,
     doc_name: "Dr. Raheel Malik",
   },
   {
     path: "/path3",
-    card_width: 550,
+    card_width: 424,
     buttonText: "Read Bio",
-    card_height: 513,
+    card_height: 480,
     doc_name: "Dr. Raheel Malik",
   },
 ];
@@ -80,11 +84,11 @@ export default function GeneralDentistry() {
     <div className="flex flex-col" id="dentistry">
       <HeroSection
         title={HERO_SECTION_DATA.title}
-        description={HERO_SECTION_DATA.decription}
-        descLineHeight={HERO_SECTION_DATA.descLineHeight}
+        description={HERO_SECTION_DATA.description}
         contentWidth={HERO_SECTION_DATA.contentWidth}
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
+        descLineHeight={36.6}
       />
       {GENERAL_DENTISTRY_SERVICE.map((service, index) => (
         <GeneralDentistryService
@@ -92,6 +96,7 @@ export default function GeneralDentistry() {
           title={service.title}
           description={service.description}
           container_side={service.container_side}
+          imagePath={service.imagePath}
         />
       ))}
       <AboutUsSection
@@ -106,20 +111,20 @@ export default function GeneralDentistry() {
         textColor={ABOUT_US_SECTION_DATA.textColor}
         descriptionWidth={ABOUT_US_SECTION_DATA.descriptionWidth}
       />
-      <div className="flex flex-col justify-center items-center mt-20 mt- pb-32">
-        <h1 className="text-22px md:text-[52px] font-bold mb-8 relative right-96">
+      <div className="bg-[#ECE8E3]   ">
+        <h2 className="text-22px md:text-[52px] py-8 ml-2 text-black font-normal md:pl-[10%]">
           Meet the team
-        </h1>
-        {/* <div className="flex flex-row gap-8 justify-center"> */}
-        <div className="flex flex-col sm:flex-row md:flex-row gap-8 justify-center items-center">
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:px-[10%] px-4 min-h-screen pb-8">
           {CARD_DATA.map((card, index) => (
             <ServiceDetailCard
               key={index}
               path={card.path}
               card_width={card.card_width}
-              card_height={card.card_height}
               buttonText={card.buttonText}
+              card_height={card.card_height}
               doc_name={card.doc_name}
+              className="w-full h-auto"
             />
           ))}
         </div>

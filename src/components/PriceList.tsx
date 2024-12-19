@@ -27,7 +27,7 @@ export default function PriceList({
       style={{ backgroundColor: `${backgroundColor}` }}
     >
       <div className="w-full p-2 md:w-[80%] py-10 overflow-auto">
-        <div className="flex justify-between mb-4 flex-wrap w-full">
+        <div className="grid justify-between grid-cols-2 mb-4 flex-wrap w-full">
           <h1 className="text-[16px] sm:text-[18px] md:text-[30px] text-left font-normal font-opus w-full sm:w-auto">
             {title}
           </h1>

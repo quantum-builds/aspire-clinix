@@ -92,7 +92,7 @@ export default function Footer({ inputBackgroundColor }: FooterProps) {
 
       {/* Footer Bottom */}
       <div className="bg-[#1D120C] py-4">
-        <p className="text-left ml-4 md:ml-10 text-white font-opus">
+        <p className="text-left ml-4 md:ml-16 text-white font-opus">
           Copyright 2024 Aspire Clinic
         </p>
       </div>

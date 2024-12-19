@@ -15,7 +15,7 @@ export default function ServiceCard({ text, path }: CardProps) {
         {text}
       </p>
       <Link className="flex justify-center" href={path}>
-        <button className="bg-[#F4F3F0] text-xl px-4 md:px-[50px] py-[20px] rounded-[20px] leading-[22.7px] absolute bottom-4 sm:relative sm:bottom-0 sm:px-[100px] md:absolute md:bottom-24">
+        <button className="bg-[#F4F3F0] text-xl px-4 md:px-[50px] py-[20px] rounded-[20px] leading-[22.7px] absolute bottom-4 sm:relative sm:bottom-0 sm:px-[100px] md:absolute md:bottom-24 font-opus">
           Explore
         </button>
       </Link>

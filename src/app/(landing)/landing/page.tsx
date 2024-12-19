@@ -1,3 +1,4 @@
+import LandingPageImage from "@/components/LandingPageImage";
 import AboutUsSection from "../../../components/AboutUsSection";
 
 import HeroSection from "../../../components/HeroSection";
@@ -10,6 +11,30 @@ const DENTAL_SERVICES = {
   description:
     "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit.",
   services: [
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
     {
       title: "General Dentistry",
       description:
@@ -157,11 +182,9 @@ const WELLNESS_SERVICE = {
 
 const HERO_SECTION_DATA = {
   title: "HOLISTIC WELLNESS IS A JOURNEY THAT STARTS HERE",
-  titleLineHeight: 79.45,
-  decription: null,
+  description: null,
   descTextSize: null,
-  descLineHeight: null,
-  contentWidth: 70,
+  contentWidth: 100,
   backgroundColor: "#FFFFFF",
   buttonColor: "#EBEBEB",
 };
@@ -183,11 +206,12 @@ export default function LandingPage() {
     <div id="landing" className="flex flex-col">
       <HeroSection
         title={HERO_SECTION_DATA.title}
-        description={HERO_SECTION_DATA.decription}
-        descLineHeight={HERO_SECTION_DATA.descLineHeight}
+        description={HERO_SECTION_DATA.description}
         contentWidth={HERO_SECTION_DATA.contentWidth}
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
+        backgroundMedia=""
+        isVideoBackground={true}
       />
       <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}
@@ -201,6 +225,7 @@ export default function LandingPage() {
         textColor={ABOUT_US_SECTION_DATA.textColor}
         descriptionWidth={ABOUT_US_SECTION_DATA.descriptionWidth}
       />
+      <LandingPageImage />
       <ServiceSection />
       <ServiceDetailSection
         title={DENTAL_SERVICES.title}

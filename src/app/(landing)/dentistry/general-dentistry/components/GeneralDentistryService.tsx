@@ -1,15 +1,17 @@
-// import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 
 interface GeneralDentistryServiceProp {
   title: string;
   description: string;
   container_side: string;
+  imagePath: string | StaticImageData;
 }
 
 export default function GeneralDentistryService({
   title,
   description,
   container_side,
+  imagePath,
 }: GeneralDentistryServiceProp) {
   return (
     <div className="w-full bg-[#ECE8E3] py-[97px] px-[10%]">
@@ -34,12 +36,13 @@ export default function GeneralDentistryService({
             container_side === "right" ? "md:order-1" : "md:order-2"
           }`}
         >
-          {/* Add Image here */}
-          {/* <Image
-            src="https://picsum.photos/500/500"
+          <Image
+            src={imagePath}
             alt={title}
-            className="w-full md:w-[50%] h-auto object-contain"
-          /> */}
+            width={705}
+            height={500}
+            className="object-cover rounded-md"
+          />
         </div>
       </div>
     </div>
