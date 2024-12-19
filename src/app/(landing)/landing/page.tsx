@@ -210,8 +210,6 @@ export default function LandingPage() {
         contentWidth={HERO_SECTION_DATA.contentWidth}
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
-        backgroundMedia=""
-        isVideoBackground={true}
       />
       <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}

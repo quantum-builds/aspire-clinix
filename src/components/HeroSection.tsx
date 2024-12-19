@@ -1,4 +1,3 @@
-
 "use client";
 
 import { AspireDarkLogo, AspireLightLogo } from "@/assets";
@@ -35,43 +34,55 @@ export default function HeroSection({
       {/* Header Section */}
       {pathname === "/fee-guide" ? (
         <header className="flex justify-between items-center container mx-auto px-3 p-0 m-0 z-20 mt-3">
-          <HeroMenu backgroundColor="white" />
-          <Image
-            src={AspireLightLogo}
-            alt="Aspire Clinix"
-            width={80}
-            height={88}
-            className="flex justify-center items-center ml-5 md:ml-32 w-[80px] h-[40px] md:w-[189px] md:h-[88px]"
-          />
-          <Link href="/book-treatment" scroll={false}>
-            <button
-              className="px-1 flex justify-center items-center lg:px-[20px] sm:px-[2px] py-2 sm:py-[20px] sm:ml-10 md:ml-1 rounded-md sm:rounded-[20px] text-sm sm:text-[20px] font-normal font-opus"
-              style={{ backgroundColor: buttonColor }}
-            >
-              <span className="block sm:hidden">Appointment</span>
-              <span className="hidden sm:block">BOOK A TREATMENT</span>
-            </button>
-          </Link>
+          <div>
+            <HeroMenu backgroundColor="white" />
+          </div>
+          <div>
+            <Image
+              src={AspireLightLogo}
+              alt="Aspire Clinix"
+              width={80}
+              height={88}
+              className="flex justify-center items-center ml-5 md:ml-32 w-[80px] h-[40px] md:w-[189px] md:h-[88px]"
+            />
+          </div>
+          <div>
+            <Link href="/book-treatment" scroll={false}>
+              <button
+                className="px-1 flex justify-center items-center lg:px-[20px] sm:px-[2px] py-2 sm:py-[20px] sm:ml-10 md:ml-1 rounded-md sm:rounded-[20px] text-sm sm:text-[20px] font-normal font-opus"
+                style={{ backgroundColor: buttonColor }}
+              >
+                <span className="block sm:hidden">Appointment</span>
+                <span className="hidden sm:block">BOOK A TREATMENT</span>
+              </button>
+            </Link>
+          </div>
         </header>
       ) : (
         <header className="flex justify-between items-center container mx-auto px-3 sm:px-0 p-0 m-0 z-20 mt-3">
-          <HeroMenu />
-          <Image
-            src={AspireDarkLogo}
-            alt="Aspire Clinix"
-            width={80}
-            height={88}
-            className="flex justify-center items-center ml-5 md:ml-32 w-[80px] h-[40px] md:w-[189px] md:h-[88px]"
-          />
-          <Link href="/book-treatment" scroll={false}>
-            <button
-              className="px-1 flex justify-center items-center lg:px-[20px] sm:px-[2px] py-2 sm:py-[20px] sm:ml-10 md:ml-1 rounded-md sm:rounded-[20px] text-sm sm:text-[20px] font-normal font-opus"
-              style={{ backgroundColor: buttonColor }}
-            >
-              <span className="block sm:hidden">Appointment</span>
-              <span className="hidden sm:block">BOOK A TREATMENT</span>
-            </button>
-          </Link>
+          <div>
+            <HeroMenu />
+          </div>
+          <div>
+            <Image
+              src={AspireDarkLogo}
+              alt="Aspire Clinix"
+              width={80}
+              height={88}
+              className="flex justify-center items-center ml-5 md:ml-32 w-[80px] h-[40px] md:w-[189px] md:h-[88px]"
+            />
+          </div>
+          <div>
+            <Link href="/book-treatment" scroll={false}>
+              <button
+                className="px-1 flex justify-center items-center lg:px-[20px] sm:px-[2px] py-2 sm:py-[20px] sm:ml-10 md:ml-1 rounded-md sm:rounded-[20px] text-sm sm:text-[20px] font-normal font-opus"
+                style={{ backgroundColor: buttonColor }}
+              >
+                <span className="block sm:hidden">Appointment</span>
+                <span className="hidden sm:block">BOOK A TREATMENT</span>
+              </button>
+            </Link>
+          </div>
         </header>
       )}
 
