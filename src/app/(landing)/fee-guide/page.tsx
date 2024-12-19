@@ -14,12 +14,10 @@ export default function FeeGuidePage() {
     <div className="flex flex-col w-full h-full">
       <HeroSection
         title="Dental Treatment Fee Guide"
-        titleTextSize={48}
-        titleLineHeight={60}
-        descTextSize={18}
-        descLineHeight={28}
-        description="Explore our fee structure and treatment options."
+        description="Lorem ipsum odor amet, consectetuer adipiscing elit. 
+    Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit"
         backgroundColor={heroBackgroundColor}
+        descLineHeight={33.3}
         buttonColor={herobuttonColor}
         textColor="white"
       />

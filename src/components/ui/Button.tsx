@@ -1,29 +1,18 @@
 interface ButtonProps {
-  width: string;
-  height: string;
-  backgroundColor: string;
   title: string;
-  borderRadius?: string;
+  type?: "submit" | "reset" | "button";
+  onClick?: () => void;
+  className?: string;
 }
 export default function Button({
-  width,
-  height,
-  backgroundColor,
   title,
-  borderRadius,
+  type = "button",
+  onClick,
+  className,
 }: ButtonProps) {
   return (
-    <div>
-      <button
-        style={{
-          backgroundColor: `${backgroundColor}`,
-          width: `${width}`,
-          height: `${height}`,
-          borderRadius: `${borderRadius}`,
-        }}
-      >
-        {title}
-      </button>
-    </div>
+    <button type={type} className={className} onClick={onClick}>
+      {title}
+    </button>
   );
 }

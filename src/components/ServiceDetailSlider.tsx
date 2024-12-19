@@ -1,114 +1,75 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import ServiceDetailCard from "./ServiceDetailCard";
 
 interface ServiceDetailSliderProp {
-  card_width: number;
   is_dentistry: boolean;
   services: Array<{ title: string; description: string | null; path: string }>;
 }
 
 export default function ServiceDetailSlider({
   services,
-  is_dentistry,
-  card_width,
-}: ServiceDetailSliderProp) {
+}: // is_dentistry,
+ServiceDetailSliderProp) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const scrollThumbRef = useRef<HTMLDivElement | null>(null);
-  const [customScrollbarWidth, setCustomScrollbarWidth] = useState(0);
   const [thumbWidth, setThumbWidth] = useState(0);
   const [scrollThumbOffset, setScrollThumbOffset] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const dragStartX = useRef(0);
-  const scrollStartLeft = useRef(0);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [scrollbarWidth, setScrollbarWidth] = useState(548); // Default scrollbar width for md screens
 
   useEffect(() => {
     const container = containerRef.current;
 
     if (container) {
-      const updateThumbSize = () => {
-        setCustomScrollbarWidth(container.clientWidth);
-        setThumbWidth(
-          (container.clientWidth / container.scrollWidth) *
-            container.clientWidth
-        );
+      const updateDimensions = () => {
+        const screenWidth = window.innerWidth;
+        // Adjust container width for responsive behavior
+        if (screenWidth >= 768) {
+          setContainerWidth(3 * 562 + 2 * 40); // 3 cards + gaps
+          setScrollbarWidth(548); // md breakpoint scrollbar width
+        } else {
+          setContainerWidth(562); // 1 card width for smaller screens
+          setScrollbarWidth(200); // Smaller scrollbar width
+        }
+
+        // Update thumb size
+        const visibleWidth = container.clientWidth;
+        const totalWidth = container.scrollWidth;
+        const thumbSize = (visibleWidth / totalWidth) * scrollbarWidth;
+
+        setThumbWidth(Math.max(thumbSize, 50)); // Minimum thumb width
       };
 
-      updateThumbSize();
-      window.addEventListener("resize", updateThumbSize);
+      updateDimensions();
+      window.addEventListener("resize", updateDimensions);
 
-      return () => window.removeEventListener("resize", updateThumbSize);
+      return () => window.removeEventListener("resize", updateDimensions);
     }
-  }, []);
+  }, [services]);
 
   const handleContainerScroll = () => {
     const container = containerRef.current;
 
     if (container) {
-      const scrollPercentage =
-        container.scrollLeft / (container.scrollWidth - container.clientWidth);
-      console.log(`scrollPercentage ${scrollPercentage}`);
-      setScrollThumbOffset(
-        scrollPercentage * (customScrollbarWidth - thumbWidth)
-      );
+      const scrollLeft = container.scrollLeft;
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+
+      // Calculate scrollbar thumb position within the visible scrollbar width
+      const thumbOffset =
+        (scrollLeft / maxScrollLeft) * (scrollbarWidth - thumbWidth);
+      setScrollThumbOffset(Math.min(thumbOffset, scrollbarWidth - thumbWidth));
     }
   };
-
-  useEffect(() => {
-    console.log(`thumbWidht ${thumbWidth}`);
-  }, [thumbWidth]);
-
-  const handleThumbMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-    dragStartX.current = e.clientX;
-    scrollStartLeft.current = scrollThumbOffset;
-  };
-
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
-      if (!isDragging || !containerRef.current) return;
-
-      const container = containerRef.current;
-      const dragDistance = e.clientX - dragStartX.current;
-      const newOffset = Math.min(
-        Math.max(scrollStartLeft.current + dragDistance, 0),
-        customScrollbarWidth - thumbWidth
-      );
-
-      setScrollThumbOffset(newOffset);
-
-      const scrollPercentage = newOffset / (customScrollbarWidth - thumbWidth);
-      container.scrollLeft =
-        scrollPercentage * (container.scrollWidth - container.clientWidth);
-    },
-    [isDragging, customScrollbarWidth, thumbWidth]
-  );
-
-  const handleMouseUp = () => setIsDragging(false);
-
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-    } else {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    }
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isDragging, handleMouseMove]);
 
   return (
-    <div className="w-full h-full flex flex-col gap-[75px]">
+    <div className="w-full flex flex-col gap-4">
+      {/* Cards Container */}
       <div
-        className="flex gap-[60px] overflow-x-auto whitespace-nowrap w-full h-full scrollbar-hide"
-        onScroll={handleContainerScroll}
+        className="flex gap-[40px] overflow-x-auto scrollbar-hide w-full"
         ref={containerRef}
+        onScroll={handleContainerScroll}
+        style={{ maxWidth: `${containerWidth}px` }} // Set max width based on screen size
       >
         {services.map((service, index) => (
           <ServiceDetailCard
@@ -116,26 +77,26 @@ export default function ServiceDetailSlider({
             title={service.title}
             description={service.description}
             path={service.path}
-            card_width={card_width}
             buttonText={"Learn More"}
+            card_height={723}
+            className="w-[562px] h-[723px]"
           />
         ))}
       </div>
 
+      {/* Custom Scrollbar */}
       <div
-        className={`h-3 bg-gray-200 rounded-full ${
-          is_dentistry ? "mx-auto w-[50%]" : "w-full"
-        }`}
+        className={`relative h-3 bg-[#F1F5F9] rounded-full mx-auto overflow-hidden`}
+        style={{ width: `${scrollbarWidth}px`, marginTop: "1rem" }}
       >
         <div
-          ref={scrollThumbRef}
-          className="h-full bg-black rounded-full cursor-pointer"
+          className="absolute h-full bg-black rounded-full"
           style={{
             width: `${thumbWidth}px`,
             transform: `translateX(${scrollThumbOffset}px)`,
+            transition: "transform 0.1s ease",
           }}
-          onMouseDown={handleThumbMouseDown}
-        ></div>
+        />
       </div>
     </div>
   );

@@ -7,11 +7,11 @@ const HERO_SECTION_DATA = {
   title: "DENTISTRY",
   titleTextSize: 64,
   titleLineHeight: 72.64,
-  decription:
+  description:
     "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit.",
   descTextSize: 32,
   descLineHeight: 36.36,
-  contentWidth: 60,
+  contentWidth: 100,
   backgroundColor: "#D9D9D9",
   buttonColor: "#EBEBEB",
 };
@@ -23,13 +23,19 @@ const ABOUT_US_SECTION_DATA = {
   descriptionLeadingHeight: 45.4,
   hasButton: false,
   buttonText: null,
-  backgroundColor: "#FFFFFF",
+  backgroundColor: "#ECE8E3",
   textColor: "#382F26",
   descriptionWidth: 60,
 };
 
 const DENTISTRY_SERVICES = {
   services: [
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
     {
       title: "General Dentistry",
       description:
@@ -92,14 +98,11 @@ export default function Denistry() {
     <div className="flex flex-col" id="dentistry">
       <HeroSection
         title={HERO_SECTION_DATA.title}
-        titleTextSize={HERO_SECTION_DATA.titleTextSize}
-        titleLineHeight={HERO_SECTION_DATA.titleLineHeight}
-        description={HERO_SECTION_DATA.decription}
-        descTextSize={HERO_SECTION_DATA.descTextSize}
-        descLineHeight={HERO_SECTION_DATA.descLineHeight}
+        description={HERO_SECTION_DATA.description}
         contentWidth={HERO_SECTION_DATA.contentWidth}
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
+        descLineHeight={36.6}
       />
       <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}

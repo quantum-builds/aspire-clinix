@@ -13,7 +13,7 @@ const MENU_LIST = [
   {
     category: "DENTISTRY",
     services: [
-      { title: "General Dentistry", path: "/" },
+      { title: "General Dentistry", path: "/dentistry" },
       { title: "Emergency Dentistry", path: "/" },
       { title: "Implant Dentistry", path: "/" },
       { title: "Gum Clinic", path: "/" },
@@ -77,7 +77,7 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
 
   return (
     <nav
-      className={` w-[40%] h-full bg-[#C9BCA9] absolute top-0 left-0 px-12 pt-20 pb-15 trasnform ${
+      className={` w-full md:w-[40%] min-h-screen bg-[#C9BCA9] absolute top-0 left-0 px-12 pt-20 pb-15 trasnform ${
         menuStatus ? "translate-x-0" : "translate-x-[-100%]"
       } transition-transform duration-500 ease-in-out font-gillSans`}
     >
@@ -87,11 +87,14 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
         alt="Close Menu"
         onClick={() => setMenuStatus(false)}
       />
-      <ul className="space-y-4">
+      <ul
+        className="space-y-4 overflow-y-auto scrollbar-none"
+        style={{ maxHeight: "500px" }}
+      >
         {MENU_LIST.map((categoryData, index) => (
           <li key={index} className="">
             <div className="flex items-center">
-              <span className="w-[60%] text-left text-2xl py-2 px-4 leading-{27.27px}">
+              <span className="w-[60%] text-left text-[20px] md:text-2xl py-2 px-4 leading-{27.27px}">
                 {categoryData.category}
               </span>
               {categoryData.services.length > 0 && (
@@ -114,7 +117,7 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
                     <li key={idx}>
                       <Link
                         href={service.path}
-                        className="text-xl leading-{22.72px} tracking-widest"
+                        className="text-[16px] md:text-xl leading-{22.72px} tracking-widest"
                       >
                         {service.title}
                       </Link>

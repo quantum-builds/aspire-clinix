@@ -1,10 +1,11 @@
+import { Dentist } from "@/assets";
 import Link from "next/link";
 
 interface ServiceDetailCardProps {
   title?: string | null;
   description?: string | null;
   path: string;
-  card_width: number;
+  card_width?: number;
   buttonText: string;
   card_height?: number;
   className?: string;
@@ -15,7 +16,6 @@ export default function ServiceDetailCard({
   title,
   description,
   path,
-  card_width,
   buttonText,
   card_height,
   className,
@@ -23,12 +23,12 @@ export default function ServiceDetailCard({
 }: ServiceDetailCardProps) {
   return (
     <div
-      className={`bg-[#B4B4B4] h-full flex-shrink-0 relative  ${
+      className={` h-full flex-shrink-0 relative  ${
         className || ""
-      } `}
-      style={{ width: `${card_width}%`, height: card_height }}
+      }  bg-cover bg-center bg-no-repeat`}
+      style={{ height: card_height, backgroundImage: `url(${Dentist.src})` }}
     >
-      <div className="flex flex-col gap-[20px] w-[63%] absolute bottom-[8%] left-[6%]">
+      <div className="flex flex-col gap-[20px] absolute bottom-0 left-[6%] mb-10">
         <p
           className="text-4xl whitespace-normal font-opus"
           style={{ lineHeight: "40.86px" }}
@@ -37,7 +37,7 @@ export default function ServiceDetailCard({
         </p>
         {description && (
           <p
-            className="text-[#382F26] font-gillSans text-base whitespace-normal tracking-widest"
+            className="text-[#382F26] font-gillSans w-80 text-base whitespace-normal tracking-widest"
             style={{ lineHeight: "18.18px" }}
           >
             {description}
@@ -47,7 +47,7 @@ export default function ServiceDetailCard({
       <div>
         <Link href={path}>
           <button
-            className="absolute font-gillSans bottom-0 right-0 bg-white py-6 px-8 text-base tracking-widest"
+            className="absolute font-gillSans bottom-0 rounded-tl-2xl right-0 bg-white py-6 px-1 md:px-8 text-base tracking-widest"
             style={{ lineHeight: "18.18px" }}
           >
             {buttonText}

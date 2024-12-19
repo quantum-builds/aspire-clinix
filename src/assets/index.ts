@@ -8,3 +8,4 @@ export { default as ArrowRightIcon } from "./arrow-right-icon.svg";
 export { default as ArrowLeftIcon } from "./arrow-left-icon.svg";
 export { default as UpIcon } from "./up-icon.svg";
 export { default as DownIcon } from "./down-icon.svg";
+export { default as Dentist } from "@/assets/dentist.jpg";
