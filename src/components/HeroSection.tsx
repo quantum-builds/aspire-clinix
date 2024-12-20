@@ -33,53 +33,51 @@ export default function HeroSection({
     >
       {/* Header Section */}
       {pathname === "/fee-guide" ? (
-        <header className="flex justify-between items-center container mx-auto px-3 p-0 m-0 z-20 mt-3">
+        <header className="flex gap-[13rem] md:gap-[33rem] lg:gap-[46rem] xl:gap-[68rem] h-[160px] justify-center items-center container mx-auto px-3 p-0 m-0 z-20 mt-3">
           <div>
             <HeroMenu backgroundColor="white" />
           </div>
-          <div>
+          <div className="absolute left-1/2 transform -translate-x-1/2">
             <Image
               src={AspireLightLogo}
               alt="Aspire Clinix"
               width={80}
               height={88}
-              className="flex justify-center items-center ml-5 md:ml-32 w-[80px] h-[40px] md:w-[189px] md:h-[88px]"
+              className="flex justify-center items-center w-[80px] h-[40px] md:w-[189px] md:h-[88px]"
             />
           </div>
           <div>
             <Link href="/book-treatment" scroll={false}>
               <button
-                className="px-1 flex justify-center items-center lg:px-[20px] sm:px-[2px] py-2 sm:py-[20px] sm:ml-10 md:ml-1 rounded-md sm:rounded-[20px] text-sm sm:text-[20px] font-normal font-opus"
+                className="px-1 flex justify-center items-center w-[100px] h-[50px] md:w-[170px] md:h-[60px] lg:w-[277px] lg:h-[77px] font-normal font-opus rounded-[5px] md:rounded-[20px]"
                 style={{ backgroundColor: buttonColor }}
               >
-                <span className="block sm:hidden">Appointment</span>
-                <span className="hidden sm:block">BOOK A TREATMENT</span>
+                BOOK A TREATMENT
               </button>
             </Link>
           </div>
         </header>
       ) : (
-        <header className="flex justify-between items-center container mx-auto px-3 sm:px-0 p-0 m-0 z-20 mt-3">
+        <header className="flex gap-[13rem] md:gap-[33rem] lg:gap-[46rem] xl:gap-[68rem] h-[160px] justify-center items-center container mx-auto px-3 p-0 m-0 z-20 mt-3">
           <div>
             <HeroMenu />
           </div>
-          <div>
+          <div className="absolute left-1/2 transform -translate-x-1/2">
             <Image
               src={AspireDarkLogo}
               alt="Aspire Clinix"
               width={80}
               height={88}
-              className="flex justify-center items-center ml-5 md:ml-32 w-[80px] h-[40px] md:w-[189px] md:h-[88px]"
+              className="flex justify-center items-center w-[80px] h-[40px] md:w-[189px] md:h-[88px]"
             />
           </div>
           <div>
             <Link href="/book-treatment" scroll={false}>
               <button
-                className="px-1 flex justify-center items-center lg:px-[20px] sm:px-[2px] py-2 sm:py-[20px] sm:ml-10 md:ml-1 rounded-md sm:rounded-[20px] text-sm sm:text-[20px] font-normal font-opus"
+                className="px-1 flex justify-center items-center md:w-[170px] md:h-[60px] lg:w-[277px] lg:h-[77px] font-normal font-opus rounded-[5px] md:rounded-[20px]"
                 style={{ backgroundColor: buttonColor }}
               >
-                <span className="block sm:hidden">Appointment</span>
-                <span className="hidden sm:block">BOOK A TREATMENT</span>
+                BOOK A TREATMENT
               </button>
             </Link>
           </div>

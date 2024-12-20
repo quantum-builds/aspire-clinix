@@ -17,7 +17,7 @@ const SERVICE_SECTION = [
 
 export default function ServiceSection() {
   return (
-    <div className="flex flex-col md:flex-row justify-between gap-1 md:gap-2 h-screen font-opus">
+    <div className="flex flex-col md:flex-row justify-between gap-1 md:gap-2 h-auto font-opus">
       {SERVICE_SECTION.map((service) => (
         <ServiceCard
           key={service.path}

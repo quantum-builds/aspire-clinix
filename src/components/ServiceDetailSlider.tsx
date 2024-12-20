@@ -10,13 +10,12 @@ interface ServiceDetailSliderProp {
 
 export default function ServiceDetailSlider({
   services,
-}: // is_dentistry,
-ServiceDetailSliderProp) {
+}: ServiceDetailSliderProp) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [thumbWidth, setThumbWidth] = useState(0);
   const [scrollThumbOffset, setScrollThumbOffset] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
-  const [scrollbarWidth, setScrollbarWidth] = useState(548); // Default scrollbar width for md screens
+  const [scrollbarWidth, setScrollbarWidth] = useState(548);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -24,13 +23,13 @@ ServiceDetailSliderProp) {
     if (container) {
       const updateDimensions = () => {
         const screenWidth = window.innerWidth;
-        // Adjust container width for responsive behavior
+
         if (screenWidth >= 768) {
-          setContainerWidth(3 * 562 + 2 * 40); // 3 cards + gaps
-          setScrollbarWidth(548); // md breakpoint scrollbar width
+          setContainerWidth(3 * 562 + 2 * 40);
+          setScrollbarWidth(548);
         } else {
-          setContainerWidth(562); // 1 card width for smaller screens
-          setScrollbarWidth(200); // Smaller scrollbar width
+          setContainerWidth(562);
+          setScrollbarWidth(200);
         }
 
         // Update thumb size
@@ -38,7 +37,7 @@ ServiceDetailSliderProp) {
         const totalWidth = container.scrollWidth;
         const thumbSize = (visibleWidth / totalWidth) * scrollbarWidth;
 
-        setThumbWidth(Math.max(thumbSize, 50)); // Minimum thumb width
+        setThumbWidth(Math.max(thumbSize, 50));
       };
 
       updateDimensions();
@@ -55,7 +54,6 @@ ServiceDetailSliderProp) {
       const scrollLeft = container.scrollLeft;
       const maxScrollLeft = container.scrollWidth - container.clientWidth;
 
-      // Calculate scrollbar thumb position within the visible scrollbar width
       const thumbOffset =
         (scrollLeft / maxScrollLeft) * (scrollbarWidth - thumbWidth);
       setScrollThumbOffset(Math.min(thumbOffset, scrollbarWidth - thumbWidth));
@@ -69,7 +67,7 @@ ServiceDetailSliderProp) {
         className="flex gap-[40px] overflow-x-auto scrollbar-hide w-full"
         ref={containerRef}
         onScroll={handleContainerScroll}
-        style={{ maxWidth: `${containerWidth}px` }} // Set max width based on screen size
+        style={{ maxWidth: `${containerWidth}px` }}
       >
         {services.map((service, index) => (
           <ServiceDetailCard
@@ -79,12 +77,11 @@ ServiceDetailSliderProp) {
             path={service.path}
             buttonText={"Learn More"}
             card_height={723}
-            className="w-[562px] h-[723px]"
+            className="w-[350px] h-[full] md:w-[562px] md:h-[723px]"
           />
         ))}
       </div>
 
-      {/* Custom Scrollbar */}
       <div
         className={`relative h-3 bg-[#F1F5F9] rounded-full mx-auto overflow-hidden`}
         style={{ width: `${scrollbarWidth}px`, marginTop: "1rem" }}
