@@ -2,15 +2,15 @@ import ServiceCard from "./ServiceCard";
 
 const SERVICE_SECTION = [
   {
-    title: "Aspire Dental",
+    title: "Dentistry",
     path: "/",
   },
   {
-    title: "Aspire Asthetics",
+    title: "Aesthetics",
     path: "/",
   },
   {
-    title: "Aspire Wellness",
+    title: "Wellness",
     path: "/",
   },
 ];
