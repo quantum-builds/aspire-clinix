@@ -28,11 +28,7 @@ export default function ServiceDetailSection({
           overflow: "hidden",
         }}
       >
-        <ServiceDetailSlider
-          services={services}
-          is_dentistry={false}
-          removeCentering={true}
-        />
+        <ServiceDetailSlider services={services} is_dentistry={false} />
       </div>
     </div>
   );

@@ -2,17 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import ServiceDetailCard from "./ServiceDetailCard";
+import clsx from "clsx";
 
 interface ServiceDetailSliderProp {
   is_dentistry: boolean;
-  removeCentering?: boolean;
+  className?: string;
 
   services: Array<{ title: string; description: string | null; path: string }>;
 }
 
 export default function ServiceDetailSlider({
   services,
-  removeCentering,
+  className,
 }: ServiceDetailSliderProp) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [thumbWidth, setThumbWidth] = useState(0);
@@ -86,9 +87,10 @@ export default function ServiceDetailSlider({
       </div>
 
       <div
-        className={`relative h-3 bg-[#F1F5F9] rounded-full ${
-          removeCentering ? "" : "mx-auto"
-        } overflow-hidden`}
+        className={clsx(
+          "relative h-3 bg-[#F1F5F9] rounded-full overflow-hidden",
+          className
+        )}
         style={{ width: `${scrollbarWidth}px`, marginTop: "1rem" }}
       >
         <div
