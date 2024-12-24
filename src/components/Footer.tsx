@@ -5,10 +5,10 @@ import Link from "next/link";
 
 const IN_PAGE_NAV_LINKS = [
   { label: "Our Philosophy", path: "/" },
-  { label: "Aspire Dental", path: "/" },
-  { label: "Aspire Aesthetics", path: "/" },
-  { label: "Aspire Wellness", path: "/" },
-  { label: "Referral Portal", path: "/" },
+  { label: "Dentistry", path: "/#dentistry" },
+  { label: "Aesthetics", path: "/#aesthetic" },
+  { label: "Wellness", path: "/landing#wellness" },
+  { label: "Referral Portal", path: "/referral#form" },
 ];
 
 const SOCIAL_ICONS = [

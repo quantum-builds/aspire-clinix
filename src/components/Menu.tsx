@@ -50,6 +50,7 @@ const MENU_LIST = [
   },
   {
     category: "REFERRAL PORTAL",
+    path: "/referral#form",
     services: [],
   },
   {
@@ -91,8 +92,18 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
         {MENU_LIST.map((categoryData, index) => (
           <li key={index} className="">
             <div className="flex items-center">
-              <span className="w-[60%] text-left text-[20px] text-nowrap md:text-2xl py-2 px-4 leading-{27.27px}">
-                {categoryData.category}
+              {/* <span className="w-[60%] text-left text-[20px] text-nowrap md:text-2xl py-2 px-4 leading-{27.27px}"> */}
+              <span
+                className={`w-[60%] text-left text-[20px] text-nowrap md:text-2xl py-2 px-4 leading-[27.27px] ${
+                  categoryData.path ? "cursor-pointer" : ""
+                }`}
+              >
+                {/* {categoryData.category} */}
+                {categoryData.path ? (
+                  <Link href={categoryData.path}>{categoryData.category}</Link>
+                ) : (
+                  categoryData.category
+                )}
               </span>
               {categoryData.services.length > 0 && (
                 <Image
