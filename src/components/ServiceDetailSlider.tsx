@@ -2,20 +2,24 @@
 
 import { useEffect, useRef, useState } from "react";
 import ServiceDetailCard from "./ServiceDetailCard";
+import clsx from "clsx";
 
 interface ServiceDetailSliderProp {
   is_dentistry: boolean;
+  className?: string;
+
   services: Array<{ title: string; description: string | null; path: string }>;
 }
 
 export default function ServiceDetailSlider({
   services,
+  className,
 }: ServiceDetailSliderProp) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [thumbWidth, setThumbWidth] = useState(0);
   const [scrollThumbOffset, setScrollThumbOffset] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
-  const [scrollbarWidth, setScrollbarWidth] = useState(548);
+  const [scrollbarWidth, setScrollbarWidth] = useState(700);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -26,7 +30,7 @@ export default function ServiceDetailSlider({
 
         if (screenWidth >= 768) {
           setContainerWidth(3 * 562 + 2 * 40);
-          setScrollbarWidth(548);
+          setScrollbarWidth(700);
         } else {
           setContainerWidth(562);
           setScrollbarWidth(200);
@@ -61,7 +65,7 @@ export default function ServiceDetailSlider({
   };
 
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-4 md:gap-[3rem]">
       {/* Cards Container */}
       <div
         className="flex gap-[40px] overflow-x-auto scrollbar-hide w-full"
@@ -83,7 +87,10 @@ export default function ServiceDetailSlider({
       </div>
 
       <div
-        className={`relative h-3 bg-[#F1F5F9] rounded-full mx-auto overflow-hidden`}
+        className={clsx(
+          "relative h-3 bg-[#F1F5F9] rounded-full overflow-hidden",
+          className
+        )}
         style={{ width: `${scrollbarWidth}px`, marginTop: "1rem" }}
       >
         <div

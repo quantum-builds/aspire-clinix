@@ -13,6 +13,7 @@ const config: Config = {
         feeguide: " #ECE8E3",
         feeguidedark: "#DCD4C9",
         menuBar: "#C9BCA9",
+        footerBackground: "#1D120C",
       },
       fontFamily: {
         opus: ["var(--font-opus)"],

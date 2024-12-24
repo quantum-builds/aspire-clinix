@@ -9,7 +9,11 @@ export default function DentistryDetailSection({
 }: DentistryDetailSectionProps) {
   return (
     <div className="md:pl-[130px] md:pt-[190px] pb-3 md:pb-[118px] bg-[#ECE8E3]">
-      <ServiceDetailSlider services={services} is_dentistry={true} />
+      <ServiceDetailSlider
+        services={services}
+        is_dentistry={true}
+        className="mx-auto"
+      />
     </div>
   );
 }

@@ -7,7 +7,7 @@ import ServiceSection from "./components/ServicesSection";
 import SupplementSection from "./components/SupplementSection";
 
 const DENTAL_SERVICES = {
-  title: "Aspire Dental",
+  title: "Dentistry",
   description:
     "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit.",
   services: [
@@ -75,7 +75,7 @@ const DENTAL_SERVICES = {
 };
 
 const ASTHETIC_SERVICE = {
-  title: "Aspire Asthetic",
+  title: "Asthetic",
   description:
     "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
   services: [
@@ -119,7 +119,7 @@ const ASTHETIC_SERVICE = {
 };
 
 const WELLNESS_SERVICE = {
-  title: "Aspire Wellness",
+  title: "Wellness",
   description:
     "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
   services: [

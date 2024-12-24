@@ -7,22 +7,22 @@ import Image from "next/image";
 
 const MENU_LIST = [
   {
-    category: "ASPIRE CLINIC",
+    category: "ASPIRE",
     services: [{ title: "Our Philosophy", path: "/" }],
   },
   {
     category: "DENTISTRY",
     services: [
-      { title: "General Dentistry", path: "/dentistry" },
-      { title: "Emergency Dentistry", path: "/" },
-      { title: "Implant Dentistry", path: "/" },
-      { title: "Gum Clinic", path: "/" },
+      { title: "General", path: "/dentistry" },
+      { title: "Cosmetic", path: "/" },
+      { title: "Emergency", path: "/" },
+      { title: "Implants", path: "/" },
+      { title: "Gums", path: "/" },
       { title: "Oral Surgery", path: "/" },
-      { title: "Denture Clinic", path: "/" },
-      { title: "Root Canal Clinic", path: "/" },
-      { title: "Kids Clinic", path: "/" },
-      { title: "Orthodontic Clinic", path: "/" },
-      { title: "Cosmetic Clinic", path: "/" },
+      { title: "Dentures", path: "/" },
+      { title: "Root Canals", path: "/" },
+      { title: "Orthodontic", path: "/" },
+      { title: "Kids", path: "/" },
     ],
   },
   {
@@ -53,7 +53,7 @@ const MENU_LIST = [
     services: [],
   },
   {
-    category: "ASPIRE ACADEMY",
+    category: "ASPIRE DENTAL ACADEMY",
     services: [],
   },
   {
@@ -77,7 +77,7 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
 
   return (
     <nav
-      className={` w-full md:w-[40%] min-h-screen bg-menuBar absolute top-0 left-0 px-12 pt-20 pb-15 trasnform ${
+      className={` w-full lg:w-[40%] md:w-[75%] min-h-screen bg-menuBar absolute top-0 left-0 px-12 pt-20 pb-15 trasnform ${
         menuStatus ? "translate-x-0" : "translate-x-[-100%]"
       } transition-transform duration-500 ease-in-out font-gillSans`}
     >
@@ -87,11 +87,11 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
         alt="Close Menu"
         onClick={() => setMenuStatus(false)}
       />
-      <ul className="space-y-4 lg:overflow-y-auto scrollbar-none lg:h-[600px]">
+      <ul className="space-y-4 lg:overflow-y-auto scrollbar-none lg:h-[800px]">
         {MENU_LIST.map((categoryData, index) => (
           <li key={index} className="">
             <div className="flex items-center">
-              <span className="w-[60%] text-left text-[20px] md:text-2xl py-2 px-4 leading-{27.27px}">
+              <span className="w-[60%] text-left text-[20px] text-nowrap md:text-2xl py-2 px-4 leading-{27.27px}">
                 {categoryData.category}
               </span>
               {categoryData.services.length > 0 && (

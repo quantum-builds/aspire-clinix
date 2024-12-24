@@ -17,16 +17,12 @@ const SOCIAL_ICONS = [
   { src: LinkedinIcon, alt: "LinkedIn", path: "/", height: 25, width: 25 },
 ];
 
-interface FooterProps {
-  inputBackgroundColor: string;
-}
-
-export default function Footer({ inputBackgroundColor }: FooterProps) {
+export default function Footer() {
   return (
-    <footer className="bg-[#1D120C]">
-      <div className="grid gap-12 md:gap-20  ml-4 lg:ml-0 md:pl-2 md:grid-cols-4 justify-items-start md:justify-items-center py-12">
+    <footer className="bg-footerBackground">
+      <div className="grid gap-12 md:gap-20 md:grid-cols-4 px-3 justify-items-start md:justify-items-center py-12">
         {/* Logo and Address Section */}
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start gap-8">
           <Image
             src={AspireLightLogo}
             alt="Aspire Clinic Logo"
@@ -34,7 +30,7 @@ export default function Footer({ inputBackgroundColor }: FooterProps) {
             height={88}
             className="w-[100px] h-[50px] lg:w-[189px] lg:h-[88px] md:w-[120px] md:h-[50px]"
           />
-          <address className="not-italic  md:text-[16px] text-[16px] sm:text-[20px] text-white flex flex-col items-start font-gillSans mt-4">
+          <address className="not-italic  md:text-[16px] text-[16px] sm:text-[20px] text-white flex flex-col items-start font-gillSans gap-2">
             <p>hello@aspireclinic.co.uk</p>
             <p>27 Mortimer Street</p>
             <p>W1N 7RJ, London, UK</p>
@@ -43,16 +39,16 @@ export default function Footer({ inputBackgroundColor }: FooterProps) {
         </div>
 
         {/* Newsletter Signup Section */}
-        <div className="flex flex-col  items-start">
-          <p className="text-[16px] sm:text-[20px] text-white font-normal font-opus mb-4 md:mb-8">
+        <div className="flex flex-col  items-start gap-9">
+          <p className="text-[16px] sm:text-[20px] text-white font-normal font-opus">
             Sign up to our newsletter
           </p>
-          <EmailInput backgroundColor={inputBackgroundColor} />
+          <EmailInput />
         </div>
 
         {/* Quick Links Section */}
-        <div className="flex flex-col items-start">
-          <p className="text-white text-[18px] sm:text-[20px] font-normal font-opus mb-4">
+        <div className="flex flex-col items-start gap-4">
+          <p className="text-white text-[18px] sm:text-[20px] font-normal font-opus">
             Quick Links
           </p>
           <ul className="flex flex-col gap-2">
@@ -70,8 +66,8 @@ export default function Footer({ inputBackgroundColor }: FooterProps) {
         </div>
 
         {/* Social Icons Section */}
-        <div className="flex flex-col items-start">
-          <p className="text-[16px] lg:text-[20px] text-white font-normal font-opus mb-4">
+        <div className="flex flex-col items-start gap-4">
+          <p className="text-[16px] lg:text-[20px] text-white font-normal font-opus">
             Connect with us
           </p>
           <div className="flex pr-2  gap-6">
@@ -88,11 +84,7 @@ export default function Footer({ inputBackgroundColor }: FooterProps) {
             ))}
           </div>
         </div>
-      </div>
-
-      {/* Footer Bottom */}
-      <div className="bg-[#1D120C] py-4">
-        <p className="text-left ml-4 md:ml-16 text-white font-opus">
+        <p className="text-left text-white font-opus">
           Copyright 2024 Aspire Clinic
         </p>
       </div>
