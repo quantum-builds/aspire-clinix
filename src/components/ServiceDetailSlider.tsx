@@ -23,6 +23,7 @@ export default function ServiceDetailSlider({
   const [scrollThumbOffset, setScrollThumbOffset] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
   const [scrollbarWidth, setScrollbarWidth] = useState(700);
+  const startDragX = useRef(0);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -31,12 +32,13 @@ export default function ServiceDetailSlider({
       const updateDimensions = () => {
         const screenWidth = window.innerWidth;
 
-        if (screenWidth >= 768) {
+        if (screenWidth >= 1280) {
           setContainerWidth(3 * 562 + 2 * 40);
-          setScrollbarWidth(700);
+          setScrollbarWidth(780);
+        } else if (screenWidth >= 768) {
+          setScrollbarWidth(345);
         } else {
-          setContainerWidth(562);
-          setScrollbarWidth(200);
+          setScrollbarWidth(340);
         }
 
         // Update thumb size
@@ -66,6 +68,7 @@ export default function ServiceDetailSlider({
       setScrollThumbOffset(Math.min(thumbOffset, scrollbarWidth - thumbWidth));
     }
   };
+
   const handleScrollbarClick = (event: React.MouseEvent) => {
     const scrollbar = scrollbarRef.current;
     const container = containerRef.current;
@@ -93,6 +96,7 @@ export default function ServiceDetailSlider({
   const handleThumbDragStart = (event: React.MouseEvent) => {
     event.preventDefault();
     isDragging.current = true;
+    startDragX.current = event.clientX;
   };
 
   const handleThumbDrag = (event: MouseEvent) => {
