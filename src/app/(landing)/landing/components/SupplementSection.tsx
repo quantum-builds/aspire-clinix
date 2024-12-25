@@ -1,15 +1,17 @@
+import { ClinicChair } from "@/assets";
 import Link from "next/link";
 
 export default function SupplementSection() {
-  const backgroundImage = "https://randomuser.me/api/portraits/men/75.jpg";
+  const backgroundImage = ClinicChair.src;
   return (
     <div
       className="flex flex-col justify-center items-center h-screen bg-[#D9D9D9] gap-[20px] relative p-4"
       style={{
-        backgroundImage: backgroundImage ? `url(${backgroundImage})` : "none",
+        backgroundImage: `url(${backgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center center",
         backgroundRepeat: "no-repeat",
+        imageRendering: "auto",
       }}
     >
       <p className="text-[18px] md:text-[64px] leading-{72.64px} font-opus">
