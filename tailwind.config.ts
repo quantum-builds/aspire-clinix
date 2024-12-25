@@ -10,7 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        feeguide: " #ECE8E3",
+        feeGuide: " #ECE8E3",
         feeguidedark: "#DCD4C9",
         menuBar: "#C9BCA9",
         footerBackground: "#1D120C",

@@ -11,7 +11,7 @@ export default function HeroMenu({ backgroundColor }: HeroMenuProps) {
   return (
     <>
       <button
-        className="font-gillSans"
+        className="font-gillSans w-[73px] h-[27px] text-[24px]"
         onClick={() => {
           setMenuStatus(true);
         }}

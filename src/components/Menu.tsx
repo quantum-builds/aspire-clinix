@@ -8,10 +8,12 @@ import Image from "next/image";
 const MENU_LIST = [
   {
     category: "ASPIRE",
+    path: "/",
     services: [{ title: "Our Philosophy", path: "/" }],
   },
   {
     category: "DENTISTRY",
+    path: "/dentistry",
     services: [
       { title: "General", path: "/dentistry" },
       { title: "Cosmetic", path: "/" },
@@ -27,6 +29,7 @@ const MENU_LIST = [
   },
   {
     category: "AESTHETICS",
+    path: "/dentistry/general-dentistry",
     services: [
       { title: "Anti Wrinkle Injections", path: "/" },
       { title: "Fillers", path: "/" },
@@ -35,6 +38,7 @@ const MENU_LIST = [
   },
   {
     category: "WELLNESS",
+    path: "/fee-guide",
     services: [
       { title: "Cryotherapy", path: "/" },
       { title: "Infra-red Sauna", path: "/" },
@@ -55,10 +59,12 @@ const MENU_LIST = [
   },
   {
     category: "ASPIRE DENTAL ACADEMY",
+    path: "/aspire",
     services: [],
   },
   {
     category: "CONTACT",
+    path: "/aspire",
     services: [],
   },
 ];
@@ -92,13 +98,11 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
         {MENU_LIST.map((categoryData, index) => (
           <li key={index} className="">
             <div className="flex items-center">
-              {/* <span className="w-[60%] text-left text-[20px] text-nowrap md:text-2xl py-2 px-4 leading-{27.27px}"> */}
               <span
                 className={`w-[60%] text-left text-[20px] text-nowrap md:text-2xl py-2 px-4 leading-[27.27px] ${
                   categoryData.path ? "cursor-pointer" : ""
                 }`}
               >
-                {/* {categoryData.category} */}
                 {categoryData.path ? (
                   <Link href={categoryData.path}>{categoryData.category}</Link>
                 ) : (

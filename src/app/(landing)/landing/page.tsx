@@ -186,7 +186,7 @@ const HERO_SECTION_DATA = {
   descTextSize: null,
   contentWidth: 100,
   backgroundColor: "#FFFFFF",
-  buttonColor: "#EBEBEB",
+  buttonColor: "#ECE8E3",
 };
 
 const ABOUT_US_SECTION_DATA = {

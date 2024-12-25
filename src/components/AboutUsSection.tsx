@@ -26,7 +26,7 @@ export default function AboutUsSection({
       style={{ backgroundColor: backgroundColor }}
     >
       <p
-        className={`text-center w-[${descriptionWidth}%] text-[16px] sm:text-[30px] md:text-[${descriptionTextSize}] font-opus`}
+        className={`text-center w-[${descriptionWidth}%] lg:w-[792px] w-full md:w-[600px] md:h-[190px] px-2 md:px-0 h-[130px] text-[16px] sm:text-[30px] md:text-[${descriptionTextSize}] font-opus`}
         style={{
           color: textColor,
           lineHeight: `${descriptionLeadingHeight}px`,

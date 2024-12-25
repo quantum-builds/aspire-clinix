@@ -15,7 +15,7 @@ const HERO_SECTION_DATA = {
   descLineHeight: 36.36,
   contentWidth: 100,
   backgroundColor: "#D9D9D9",
-  buttonColor: "#EBEBEB",
+  buttonColor: "#ECE8E3",
 };
 
 const GENERAL_DENTISTRY_SERVICE = [
@@ -60,21 +60,21 @@ const CARD_DATA = [
     path: "/path1",
     card_width: 424,
     buttonText: "Read Bio",
-    card_height: 480,
+    card_height: 613,
     doc_name: "Dr. Richard Porter",
   },
   {
     path: "/path2",
     card_width: 424,
     buttonText: "Read Bio",
-    card_height: 480,
+    card_height: 613,
     doc_name: "Dr. Raheel Malik",
   },
   {
     path: "/path3",
     card_width: 424,
     buttonText: "Read Bio",
-    card_height: 480,
+    card_height: 613,
     doc_name: "Dr. Raheel Malik",
   },
 ];
@@ -111,11 +111,12 @@ export default function GeneralDentistry() {
         textColor={ABOUT_US_SECTION_DATA.textColor}
         descriptionWidth={ABOUT_US_SECTION_DATA.descriptionWidth}
       />
-      <div className="bg-[#ECE8E3]   ">
-        <h2 className="text-22px md:text-[52px] py-8 ml-2 text-black font-normal md:pl-[10%]">
+
+      <div className="bg-[#ECE8E3] flex flex-col gap-20 w-full mx-auto">
+        <h2 className="text-[40px] md:text-[52px] text-center lg:text-left text-black font-normal lg:pl-[12%] xl:pl-[15%] pt-[3.5rem]">
           Meet the team
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:px-[10%] px-4 min-h-screen pb-8">
+        <div className="grid grid-cols-1 gap-[3rem] lg:gap-16 lg:grid-cols-2 xl:grid-cols-3 mx-auto h-full pb-[10%]">
           {CARD_DATA.map((card, index) => (
             <ServiceDetailCard
               key={index}
@@ -124,7 +125,7 @@ export default function GeneralDentistry() {
               buttonText={card.buttonText}
               card_height={card.card_height}
               doc_name={card.doc_name}
-              className="w-full h-auto"
+              className="w-[360px] md:w-[424px] h-auto"
             />
           ))}
         </div>
