@@ -17,7 +17,7 @@ export default function ServiceButtons() {
           <button
             className={`${
               index === 0 ? "py-[30px] px-[95.29px]" : "py-[30px] px-[86px]"
-            } rounded-[20px] leading-[22.7px] bg-[#AAAAAA] text-[20px] my-2`}
+            } rounded-[20px] leading-[22.7px] bg-golden50 text-[20px] my-2`}
           >
             {service.title}
           </button>

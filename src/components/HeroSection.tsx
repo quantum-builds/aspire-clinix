@@ -27,7 +27,11 @@ export default function HeroSection({
 }: HeroSectionProps) {
   const pathname = usePathname();
   const renderHeader = (logoSrc: StaticImageData) => (
+<<<<<<< HEAD
     <header className="flex gap-[11rem] md:gap-[30rem] lg:gap-[46rem] xl:gap-[58rem] xxl-gap-[70rem] h-[160px] justify-center items-center container mx-auto px-3 p-0 m-0 z-20 mt-3">
+=======
+    <header className="flex gap-[11rem] md:gap-[30rem] lg:gap-[46rem] xl:gap-[58rem] xxl-gap-[90rem] h-[160px] justify-center items-center container mx-auto px-3 p-0 m-0 z-20 mt-3">
+>>>>>>> main
       <div>
         <HeroMenu
           backgroundColor={pathname === "/fee-guide" ? "white" : undefined}
