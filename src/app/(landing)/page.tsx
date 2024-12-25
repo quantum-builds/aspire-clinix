@@ -10,28 +10,172 @@ const DENTAL_SERVICES = {
   description:
     "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit.",
   services: [
-    { title: "General Dentistry", description: "Description here", path: "/" },
-    { title: "General Dentistry", description: "Description here", path: "/" },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
   ],
 };
 
 const ASTHETIC_SERVICE = {
-  title: "Aesthetic",
+  title: "Asthetic",
   description:
-    "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit.",
+    "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
   services: [
-    { title: "Service 1", description: "Description here", path: "/" },
-    { title: "Service 2", description: "Description here", path: "/" },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
   ],
 };
 
 const WELLNESS_SERVICE = {
   title: "Wellness",
   description:
-    "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit.",
+    "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
   services: [
-    { title: "Wellness 1", description: "Description here", path: "/" },
-    { title: "Wellness 2", description: "Description here", path: "/" },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+    },
   ],
 };
 
@@ -46,7 +190,7 @@ const HERO_SECTION_DATA = {
 
 const ABOUT_US_SECTION_DATA = {
   description:
-    "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec.",
+    "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit.",
   descriptionTextSize: 40,
   descriptionLeadingHeight: 45.4,
   hasButton: true,
@@ -55,6 +199,7 @@ const ABOUT_US_SECTION_DATA = {
   textColor: "#C9BCA9",
   descriptionWidth: 60,
 };
+
 
 export default function Home() {
   return (
