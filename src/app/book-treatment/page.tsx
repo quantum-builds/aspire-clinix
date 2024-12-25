@@ -6,9 +6,9 @@ export default function BookTreatment() {
   return (
     <div
       id="book-treatment"
-      className="flex justify-center h-screen bg-[#AAAAAA]"
+      className="flex justify-center items-center min-h-screen bg-grey100 px-4 sm:px-8"
     >
-      <div className="flex flex-col items-center w-[40%] h-full gap-20 bg-white">
+      <div className="flex flex-col items-center w-full sm:w-[90%] md:w-[70%] lg:w-[40%] gap-5 bg-menuBar p-6  shadow-lg">
         <AspireLogo />
         <ServiceButtons />
         <ExistingPatientSignIn />

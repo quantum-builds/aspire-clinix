@@ -12,8 +12,11 @@ const config: Config = {
       colors: {
         feeGuide: " #ECE8E3",
         feeguidedark: "#DCD4C9",
-        menuBar: "#C9BCA9",
+        menuBar: "rgba(201, 188, 169, 1)",
         footerBackground: "#1D120C",
+        grey100:"rgba(172, 172, 172, 1)",
+        golden50:"rgba(236, 232, 227, 1)",
+        grey101:"rgba(170, 170, 170, 1)"
       },
       fontFamily: {
         opus: ["var(--font-opus)"],
