@@ -34,10 +34,12 @@ export default function ServiceDetailSlider({
 
         if (screenWidth >= 1280) {
           setContainerWidth(3 * 562 + 2 * 40);
-          setScrollbarWidth(780);
+          setScrollbarWidth(700);
         } else if (screenWidth >= 768) {
-          setScrollbarWidth(345);
+          setContainerWidth(3 * 562 + 2 * 40);
+          setScrollbarWidth(340);
         } else {
+          setContainerWidth(562);
           setScrollbarWidth(340);
         }
 
