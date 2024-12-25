@@ -127,11 +127,35 @@ export default function ServiceDetailSlider({
     isDragging.current = false;
   };
 
+  const handleScrollbarWheel = (event: WheelEvent) => {
+    event.preventDefault();
+    const container = containerRef.current;
+
+    if (container) {
+      // Forward the wheel delta to the container
+      container.scrollLeft += event.deltaY;
+
+      // Update the thumb position
+      handleContainerScroll();
+    }
+  };
+
   useEffect(() => {
+    const scrollbar = scrollbarRef.current;
+
+    if (scrollbar) {
+      // Add wheel event listener to custom scrollbar
+      scrollbar.addEventListener("wheel", handleScrollbarWheel);
+    }
+
     window.addEventListener("mousemove", handleThumbDrag);
     window.addEventListener("mouseup", handleThumbDragEnd);
 
     return () => {
+      if (scrollbar) {
+        scrollbar.removeEventListener("wheel", handleScrollbarWheel);
+      }
+
       window.removeEventListener("mousemove", handleThumbDrag);
       window.removeEventListener("mouseup", handleThumbDragEnd);
     };
@@ -143,7 +167,7 @@ export default function ServiceDetailSlider({
       <div
         className="flex gap-[40px] overflow-x-auto scrollbar-hide w-full"
         ref={containerRef}
-        onScroll={handleContainerScroll}
+        onScroll={handleContainerScroll} // Synchronize with the custom scrollbar
         style={{ maxWidth: `${containerWidth}px` }}
       >
         {services.map((service, index) => (
@@ -159,13 +183,14 @@ export default function ServiceDetailSlider({
         ))}
       </div>
 
+      {/* Custom Scrollbar */}
       <div
         className={clsx(
           "relative h-3 bg-[#F1F5F9] rounded-full overflow-hidden cursor-pointer",
           className
         )}
         style={{ width: `${scrollbarWidth}px`, marginTop: "1rem" }}
-        onClick={handleScrollbarClick}
+        onClick={handleScrollbarClick} // Handles click interactions
         ref={scrollbarRef}
       >
         <div
@@ -175,7 +200,7 @@ export default function ServiceDetailSlider({
             transform: `translateX(${scrollThumbOffset}px)`,
             transition: "transform 0.1s ease",
           }}
-          onMouseDown={handleThumbDragStart}
+          onMouseDown={handleThumbDragStart} // Handles drag interactions
         />
       </div>
     </div>

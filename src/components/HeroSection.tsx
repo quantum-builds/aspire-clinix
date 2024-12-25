@@ -34,6 +34,7 @@ export default function HeroSection({
         />
       </div>
       <div className="absolute left-1/2 transform -translate-x-1/2">
+      <Link href="/" scroll={false}>
         <Image
           src={logoSrc}
           alt="Aspire Clinix"
@@ -41,6 +42,7 @@ export default function HeroSection({
           height={88}
           className="flex justify-center items-center w-[80px] h-[40px] md:w-[189px] md:h-[88px]"
         />
+      </Link>
       </div>
       <div>
         <Link href="/book-treatment" scroll={false}>
