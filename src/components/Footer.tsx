@@ -5,10 +5,10 @@ import Link from "next/link";
 
 const IN_PAGE_NAV_LINKS = [
   { label: "Our Philosophy", path: "/" },
-  { label: "Aspire Dental", path: "/" },
-  { label: "Aspire Aesthetics", path: "/" },
-  { label: "Aspire Wellness", path: "/" },
-  { label: "Referral Portal", path: "/" },
+  { label: "Dentistry", path: "/#dentistry" },
+  { label: "Aesthetics", path: "/#aesthetic" },
+  { label: "Wellness", path: "/landing#wellness" },
+  { label: "Referral Portal", path: "/referral#form" },
 ];
 
 const SOCIAL_ICONS = [
@@ -20,7 +20,7 @@ const SOCIAL_ICONS = [
 export default function Footer() {
   return (
     <footer className="bg-footerBackground">
-      <div className="grid gap-12 md:gap-20 md:grid-cols-4 px-3 justify-items-start md:justify-items-center py-12">
+      <div className="grid gap-12 md:gap-[3rem] md:px-3 lg:px-0 md:grid-cols-4 px-3 justify-items-start md:justify-items-center py-12">
         {/* Logo and Address Section */}
         <div className="flex flex-col items-start gap-8">
           <Image

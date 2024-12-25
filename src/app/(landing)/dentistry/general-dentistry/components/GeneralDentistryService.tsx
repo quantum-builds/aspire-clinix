@@ -18,14 +18,14 @@ export default function GeneralDentistryService({
       <div className="h-[79vh] grid grid-cols-1 md:grid-cols-2 items-center gap-8">
         {/* Text Section */}
         <div
-          className={`flex flex-col justify-center gap-6 md:gap-[67px] w-full ${
+          className={`flex flex-col justify-center gap-6 md:gap-[30px] lg:gap-[67px] w-full ${
             container_side === "right" ? "md:order-2" : "md:order-1"
           }`}
         >
           <h2 className="text-[22px] md:text-[52px] leading-[59.02px] font-bold font-opus">
             {title}
           </h2>
-          <p className="text-[16px] md:text-[24px] leading-[27.27px] tracking-widest font-gillSans">
+          <p className="text-[16px] md:text-[24px] lg:w-[471px] md:w-[360px] md:h-[150px] lg:h-[81px] leading-[27.27px] tracking-widest font-gillSans">
             {description}
           </p>
         </div>
@@ -40,7 +40,7 @@ export default function GeneralDentistryService({
             src={imagePath}
             alt={title}
             width={705}
-            height={500}
+            height={705}
             className="object-cover rounded-md"
           />
         </div>

@@ -13,7 +13,9 @@ export default function ReferralPage() {
         buttonColor={herobuttonColor}
         textColor="white"
       />
-      <ReferralForm />
+      <div id="form">
+        <ReferralForm />
+      </div>
     </div>
   );
 }

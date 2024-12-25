@@ -186,7 +186,7 @@ const HERO_SECTION_DATA = {
   descTextSize: null,
   contentWidth: 100,
   backgroundColor: "#FFFFFF",
-  buttonColor: "#EBEBEB",
+  buttonColor: "#ECE8E3",
 };
 
 const ABOUT_US_SECTION_DATA = {
@@ -225,21 +225,27 @@ export default function LandingPage() {
       />
       <LandingPageImage />
       <ServiceSection />
-      <ServiceDetailSection
-        title={DENTAL_SERVICES.title}
-        description={DENTAL_SERVICES.description}
-        services={DENTAL_SERVICES.services}
-      />
-      <ServiceDetailSection
-        title={ASTHETIC_SERVICE.title}
-        description={ASTHETIC_SERVICE.description}
-        services={ASTHETIC_SERVICE.services}
-      />
-      <ServiceDetailSection
-        title={WELLNESS_SERVICE.title}
-        description={WELLNESS_SERVICE.description}
-        services={WELLNESS_SERVICE.services}
-      />
+      <div id="dentistry">
+        <ServiceDetailSection
+          title={DENTAL_SERVICES.title}
+          description={DENTAL_SERVICES.description}
+          services={DENTAL_SERVICES.services}
+        />
+      </div>
+      <div id="aesthetic">
+        <ServiceDetailSection
+          title={ASTHETIC_SERVICE.title}
+          description={ASTHETIC_SERVICE.description}
+          services={ASTHETIC_SERVICE.services}
+        />
+      </div>
+      <div id="wellness">
+        <ServiceDetailSection
+          title={WELLNESS_SERVICE.title}
+          description={WELLNESS_SERVICE.description}
+          services={WELLNESS_SERVICE.services}
+        />
+      </div>
       <SupplementSection />
     </div>
   );
