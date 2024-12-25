@@ -13,7 +13,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full h-screen flex justify-center items-center bg-[#ACACAC] font-opus text-[#382F26]">
+    <div className="w-full h-screen flex justify-center items-center bg-menuBar font-opus text-[#382F26]">
       <form
         onSubmit={handleSubmit}
         className="w-full md:w-1/2 h-full flex flex-col items-center justify-center bg-[#DAD7D3]"
@@ -60,7 +60,7 @@ const LoginForm = () => {
 
           <button
             type="submit"
-            className="w-full p-2 bg-blue-500 text-white rounded-md mt-7"
+            className="w-full p-2 bg-golden50 text-black rounded-md mt-7"
           >
             Login
           </button>
