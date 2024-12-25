@@ -9,6 +9,7 @@ export default function LandingPageImage() {
         layout="fill"
         objectFit="cover"
         quality={100}
+        className="w-full h-full"
       />
     </div>
   );
