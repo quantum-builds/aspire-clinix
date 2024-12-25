@@ -84,7 +84,7 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
 
   return (
     <nav
-      className={` w-full lg:w-[40%] md:w-[75%] min-h-screen bg-menuBar absolute top-0 left-0 px-12 pt-20 pb-15 trasnform ${
+      className={` w-full lg:w-[40%] md:w-[75%] h-screen bg-menuBar absolute top-0 left-0 px-12 pt-20 pb-15 trasnform ${
         menuStatus ? "translate-x-0" : "translate-x-[-100%]"
       } transition-transform duration-500 ease-in-out font-gillSans`}
     >
@@ -94,7 +94,7 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
         alt="Close Menu"
         onClick={() => setMenuStatus(false)}
       />
-      <ul className="space-y-4 lg:overflow-y-auto scrollbar-none lg:h-[800px]">
+      <ul className="space-y-4 lg:overflow-y-auto scrollbar-none lg:h-[500px]">
         {MENU_LIST.map((categoryData, index) => (
           <li key={index} className="">
             <div className="flex items-center">

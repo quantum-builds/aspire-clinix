@@ -7,6 +7,7 @@ import clsx from "clsx";
 interface ServiceDetailSliderProp {
   is_dentistry: boolean;
   className?: string;
+  scrollbarwidthOverride?: number;
 
   services: Array<{ title: string; description: string | null; path: string }>;
 }
@@ -15,6 +16,8 @@ export default function ServiceDetailSlider({
   services,
   className,
 }: ServiceDetailSliderProp) {
+  const isDragging = useRef<boolean>(false);
+  const scrollbarRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [thumbWidth, setThumbWidth] = useState(0);
   const [scrollThumbOffset, setScrollThumbOffset] = useState(0);
@@ -63,6 +66,72 @@ export default function ServiceDetailSlider({
       setScrollThumbOffset(Math.min(thumbOffset, scrollbarWidth - thumbWidth));
     }
   };
+  const handleScrollbarClick = (event: React.MouseEvent) => {
+    const scrollbar = scrollbarRef.current;
+    const container = containerRef.current;
+
+    if (scrollbar && container) {
+      const rect = scrollbar.getBoundingClientRect();
+      const clickPosition = event.clientX - rect.left;
+      const maxThumbOffset = scrollbarWidth - thumbWidth;
+
+      // Calculate the corresponding scrollLeft for the container
+      const scrollRatio = clickPosition / scrollbarWidth;
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+      const newScrollLeft = scrollRatio * maxScrollLeft;
+
+      container.scrollTo({ left: newScrollLeft, behavior: "smooth" });
+      setScrollThumbOffset(
+        Math.min(
+          (newScrollLeft / maxScrollLeft) * maxThumbOffset,
+          maxThumbOffset
+        )
+      );
+    }
+  };
+
+  const handleThumbDragStart = (event: React.MouseEvent) => {
+    event.preventDefault();
+    isDragging.current = true;
+  };
+
+  const handleThumbDrag = (event: MouseEvent) => {
+    if (!isDragging.current) return;
+
+    const scrollbar = scrollbarRef.current;
+    const container = containerRef.current;
+
+    if (scrollbar && container) {
+      const rect = scrollbar.getBoundingClientRect();
+      const maxThumbOffset = scrollbarWidth - thumbWidth;
+      const clickPosition = event.clientX - rect.left;
+
+      const thumbOffset = Math.min(
+        Math.max(0, clickPosition - thumbWidth / 2),
+        maxThumbOffset
+      );
+
+      const scrollRatio = thumbOffset / maxThumbOffset;
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+
+      container.scrollTo({ left: scrollRatio * maxScrollLeft });
+      setScrollThumbOffset(thumbOffset);
+    }
+  };
+
+  const handleThumbDragEnd = () => {
+    isDragging.current = false;
+  };
+
+  useEffect(() => {
+    window.addEventListener("mousemove", handleThumbDrag);
+    window.addEventListener("mouseup", handleThumbDragEnd);
+
+    return () => {
+      window.removeEventListener("mousemove", handleThumbDrag);
+      window.removeEventListener("mouseup", handleThumbDragEnd);
+    };
+  }, []);
 
   return (
     <div className="w-full flex flex-col gap-4 md:gap-[3rem]">
@@ -88,10 +157,12 @@ export default function ServiceDetailSlider({
 
       <div
         className={clsx(
-          "relative h-3 bg-[#F1F5F9] rounded-full overflow-hidden",
+          "relative h-3 bg-[#F1F5F9] rounded-full overflow-hidden cursor-pointer",
           className
         )}
         style={{ width: `${scrollbarWidth}px`, marginTop: "1rem" }}
+        onClick={handleScrollbarClick}
+        ref={scrollbarRef}
       >
         <div
           className="absolute h-full bg-black rounded-full"
@@ -100,6 +171,7 @@ export default function ServiceDetailSlider({
             transform: `translateX(${scrollThumbOffset}px)`,
             transition: "transform 0.1s ease",
           }}
+          onMouseDown={handleThumbDragStart}
         />
       </div>
     </div>
