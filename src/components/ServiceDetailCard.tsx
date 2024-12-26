@@ -47,7 +47,7 @@ export default function ServiceDetailCard({
       <div>
         <Link href={path}>
           <button
-            className="absolute font-gillSans bottom-0 rounded-tl-2xl w-[150px] h-[65px] right-0 bg-white text-base tracking-widest"
+            className="absolute font-gillSans bottom-0 rounded-tl-2xl w-[150px] h-[65px] right-0 bg-feeGuide text-base tracking-widest"
             style={{ lineHeight: "18.18px" }}
           >
             {buttonText}

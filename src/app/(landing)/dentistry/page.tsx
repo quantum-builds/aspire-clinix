@@ -103,6 +103,7 @@ export default function Denistry() {
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
         descLineHeight={36.6}
+        headingFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
       />
       <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}
@@ -110,6 +111,7 @@ export default function Denistry() {
         descriptionLeadingHeight={
           ABOUT_US_SECTION_DATA.descriptionLeadingHeight
         }
+        buttonBackgroundColor="#ECE8E3"
         hasButton={ABOUT_US_SECTION_DATA.hasButton}
         buttonText={ABOUT_US_SECTION_DATA.buttonText}
         backgroundColor={ABOUT_US_SECTION_DATA.backgroundColor}

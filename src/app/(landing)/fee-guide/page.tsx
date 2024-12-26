@@ -17,9 +17,10 @@ export default function FeeGuidePage() {
         description="Lorem ipsum odor amet, consectetuer adipiscing elit. 
     Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit"
         backgroundColor={heroBackgroundColor}
-        descLineHeight={33.3}
+        descLineHeight={40.86}
         buttonColor={herobuttonColor}
         textColor="white"
+        headingFontSize="md:text-[48px] text-[25px]"
       />
       <CheckupAndRoutine />
 

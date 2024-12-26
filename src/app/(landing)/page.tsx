@@ -74,7 +74,7 @@ const DENTAL_SERVICES = {
 };
 
 const ASTHETIC_SERVICE = {
-  title: "Asthetic",
+  title: "Aesthetics",
   description:
     "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
   services: [
@@ -198,8 +198,8 @@ const ABOUT_US_SECTION_DATA = {
   backgroundColor: "#1D120C",
   textColor: "#C9BCA9",
   descriptionWidth: 60,
+  buttonBackgroundColor: "#ECE8E3",
 };
-
 
 export default function Home() {
   return (
@@ -210,6 +210,7 @@ export default function Home() {
         contentWidth={HERO_SECTION_DATA.contentWidth}
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
+        headingFontSize="md:text-[45px] text-[25px] lg:text-[70px]"
       />
       <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}
@@ -222,6 +223,7 @@ export default function Home() {
         backgroundColor={ABOUT_US_SECTION_DATA.backgroundColor}
         textColor={ABOUT_US_SECTION_DATA.textColor}
         descriptionWidth={ABOUT_US_SECTION_DATA.descriptionWidth}
+        buttonBackgroundColor={ABOUT_US_SECTION_DATA.buttonBackgroundColor}
       />
       <LandingPageImage />
       <ServiceSection />
