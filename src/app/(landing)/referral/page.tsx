@@ -5,13 +5,14 @@ export default function ReferralPage() {
   const heroBackgroundColor = "#DCD4C9";
   const herobuttonColor = "#ECE8E3";
   return (
-    <div className="bg-[#ECE8E3] h-auto">
+    <div className="bg-feeGuide h-auto">
       <HeroSection
-        title="Dental Treatment Fee Guide"
-        description="Explore our fee structure and treatment options."
+        title={null}
+        description="Aspire Dental is pleased to accept referrals from fellow dentists. And we offer referring dentists a series of promises to guarantee the best care for their patients."
         backgroundColor={heroBackgroundColor}
         buttonColor={herobuttonColor}
-        textColor="white"
+        textColor="#423C36"
+        descLineHeight={45.4}
       />
       <div id="form">
         <ReferralForm />

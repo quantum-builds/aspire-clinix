@@ -135,7 +135,7 @@ export default function ReferralForm() {
             marginTop="50px"
             padding="8px"
           />
-          <div className="flex flex-wrap justify-between flex-1 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 flex-wrap justify-between flex-1 gap-8">
             <FormInput
               type="text"
               name="mobileNumber"
