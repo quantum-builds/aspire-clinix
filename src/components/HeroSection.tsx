@@ -96,7 +96,7 @@ export default function HeroSection({
         {/* Title */}
         <h1
           className={clsx(
-            "text-center md:w-[500px] z-20 lg:w-[766px] xl:w-[1143px] w-[350px] font-opus font-normal md:leading-[70px] lg:leading-[100px]",
+            "text-center md:w-[500px] z-10 lg:w-[766px] xl:w-[1143px] w-[350px] font-opus font-normal md:leading-[70px] lg:leading-[100px]",
             headingFontSize
           )}
           style={{
@@ -109,7 +109,7 @@ export default function HeroSection({
         {/* Description */}
         {description && descLineHeight && (
           <p
-            className="text-center font-gillSans z-20 text-[16px] lg:w-[837px] lg:h-[126px]  md:text-[32px] px-4 sm:px-5"
+            className="text-center font-gillSans z-10 text-[16px] lg:w-[837px] lg:h-[126px]  md:text-[32px] px-4 sm:px-5"
             style={{
               lineHeight: `${descLineHeight}px`,
               color: textColor,
