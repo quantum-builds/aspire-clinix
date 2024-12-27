@@ -186,6 +186,7 @@ const HERO_SECTION_DATA = {
   contentWidth: 100,
   backgroundColor: "#FFFFFF",
   buttonColor: "#ECE8E3",
+  backgroundContent: "/videos/landing-page-video.mp4",
 };
 
 const ABOUT_US_SECTION_DATA = {
@@ -211,6 +212,8 @@ export default function Home() {
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
         headingFontSize="md:text-[45px] text-[25px] lg:text-[70px]"
+        isVideo={true}
+        backgroundContent={HERO_SECTION_DATA.backgroundContent}
       />
       <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}

@@ -1,7 +1,7 @@
 import HeroSection from "@/components/HeroSection";
 import GeneralDentistryService from "./components/GeneralDentistryService";
 import AboutUsSection from "@/components/AboutUsSection";
-import { Dentist } from "@/assets";
+import { ClinicChair, Dentist } from "@/assets";
 
 import ServiceDetailCard from "@/components/ServiceDetailCard";
 
@@ -90,6 +90,8 @@ export default function GeneralDentistry() {
         buttonColor={HERO_SECTION_DATA.buttonColor}
         descLineHeight={36.6}
         headingFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
+        isVideo={false}
+        backgroundContent={ClinicChair}
       />
       {GENERAL_DENTISTRY_SERVICE.map((service, index) => (
         <GeneralDentistryService

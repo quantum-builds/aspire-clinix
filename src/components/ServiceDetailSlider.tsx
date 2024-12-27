@@ -7,7 +7,7 @@ import clsx from "clsx";
 interface ServiceDetailSliderProp {
   is_dentistry: boolean;
   className?: string;
-  scrollbarwidthOverride?: number;
+  scrollbarWidthOverride?: number;
 
   services: Array<{ title: string; description: string | null; path: string }>;
 }
@@ -22,7 +22,7 @@ export default function ServiceDetailSlider({
   const [thumbWidth, setThumbWidth] = useState(0);
   const [scrollThumbOffset, setScrollThumbOffset] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
-  const [scrollbarWidth, setScrollbarWidth] = useState(700);
+  const [scrollbarWidth, setScrollbarWidth] = useState(800);
   const startDragX = useRef(0);
 
   useEffect(() => {
@@ -31,10 +31,15 @@ export default function ServiceDetailSlider({
     if (container) {
       const updateDimensions = () => {
         const screenWidth = window.innerWidth;
-
-        if (screenWidth >= 1280) {
+        if (screenWidth >= 1536) {
+          setScrollbarWidth(848);
           setContainerWidth(3 * 562 + 2 * 40);
-          setScrollbarWidth(700);
+        } else if (screenWidth >= 1280) {
+          setScrollbarWidth(600);
+          setContainerWidth(3 * 562 + 2 * 40);
+        } else if (screenWidth >= 1024) {
+          setContainerWidth(3 * 562 + 2 * 40);
+          setScrollbarWidth(500);
         } else if (screenWidth >= 768) {
           setContainerWidth(3 * 562 + 2 * 40);
           setScrollbarWidth(340);
