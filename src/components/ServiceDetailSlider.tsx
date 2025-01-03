@@ -1,15 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import ServiceDetailCard from "./ServiceDetailCard";
 import clsx from "clsx";
+import { StaticImageData } from "next/image";
 
 interface ServiceDetailSliderProp {
   is_dentistry: boolean;
   className?: string;
   scrollbarWidthOverride?: number;
 
-  services: Array<{ title: string; description: string | null; path: string }>;
+  services: Array<{
+    title: string;
+    description: string | null;
+    path: string;
+    backgroundContent: string | StaticImageData;
+  }>;
 }
 
 export default function ServiceDetailSlider({
@@ -22,46 +28,54 @@ export default function ServiceDetailSlider({
   const [thumbWidth, setThumbWidth] = useState(0);
   const [scrollThumbOffset, setScrollThumbOffset] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
-  const [scrollbarWidth, setScrollbarWidth] = useState(800);
+  const [scrollbarWidth, setScrollbarWidth] = useState(848);
   const startDragX = useRef(0);
+  const [loadedImages, setLoadedImages] = useState(0);
 
-  useEffect(() => {
-    const container = containerRef.current;
+  useLayoutEffect(() => {
+    if (loadedImages === services.length) {
+      const container = containerRef.current;
+      if (container) {
+        const updateDimensions = () => {
+          const screenWidth = window.innerWidth;
+          if (screenWidth >= 1536) {
+            setScrollbarWidth(848);
+            setContainerWidth(3 * 562 + 2 * 40);
+          } else if (screenWidth >= 1280) {
+            setScrollbarWidth(600);
+            setContainerWidth(3 * 562 + 2 * 40);
+          } else if (screenWidth >= 1024) {
+            setContainerWidth(3 * 562 + 2 * 40);
+            setScrollbarWidth(470);
+          } else if (screenWidth >= 768) {
+            setContainerWidth(3 * 562 + 2 * 40);
+            setScrollbarWidth(340);
+          } else {
+            setContainerWidth(562);
+            setScrollbarWidth(310);
+          }
 
-    if (container) {
-      const updateDimensions = () => {
-        const screenWidth = window.innerWidth;
-        if (screenWidth >= 1536) {
-          setScrollbarWidth(848);
-          setContainerWidth(3 * 562 + 2 * 40);
-        } else if (screenWidth >= 1280) {
-          setScrollbarWidth(600);
-          setContainerWidth(3 * 562 + 2 * 40);
-        } else if (screenWidth >= 1024) {
-          setContainerWidth(3 * 562 + 2 * 40);
-          setScrollbarWidth(500);
-        } else if (screenWidth >= 768) {
-          setContainerWidth(3 * 562 + 2 * 40);
-          setScrollbarWidth(340);
-        } else {
-          setContainerWidth(562);
-          setScrollbarWidth(340);
-        }
+          // Update thumb size
+          const visibleWidth = container.clientWidth;
+          const totalWidth = container.scrollWidth;
+          const thumbSize = (visibleWidth / totalWidth) * scrollbarWidth;
 
-        // Update thumb size
-        const visibleWidth = container.clientWidth;
-        const totalWidth = container.scrollWidth;
-        const thumbSize = (visibleWidth / totalWidth) * scrollbarWidth;
+          setThumbWidth(Math.max(thumbSize, 50));
+        };
 
-        setThumbWidth(Math.max(thumbSize, 50));
-      };
+        updateDimensions();
+        window.addEventListener("resize", updateDimensions);
 
-      updateDimensions();
-      window.addEventListener("resize", updateDimensions);
-
-      return () => window.removeEventListener("resize", updateDimensions);
+        return () => window.removeEventListener("resize", updateDimensions);
+      }
     }
-  }, [services]);
+  }, [loadedImages, scrollbarWidth]);
+  const handleImageLoad = () => {
+    setLoadedImages((prev) => prev + 1); // Increment the counter
+  };
+  useLayoutEffect(() => {
+    handleContainerScroll(); // Force initial thumb synchronization
+  }, [scrollbarWidth, thumbWidth]);
 
   const handleContainerScroll = () => {
     const container = containerRef.current;
@@ -182,10 +196,12 @@ export default function ServiceDetailSlider({
             key={index}
             title={service.title}
             description={service.description}
+            backgroundContent={service.backgroundContent}
             path={service.path}
             buttonText={"Learn More"}
             card_height={723}
             className="w-[350px] h-[full] md:w-[562px] md:h-[723px]"
+            onLoad={handleImageLoad}
           />
         ))}
       </div>

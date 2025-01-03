@@ -5,7 +5,7 @@ export default function SupplementSection() {
   const backgroundImage = ClinicChair.src;
   return (
     <div
-      className="flex flex-col justify-center items-center h-screen bg-[#D9D9D9] gap-[20px] relative p-4"
+      className="flex flex-col justify-center items-center h-screen bg-[#D9D9D9] gap-[50px] relative p-4"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: "cover",
@@ -25,7 +25,7 @@ export default function SupplementSection() {
         </p>
       </div>
       <Link href="/">
-        <button className="flex justify-center items-center bg-feeGuide md:w-[232px] w-[150px] h-[50px] rounded-[10px] md:h-[77px] md:rounded-[20px] leading-[27.24px]  text-[16px] md:text-[20px] font-opus absolute bottom-[12rem] md:bottom-4 left-1/2 transform -translate-x-1/2 sm:relative sm:bottom-auto sm:left-auto sm:transform-none">
+        <button className="flex justify-center items-center bg-feeGuide md:w-[232px] w-[150px] h-[50px] rounded-[10px] md:h-[77px] md:rounded-[20px] leading-[27.24px]  text-[16px] md:text-[20px] font-opus absolute bottom-[5rem] md:bottom-0 left-1/2 transform -translate-x-1/2 sm:relative sm:bottom-auto sm:left-auto sm:transform-none">
           Learn More
         </button>
       </Link>

@@ -1,7 +1,12 @@
 import HeroSection from "@/components/HeroSection";
 import GeneralDentistryService from "./components/GeneralDentistryService";
 import AboutUsSection from "@/components/AboutUsSection";
-import { ClinicChair, Dentist } from "@/assets";
+import {
+  AspireAesthetic,
+  ClinicChair,
+  Dentist,
+  DentistTreatment,
+} from "@/assets";
 
 import ServiceDetailCard from "@/components/ServiceDetailCard";
 
@@ -62,6 +67,7 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Richard Porter",
+    backgroundContent: Dentist,
   },
   {
     path: "/path2",
@@ -69,6 +75,7 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Raheel Malik",
+    backgroundContent: AspireAesthetic,
   },
   {
     path: "/path3",
@@ -76,6 +83,7 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Raheel Malik",
+    backgroundContent: DentistTreatment,
   },
 ];
 
@@ -125,11 +133,12 @@ export default function GeneralDentistry() {
             <ServiceDetailCard
               key={index}
               path={card.path}
+              backgroundContent={card.backgroundContent}
               card_width={card.card_width}
               buttonText={card.buttonText}
               card_height={card.card_height}
               doc_name={card.doc_name}
-              className="w-[360px] md:w-[424px] h-auto xl:w-[380px] 2xl:w-[424px]"
+              className="w-[320px] sm:w-[360px] md:w-[424px] h-auto xl:w-[380px] 2xl:w-[424px]"
             />
           ))}
         </div>

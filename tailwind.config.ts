@@ -19,6 +19,8 @@ const config: Config = {
         grey101: "rgba(170, 170, 170, 1)",
         textColor: "#423C36",
         formBackground: "#DAD7D3",
+        bookATreatment: "#AAAAAA",
+        bookATreatmentBackground: "#C9BCA9",
       },
       fontFamily: {
         opus: ["var(--font-opus)"],

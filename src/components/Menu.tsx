@@ -84,8 +84,8 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
 
   return (
     <nav
-      className={` w-full lg:w-[40%] md:w-[60%] z-50 h-screen bg-menuBar absolute top-0 left-0 px-12 pt-20 pb-15 trasnform ${
-        menuStatus ? "translate-x-0" : "translate-x-[-100%]"
+      className={`  w-full lg:w-[40%] md:w-[60%] z-50 h-screen bg-menuBar fixed top-0 left-0 px-12 pt-20 pb-15 trasnform ${
+        menuStatus ? "translate-x-0" : "-translate-x-full"
       } transition-transform duration-500 ease-in-out font-gillSans`}
     >
       <Image

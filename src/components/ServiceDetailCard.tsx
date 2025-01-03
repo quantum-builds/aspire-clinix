@@ -1,4 +1,4 @@
-import { Dentist } from "@/assets";
+import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 
 interface ServiceDetailCardProps {
@@ -10,6 +10,8 @@ interface ServiceDetailCardProps {
   card_height?: number;
   className?: string;
   doc_name?: string;
+  backgroundContent?: string | StaticImageData;
+  onLoad?: () => void;
 }
 
 export default function ServiceDetailCard({
@@ -20,14 +22,22 @@ export default function ServiceDetailCard({
   card_height,
   className,
   doc_name,
+  backgroundContent,
+  onLoad,
 }: ServiceDetailCardProps) {
   return (
     <div
       className={` h-full flex-shrink-0 relative  ${
         className || ""
       }  bg-cover bg-center bg-no-repeat`}
-      style={{ height: card_height, backgroundImage: `url(${Dentist.src})` }}
+      style={{ height: card_height }}
     >
+      <Image
+        className="absolute top-0 left-0 w-full h-full object-cover"
+        alt="Background Image"
+        src={backgroundContent as StaticImageData}
+        onLoad={onLoad}
+      />
       <div className="flex flex-col gap-[20px] absolute bottom-0 left-[6%] mb-10">
         <p
           className="text-4xl whitespace-normal font-opus"

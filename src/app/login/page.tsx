@@ -18,21 +18,20 @@ const LoginForm = () => {
     <div className="w-full h-screen flex justify-center items-center bg-grey100 font-opus text-[#382F26]">
       <div className="absolute top-5">
         <AspireLogo />
-        <h2 className="mb-8 mt-5 text-center text-[24px] md:text-[32px] font-semibold">
-            Login
-          </h2>
+        <h2 className="mb-8 mt-5 text-center text-[24px] md:text-[32px] font-normal font-opus">
+          Login
+        </h2>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="w-full md:w-1/2 h-full p-6 flex flex-col items-center justify-center bg-menuBar rounded-lg shadow-md"
+        className="w-full md:w-1/2 h-full p-6 flex flex-col items-center justify-center bg-formBackground"
       >
-        <div className="w-full md:w-3/4 lg:w-2/3">
-         
+        <div className="w-full md:w-1/2">
           <div className="mb-6">
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-opus font-normal text-black mb-2"
             >
               Email
             </label>
@@ -42,7 +41,7 @@ const LoginForm = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 block w-full p-3 border bg-[#DAD7D3] outline-none border-black rounded-md focus:ring-2 focus:ring-golden50"
+              className="mt-1 block w-full p-3 border bg-formBackground outline-none border-black rounded-md"
               placeholder="Enter your email"
             />
           </div>
@@ -50,7 +49,7 @@ const LoginForm = () => {
           <div className="mb-6">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-normal font-opus text-black mb-2"
             >
               Password
             </label>
@@ -60,14 +59,14 @@ const LoginForm = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="mt-1 block w-full p-3 border bg-[#DAD7D3] outline-none border-black rounded-md focus:ring-2 focus:ring-golden50"
+              className="mt-1 block w-full p-3 border bg-formBackground outline-none border-black rounded-md"
               placeholder="Enter your password"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-3 bg-golden50 text-black rounded-md font-semibold hover:bg-golden70 transition-all duration-200"
+            className="w-[153px] h-[45px] py-3 bg-feeGuide text-black rounded-md font-normal font-opus"
           >
             Login
           </button>
