@@ -16,6 +16,8 @@ interface HeroSectionProps {
   buttonColor: string;
   textColor?: string;
   headingFontSize?: string;
+  isVideo?: boolean;
+  backgroundContent?: string | StaticImageData;
 }
 
 export default function HeroSection({
@@ -27,10 +29,12 @@ export default function HeroSection({
   buttonColor,
   textColor,
   headingFontSize,
+  isVideo,
+  backgroundContent,
 }: HeroSectionProps) {
   const pathname = usePathname();
   const renderHeader = (logoSrc: StaticImageData) => (
-    <header className="flex gap-[12rem] sm:gap-[30rem] lg:gap-[40rem] xl:gap-[58rem] xxl-gap-[90rem] h-[85px] md:h-[180px] justify-center items-center container mx-auto px-3 p-0 m-0 z-20">
+    <header className="flex gap-[10rem] sm:gap-[30rem] absolute top-0 lg:gap-[40rem] xl:gap-[58rem] h-[85px] md:h-[180px] justify-center items-center container mx-auto px-3 p-0 m-0 z-20">
       <div>
         <HeroMenu
           backgroundColor={pathname === "/fee-guide" ? "white" : undefined}
@@ -61,9 +65,25 @@ export default function HeroSection({
   );
   return (
     <div
-      className="flex flex-col items-center h-screen relative gap-[220px] lg:gap-[350px] xl:gap-[80px]"
+      className="flex flex-col items-center justify-center h-screen relative overflow-hidden"
       style={{ backgroundColor }}
     >
+      {backgroundContent &&
+        (isVideo ? (
+          <video
+            className="absolute top-0 left-0 w-full h-full object-cover"
+            src={backgroundContent as string}
+            autoPlay
+            loop
+            muted
+          ></video>
+        ) : (
+          <Image
+            className="absolute top-0 left-0 w-full h-full object-cover"
+            alt="Background Image"
+            src={backgroundContent as StaticImageData}
+          />
+        ))}
       {/* Header Section */}
       {renderHeader(
         pathname === "/fee-guide" ? AspireLightLogo : AspireDarkLogo
@@ -71,13 +91,13 @@ export default function HeroSection({
 
       {/* Main Content */}
       <div
-        className="flex flex-col justify-center items-center gap-5 lg:gap-4"
+        className="flex flex-col justify-center items-center gap-5 lg:gap-4 mt-16"
         style={{ width: contentWidth ? `${contentWidth}%` : "100%" }}
       >
         {/* Title */}
         <h1
           className={clsx(
-            "text-center md:w-[500px] lg:w-[766px] xl:w-[1143px] w-[350px] font-opus font-normal md:leading-[70px] lg:leading-[100px]",
+            "text-center md:w-[500px] z-10 lg:w-[766px] xl:w-[1143px] w-[350px] font-opus font-normal md:leading-[70px] lg:leading-[100px]",
             headingFontSize
           )}
           style={{
@@ -90,7 +110,7 @@ export default function HeroSection({
         {/* Description */}
         {description && descLineHeight && (
           <p
-            className="text-center font-gillSans text-[16px] lg:w-[837px] lg:h-[126px]  md:text-[32px] px-4 sm:px-5"
+            className="text-center font-gillSans z-10 text-[16px] lg:w-[837px] lg:h-[126px]  md:text-[32px] px-4 sm:px-5"
             style={{
               lineHeight: `${descLineHeight}px`,
               color: textColor,

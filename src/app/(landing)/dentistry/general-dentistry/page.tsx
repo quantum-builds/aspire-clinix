@@ -1,7 +1,12 @@
 import HeroSection from "@/components/HeroSection";
 import GeneralDentistryService from "./components/GeneralDentistryService";
 import AboutUsSection from "@/components/AboutUsSection";
-import { Dentist } from "@/assets";
+import {
+  AspireAesthetic,
+  ClinicChair,
+  Dentist,
+  DentistTreatment,
+} from "@/assets";
 
 import ServiceDetailCard from "@/components/ServiceDetailCard";
 
@@ -62,6 +67,7 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Richard Porter",
+    backgroundContent: Dentist,
   },
   {
     path: "/path2",
@@ -69,6 +75,7 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Raheel Malik",
+    backgroundContent: AspireAesthetic,
   },
   {
     path: "/path3",
@@ -76,6 +83,7 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Raheel Malik",
+    backgroundContent: DentistTreatment,
   },
 ];
 
@@ -90,6 +98,8 @@ export default function GeneralDentistry() {
         buttonColor={HERO_SECTION_DATA.buttonColor}
         descLineHeight={36.6}
         headingFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
+        isVideo={false}
+        backgroundContent={ClinicChair}
       />
       {GENERAL_DENTISTRY_SERVICE.map((service, index) => (
         <GeneralDentistryService
@@ -114,7 +124,7 @@ export default function GeneralDentistry() {
         buttonBackgroundColor="#ECE8E3"
       />
 
-      <div className="bg-[#ECE8E3] flex flex-col gap-20 w-full mx-auto">
+      <div className="bg-feeGuide flex flex-col gap-20 w-full mx-auto">
         <h2 className="text-[40px] font-opus md:text-[52px] mx-auto container text-center lg:text-left text-black font-normal pt-[3.5rem] lg:px-12">
           Meet the team
         </h2>
@@ -123,11 +133,12 @@ export default function GeneralDentistry() {
             <ServiceDetailCard
               key={index}
               path={card.path}
+              backgroundContent={card.backgroundContent}
               card_width={card.card_width}
               buttonText={card.buttonText}
               card_height={card.card_height}
               doc_name={card.doc_name}
-              className="w-[360px] md:w-[424px] h-auto xl:w-[380px] 2xl:w-[424px]"
+              className="w-[320px] sm:w-[360px] md:w-[424px] h-auto xl:w-[380px] 2xl:w-[424px]"
             />
           ))}
         </div>

@@ -37,87 +37,83 @@ export default function RegistrationForm() {
   };
   return (
     <div
-      className="w-full h-screen flex justify-center items-center font-opus text-[#382F26]  bg-cover bg-center bg-no-repeat"
+      className="w-full min-h-screen flex justify-center items-center bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: `url(${Dentist.src})` }}
     >
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full md:w-1/2 h-full pl-3 md:pl-0 flex flex-col items-center justify-center bg-[#DAD7D3]"
-      >
-        <div className="w-[100%] md:w-[50%]">
+      <div className="flex justify-center items-center min-h-screen py-[5%] w-full md:w-1/2 flex-col bg-formBackground gap-6 md:gap-12">
+        <div className="flex justify-center items-center">
           <Image
             src={AspireDarkLogo}
             alt="Aspire Clinix"
-            width={80}
-            height={88}
-            className="ml-24 md:mb-4"
+            className="w-[90px] h-[50px] md:w-[189px] md:h-[88px]"
           />
-          <p className="text-[16px] sm:text-[24px] font-normal text-nowrap">
+        </div>
+        <div className="flex flex-col gap-5">
+          <p className="font-opus font-normal text-[24px]">
             Your referral has been submitted.
           </p>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-4 md:gap-9"
+          >
+            <h1 className="font-opus font-normal text-[24px] md:text-[32px] ">
+              CREATE AN ACCOUNT
+            </h1>
+            <div>
+              <FormInput
+                type="email"
+                name="email"
+                label="Email Address"
+                control={control}
+                errorMessage={errors.email?.message}
+                placeholder="Email Address"
+                backgroundColor="#DAD7D3"
+                marginTop="15px"
+                inputMarginTop="10px"
+                padding="12px"
+                labelTextSize="20px"
+                className="w-[312px]"
+              />
 
-          <h1 className="mt-3 text-[20px] text-nowrap md:text-[32px] font-normal">
-            CREATE AN ACCOUNT
-          </h1>
-
-          {/** Email Input */}
-          <FormInput
-            type="email"
-            name="email"
-            label="Email Address"
-            control={control}
-            errorMessage={errors.email?.message}
-            placeholder="Email Address"
-            backgroundColor="#DAD7D3"
-            marginTop="15px"
-            inputMarginTop="10px"
-            padding="12px"
-            labelTextSize="20px"
-            className="w-[312px]"
-          />
-
-          {/** Password Input */}
-          <FormInput
-            type="password"
-            name="password"
-            label="Password"
-            control={control}
-            errorMessage={errors.password?.message}
-            placeholder="Password"
-            backgroundColor="#DAD7D3"
-            marginTop="15px"
-            inputMarginTop="10px"
-            padding="12px"
-            labelTextSize="20px"
-            className="w-[312px]"
-          />
-
-          {/** Confirm Password Input */}
-          <FormInput
-            type="password"
-            name="confirmPassword"
-            label="Confirm Password"
-            control={control}
-            errorMessage={errors.confirmPassword?.message}
-            placeholder="Password"
-            backgroundColor="#DAD7D3"
-            marginTop="15px"
-            inputMarginTop="10px"
-            padding="12px"
-            labelTextSize="20px"
-            className="w-[312px]"
-          />
-
-          {/** Submit Button */}
-          <div className="mt-10 text-left">
-            <Button
-              type="submit"
-              title="Create Account"
-              className="w-[90px] sm:w-[153px] h-[45px] bg-white text-black rounded-[10px]"
-            />
-          </div>
+              <FormInput
+                type="password"
+                name="password"
+                label="Password"
+                control={control}
+                errorMessage={errors.password?.message}
+                placeholder="Password"
+                backgroundColor="#DAD7D3"
+                marginTop="15px"
+                inputMarginTop="10px"
+                padding="12px"
+                labelTextSize="20px"
+                className="w-[312px]"
+              />
+              <FormInput
+                type="password"
+                name="confirmPassword"
+                label="Confirm Password"
+                control={control}
+                errorMessage={errors.confirmPassword?.message}
+                placeholder="Password"
+                backgroundColor="#DAD7D3"
+                marginTop="15px"
+                inputMarginTop="10px"
+                padding="12px"
+                labelTextSize="20px"
+                className="w-[312px]"
+              />
+            </div>
+            <div className="flex justify-center items-center md:justify-start md:items-start">
+              <Button
+                type="submit"
+                title="Create Account"
+                className="w-[153px] h-[45px] bg-feeGuide text-black rounded-[10px] mt-8 md:mt-4"
+              />
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,12 @@ import AboutUsSection from "../../../components/AboutUsSection";
 
 import HeroSection from "../../../components/HeroSection";
 import DentistryDetailSection from "../../../components/DentistryDetailSection";
+import {
+  AspireAesthetic,
+  ClinicChair,
+  Dentist,
+  DentistTreatment,
+} from "@/assets";
 
 const HERO_SECTION_DATA = {
   title: "DENTISTRY",
@@ -35,60 +41,70 @@ const DENTISTRY_SERVICES = {
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
+      backgroundContent: Dentist,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
+      backgroundContent: DentistTreatment,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
+      backgroundContent: DentistTreatment,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
+      backgroundContent: AspireAesthetic,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
+      backgroundContent: Dentist,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
+      backgroundContent: Dentist,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
+      backgroundContent: Dentist,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
+      backgroundContent: Dentist,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
+      backgroundContent: Dentist,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
+      backgroundContent: Dentist,
     },
   ],
 };
@@ -104,6 +120,8 @@ export default function Denistry() {
         buttonColor={HERO_SECTION_DATA.buttonColor}
         descLineHeight={36.6}
         headingFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
+        isVideo={false}
+        backgroundContent={ClinicChair}
       />
       <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}

@@ -135,7 +135,7 @@ export default function ReferralForm() {
             marginTop="50px"
             padding="8px"
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 flex-wrap justify-between flex-1 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 flex-wrap justify-between flex-1 gap-8">
             <FormInput
               type="text"
               name="mobileNumber"
@@ -163,18 +163,29 @@ export default function ReferralForm() {
             <h2 className="text-[16px] md:text-[24px] font-normal">
               Medical History
             </h2>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
           </div>
-          <div className="grid mt-4 justify-center items-start md:grid-cols-2 gap-2 min-w-max">
-            {REFERRAL_DETAIL.options.map((option) => (
-              <CheckboxInput
-                type="checkbox"
-                key={option.value}
-                name={REFERRAL_DETAIL.name}
-                label={option.label}
-                value={option.value}
-                control={control}
-              />
-            ))}
+          <div>
+            <h3 className="font-opus text-[16px] md:text-[24px]">
+              Referral Details
+            </h3>
+            <div className="grid mt-4 justify-center items-start md:grid-cols-2 gap-2 min-w-max">
+              {REFERRAL_DETAIL.options.map((option) => (
+                <CheckboxInput
+                  type="checkbox"
+                  key={option.value}
+                  name={REFERRAL_DETAIL.name}
+                  label={option.label}
+                  value={option.value}
+                  control={control}
+                />
+              ))}
+            </div>
           </div>
           <div className="mt-5 flex items-center">
             <label

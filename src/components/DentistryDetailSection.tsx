@@ -1,7 +1,13 @@
 import ServiceDetailSlider from "@/components/ServiceDetailSlider";
+import { StaticImageData } from "next/image";
 
 interface DentistryDetailSectionProps {
-  services: Array<{ title: string; description: string | null; path: string }>;
+  services: Array<{
+    title: string;
+    description: string | null;
+    path: string;
+    backgroundContent: string | StaticImageData;
+  }>;
 }
 
 export default function DentistryDetailSection({
