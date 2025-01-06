@@ -14,17 +14,11 @@ export default function BookTreatment() {
         backgroundPosition: "center",
       }}
     >
-      <div className="flex flex-col items-center justify-center py-[5%] w-full min-h-screen md:w-1/2 gap-60 bg-bookATreatmentBackground p-6  shadow-lg">
-        <div>
-          <AspireLogo />
-        </div>
-        <div className="flex flex-col gap-52">
-          <div>
-            <ServiceButtons />
-          </div>
-          <div>
-            <ExistingPatientSignIn />
-          </div>
+      <div className="bg-[#C9BCA9] opacity-70 flex flex-col items-center  justify-center w-full min-h-screen md:w-1/2 gap-[2rem] p-6  shadow-lg">
+        <AspireLogo />
+        <div className="flex flex-col gap-[1rem]">
+          <ServiceButtons />
+          <ExistingPatientSignIn />
         </div>
       </div>
     </div>

@@ -62,6 +62,7 @@ const MENU_LIST = [
     path: "/aspire",
     services: [],
   },
+  { category: "FEE GUIDE", path: "/fee-guide", services: [] },
   {
     category: "CONTACT",
     path: "/aspire",

@@ -14,3 +14,4 @@ export { default as AspireAesthetic } from "@/assets/aspire-aesthetic.jpg";
 export { default as AspireFullImage } from "@/assets/aspire-full-image.jpg";
 export { default as WomenWithToothbrush } from "@/assets/women-with-toothbrush.jpg";
 export { default as DentistTreatment } from "@/assets/dentist-treatment.jpg";
+export { default as TeethCartoon } from "@/assets/teeth-cartoon.jpg";
