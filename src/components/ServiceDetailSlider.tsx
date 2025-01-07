@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ServiceDetailCard from "./ServiceDetailCard";
 import clsx from "clsx";
 import { StaticImageData } from "next/image";
@@ -22,7 +22,7 @@ export default function ServiceDetailSlider({
   services,
   className,
 }: ServiceDetailSliderProp) {
-  const isDragging = useRef<boolean>(false);
+  const isDragging = useRef(false);
   const scrollbarRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [thumbWidth, setThumbWidth] = useState(0);
@@ -69,15 +69,15 @@ export default function ServiceDetailSlider({
         return () => window.removeEventListener("resize", updateDimensions);
       }
     }
-  }, [loadedImages, scrollbarWidth]);
+  }, [loadedImages, scrollbarWidth, services]);
   const handleImageLoad = () => {
     setLoadedImages((prev) => prev + 1); // Increment the counter
   };
   useLayoutEffect(() => {
     handleContainerScroll(); // Force initial thumb synchronization
-  }, [scrollbarWidth, thumbWidth]);
+  }, [scrollbarWidth, thumbWidth, services]);
 
-  const handleContainerScroll = () => {
+  const handleContainerScroll = useCallback(() => {
     const container = containerRef.current;
 
     if (container) {
@@ -88,7 +88,10 @@ export default function ServiceDetailSlider({
         (scrollLeft / maxScrollLeft) * (scrollbarWidth - thumbWidth);
       setScrollThumbOffset(Math.min(thumbOffset, scrollbarWidth - thumbWidth));
     }
-  };
+  }, [scrollbarWidth, thumbWidth]);
+  useLayoutEffect(() => {
+    handleContainerScroll();
+  }, [scrollbarWidth, thumbWidth, services, handleContainerScroll]);
 
   const handleScrollbarClick = (event: React.MouseEvent) => {
     const scrollbar = scrollbarRef.current;
@@ -114,73 +117,64 @@ export default function ServiceDetailSlider({
     }
   };
 
-  const handleThumbDragStart = (event: React.MouseEvent) => {
-    event.preventDefault();
+  const handleThumbDragStart = (event: React.MouseEvent | React.TouchEvent) => {
     isDragging.current = true;
-    startDragX.current = event.clientX;
+    startDragX.current =
+      "clientX" in event
+        ? (event as React.MouseEvent).clientX
+        : (event as React.TouchEvent).touches[0].clientX;
+    event.preventDefault();
   };
 
-  const handleThumbDrag = (event: MouseEvent) => {
-    if (!isDragging.current) return;
+  const handleThumbDragMove = useCallback(
+    (event: MouseEvent | TouchEvent) => {
+      if (!isDragging.current) return;
 
-    const scrollbar = scrollbarRef.current;
-    const container = containerRef.current;
+      const scrollbar = scrollbarRef.current;
+      const container = containerRef.current;
 
-    if (scrollbar && container) {
-      const rect = scrollbar.getBoundingClientRect();
-      const maxThumbOffset = scrollbarWidth - thumbWidth;
-      const clickPosition = event.clientX - rect.left;
+      if (scrollbar && container) {
+        const clientX =
+          event instanceof MouseEvent
+            ? event.clientX
+            : event.touches[0].clientX;
+        const deltaX = clientX - startDragX.current;
 
-      const thumbOffset = Math.min(
-        Math.max(0, clickPosition - thumbWidth / 2),
-        maxThumbOffset
-      );
+        const maxThumbOffset = scrollbarWidth - thumbWidth;
+        const newThumbOffset = Math.min(
+          Math.max(0, scrollThumbOffset + deltaX),
+          maxThumbOffset
+        );
 
-      const scrollRatio = thumbOffset / maxThumbOffset;
-      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+        const scrollRatio = newThumbOffset / maxThumbOffset;
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
 
-      container.scrollTo({ left: scrollRatio * maxScrollLeft });
-      setScrollThumbOffset(thumbOffset);
-    }
-  };
+        container.scrollLeft = scrollRatio * maxScrollLeft;
+        setScrollThumbOffset(newThumbOffset);
+
+        startDragX.current = clientX; // Update for the next move
+      }
+    },
+    [scrollThumbOffset, scrollbarWidth, thumbWidth]
+  );
 
   const handleThumbDragEnd = () => {
     isDragging.current = false;
   };
 
-  const handleScrollbarWheel = (event: WheelEvent) => {
-    event.preventDefault();
-    const container = containerRef.current;
-
-    if (container) {
-      // Forward the wheel delta to the container
-      container.scrollLeft += event.deltaY;
-
-      // Update the thumb position
-      handleContainerScroll();
-    }
-  };
-
-  useEffect(() => {
-    const scrollbar = scrollbarRef.current;
-
-    if (scrollbar) {
-      // Add wheel event listener to custom scrollbar
-      scrollbar.addEventListener("wheel", handleScrollbarWheel);
-    }
-
-    window.addEventListener("mousemove", handleThumbDrag);
+  useLayoutEffect(() => {
+    window.addEventListener("mousemove", handleThumbDragMove);
     window.addEventListener("mouseup", handleThumbDragEnd);
+    window.addEventListener("touchmove", handleThumbDragMove);
+    window.addEventListener("touchend", handleThumbDragEnd);
 
     return () => {
-      if (scrollbar) {
-        scrollbar.removeEventListener("wheel", handleScrollbarWheel);
-      }
-
-      window.removeEventListener("mousemove", handleThumbDrag);
+      window.removeEventListener("mousemove", handleThumbDragMove);
       window.removeEventListener("mouseup", handleThumbDragEnd);
+      window.removeEventListener("touchmove", handleThumbDragMove);
+      window.removeEventListener("touchend", handleThumbDragEnd);
     };
-  }, []);
+  }, [handleThumbDragMove]);
 
   return (
     <div className="w-full flex flex-col gap-4 md:gap-[3rem]">
@@ -224,6 +218,7 @@ export default function ServiceDetailSlider({
             transition: "transform 0.1s ease",
           }}
           onMouseDown={handleThumbDragStart} // Handles drag interactions
+          onTouchStart={handleThumbDragStart}
         />
       </div>
     </div>

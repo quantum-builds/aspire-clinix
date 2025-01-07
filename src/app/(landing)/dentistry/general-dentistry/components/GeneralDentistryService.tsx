@@ -14,7 +14,7 @@ export default function GeneralDentistryService({
   imagePath,
 }: GeneralDentistryServiceProp) {
   return (
-    <div className="w-full bg-[#ECE8E3] py-[97px] px-[10%]">
+    <div className="w-full bg-feeGuide py-[97px] px-[10%]">
       <div className="h-[79vh] grid grid-cols-1 md:grid-cols-2 items-center gap-8">
         {/* Text Section */}
         <div

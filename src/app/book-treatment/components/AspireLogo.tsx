@@ -5,7 +5,11 @@ import Link from "next/link";
 export default function AspireLogo() {
   return (
     <Link href="/" scroll={false}>
-      <Image src={AspireDarkLogo} alt="Aspire Clinic" width={189} height={88} />
+      <Image
+        src={AspireDarkLogo}
+        alt="Aspire Clinic"
+        className="w-[150px] h-[70px] 2xl:w-[189px] 2xl:h-[88px]"
+      />
     </Link>
   );
 }

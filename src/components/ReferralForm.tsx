@@ -96,13 +96,13 @@ export default function ReferralForm() {
   };
 
   return (
-    <div className="bg-[#ECE8E3] w-full  h-full py-16 font-opus ">
-      <div className="max-w-[80%] mx-auto">
-        <div className="my-5">
-          <h1 className="text-[52px] font-normal">Referral Form</h1>
-        </div>
+    <div className="bg-feeGuide w-full  h-full py-16 font-opus flex justify-center items-center ">
+      <div className="max-w-[80%] mx-auto flex justify-center items-center flex-col">
         <form onSubmit={handleSubmit(onSubmit)} className="max-w-[75%]">
-          <h2 className="text-[32px] font-normal mt-10 mb-8">
+          <h1 className="text-[40px] md:text-[52px] font-normal text-left">
+            Referral Form
+          </h1>
+          <h2 className="text-[32px] font-normal mt-16 mb-8">
             Patient Details
           </h2>
           <FormInput
@@ -135,7 +135,7 @@ export default function ReferralForm() {
             marginTop="50px"
             padding="8px"
           />
-          <div className="grid grid-cols-1 lg:grid-cols-2 flex-wrap justify-between flex-1 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 flex-wrap justify-between flex-1 gap-16">
             <FormInput
               type="text"
               name="mobileNumber"
@@ -174,7 +174,7 @@ export default function ReferralForm() {
             <h3 className="font-opus text-[16px] md:text-[24px]">
               Referral Details
             </h3>
-            <div className="grid mt-4 justify-center items-start md:grid-cols-2 gap-2 min-w-max">
+            <div className="grid mt-4 justify-center items-start md:grid-cols-2 gap-1 lg:gap-2 lg:gap-x-20 min-w-max">
               {REFERRAL_DETAIL.options.map((option) => (
                 <CheckboxInput
                   type="checkbox"
@@ -203,7 +203,7 @@ export default function ReferralForm() {
                   type="text"
                   {...field}
                   id="other"
-                  className="ml-8 w-[200px] h-[40px] md:w-[334px] md:h-[55px] rounded-lg bg-[#ECE8E3] border border-black px-2 outline-none"
+                  className="ml-8 w-[200px] h-[40px] md:w-[334px] md:h-[55px] rounded-lg bg-feeGuide border border-black px-2 outline-none"
                 />
               )}
             />
@@ -224,7 +224,7 @@ export default function ReferralForm() {
                 <textarea
                   {...field}
                   id="treatmentDetails"
-                  className="w-full h-[223px] bg-[#ECE8E3] border border-black rounded-lg p-4 outline-none"
+                  className="w-full h-[223px] bg-feeGuide border border-black rounded-lg p-4 outline-none"
                 />
               )}
             />
@@ -263,7 +263,7 @@ export default function ReferralForm() {
               marginTop="50px"
               padding="8px"
             />
-            <div className="flex flex-wrap justify-between gap-8">
+            <div className="flex flex-wrap justify-between gap-16">
               <div className="flex flex-1 items-center">
                 <FormInput
                   type="text"
@@ -294,7 +294,7 @@ export default function ReferralForm() {
                 Would you like to attend the treatment appointment with the
                 patient and shadow the dentist?
               </p>
-              <div className="grid justify-center items-start grid-cols-2 mt-3">
+              <div className="grid justify-center items-start lg:gap-x-20 grid-cols-2 mt-3">
                 {TREATMENT_APPOINTMENT.optionsDentist.map((option) => (
                   <CheckboxInput
                     type="radio"
@@ -309,12 +309,11 @@ export default function ReferralForm() {
               </div>
             </div>
           </div>
-          <div className="ml-8 mt-20">
+          <div className=" my-20 flex md:justify-start justify-center items-center md:items-start">
             <Button
               type="submit"
               title="Submit Referral"
               className="w-[150px] h-[50px] text-black bg-white"
-              // onClick={() => console.log("button clicked")}
             />
           </div>
         </form>

@@ -1,5 +1,5 @@
 import ServiceCard from "./ServiceCard";
-import { Dentist, DentistTreatment } from "@/assets";
+import { DentistTreatment, TeethCartoon } from "@/assets";
 const SERVICE_SECTION = [
   {
     title: "Dentistry",
@@ -9,7 +9,7 @@ const SERVICE_SECTION = [
   {
     title: "Aesthetics",
     path: "/#aesthetic",
-    image: Dentist,
+    image: TeethCartoon,
   },
   {
     title: "Wellness",

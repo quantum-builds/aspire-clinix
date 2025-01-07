@@ -3,10 +3,10 @@ import AboutUsSection from "../../../components/AboutUsSection";
 import HeroSection from "../../../components/HeroSection";
 import DentistryDetailSection from "../../../components/DentistryDetailSection";
 import {
-  AspireAesthetic,
+  AiCartoon,
   ClinicChair,
-  Dentist,
   DentistTreatment,
+  TeethCartoon,
 } from "@/assets";
 
 const HERO_SECTION_DATA = {
@@ -41,7 +41,21 @@ const DENTISTRY_SERVICES = {
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: Dentist,
+      backgroundContent: AiCartoon,
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+      backgroundContent: TeethCartoon,
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+      backgroundContent: AiCartoon,
     },
     {
       title: "General Dentistry",
@@ -55,6 +69,27 @@ const DENTISTRY_SERVICES = {
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
+      backgroundContent: AiCartoon,
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+      backgroundContent: TeethCartoon,
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
+      backgroundContent: TeethCartoon,
+    },
+    {
+      title: "General Dentistry",
+      description:
+        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+      path: "/",
       backgroundContent: DentistTreatment,
     },
     {
@@ -62,49 +97,14 @@ const DENTISTRY_SERVICES = {
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: AspireAesthetic,
+      backgroundContent: TeethCartoon,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: Dentist,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: Dentist,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: Dentist,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: Dentist,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: Dentist,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: Dentist,
+      backgroundContent: AiCartoon,
     },
   ],
 };

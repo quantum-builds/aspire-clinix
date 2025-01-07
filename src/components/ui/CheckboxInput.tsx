@@ -30,24 +30,14 @@ export function CheckboxInput({
             name={type === "radio" ? radioName : undefined}
             checked={
               type === "radio"
-                ? field.value === value // Single value for radio
-                : field.value?.includes(value) || false // Array for checkboxes
+                ? field.value === value
+                : field.value?.includes(value) || false
             }
-            // name={radioName}
-            // checked={field.value?.includes(value) || false}
-            // onChange={(e) => {
-            //   const isChecked = e.target.checked;
-            //   field.onChange(
-            //     isChecked
-            //       ? [...(field.value || []), value]
-            //       : field.value.filter((item: string) => item !== value)
-            //   );
-            // }}
             onChange={(e) => {
               const isChecked = e.target.checked;
 
               if (type === "radio") {
-                field.onChange(value); // For radio, set single value
+                field.onChange(value);
               } else {
                 field.onChange(
                   isChecked
@@ -60,7 +50,9 @@ export function CheckboxInput({
           />
         )}
       />
-      <label className="text-[16px] md:text-[22px] text-nowrap">{label}</label>
+      <label className="text-[16px] md:text-[20px] lg:text-[22px] text-nowrap">
+        {label}
+      </label>
     </div>
   );
 }

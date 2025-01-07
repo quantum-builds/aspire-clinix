@@ -29,7 +29,7 @@ export default function PriceList({
       <div className="w-full p-2 md:w-[80%] py-10 overflow-auto">
         <div className="grid items-center justify-between grid-cols-2 mb-4 w-full">
           <div>
-            <h1 className="text-[16px] sm:text-[18px] md:text-[30px] text-left pl-5 md:pl-0 font-normal font-opus w-full sm:w-auto">
+            <h1 className="text-[16px] sm:text-[18px] md:text-[30px] text-left pl-4 md:pl-0 font-normal font-opus w-full sm:w-auto">
               {title}
             </h1>
           </div>

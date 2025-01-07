@@ -1,6 +1,6 @@
 export default function MeetTeamPage() {
   return (
-    <div className="w-full bg-[#ECE8E3] flex justify-center items-center min-h-screen">
+    <div className="w-full bg-feeGuide flex justify-center items-center min-h-screen">
       <div className="w-full h-full p-5 md:size-4/5 flex justify-center items-center">
         <div className="flex flex-col lg:flex-row lg:px-7 lg:text-left gap-8 md:gap-x-16 sm:mt-[20px]">
           {/* Video Section */}
