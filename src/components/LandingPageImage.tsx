@@ -6,10 +6,9 @@ export default function LandingPageImage() {
       <Image
         src={AspireFullImage}
         alt="Dentist Background"
-        layout="fill"
-        objectFit="cover"
+        fill
         quality={100}
-        className="w-full h-full"
+        className="w-full h-full object-cover"
       />
     </div>
   );

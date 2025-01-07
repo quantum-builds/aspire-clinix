@@ -2,10 +2,11 @@ import HeroSection from "@/components/HeroSection";
 import GeneralDentistryService from "./components/GeneralDentistryService";
 import AboutUsSection from "@/components/AboutUsSection";
 import {
+  AiCartoon,
   AspireAesthetic,
   ClinicChair,
-  Dentist,
   DentistTreatment,
+  TeethCartoon,
 } from "@/assets";
 
 import ServiceDetailCard from "@/components/ServiceDetailCard";
@@ -29,7 +30,7 @@ const GENERAL_DENTISTRY_SERVICE = [
     description:
       "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
     container_side: "left",
-    imagePath: Dentist,
+    imagePath: AiCartoon,
   },
 
   {
@@ -37,7 +38,7 @@ const GENERAL_DENTISTRY_SERVICE = [
     description:
       "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
     container_side: "right",
-    imagePath: Dentist,
+    imagePath: TeethCartoon,
   },
 
   {
@@ -45,7 +46,7 @@ const GENERAL_DENTISTRY_SERVICE = [
     description:
       "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
     container_side: "left",
-    imagePath: Dentist,
+    imagePath: TeethCartoon,
   },
 ];
 
@@ -67,7 +68,7 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Richard Porter",
-    backgroundContent: Dentist,
+    backgroundContent: TeethCartoon,
   },
   {
     path: "/path2",

@@ -96,7 +96,7 @@ export default function ReferralForm() {
   };
 
   return (
-    <div className="bg-[#ECE8E3] w-full  h-full py-16 font-opus flex justify-center items-center ">
+    <div className="bg-feeGuide w-full  h-full py-16 font-opus flex justify-center items-center ">
       <div className="max-w-[80%] mx-auto flex justify-center items-center flex-col">
         <form onSubmit={handleSubmit(onSubmit)} className="max-w-[75%]">
           <h1 className="text-[40px] md:text-[52px] font-normal text-left">
@@ -203,7 +203,7 @@ export default function ReferralForm() {
                   type="text"
                   {...field}
                   id="other"
-                  className="ml-8 w-[200px] h-[40px] md:w-[334px] md:h-[55px] rounded-lg bg-[#ECE8E3] border border-black px-2 outline-none"
+                  className="ml-8 w-[200px] h-[40px] md:w-[334px] md:h-[55px] rounded-lg bg-feeGuide border border-black px-2 outline-none"
                 />
               )}
             />
@@ -224,7 +224,7 @@ export default function ReferralForm() {
                 <textarea
                   {...field}
                   id="treatmentDetails"
-                  className="w-full h-[223px] bg-[#ECE8E3] border border-black rounded-lg p-4 outline-none"
+                  className="w-full h-[223px] bg-feeGuide border border-black rounded-lg p-4 outline-none"
                 />
               )}
             />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ServiceDetailCard from "./ServiceDetailCard";
 import clsx from "clsx";
 import { StaticImageData } from "next/image";
@@ -69,15 +69,15 @@ export default function ServiceDetailSlider({
         return () => window.removeEventListener("resize", updateDimensions);
       }
     }
-  }, [loadedImages, scrollbarWidth]);
+  }, [loadedImages, scrollbarWidth, services]);
   const handleImageLoad = () => {
     setLoadedImages((prev) => prev + 1); // Increment the counter
   };
   useLayoutEffect(() => {
     handleContainerScroll(); // Force initial thumb synchronization
-  }, [scrollbarWidth, thumbWidth]);
+  }, [scrollbarWidth, thumbWidth, services]);
 
-  const handleContainerScroll = () => {
+  const handleContainerScroll = useCallback(() => {
     const container = containerRef.current;
 
     if (container) {
@@ -88,7 +88,10 @@ export default function ServiceDetailSlider({
         (scrollLeft / maxScrollLeft) * (scrollbarWidth - thumbWidth);
       setScrollThumbOffset(Math.min(thumbOffset, scrollbarWidth - thumbWidth));
     }
-  };
+  }, [scrollbarWidth, thumbWidth]);
+  useLayoutEffect(() => {
+    handleContainerScroll();
+  }, [scrollbarWidth, thumbWidth, services, handleContainerScroll]);
 
   const handleScrollbarClick = (event: React.MouseEvent) => {
     const scrollbar = scrollbarRef.current;
@@ -123,32 +126,37 @@ export default function ServiceDetailSlider({
     event.preventDefault();
   };
 
-  const handleThumbDragMove = (event: MouseEvent | TouchEvent) => {
-    if (!isDragging.current) return;
+  const handleThumbDragMove = useCallback(
+    (event: MouseEvent | TouchEvent) => {
+      if (!isDragging.current) return;
 
-    const scrollbar = scrollbarRef.current;
-    const container = containerRef.current;
+      const scrollbar = scrollbarRef.current;
+      const container = containerRef.current;
 
-    if (scrollbar && container) {
-      const clientX =
-        event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
-      const deltaX = clientX - startDragX.current;
+      if (scrollbar && container) {
+        const clientX =
+          event instanceof MouseEvent
+            ? event.clientX
+            : event.touches[0].clientX;
+        const deltaX = clientX - startDragX.current;
 
-      const maxThumbOffset = scrollbarWidth - thumbWidth;
-      const newThumbOffset = Math.min(
-        Math.max(0, scrollThumbOffset + deltaX),
-        maxThumbOffset
-      );
+        const maxThumbOffset = scrollbarWidth - thumbWidth;
+        const newThumbOffset = Math.min(
+          Math.max(0, scrollThumbOffset + deltaX),
+          maxThumbOffset
+        );
 
-      const scrollRatio = newThumbOffset / maxThumbOffset;
-      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+        const scrollRatio = newThumbOffset / maxThumbOffset;
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
 
-      container.scrollLeft = scrollRatio * maxScrollLeft;
-      setScrollThumbOffset(newThumbOffset);
+        container.scrollLeft = scrollRatio * maxScrollLeft;
+        setScrollThumbOffset(newThumbOffset);
 
-      startDragX.current = clientX; // Update for the next move
-    }
-  };
+        startDragX.current = clientX; // Update for the next move
+      }
+    },
+    [scrollThumbOffset, scrollbarWidth, thumbWidth]
+  );
 
   const handleThumbDragEnd = () => {
     isDragging.current = false;
@@ -166,7 +174,7 @@ export default function ServiceDetailSlider({
       window.removeEventListener("touchmove", handleThumbDragMove);
       window.removeEventListener("touchend", handleThumbDragEnd);
     };
-  }, [scrollThumbOffset]);
+  }, [handleThumbDragMove]);
 
   return (
     <div className="w-full flex flex-col gap-4 md:gap-[3rem]">

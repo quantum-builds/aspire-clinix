@@ -10,7 +10,13 @@ export default function ServiceCard({ text, path, image }: CardProps) {
   return (
     <div className="relative flex flex-col items-center justify-center gap-1 h-screen md:h-[1119px] w-full font-opus bg-gray-100  overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full">
-        <Image src={image} alt="" layout="fill" objectFit="cover" priority />
+        {/* <Image src={image} alt="" layout="fill" objectFit="cover" priority /> */}
+        <Image
+          src={image}
+          alt=""
+          className="object-cover w-full h-full"
+          priority
+        />
       </div>
 
       <div className="flex z-10 justify-center items-center flex-col">
