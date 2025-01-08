@@ -29,7 +29,7 @@ const MENU_LIST = [
   },
   {
     category: "AESTHETICS",
-    path: "/dentistry/general-dentistry",
+    path: "/general-dentistry",
     services: [
       { title: "Anti Wrinkle Injections", path: "/" },
       { title: "Fillers", path: "/" },
@@ -38,7 +38,7 @@ const MENU_LIST = [
   },
   {
     category: "WELLNESS",
-    path: "/fee-guide",
+    path: "/referral",
     services: [
       { title: "Cryotherapy", path: "/" },
       { title: "Infra-red Sauna", path: "/" },

@@ -25,7 +25,7 @@ export default function GeneralDentistryService({
           <h2 className="text-[22px] md:text-[52px] leading-[59.02px] font-bold font-opus">
             {title}
           </h2>
-          <p className="text-[16px] md:text-[24px] lg:w-[471px] md:w-[360px] md:h-[150px] lg:h-[81px] leading-[27.27px] tracking-widest font-gillSans">
+          <p className="text-[16px] md:text-[24px] lg:w-[410px]  xl:w-[471px] md:w-[360px] md:h-[150px] lg:h-[107px] xl:h-[81px] leading-[27.27px] tracking-widest font-gillSans">
             {description}
           </p>
         </div>
