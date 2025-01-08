@@ -96,7 +96,7 @@ export default function ReferralForm() {
   };
 
   return (
-    <div className="bg-feeGuide w-full  h-full py-16 font-opus flex justify-center items-center ">
+    <div className="bg-feeGuide w-full h-full py-16 font-opus flex justify-center items-center ">
       <div className="max-w-[80%] mx-auto flex justify-center items-center flex-col">
         <form onSubmit={handleSubmit(onSubmit)} className="max-w-[75%]">
           <h1 className="text-[40px] md:text-[52px] font-normal text-left">
@@ -313,7 +313,7 @@ export default function ReferralForm() {
             <Button
               type="submit"
               title="Submit Referral"
-              className="w-[150px] h-[50px] text-black bg-white"
+              className="w-[150px] h-[50px] text-black bg-white rounded-[5px] md:rounded-[20px]"
             />
           </div>
         </form>

@@ -63,7 +63,7 @@ const ABOUT_US_SECTION_DATA = {
 };
 const CARD_DATA = [
   {
-    path: "/path1",
+    path: "/dr-richardporter",
     card_width: 424,
     buttonText: "Read Bio",
     card_height: 613,
@@ -71,7 +71,7 @@ const CARD_DATA = [
     backgroundContent: TeethCartoon,
   },
   {
-    path: "/path2",
+    path: "/dr-raheelmalik",
     card_width: 424,
     buttonText: "Read Bio",
     card_height: 613,
@@ -79,7 +79,7 @@ const CARD_DATA = [
     backgroundContent: AspireAesthetic,
   },
   {
-    path: "/path3",
+    path: "/dr-aspireclinic",
     card_width: 424,
     buttonText: "Read Bio",
     card_height: 613,

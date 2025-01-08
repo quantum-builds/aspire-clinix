@@ -75,6 +75,8 @@ export default function ServiceDetailSlider({
   };
   useLayoutEffect(() => {
     handleContainerScroll(); // Force initial thumb synchronization
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollbarWidth, thumbWidth, services]);
 
   const handleContainerScroll = useCallback(() => {
