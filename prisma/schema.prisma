@@ -1,0 +1,54 @@
+  generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Patient {
+  id String @id @default(cuid())
+  email String @unique
+  name String 
+  password String
+  mobileNumber String @unique
+  dateOfBirth DateTime
+  Address String
+}
+
+model Dentist {
+  id String @id @default(cuid())
+  email String @unique
+  name String 
+  password String
+  mobileNumber String @unique
+  gdcNumber String @unique
+}
+
+model ReferralForm{
+  id String @id @default(cuid())
+
+  referrerDentistId String 
+   
+  patientEmail String 
+  patientName String 
+  pateintMobileNumber String 
+  patientDateOfBirth DateTime
+  patientAddress String
+
+  dentistEmail String 
+  dentistName String 
+  dentistMobileNumber String 
+  dentistGCDNumber String 
+
+  medicalHistory String
+  referralDetails String[]
+  requiredTreatment String 
+  attendAppointment Boolean
+
+  createdAt DateTime @default(now())
+
+  @@unique([patientEmail,dentistEmail])
+}
