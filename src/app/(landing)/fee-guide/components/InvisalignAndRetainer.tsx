@@ -2,7 +2,7 @@ import PriceList from "@/components/PriceList";
 
 export default function InvisalignAndRetainer() {
   const title = "Fillings, Root Canal Treatment & Extractions";
-  const prices = "Prices Starting from";
+  const prices = "Prices starting from";
   const backgroundColor = "#DCD4C9";
   const rows = [
     {
