@@ -1,4 +1,4 @@
-  generator client {
+generator client {
   provider = "prisma-client-js"
 }
 
@@ -7,48 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Patient {
-  id String @id @default(cuid())
-  email String @unique
+  id       String @id @default(cuid())
+  email    String @unique
   password String
-  // name String 
-  // mobileNumber String @unique
-  // dateOfBirth DateTime
-  // Address String
 }
 
 model Dentist {
-  id String @id @default(cuid())
-  email String @unique
+  id       String @id @default(cuid())
+  email    String @unique
   password String
-  // name String 
-  // mobileNumber String @unique
-  // gdcNumber String @unique
 }
 
-model ReferralForm{
-  id String @id @default(cuid())
+model ReferralForm {
+  id                  String   @id @default(cuid())
+  medicalHistory      String
+  requiredTreatment   String
+  attendAppointment   Boolean
+  createdAt           DateTime @default(now())
+  referralDetails     String[]
+  dentistEmail        String
+  dentistGCDNumber    String
+  dentistMobileNumber String
+  dentistName         String
+  pateintMobileNumber String
+  patientAddress      String
+  patientDateOfBirth  DateTime
+  patientEmail        String
+  patientName         String
+  referrerDentistId   String
 
-  referrerDentistId String 
-   
-  patientEmail String 
-  patientName String 
-  pateintMobileNumber String 
-  patientDateOfBirth DateTime
-  patientAddress String
-
-  dentistEmail String 
-  dentistName String 
-  dentistMobileNumber String 
-  dentistGCDNumber String 
-
-  medicalHistory String
-  referralDetails String[]
-  requiredTreatment String 
-  attendAppointment Boolean
-
-  createdAt DateTime @default(now())
-
-  @@unique([patientEmail,dentistEmail])
+  @@unique([patientEmail, dentistEmail])
 }
