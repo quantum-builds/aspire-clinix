@@ -1,9 +1,9 @@
-import prisma from "@/lib/db";
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import prisma from "@/lib/db";
 import { verifyPassword } from "@/utils/passwordUtils";
 
-export const handler = NextAuth({
+const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -15,27 +15,23 @@ export const handler = NextAuth({
         if (!credentials || !credentials.email || !credentials.password) {
           throw new Error("Email and password are required");
         }
-      
+
         const { email, password } = credentials;
 
         const user = await prisma.patient.findUnique({
           where: { email },
         });
 
-        // console.log(user);
-        // console.log(user?.password);
         if (!user || !user.password) {
           throw new Error("Invalid email or password");
         }
 
         const isValidPassword = await verifyPassword(password, user.password);
 
-        console.log("is valid pass", isValidPassword);
         if (!isValidPassword) {
           throw new Error("Invalid email or password");
         }
 
-        // Return user object with the fields needed in JWT and session callbacks
         return {
           id: user.id,
           email: user.email,
@@ -61,10 +57,8 @@ export const handler = NextAuth({
       return session;
     },
   },
-  pages: {
-    // signIn: "/login", // Custom sign-in page URL
-    // error: "/create-account", // Custom error page URL
-  },
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
