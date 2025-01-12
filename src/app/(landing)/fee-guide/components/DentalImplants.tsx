@@ -2,7 +2,7 @@ import PriceList from "@/components/PriceList";
 
 export default function DentalImplants() {
   const title = "Dental Implants";
-  const prices = "prices Starting from";
+  const prices = "Prices starting from";
   const backgroundColor = "#ECE8E3";
   const rows = [
     {

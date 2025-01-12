@@ -11,20 +11,20 @@ datasource db {
 model Patient {
   id String @id @default(cuid())
   email String @unique
-  name String 
   password String
-  mobileNumber String @unique
-  dateOfBirth DateTime
-  Address String
+  // name String 
+  // mobileNumber String @unique
+  // dateOfBirth DateTime
+  // Address String
 }
 
 model Dentist {
   id String @id @default(cuid())
   email String @unique
-  name String 
   password String
-  mobileNumber String @unique
-  gdcNumber String @unique
+  // name String 
+  // mobileNumber String @unique
+  // gdcNumber String @unique
 }
 
 model ReferralForm{

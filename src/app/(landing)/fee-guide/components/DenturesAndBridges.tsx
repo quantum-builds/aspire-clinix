@@ -2,7 +2,7 @@ import PriceList from "@/components/PriceList";
 
 export default function DentureAndBridges() {
   const title = "Dentures, Crowns & Bridges";
-  const prices = "Price Starting from";
+  const prices = "Price starting from";
   const backgroundColor = "#ECE8E3";
   const rows = [
     {
