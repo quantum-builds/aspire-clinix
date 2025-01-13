@@ -12,53 +12,47 @@ function verifyUserAccess(userId: string, updatedReferralForm: ReferralForm) {
   }
 }
 
-export async function GET(req: NextRequest){
-  if(req.method!==ApiMethods.GET){
+export async function GET(req: NextRequest) {
+  if (req.method !== ApiMethods.GET) {
     return NextResponse.json(
-      {message:"Methond not allowed."},
-      {status:405}
-    )
+      { message: "Methond not allowed." },
+      { status: 405 }
+    );
   }
 
   const referralFormId = req.nextUrl.searchParams.get("id");
 
-  
-  try{
-      if(!referralFormId || !isValidCuid(referralFormId)){
-        return NextResponse.json(
-          { message: "Invalid Form Id." },
-          { status: 400}
-        );
-      }
-      
-      const referralForm = await prisma.referralForm.findUnique({
-        where: { id: referralFormId },
-      });
+  if (!referralFormId || !isValidCuid(referralFormId)) {
+    return NextResponse.json({ message: "Invalid Form Id." }, { status: 400 });
+  }
+  try {
+    const referralForm = await prisma.referralForm.findUnique({
+      where: { id: referralFormId },
+    });
 
-      if(!referralForm){
-        return NextResponse.json(
-          {message:"Referral form with this Id does not exists."},
-          {status: 404}
-        )
-      }
-
+    if (!referralForm) {
       return NextResponse.json(
-        {
-          message:"Referral form fetched successfully.",
-          data:referralForm
-        },
-        {status:200}
-      )
-  }catch(err){
+        { message: "Referral form with this Id does not exists." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        message: "Referral form fetched successfully.",
+        data: referralForm,
+      },
+      { status: 200 }
+    );
+  } catch (err) {
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }
     );
   }
-
 }
 
-export async function PUT(req:NextRequest){
+export async function PUT(req: NextRequest) {
   if (req.method !== ApiMethods.PUT) {
     return NextResponse.json(
       { message: "Methond not allowed." },
@@ -100,24 +94,23 @@ export async function PUT(req:NextRequest){
   //       message: "You are not authorized to perform this action",
   //     });
   //   }
-  
-  const updateReferralForm=req.json()
 
-  try{
+  const updateReferralForm = req.json();
+
+  try {
     await prisma.referralForm.update({
       where: { id: referralFormId },
       data: updateReferralForm,
     });
 
     return NextResponse.json(
-      {message:"Referral form updated successfully."},
-      {status:200}
-    )
-  }catch(error){
+      { message: "Referral form updated successfully." },
+      { status: 200 }
+    );
+  } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }
     );
   }
-
 }

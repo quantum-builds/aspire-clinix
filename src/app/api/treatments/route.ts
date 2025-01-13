@@ -11,32 +11,20 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const patientId = req.nextUrl.searchParams.get("id");
-
-  if (!patientId || !isValidCuid(patientId)) {
-    return NextResponse.json(
-      { message: "Invalid patient Id." },
-      { status: 400 }
-    );
-  }
   try {
-    const appointments = await prisma.appointment.findMany({
-      where: {
-        patientId: patientId,
-      },
-    });
+    const treatments = await prisma.appointment.findMany({});
 
-    if (!appointments) {
+    if (!treatments) {
       return NextResponse.json(
-        { message: "Appointment for this patient does not exists." },
+        { message: "No treatment exist yet" },
         { status: 404 }
       );
     }
 
     return NextResponse.json(
       {
-        message: "Appointments fetched successfully.",
-        data: appointments,
+        message: "Treatments fetched successfully.",
+        data: treatments,
       },
       { status: 200 }
     );

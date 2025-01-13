@@ -19,24 +19,26 @@ export async function GET(req: NextRequest) {
       { status: 400 }
     );
   }
+
   try {
-    const appointments = await prisma.appointment.findMany({
-      where: {
-        patientId: patientId,
-      },
+    const patientTreatments = await prisma.appointment.findMany({
+      where: { patientId: patientId },
     });
 
-    if (!appointments) {
+    // =====================
+    // --> also get the treatment info
+
+    if (!patientTreatments) {
       return NextResponse.json(
-        { message: "Appointment for this patient does not exists." },
+        { message: "No patient treatment exist yet" },
         { status: 404 }
       );
     }
 
     return NextResponse.json(
       {
-        message: "Appointments fetched successfully.",
-        data: appointments,
+        message: "Patient treatments fetched successfully.",
+        data: patientTreatments,
       },
       { status: 200 }
     );
