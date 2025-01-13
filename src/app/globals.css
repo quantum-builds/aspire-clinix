@@ -35,3 +35,8 @@ html {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+
+body {
+  zoom: 0.75
+}
