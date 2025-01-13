@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/db";
 import { ReferralForm } from "@prisma/client";
-import { ApiMethods } from "@/constants/apiMethods";
+import { ApiMethods } from "@/constants/ApiMethods";
 import { isValidCuid } from "@/utils/typeValidUtils";
 
 function verifyUserAccess(userId: string, updatedReferralForm: ReferralForm) {
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest){
 
       if(!referralForm){
         return NextResponse.json(
-          {message:"Referral form with does not exists."},
+          {message:"Referral form with this Id does not exists."},
           {status: 404}
         )
       }

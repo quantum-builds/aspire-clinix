@@ -1,6 +1,6 @@
 import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
-import { ApiMethods } from "@/constants/apiMethods";
+import { ApiMethods } from "@/constants/ApiMethods";
 import { isValidCuid } from "@/utils/typeValidUtils";
 
 export async function GET(req:NextRequest){

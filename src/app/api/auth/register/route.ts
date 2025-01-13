@@ -1,4 +1,4 @@
-import { ApiMethods } from "@/constants/apiMethods";
+import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
 import { hashPassword } from "@/utils/passwordUtils";
 import { NextResponse, NextRequest } from "next/server";

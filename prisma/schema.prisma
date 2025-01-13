@@ -39,3 +39,11 @@ model ReferralForm {
 
   @@unique([patientEmail, dentistEmail])
 }
+
+model Appointment{
+  id String @id @default(cuid())
+  dentistId String 
+  patienId String 
+  appointmentDate DateTime
+  appointmentStatus String
+}
