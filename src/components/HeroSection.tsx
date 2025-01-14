@@ -34,23 +34,21 @@ export default function HeroSection({
 }: HeroSectionProps) {
   const pathname = usePathname();
   const renderHeader = (logoSrc: StaticImageData) => (
-    <header className="flex gap-[10rem] sm:gap-[30rem] absolute top-0 lg:gap-[40rem] xl:gap-[58rem] h-[85px] md:h-[180px] justify-center items-center container mx-auto px-3 p-0 m-0 z-20">
+    <header className="flex justify-between  absolute top-0  h-[85px] md:h-[180px]  items-center container px-3 z-20">
       <div>
         <HeroMenu
           backgroundColor={pathname === "/fee-guide" ? "white" : undefined}
         />
       </div>
-      <div className="absolute left-1/2 transform -translate-x-1/2">
-        <Link href="/" scroll={false}>
-          <Image
-            src={logoSrc}
-            alt="Aspire Clinix"
-            width={80}
-            height={88}
-            className="flex justify-center items-center w-[80px] h-[40px] md:w-[189px] md:h-[88px]"
-          />
-        </Link>
-      </div>
+      <Link href="/" scroll={false}>
+        <Image
+          src={logoSrc}
+          alt="Aspire Clinix"
+          width={80}
+          height={88}
+          className="flex justify-center items-center w-[80px] h-[40px] md:w-[189px] md:h-[88px]"
+        />
+      </Link>
       <div>
         <Link href="/book-treatment" scroll={false}>
           <button
