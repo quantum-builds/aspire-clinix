@@ -4,12 +4,18 @@ import AspireLogo from "../../book-treatment/components/AspireLogo";
 import { signIn, useSession } from "next-auth/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
+import { UserTypes } from "@/utils/userRoles";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
   password: z.string().min(6, "Password must be at least 6 characters long."),
+  role: z.enum([UserTypes.PATIENT, UserTypes.DENTIST], {
+    errorMap: () => {
+      return { message: "Role must be either 'patient' or 'dentist'." };
+    },
+  }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -24,21 +30,20 @@ const LoginForm = () => {
     defaultValues: {
       email: "",
       password: "",
+      role: UserTypes.PATIENT,
     },
   });
 
   const onSubmit = async (data: FormData) => {
     try {
-      const { email, password } = data;
+      const { email, password, role } = data;
       await signIn("credentials", {
         email,
         password,
-        redirect: true,
+        role,
+        redirect: false,
         callbackUrl: "/dentistry",
       });
-
-      const cred = useSession();
-      console.log("credentials are", cred);
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
     }
@@ -89,6 +94,26 @@ const LoginForm = () => {
               labelTextSize="20px"
               className="w-[312px]"
             />
+          </div>
+
+          <div className="mb-6 bg-[#DAD7D3]">
+            <label className="block text-[20px] mb-2">Role</label>
+            <Controller
+              name="role"
+              control={control}
+              render={({ field }) => (
+                <select
+                  {...field}
+                  className="w-[312px] p-3 bg-[#DAD7D3] rounded-md"
+                >
+                  <option value={UserTypes.PATIENT}>Patient</option>
+                  <option value={UserTypes.DENTIST}>Dentist</option>
+                </select>
+              )}
+            />
+            {errors.role && (
+              <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
+            )}
           </div>
 
           <button

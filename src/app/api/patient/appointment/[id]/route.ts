@@ -1,6 +1,8 @@
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
 import { isValidCuid } from "@/utils/typeValidUtils";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -57,8 +59,10 @@ export async function PUT(req: NextRequest) {
     );
   }
 
+  
   const appointmentId = req.nextUrl.searchParams.get("id");
-
+  const session=await getServerSession(authOptions)
+  
   if (!appointmentId || !isValidCuid(appointmentId)) {
     return NextResponse.json(
       { message: "Invalid Appointment Id." },
@@ -69,6 +73,7 @@ export async function PUT(req: NextRequest) {
   const updatedAppointment = req.json();
 
   try {
+    
     await prisma.appointment.update({
       where: { id: appointmentId },
       data: updatedAppointment,

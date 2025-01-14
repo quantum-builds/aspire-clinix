@@ -1,7 +1,9 @@
 import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
 import { isValidCuid } from "@/utils/typeValidUtils";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function GET(req: NextRequest) {
   if (req.method !== ApiMethods.GET) {
@@ -11,10 +13,13 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  // const session = await getServerSession(authOptions);
+  // console.log(session?.user?.email);
+
   try {
     const treatments = await prisma.appointment.findMany({});
 
-    if (!treatments) {
+    if (treatments.length === 0) {
       return NextResponse.json(
         { message: "No treatment exist yet" },
         { status: 404 }

@@ -35,17 +35,22 @@ export default function RegistrationForm() {
   });
   const onSubmit = async (data: FormData) => {
     try {
-      
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/register",
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json", 
-          },
-        }
-      );
-      console.log("Response:", response.data);
+      // const response = await axios.post(
+      //   "http://localhost:3000/api/auth/register",
+      //   data,
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+      const response = await axios.get("http://localhost:3000/api/treatments", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // console.log("Response:", response.data);
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
     }

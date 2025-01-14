@@ -1,14 +1,19 @@
 import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function POST(req: NextRequest) {
+
   if (req.method !== ApiMethods.POST) {
     return NextResponse.json(
       { message: "Methond not allowed." },
       { status: 405 }
     );
   }
+
+  const session=await getServerSession(authOptions)
 
   const treatment = await req.json();
 
