@@ -7,13 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model User{
+model User {
   id       String @id @default(cuid())
   email    String @unique
   password String
-  role String
+  role     String
 }
+
 model Patient {
   id       String @id @default(cuid())
   email    String @unique
@@ -48,32 +48,25 @@ model ReferralForm {
 }
 
 model Appointment {
-  id                String   @id
+  id                String   @id @default(cuid())
   dentistId         String
   appointmentDate   DateTime
   appointmentStatus String
   patientId         String
 }
 
-model PatientTreatment {
-  id              String   @id
-  dentistId       String
-  patientId       String
-  treatmentId     String
-  treatmentDate   DateTime
-  treatmentStatus String
-}
-
 model Treatment {
-  id          String  @id
+  id          String  @id @default(cuid())
   name        String  @unique
   description String
   cost        Decimal @db.Decimal(10, 2)
 }
 
-model User {
-  id       String @id
-  email    String @unique
-  password String
-  role     String
+model PatientTreatment {
+  id              String   @id @default(cuid())
+  dentistId       String
+  patientId       String
+  treatmentId     String
+  treatmentDate   DateTime
+  treatmentStatus String
 }

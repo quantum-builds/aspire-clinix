@@ -38,7 +38,7 @@ const MENU_LIST = [
   },
   {
     category: "WELLNESS",
-    path: "/referral",
+    path: "/dentist/referral",
     services: [
       { title: "Cryotherapy", path: "/" },
       { title: "Infra-red Sauna", path: "/" },
@@ -54,7 +54,7 @@ const MENU_LIST = [
   },
   {
     category: "REFERRAL PORTAL",
-    path: "/referral#form",
+    path: "/dentist/referral#form",
     services: [],
   },
   {
