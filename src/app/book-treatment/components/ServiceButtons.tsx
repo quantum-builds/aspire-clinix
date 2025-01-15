@@ -8,8 +8,8 @@ const SERVICES = [
 
 export default function ServiceButtons() {
   return (
-    <div className="flex flex-col">
-      <p className="mb-[53px] text-[22px] flex justify-center items-center xl:text-[28px] 2xl:text-[32px] font-opus leading-[36.32px]">
+    <div className="zoom-out flex flex-col">
+      <p className=" mb-[53px] text-[22px] flex justify-center items-center xl:text-[28px] 2xl:text-[32px] font-opus leading-[36.32px]">
         BOOK A TREATMENT
       </p>
       {SERVICES.map((service, index) => (

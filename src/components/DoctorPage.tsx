@@ -13,7 +13,7 @@ export default function DoctorPage({
   const descriptionLines = doctorDescription.split("\n");
   return (
     <div className="w-full bg-feeGuide flex justify-center lg:items-center min-h-screen">
-      <div className="flex flex-col lg:flex-row gap-14">
+      <div className="zoom-out flex flex-col lg:flex-row gap-14">
         <div>
           <video
             className="w-full h-full xl:w-[832px] p-4 lg:p-0 md:h-[539px]"

@@ -17,7 +17,7 @@ export default function HeroMenu({ backgroundColor }: HeroMenuProps) {
         }}
         style={{ color: `${backgroundColor}` }}
       >
-        MENU
+        <p className="zoom-out">MENU</p>
       </button>
       <Menu menuStatus={menuStatus} setMenuStatus={setMenuStatus} />
     </>

@@ -18,7 +18,7 @@ export default function ServiceDetailSection({
   services,
 }: ServiceDetailProps) {
   return (
-    <div className="grid justify-center items-center gap-[0.5rem] w-full md:grid-cols-2 pl-2 md:pl-[5%] bg-feeGuide py-10 overflow-hidden">
+    <div className="zoom-out grid justify-center items-center gap-[0.5rem] w-full md:grid-cols-2 pl-2 md:pl-[5%] bg-feeGuide py-10 overflow-hidden">
       <div className="w-full flex flex-col gap-7 md:w-[70%]">
         <h2 className="flex text-left text-[35px] md:text-nowrap font-normal md:text-[50px] lg:text-[64px] font-opus">
           {title}

@@ -14,7 +14,7 @@ export default function DentistryDetailSection({
   services,
 }: DentistryDetailSectionProps) {
   return (
-    <div className="md:pl-[130px] md:pt-[190px] pb-3 md:pb-[118px] bg-feeGuide">
+    <div className="md:pl-[130px] md:pt-[190px] pb-3 md:pb-[118px] bg-feeGuide zoom-out">
       <ServiceDetailSlider
         services={services}
         is_dentistry={true}

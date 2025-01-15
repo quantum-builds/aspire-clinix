@@ -16,7 +16,7 @@ const LoginForm = () => {
 
   return (
     <div className="w-full h-screen flex justify-center items-center bg-grey100 font-opus text-[#382F26]">
-      <div className="absolute top-5">
+      <div className="zoom-out absolute top-5">
         <AspireLogo />
         <h2 className="mb-8 mt-5 text-center text-[24px] md:text-[32px] font-normal font-opus">
           Login
@@ -25,7 +25,7 @@ const LoginForm = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="w-full md:w-1/2 h-full p-6 flex flex-col items-center justify-center bg-formBackground"
+        className="zoom-out w-full md:w-1/2 h-full p-6 flex flex-col items-center justify-center bg-formBackground"
       >
         <div className="w-full md:w-1/2">
           <div className="mb-6">

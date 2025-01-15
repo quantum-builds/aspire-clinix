@@ -20,7 +20,7 @@ const SOCIAL_ICONS = [
 export default function Footer() {
   return (
     <footer className="bg-footerBackground">
-      <div className="grid gap-12 md:gap-[3rem] md:px-3 lg:px-0 md:grid-cols-4 px-3 justify-items-start md:justify-items-center py-12">
+      <div className="zoom-out grid gap-12 md:gap-[3rem] md:px-3 lg:px-0 md:grid-cols-4 px-3 justify-items-start md:justify-items-center py-12">
         {/* Logo and Address Section */}
         <div className="flex flex-col items-start gap-8">
           <Image

@@ -8,7 +8,7 @@ export default function AspireLogo() {
       <Image
         src={AspireDarkLogo}
         alt="Aspire Clinic"
-        className="w-[150px] h-[70px] 2xl:w-[189px] 2xl:h-[88px]"
+        className="zoom-out w-[150px] h-[70px] 2xl:w-[189px] 2xl:h-[88px]"
       />
     </Link>
   );
