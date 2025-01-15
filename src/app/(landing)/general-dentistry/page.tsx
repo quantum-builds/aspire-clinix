@@ -125,7 +125,7 @@ export default function GeneralDentistry() {
         buttonBackgroundColor="#ECE8E3"
       />
 
-      <div className="bg-feeGuide flex flex-col gap-20 w-full mx-auto">
+      <div className=" zoom-out bg-feeGuide flex flex-col gap-20 w-full mx-auto">
         <h2 className="text-[40px] font-opus md:text-[52px] mx-auto container text-center lg:text-left text-black font-normal pt-[3.5rem] lg:px-12">
           Meet the team
         </h2>

@@ -55,15 +55,15 @@ export default function RegistrationForm() {
       className="w-full min-h-screen flex justify-center items-center bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: `url(${Dentist.src})` }}
     >
-      <div className="flex justify-center items-center min-h-screen py-[5%] w-full md:w-1/2 flex-col bg-formBackground gap-6 md:gap-12">
-        <div className="flex justify-center items-center">
+      <div className=" flex justify-center items-center min-h-screen py-[5%] w-full md:w-1/2 flex-col bg-formBackground gap-6 md:gap-12">
+        <div className="zoom-out flex justify-center items-center">
           <Image
             src={AspireDarkLogo}
             alt="Aspire Clinix"
             className="w-[90px] h-[50px] md:w-[189px] md:h-[88px]"
           />
         </div>
-        <div className="flex flex-col gap-5">
+        <div className="zoom-out flex flex-col gap-5">
           <p className="font-opus font-normal text-[24px]">
             Your referral has been submitted.
           </p>

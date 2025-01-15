@@ -28,7 +28,7 @@ export default function AboutUsSection({
       style={{ backgroundColor: backgroundColor }}
     >
       <p
-        className={`text-center w-[${descriptionWidth}%] lg:w-[792px] w-full md:w-[600px] md:h-[190px] px-2 md:px-0 h-[170px] text-[16px] sm:text-[30px] md:text-[${descriptionTextSize}] font-opus`}
+        className={`zoom-out text-center w-[${descriptionWidth}%] lg:w-[792px] w-full md:w-[600px] md:h-[190px] px-2 md:px-0 h-[170px] text-[16px] sm:text-[30px] md:text-[${descriptionTextSize}] font-opus`}
         style={{
           color: textColor,
           lineHeight: `${descriptionLeadingHeight}px`,
@@ -40,7 +40,7 @@ export default function AboutUsSection({
       {hasButton && (
         <Link href={"/fee-guide"}>
           <button
-            className=" text-textColor font-opus text-[20px] flex justify-center items-center md:rounded-[20px] rounded-[5px] md:w-[232px] w-[155px] h-[50px] md:h-[77px]"
+            className="zoom-out text-textColor font-opus text-[20px] flex justify-center items-center md:rounded-[20px] rounded-[5px] md:w-[232px] w-[155px] h-[50px] md:h-[77px]"
             style={{
               backgroundColor: buttonBackgroundColor,
             }}

@@ -34,7 +34,7 @@ export default function HeroSection({
 }: HeroSectionProps) {
   const pathname = usePathname();
   const renderHeader = (logoSrc: StaticImageData) => (
-    <header className="flex justify-between items-center absolute w-full top-0 h-[85px] md:h-[180px] px-5 lg:px-12 z-20">
+    <header className="  flex justify-between items-center absolute w-full top-0 h-16 md:h-32 px-5 lg:px-12 z-20">
       <div className="flex-1">
         <HeroMenu
           backgroundColor={pathname === "/fee-guide" ? "white" : undefined}
@@ -46,10 +46,10 @@ export default function HeroSection({
           alt="Aspire Clinix"
           width={80}
           height={88}
-          className="flex items-center justify-center w-[80px] h-[40px] md:w-[189px] md:h-[88px] "
+          className="zoom-out flex items-center justify-center w-[80px] h-[40px] md:w-[189px] md:h-[88px] "
         />
       </Link>
-      <div className="flex-1">
+      <div className="zoom-out flex-1">
         <Link href="/book-treatment" scroll={false}>
           <button
             className="flex justify-center items-center ml-auto w-[90px] h-[42px] md:w-[170px] md:h-[60px] lg:w-[277px] lg:h-[77px] font-normal md:text-[20px] text-[13px] font-opus rounded-[5px] md:rounded-[20px]"
@@ -69,8 +69,9 @@ export default function HeroSection({
       {backgroundContent &&
         (isVideo ? (
           <video
-            className="absolute top-0 left-0 w-full h-full object-cover"
+            className="absolute top-0 left-0 w-full h-full  object-cover"
             src={backgroundContent as string}
+            style={{ height: "100vh" }}
             autoPlay
             loop
             muted
@@ -82,6 +83,7 @@ export default function HeroSection({
             src={backgroundContent as StaticImageData}
           />
         ))}
+
       {/* Header Section */}
       {renderHeader(
         pathname === "/fee-guide" ? AspireLightLogo : AspireDarkLogo
@@ -89,7 +91,7 @@ export default function HeroSection({
 
       {/* Main Content */}
       <div
-        className="flex flex-col justify-center items-center gap-5 lg:gap-4 mt-16"
+        className="zoom-out flex flex-col justify-center items-center gap-5 lg:gap-4 mt-16"
         style={{ width: contentWidth ? `${contentWidth}%` : "100%" }}
       >
         {/* Title */}

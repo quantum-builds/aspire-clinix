@@ -95,7 +95,7 @@ export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
         alt="Close Menu"
         onClick={() => setMenuStatus(false)}
       />
-      <ul className="space-y-4 lg:overflow-y-auto scrollbar-none lg:h-[500px]">
+      <ul className="zoom-out space-y-4 lg:overflow-y-auto scrollbar-none lg:h-[500px]">
         {MENU_LIST.map((categoryData, index) => (
           <li key={index} className="">
             <div className="flex items-center">
