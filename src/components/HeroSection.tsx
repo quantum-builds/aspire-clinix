@@ -34,8 +34,8 @@ export default function HeroSection({
 }: HeroSectionProps) {
   const pathname = usePathname();
   const renderHeader = (logoSrc: StaticImageData) => (
-    <header className="flex justify-between  absolute top-0  h-[85px] md:h-[180px]  items-center container px-3 z-20">
-      <div>
+    <header className="flex justify-between items-center absolute w-full top-0 h-[85px] md:h-[180px] px-5 lg:px-12 z-20">
+      <div className="flex-1">
         <HeroMenu
           backgroundColor={pathname === "/fee-guide" ? "white" : undefined}
         />
@@ -46,13 +46,13 @@ export default function HeroSection({
           alt="Aspire Clinix"
           width={80}
           height={88}
-          className="flex justify-center items-center w-[80px] h-[40px] md:w-[189px] md:h-[88px]"
+          className="flex items-center justify-center w-[80px] h-[40px] md:w-[189px] md:h-[88px] "
         />
       </Link>
-      <div>
+      <div className="flex-1">
         <Link href="/book-treatment" scroll={false}>
           <button
-            className="flex justify-center items-center w-[90px] h-[42px] md:w-[170px] md:h-[60px] lg:w-[277px] lg:h-[77px] font-normal md:text-[20px] text-[13px] font-opus rounded-[5px] md:rounded-[20px]"
+            className="flex justify-center items-center ml-auto w-[90px] h-[42px] md:w-[170px] md:h-[60px] lg:w-[277px] lg:h-[77px] font-normal md:text-[20px] text-[13px] font-opus rounded-[5px] md:rounded-[20px]"
             style={{ backgroundColor: buttonColor }}
           >
             BOOK A TREATMENT

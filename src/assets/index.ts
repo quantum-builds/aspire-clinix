@@ -1,5 +1,5 @@
-export { default as AspireDarkLogo } from "./aspire-dark-logo.png";
-export { default as AspireLightLogo } from "@/assets/aspire-light-logo.png";
+export { default as AspireDarkLogo } from "./aspire-dark-logo.svg";
+export { default as AspireLightLogo } from "@/assets/aspire-light-logo.svg";
 export { default as ArrowLight } from "@/assets/arrow-light.svg";
 export { default as InstagramIcon } from "./instagram-icon.svg";
 export { default as LinkedinIcon } from "./linkedin-icon.svg";
