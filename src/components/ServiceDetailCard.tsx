@@ -35,12 +35,7 @@ export default function ServiceDetailCard({
       <Image
         className="absolute top-0 left-0 w-full h-full object-cover"
         alt="Background Image"
-        // src={backgroundContent as StaticImageData}
-        src={
-          typeof backgroundContent === "string"
-            ? backgroundContent
-            : (backgroundContent as StaticImageData)
-        }
+        src={backgroundContent as StaticImageData}
         onLoad={onLoad}
       />
       <div className="flex flex-col gap-[20px] absolute bottom-0 left-[6%] mb-10">
