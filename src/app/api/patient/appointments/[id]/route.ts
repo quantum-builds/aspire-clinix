@@ -1,7 +1,7 @@
 import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
 import { isValidCuid } from "@/utils/typeValidUtils";
-import { NextRequest,NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   if (req.method !== ApiMethods.GET) {
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
     const appointments = await prisma.appointment.findMany({
       where: {
-        patienId: patientId,
+        patientId: patientId,
       },
     });
 
