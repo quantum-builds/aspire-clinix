@@ -1,6 +1,6 @@
 "use client";
 
-import AspireLogo from "../../book-treatment/components/AspireLogo";
+import AspireLogo from "../../patient/book-treatment/components/AspireLogo";
 import { signIn, useSession } from "next-auth/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,8 +41,8 @@ const LoginForm = () => {
         email,
         password,
         role,
-        redirect: false,
-        callbackUrl: "/dentistry",
+        redirect: true,
+        callbackUrl: "/",
       });
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);

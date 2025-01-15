@@ -60,7 +60,6 @@ export default function HeroSection({
           </button>
         </Link>
       </div>
-      {/* <LogoutButton /> */}
     </header>
   );
   return (
