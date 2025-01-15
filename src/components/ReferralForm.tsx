@@ -97,7 +97,7 @@ export default function ReferralForm() {
 
   return (
     <div className="bg-feeGuide w-full h-full py-16 font-opus flex justify-center items-center ">
-      <div className="max-w-[80%] mx-auto flex justify-center items-center flex-col">
+      <div className="zoom-out max-w-[80%] mx-auto flex justify-center items-center flex-col">
         <form onSubmit={handleSubmit(onSubmit)} className="max-w-[75%]">
           <h1 className="text-[40px] md:text-[52px] font-normal text-left">
             Referral Form

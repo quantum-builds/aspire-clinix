@@ -15,7 +15,7 @@ export default function GeneralDentistryService({
 }: GeneralDentistryServiceProp) {
   return (
     <div className="w-full bg-feeGuide py-[97px] px-[10%]">
-      <div className="h-[79vh] grid grid-cols-1 md:grid-cols-2 items-center gap-8">
+      <div className="zoom-out h-[79vh] grid grid-cols-1 md:grid-cols-2 items-center gap-8 ">
         {/* Text Section */}
         <div
           className={`flex flex-col justify-center gap-6 md:gap-[30px] lg:gap-[67px] w-full ${
