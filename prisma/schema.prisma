@@ -39,3 +39,34 @@ model ReferralForm {
 
   @@unique([patientEmail, dentistEmail])
 }
+
+model Appointment {
+  id                String   @id
+  dentistId         String
+  appointmentDate   DateTime
+  appointmentStatus String
+  patientId         String
+}
+
+model PatientTreatment {
+  id              String   @id
+  dentistId       String
+  patientId       String
+  treatmentId     String
+  treatmentDate   DateTime
+  treatmentStatus String
+}
+
+model Treatment {
+  id          String  @id
+  name        String  @unique
+  description String
+  cost        Decimal @db.Decimal(10, 2)
+}
+
+model User {
+  id       String @id
+  email    String @unique
+  password String
+  role     String
+}
