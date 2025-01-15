@@ -37,6 +37,7 @@ export default function ServiceDetailCard({
         alt="Background Image"
         src={backgroundContent as StaticImageData}
         onLoad={onLoad}
+        priority
       />
       <div className="flex flex-col gap-[20px] absolute bottom-0 left-[6%] mb-10">
         <p

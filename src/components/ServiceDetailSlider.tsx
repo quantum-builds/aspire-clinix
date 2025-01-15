@@ -182,7 +182,7 @@ export default function ServiceDetailSlider({
     <div className="w-full flex flex-col gap-4 md:gap-[3rem]">
       {/* Cards Container */}
       <div
-        className="flex gap-[40px] overflow-x-auto scrollbar-hide w-full"
+        className="flex gap-[40px] overflow-x-auto scrollbar-hide w-full mx-auto"
         ref={containerRef}
         onScroll={handleContainerScroll} // Synchronize with the custom scrollbar
         style={{ maxWidth: `${containerWidth}px` }}
