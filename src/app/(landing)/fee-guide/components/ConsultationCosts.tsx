@@ -3,7 +3,7 @@ import PriceList from "@/components/PriceList";
 
 export default function ConsultationCosts() {
   const title = "Consultation Costs";
-  const prices = "prices starting from";
+  const prices = "Prices starting from";
   const backgroundColor = "#DCD4C9";
   const rows = [
     {
