@@ -29,7 +29,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(LOGIN, nextUrl));
   }
 
-  // Authorization logic for authorized routes
   if (isAuthenticated && role) {
     const path = AUTHERIZED_ROUTES[role as keyof typeof AUTHERIZED_ROUTES];
     console.log(path);
@@ -39,7 +38,7 @@ export async function middleware(request: NextRequest) {
     console.log(isAuthorizedRoute);
 
     if (!isAuthorizedRoute) {
-      return NextResponse.redirect(new URL(ROOT, nextUrl)); // Redirect to root for unauthorized access
+      return NextResponse.redirect(new URL(ROOT, nextUrl));
     }
   }
 

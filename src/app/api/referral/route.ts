@@ -2,27 +2,29 @@ import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { ApiMethods } from "@/constants/ApiMethods";
 
-export async function POST(req:NextRequest){
-
-  if(req.method!==ApiMethods.POST){
+export async function POST(req: NextRequest) {
+  if (req.method !== ApiMethods.POST) {
     return NextResponse.json(
       { message: "Methond not allowed." },
       { status: 405 }
-    )
+    );
   }
 
-  const referrelForm=await req.json()
+  const referralForm = await req.json();
 
-  try{
-      await prisma.referralForm.create({
-        data: referrelForm,
-      });
+  try {
+    console.log(referralForm);
 
-      return NextResponse.json(
-        {message:"Form created successfully."},
-        {status:201}
-      )
-  }catch(error){
+    await prisma.referralForm.create({
+      data: referralForm,
+    });
+
+    return NextResponse.json(
+      { message: "Form created successfully." },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

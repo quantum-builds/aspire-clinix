@@ -27,24 +27,25 @@ model Dentist {
 }
 
 model ReferralForm {
-  id                  String   @id @default(cuid())
-  medicalHistory      String
-  requiredTreatment   String
-  attendAppointment   Boolean
-  createdAt           DateTime @default(now())
-  referralDetails     String[]
-  dentistEmail        String
-  dentistGCDNumber    String
-  dentistMobileNumber String
-  dentistName         String
-  pateintMobileNumber String
-  patientAddress      String
-  patientDateOfBirth  DateTime
-  patientEmail        String
-  patientName         String
-  referrerDentistId   String
+  id                    String   @id @default(cuid())
+  medicalHistory        String?
+  createdAt             DateTime @default(now())
+  referralDetails       String[]
+  treatmentDetails      String?
+  DOB                   String
+  address               String
+  email                 String
+  mobileNumber          String  
+  name                  String
+  other                 String?
+  referralAddress       String
+  referralEmail         String
+  referralGDC           String
+  referralMobileNumber  String
+  referralName          String
+  treatMeantAppointment String
 
-  @@unique([patientEmail, dentistEmail])
+  @@unique([email, referralEmail])
 }
 
 model Appointment {
