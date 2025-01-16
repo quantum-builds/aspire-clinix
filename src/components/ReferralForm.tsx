@@ -91,7 +91,6 @@ export default function ReferralForm() {
   });
 
   const onSubmit = (data: FormData) => {
-    console.log(data);
     console.log("Form Errors: ", errors);
   };
 

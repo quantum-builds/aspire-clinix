@@ -1,7 +1,6 @@
 import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
 import { isValidCuid } from "@/utils/typeValidUtils";
-import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -12,33 +11,30 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const appointmentId = req.nextUrl.searchParams.get("id");
+  const treatmentId = req.nextUrl.searchParams.get("id");
+  if (!treatmentId || !isValidCuid(treatmentId)) {
+    return NextResponse.json(
+      { message: "Invalid treament Id." },
+      { status: 400 }
+    );
+  }
 
   try {
-    if (!appointmentId || !isValidCuid(appointmentId)) {
-      return NextResponse.json(
-        { message: "Invalid Form Id." },
-        { status: 400 }
-      );
-    }
-
-    const appointment = await prisma.appointment.findUnique({
-      where: {
-        id: appointmentId,
-      },
+    const treatment = await prisma.treatment.findUnique({
+      where: { id: treatmentId },
     });
 
-    if (!appointment) {
+    if (!treatment) {
       return NextResponse.json(
-        { message: "This appointment does not exist." },
+        { message: "This treatment does not exist." },
         { status: 404 }
       );
     }
 
     return NextResponse.json(
       {
-        message: "Appointment fetched successfully.",
-        data: appointment,
+        message: "Treatment fetched successfully.",
+        data: treatment,
       },
       { status: 200 }
     );
@@ -58,25 +54,25 @@ export async function PUT(req: NextRequest) {
     );
   }
 
-  const appointmentId = req.nextUrl.searchParams.get("id");
+  const treatmentId = req.nextUrl.searchParams.get("id");
 
-  if (!appointmentId || !isValidCuid(appointmentId)) {
+  if (!treatmentId || !isValidCuid(treatmentId)) {
     return NextResponse.json(
-      { message: "Invalid Appointment Id." },
+      { message: "Invalid treatmen Id." },
       { status: 400 }
     );
   }
 
-  const updatedAppointment = req.json();
+  const updatedTreatment = req.json();
 
   try {
-    await prisma.appointment.update({
-      where: { id: appointmentId },
-      data: updatedAppointment,
+    await prisma.referralForm.update({
+      where: { id: treatmentId },
+      data: updatedTreatment,
     });
 
     return NextResponse.json(
-      { message: "Appointment updated successfully" },
+      { message: "Treatment updated successfully." },
       { status: 200 }
     );
   } catch (error) {

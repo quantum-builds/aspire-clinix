@@ -11,17 +11,17 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { email, password } = await req.json();
+  const { email, password,role } = await req.json();
 
-  if (!email || !password) {
+  if (!email || !password || !role) {
     return NextResponse.json(
-      { message: "Email and password are required" },
+      { message: "Email, password and role are required" },
       { status: 400 }
     );
   }
 
   try {
-    const existingUser = await prisma.patient.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: { email: email },
     });
 
@@ -34,10 +34,11 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await hashPassword(password);
 
-    await prisma.patient.create({
+    await prisma.user.create({
       data: {
         email: email,
         password: hashedPassword,
+        role:role,
       },
     });
 

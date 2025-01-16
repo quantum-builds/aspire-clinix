@@ -1,9 +1,9 @@
 import LandingPageImage from "@/components/LandingPageImage";
 import AboutUsSection from "@/components/AboutUsSection";
 import HeroSection from "@/components/HeroSection";
-import ServiceDetailSection from "@/app/(landing)/landing/components/ServiceDetailsSection";
-import ServiceSection from "@/app/(landing)/landing/components/ServicesSection";
-import SupplementSection from "@/app/(landing)/landing/components/SupplementSection";
+import ServiceDetailSection from "@/app/(landing)/components/ServiceDetailsSection";
+import ServiceSection from "@/app/(landing)/components/ServicesSection";
+import SupplementSection from "@/app/(landing)/components/SupplementSection";
 import {
   AiCartoon,
   DentistTreatment,

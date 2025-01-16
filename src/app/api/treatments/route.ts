@@ -1,6 +1,5 @@
 import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
-import { isValidCuid } from "@/utils/typeValidUtils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -11,32 +10,20 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const patientId = req.nextUrl.searchParams.get("id");
-
-  if (!patientId || !isValidCuid(patientId)) {
-    return NextResponse.json(
-      { message: "Invalid patient Id." },
-      { status: 400 }
-    );
-  }
   try {
-    const appointments = await prisma.appointment.findMany({
-      where: {
-        patientId: patientId,
-      },
-    });
+    const treatments = await prisma.appointment.findMany({});
 
-    if (appointments.length === 0) {
+    if (treatments.length === 0) {
       return NextResponse.json(
-        { message: "Appointment for this patient does not exists." },
+        { message: "No treatment exist yet" },
         { status: 404 }
       );
     }
 
     return NextResponse.json(
       {
-        message: "Appointments fetched successfully.",
-        data: appointments,
+        message: "Treatments fetched successfully.",
+        data: treatments,
       },
       { status: 200 }
     );
