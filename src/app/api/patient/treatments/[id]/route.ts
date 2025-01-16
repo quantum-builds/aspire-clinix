@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     // =====================
     // --> also get the treatment info
 
-    if (!patientTreatments) {
+    if (patientTreatments.length === 0) {
       return NextResponse.json(
         { message: "No patient treatment exist yet" },
         { status: 404 }

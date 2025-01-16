@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    if (!appointments) {
+    if (appointments.length === 0) {
       return NextResponse.json(
         { message: "Appointment for this patient does not exists." },
         { status: 404 }

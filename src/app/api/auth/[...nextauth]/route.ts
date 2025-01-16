@@ -2,9 +2,8 @@ import NextAuth, { AuthOptions, getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/db";
 import { verifyPassword } from "@/utils/passwordUtils";
-import { use } from "react";
 
-export const authOptions: AuthOptions = {
+const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
