@@ -82,6 +82,8 @@ model Appointment {
   patientId         String
   dentist           Dentist  @relation(fields: [dentistId], references: [id])
   patient           Patient  @relation(fields: [patientId], references: [id])
+
+  @@unique([dentistId, patientId, appointmentDate])
 }
 
 model Treatment {
@@ -102,4 +104,6 @@ model PatientTreatment {
   dentist         Dentist   @relation(fields: [dentistId], references: [id])
   patient         Patient   @relation(fields: [patientId], references: [id])
   treatment       Treatment @relation(fields: [treatmentId], references: [id])
+
+  @@unique([patientId, treatmentId, treatmentDate])
 }

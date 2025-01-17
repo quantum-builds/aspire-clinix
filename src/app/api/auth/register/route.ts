@@ -1,7 +1,7 @@
 import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
 import { hashPassword } from "@/utils/passwordUtils";
-import { UserTypes } from "@/utils/userRoles";
+import { UserTypes } from "@/constants/UserRoles";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {

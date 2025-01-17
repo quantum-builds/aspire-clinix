@@ -6,7 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
-import { UserTypes } from "@/utils/userRoles";
+import { UserTypes } from "@/constants/UserRoles";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
