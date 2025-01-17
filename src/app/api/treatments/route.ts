@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const treatments = await prisma.appointment.findMany({});
+    const treatments = await prisma.treatment.findMany({});
 
     if (treatments.length === 0) {
       return NextResponse.json(

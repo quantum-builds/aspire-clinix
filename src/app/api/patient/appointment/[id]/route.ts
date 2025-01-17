@@ -26,6 +26,10 @@ export async function GET(req: NextRequest) {
       where: {
         id: appointmentId,
       },
+      include: {
+        dentist: true,
+        patient: true,
+      },
     });
 
     if (!appointment) {
@@ -67,9 +71,42 @@ export async function PUT(req: NextRequest) {
     );
   }
 
-  const updatedAppointment = req.json();
+  const updatedAppointment = await req.json();
 
   try {
+    const { dentistId, patientId } = updatedAppointment;
+
+    console.log(dentistId + " " + patientId);
+
+    if (!isValidCuid(dentistId) || !isValidCuid(patientId)) {
+      return NextResponse.json(
+        { message: "Invalid patient or dentist Id." },
+        { status: 400 }
+      );
+    }
+
+    const dentist = await prisma.dentist.findUnique({
+      where: { id: dentistId },
+    });
+
+    if (!dentist) {
+      return NextResponse.json(
+        { message: "This doctor does not exists." },
+        { status: 404 }
+      );
+    }
+
+    const patient = await prisma.dentist.findUnique({
+      where: { id: patientId },
+    });
+
+    if (!patient) {
+      return NextResponse.json(
+        { message: "This patient does not exists." },
+        { status: 404 }
+      );
+    }
+
     await prisma.appointment.update({
       where: { id: appointmentId },
       data: updatedAppointment,

@@ -21,12 +21,10 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const patientTreatments = await prisma.appointment.findMany({
+    const patientTreatments = await prisma.patientTreatment.findMany({
       where: { patientId: patientId },
+      include: { treatment: true },
     });
-
-    // =====================
-    // --> also get the treatment info
 
     if (patientTreatments.length === 0) {
       return NextResponse.json(

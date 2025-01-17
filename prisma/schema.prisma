@@ -8,22 +8,44 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(cuid())
-  email    String @unique
+  id       String   @id @default(cuid())
+  email    String   @unique
   password String
   role     String
+  Dentist  Dentist?
+  Patient  Patient?
 }
 
 model Patient {
-  id       String @id @default(cuid())
-  email    String @unique
-  password String
+  id               String             @id @default(cuid())
+  email            String             @unique
+  address          String?
+  dateOfBirth      DateTime?
+  mobileNumber     String?            @unique
+  name             String?
+  userId           String             @unique
+  appointments     Appointment[]
+  user             User               @relation(fields: [userId], references: [id])
+  patientTreatment PatientTreatment[]
+  referrals        ReferralForm[]
+  dentist          Dentist[]          @relation("PatientDentists")
 }
 
 model Dentist {
-  id       String @id @default(cuid())
-  email    String @unique
-  password String
+  id                String             @id @default(cuid())
+  email             String             @unique
+  GDCnumber         String?            @unique
+  address           String?
+  mobileNumber      String?
+  name              String?
+  specialty         String?
+  userId            String             @unique
+  yearsOfExperience Int?
+  appointments      Appointment[]
+  user              User               @relation(fields: [userId], references: [id])
+  patientTreatment  PatientTreatment[]
+  referrals         ReferralForm[]
+  patients          Patient[]          @relation("PatientDentists")
 }
 
 model ReferralForm {
@@ -35,7 +57,7 @@ model ReferralForm {
   DOB                   String
   address               String
   email                 String
-  mobileNumber          String  
+  mobileNumber          String
   name                  String
   other                 String?
   referralAddress       String
@@ -44,8 +66,12 @@ model ReferralForm {
   referralMobileNumber  String
   referralName          String
   treatMeantAppointment String
+  dentistId             String
+  patientId             String
+  dentist               Dentist  @relation(fields: [dentistId], references: [id])
+  patient               Patient  @relation(fields: [patientId], references: [id])
 
-  @@unique([email, referralEmail])
+  @@unique([patientId, dentistId])
 }
 
 model Appointment {
@@ -54,20 +80,26 @@ model Appointment {
   appointmentDate   DateTime
   appointmentStatus String
   patientId         String
+  dentist           Dentist  @relation(fields: [dentistId], references: [id])
+  patient           Patient  @relation(fields: [patientId], references: [id])
 }
 
 model Treatment {
-  id          String  @id @default(cuid())
-  name        String  @unique
-  description String
-  cost        Decimal @db.Decimal(10, 2)
+  id               String             @id @default(cuid())
+  name             String             @unique
+  description      String
+  cost             Decimal            @db.Decimal(10, 2)
+  patientTreatment PatientTreatment[]
 }
 
 model PatientTreatment {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   dentistId       String
   patientId       String
   treatmentId     String
   treatmentDate   DateTime
   treatmentStatus String
+  dentist         Dentist   @relation(fields: [dentistId], references: [id])
+  patient         Patient   @relation(fields: [patientId], references: [id])
+  treatment       Treatment @relation(fields: [treatmentId], references: [id])
 }

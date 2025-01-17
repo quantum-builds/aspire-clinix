@@ -1,5 +1,6 @@
 import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
+import { isValidCuid } from "@/utils/typeValidUtils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -12,11 +13,8 @@ export async function POST(req: NextRequest) {
 
   const patientTreatment = await req.json();
 
-  //   ==============
-  // --->want to create
-
   try {
-    const treatmentId = patientTreatment.treatmentId;
+    const { dentistId, patientId, treatmentId } = patientTreatment;
     const treatmentInfo = await prisma.treatment.findUnique({
       where: { id: treatmentId },
     });
@@ -26,6 +24,38 @@ export async function POST(req: NextRequest) {
         {
           message: "The treatment patient trying to shceduled does not exist. ",
         },
+        { status: 404 }
+      );
+    }
+
+
+    console.log(dentistId + " " + patientId);
+
+    if (!isValidCuid(dentistId) || !isValidCuid(patientId)) {
+      return NextResponse.json(
+        { message: "Invalid patient or dentist Id." },
+        { status: 400 }
+      );
+    }
+
+    const dentist = await prisma.dentist.findUnique({
+      where: { id: dentistId },
+    });
+
+    if (!dentist) {
+      return NextResponse.json(
+        { message: "This doctor does not exists." },
+        { status: 404 }
+      );
+    }
+
+    const patient = await prisma.dentist.findUnique({
+      where: { id: patientId },
+    });
+
+    if (!patient) {
+      return NextResponse.json(
+        { message: "This patient does not exists." },
         { status: 404 }
       );
     }

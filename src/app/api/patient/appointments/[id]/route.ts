@@ -24,6 +24,10 @@ export async function GET(req: NextRequest) {
       where: {
         patientId: patientId,
       },
+      include: {
+        dentist: true,
+        patient: true,
+      },
     });
 
     if (appointments.length === 0) {

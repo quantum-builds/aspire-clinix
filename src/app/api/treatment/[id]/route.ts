@@ -63,10 +63,10 @@ export async function PUT(req: NextRequest) {
     );
   }
 
-  const updatedTreatment = req.json();
+  const updatedTreatment = await req.json();
 
   try {
-    await prisma.referralForm.update({
+    await prisma.treatment.update({
       where: { id: treatmentId },
       data: updatedTreatment,
     });

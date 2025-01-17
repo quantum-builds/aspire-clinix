@@ -4,14 +4,6 @@ import { ReferralForm } from "@prisma/client";
 import { ApiMethods } from "@/constants/ApiMethods";
 import { isValidCuid } from "@/utils/typeValidUtils";
 
-function verifyUserAccess(userId: string, updatedReferralForm: ReferralForm) {
-  if (userId === updatedReferralForm.id) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
 export async function GET(req: NextRequest) {
   if (req.method !== ApiMethods.GET) {
     return NextResponse.json(
@@ -28,6 +20,10 @@ export async function GET(req: NextRequest) {
   try {
     const referralForm = await prisma.referralForm.findUnique({
       where: { id: referralFormId },
+      include: {
+        dentist: true,
+        patient: true,
+      },
     });
 
     if (!referralForm) {
@@ -66,38 +62,41 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ message: "Invalid Form Id." }, { status: 400 });
   }
 
-  //   const accessToken = getAccessTokenFromCookies(req);
-  //   if (!accessToken) {
-  //     return res
-  //       .status(401)
-  //       .json({ message: "You are not authorized to perform this action" });
-  //   }
-
-  //   const userId = verifyToken(accessToken);
-  //   if (!userId) {
-  //     return res.status(401).json({
-  //       message: "You are not authorized to perform this action",
-  //     });
-  //   }
-
-  //   const updatedReferralForm: ReferralForm = req.body;
-  //   if (verifyUserAccess(userId as string, updatedReferralForm)) {
-  //     await prisma.referralForm.update({
-  //       where: { id: referralFormId },
-  //       data: updatedReferralForm,
-  //     });
-  //     return res
-  //       .status(200)
-  //       .json({ message: "Referral form updated succcessfully" });
-  //   } else {
-  //     return res.status(401).json({
-  //       message: "You are not authorized to perform this action",
-  //     });
-  //   }
-
-  const updateReferralForm = req.json();
+  const updateReferralForm = await req.json();
 
   try {
+    const { dentistId, patientId } = updateReferralForm;
+
+    console.log(dentistId + " " + patientId);
+
+    if (!isValidCuid(dentistId) || !isValidCuid(patientId)) {
+      return NextResponse.json(
+        { message: "Invalid patient or dentist Id." },
+        { status: 400 }
+      );
+    }
+
+    const dentist = await prisma.dentist.findUnique({
+      where: { id: dentistId },
+    });
+
+    if (!dentist) {
+      return NextResponse.json(
+        { message: "This doctor does not exists." },
+        { status: 404 }
+      );
+    }
+
+    const patient = await prisma.dentist.findUnique({
+      where: { id: patientId },
+    });
+
+    if (!patient) {
+      return NextResponse.json(
+        { message: "This patient does not exists." },
+        { status: 404 }
+      );
+    }
     await prisma.referralForm.update({
       where: { id: referralFormId },
       data: updateReferralForm,

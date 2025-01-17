@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
   try {
     const patientTreatment = await prisma.patientTreatment.findUnique({
       where: { id: patientTreatmentId },
+      include: { treatment: true },
     });
 
     if (!patientTreatment) {
@@ -31,26 +32,10 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const treamentInfo = await prisma.treatment.findUnique({
-      where: { id: patientTreatment.treatmentId },
-    });
-
-    if (!treamentInfo) {
-      return NextResponse.json(
-        { message: "This treatment does not exist." },
-        { status: 404 }
-      );
-    }
-
-    const response = {
-      ...patientTreatment,
-      treatment: treamentInfo,
-    };
-
     return NextResponse.json(
       {
         message: "Patient Treatment data fetched successfully.",
-        data: response,
+        data: patientTreatment,
       },
       { status: 200 }
     );
@@ -78,10 +63,55 @@ export async function PUT(req: NextRequest) {
     );
   }
 
-  const updatedPatientTreatment = req.json();
+  const updatedPatientTreatment = await req.json();
 
   try {
-    await prisma.referralForm.update({
+    const { dentistId, patientId, treatmentId } = updatedPatientTreatment;
+    const treatmentInfo = await prisma.treatment.findUnique({
+      where: { id: treatmentId },
+    });
+
+    if (!treatmentInfo) {
+      return NextResponse.json(
+        {
+          message: "The treatment patient trying to shceduled does not exist. ",
+        },
+        { status: 404 }
+      );
+    }
+
+    console.log(dentistId + " " + patientId);
+
+    if (!isValidCuid(dentistId) || !isValidCuid(patientId)) {
+      return NextResponse.json(
+        { message: "Invalid patient or dentist Id." },
+        { status: 400 }
+      );
+    }
+
+    const dentist = await prisma.dentist.findUnique({
+      where: { id: dentistId },
+    });
+
+    if (!dentist) {
+      return NextResponse.json(
+        { message: "This doctor does not exists." },
+        { status: 404 }
+      );
+    }
+
+    const patient = await prisma.dentist.findUnique({
+      where: { id: patientId },
+    });
+
+    if (!patient) {
+      return NextResponse.json(
+        { message: "This patient does not exists." },
+        { status: 404 }
+      );
+    }
+
+    await prisma.patientTreatment.update({
       where: { id: patientTreatmentId },
       data: updatedPatientTreatment,
     });
