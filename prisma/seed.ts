@@ -1,3 +1,4 @@
+import { hashPassword } from "../src/utils/passwordUtils";
 import { AppointmentStatus } from "../src/constants/AppointmentStatus";
 import { PatientTreatmentStatus } from "../src/constants/PatientTreatmentStatus";
 import { UserTypes } from "../src/constants/UserRoles";
@@ -7,12 +8,14 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Upsert Users
+
+  const hashedPassword = await hashPassword("securepassword");
   const user1 = await prisma.user.upsert({
     where: { email: "patient1@example.com" },
     update: {}, // Update nothing if the user exists
     create: {
       email: "patient1@example.com",
-      password: "securepassword",
+      password: hashedPassword,
       role: UserTypes.PATIENT,
     },
   });
@@ -22,7 +25,7 @@ async function main() {
     update: {},
     create: {
       email: "dentist1@example.com",
-      password: "securepassword",
+      password: hashedPassword,
       role: UserTypes.DENTIST,
     },
   });

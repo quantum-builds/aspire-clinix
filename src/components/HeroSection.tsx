@@ -64,7 +64,7 @@ export default function HeroSection({
   );
   return (
     <div
-      className="flex flex-col items-center justify-center h-screen relative overflow-hidden"
+      className="flex flex-col items-center justify-center min-h-screen relative overflow-hidden"
       style={{ backgroundColor }}
     >
       {backgroundContent &&

@@ -1,28 +1,32 @@
-import Link from "next/link";
+import HeroSection from "@/components/HeroSection";
+import PricingPlans from "./components/PricingPlans";
+import AppointmentsView from "./components/AppointmentCard";
 
-export default function Patient(){
-    return (
-      <div className="relative w-full h-full">
-        {/* Background Video */}
-        <video
-          className=" w-full h-full object-cover"
-          src="/videos/landing-page-video.mp4"
-          autoPlay
-          loop
-          muted
-        ></video>
+const HERO_SECTION_DATA = {
+  title: "STAY ON TOP OF YOUR WELLNESS",
+  description: null,
+  descTextSize: null,
+  contentWidth: 100,
+  backgroundColor: "#FFFFFF",
+  buttonColor: "#ECE8E3",
+  backgroundContent: "/videos/landing-page-video.mp4",
+};
 
-        {/* Button Overlay */}
-        <div className="absolute inset-0 flex items-center justify-center z-20">
-          <Link href="/patient/book-treatment" scroll={false}>
-            <button
-              className="flex justify-center items-center w-[90px] h-[42px] md:w-[170px] md:h-[60px] lg:w-[277px] lg:h-[77px] font-normal md:text-[20px] text-[13px] font-opus rounded-[5px] md:rounded-[20px]"
-              style={{ backgroundColor: "#EBEBEB" }}
-            >
-              BOOK A TREATMENT
-            </button>
-          </Link>
-        </div>
-      </div>
-    );
+export default function Patient() {
+  return (
+    <div className="flex flex-col w-full h-full">
+      <HeroSection
+        title={HERO_SECTION_DATA.title}
+        description={HERO_SECTION_DATA.description}
+        contentWidth={HERO_SECTION_DATA.contentWidth}
+        backgroundColor={HERO_SECTION_DATA.backgroundColor}
+        buttonColor={HERO_SECTION_DATA.buttonColor}
+        headingFontSize="md:text-[45px] text-[23px] lg:text-[70px]"
+        isVideo={true}
+        backgroundContent={HERO_SECTION_DATA.backgroundContent}
+      />
+      <AppointmentsView />
+      <PricingPlans />
+    </div>
+  );
 }
