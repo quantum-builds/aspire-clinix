@@ -1,6 +1,9 @@
+// "use client";
+
 import HeroSection from "@/components/HeroSection";
 import PricingPlans from "./components/PricingPlans";
-import AppointmentsView from "./components/AppointmentCard";
+// import AppointmentsView from "./components/AppointmentCard";
+import { SessionProvider } from "next-auth/react";
 
 const HERO_SECTION_DATA = {
   title: "STAY ON TOP OF YOUR WELLNESS",
@@ -25,7 +28,9 @@ export default function Patient() {
         isVideo={true}
         backgroundContent={HERO_SECTION_DATA.backgroundContent}
       />
-      <AppointmentsView />
+      {/* <SessionProvider>
+        <AppointmentsView />
+      </SessionProvider> */}
       <PricingPlans />
     </div>
   );

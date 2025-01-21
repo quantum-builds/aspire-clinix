@@ -8,6 +8,10 @@ export const ENDPOINTS = {
   referralForm: {
     create: `/api/referral`,
   },
+
+  appointment: {
+    get: "/api/patient/appointments",
+  },
 };
 
 export const axiosInstance = axios.create({

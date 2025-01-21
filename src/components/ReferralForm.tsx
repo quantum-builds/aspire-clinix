@@ -284,17 +284,17 @@ export default function ReferralForm() {
                 patient and shadow the dentist?
               </p>
               <div className="grid justify-center items-start lg:gap-x-20 grid-cols-2 mt-3">
-                {TREATMENT_APPOINTMENT.optionsDentist.map((option) => (
-                  <CheckboxInput
-                    type="radio"
-                    key={option.value}
-                    name={TREATMENT_APPOINTMENT.name}
-                    label={option.label}
-                    value={option.value}
-                    control={control}
-                    radioName="name"
-                  />
-                ))}
+                  {TREATMENT_APPOINTMENT.optionsDentist.map((option) => (
+                    <CheckboxInput
+                      type="radio"
+                      key={option.value}
+                      name={TREATMENT_APPOINTMENT.name}
+                      label={option.label}
+                      value={option.value}
+                      control={control}
+                      radioName="name"
+                    />
+                  ))}
               </div>
             </div>
           </div>

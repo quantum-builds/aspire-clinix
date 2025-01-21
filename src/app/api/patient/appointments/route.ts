@@ -1,6 +1,8 @@
 import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
 import { isValidCuid } from "@/utils/typeValidUtils";
+import { Console } from "console";
+import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -11,18 +13,31 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const patientId = req.nextUrl.searchParams.get("id");
+  // const patientId = req.nextUrl.searchParams.get("id");
+  const token = await getToken({
+    req: req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+  const userId = token?.sub;
 
-  if (!patientId || !isValidCuid(patientId)) {
+  if (!userId || !isValidCuid(userId)) {
     return NextResponse.json(
       { message: "Invalid patient Id." },
       { status: 400 }
     );
   }
+
   try {
+    const patient = await prisma.patient.findUnique({
+      where: { userId: userId },
+    });
+
     const appointments = await prisma.appointment.findMany({
       where: {
-        patientId: patientId,
+        patientId: patient?.id,
+      },
+      orderBy: {
+        appointmentDate: "asc",
       },
       include: {
         dentist: true,
@@ -30,6 +45,9 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    console.log("in appointments");
+    // console.log(patient?.id);
+    // console.log(appointments);
     if (appointments.length === 0) {
       return NextResponse.json(
         { message: "Appointment for this patient does not exists." },

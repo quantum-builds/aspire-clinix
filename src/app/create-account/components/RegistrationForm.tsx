@@ -44,13 +44,6 @@ export default function RegistrationForm() {
           },
         }
       );
-      // const response = await axios.get("http://localhost:3000/api/treatments", {
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      // });
-
-      // console.log("Response:", response.data);
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
     }

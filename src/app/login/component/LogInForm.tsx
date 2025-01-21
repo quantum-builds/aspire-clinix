@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
 import { UserTypes } from "@/constants/UserRoles";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -21,6 +22,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const LoginForm = () => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const {
     handleSubmit,
     control,
@@ -34,18 +36,38 @@ const LoginForm = () => {
     },
   });
 
+  // const onSubmit = async (data: FormData) => {
+  //   try {
+  //     const { email, password, role } = data;
+  //     await signIn("credentials", {
+  //       email,
+  //       password,
+  //       role,
+  //       redirect: true,
+  //       callbackUrl: "/",
+  //     });
+  //   } catch (error: any) {
+  //     console.error("Error:", error.response?.data || error.message);
+  //   }
+  // };
+
   const onSubmit = async (data: FormData) => {
     try {
       const { email, password, role } = data;
-      await signIn("credentials", {
+      const response = await signIn("credentials", {
         email,
         password,
         role,
-        redirect: true,
-        callbackUrl: "/",
+        redirect: false, // Prevent redirect
       });
+
+      if (response?.error) {
+        // Set error message if the signIn fails
+        setErrorMessage("Invalid email, password, or role.");
+      }
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
+      setErrorMessage("An unexpected error occurred. Please try again.");
     }
   };
   return (
@@ -62,6 +84,9 @@ const LoginForm = () => {
         className="w-full md:w-1/2 h-full p-6 flex flex-col items-center justify-center bg-formBackground"
       >
         <div className="w-full md:w-1/2">
+          {errorMessage && (
+            <div className="text-red-500 text-sm mb-4">{errorMessage}</div>
+          )}
           <div className="mb-6">
             <FormInput
               type="email"
@@ -96,7 +121,7 @@ const LoginForm = () => {
             />
           </div>
 
-          <div className="mb-6 bg-[#DAD7D3]">
+          <div className="mb-6 ">
             <label className="block text-[20px] mb-2">Role</label>
             <Controller
               name="role"
@@ -104,7 +129,7 @@ const LoginForm = () => {
               render={({ field }) => (
                 <select
                   {...field}
-                  className="w-[312px] p-3 bg-[#DAD7D3] rounded-md"
+                  className="w-[312px] p-3 bg-[#DAD7D3] rounded-md border-[1px] border-[#000000]"
                 >
                   <option value={UserTypes.PATIENT}>Patient</option>
                   <option value={UserTypes.DENTIST}>Dentist</option>

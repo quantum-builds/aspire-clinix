@@ -36,7 +36,7 @@ model Dentist {
   email             String             @unique
   GDCnumber         String?            @unique
   address           String?
-  mobileNumber      String?
+  mobileNumber      String?            @unique
   name              String?
   specialty         String?
   userId            String             @unique
@@ -78,7 +78,9 @@ model Appointment {
   id                String   @id @default(cuid())
   dentistId         String
   appointmentDate   DateTime
-  appointmentStatus String
+  appointmentStatus String?
+  service           String
+  downloadReport    String?
   patientId         String
   dentist           Dentist  @relation(fields: [dentistId], references: [id])
   patient           Patient  @relation(fields: [patientId], references: [id])
