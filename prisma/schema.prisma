@@ -14,6 +14,13 @@ model User {
   role     String
   Dentist  Dentist?
   Patient  Patient?
+  Admin    Admin?
+}
+
+model Admin{
+  id String @id @default(cuid())
+  userId           String             @unique
+  user             User               @relation(fields: [userId], references: [id])
 }
 
 model Patient {
@@ -79,9 +86,9 @@ model Appointment {
   dentistId         String
   appointmentDate   DateTime
   appointmentStatus String?
-  service           String
-  downloadReport    String?
   patientId         String
+  downloadReport    String?
+  service           String
   dentist           Dentist  @relation(fields: [dentistId], references: [id])
   patient           Patient  @relation(fields: [patientId], references: [id])
 

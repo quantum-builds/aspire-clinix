@@ -63,6 +63,12 @@ export async function POST(req: NextRequest) {
           email: newUser.email,
         },
       });
+    } else if (newUser.role === UserRoles.ADMIN) {
+      await prisma.admin.create({
+        data: {
+          userId: newUser.id,
+        },
+      });
     }
 
     return NextResponse.json(

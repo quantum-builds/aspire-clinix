@@ -13,6 +13,16 @@ const prisma = new PrismaClient();
 async function main() {
   const hashedPassword = await hashPassword("securepassword");
 
+  const user0 = await prisma.user.upsert({
+    where: { email: "admin@example.com" },
+    update: {},
+    create: {
+      email: "admin@example.com",
+      password: hashedPassword,
+      role: UserRoles.ADMIN,
+    },
+  });
+
   // Upsert Users
   const user1 = await prisma.user.upsert({
     where: { email: "patient1@example.com" },
@@ -71,6 +81,14 @@ async function main() {
       email: "dentist3@example.com",
       password: hashedPassword,
       role: UserRoles.DENTIST,
+    },
+  });
+
+  const admin = await prisma.admin.upsert({
+    where: { userId: user0.id },
+    update: {},
+    create: {
+      userId: user0.id,
     },
   });
 

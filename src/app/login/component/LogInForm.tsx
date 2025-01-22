@@ -12,7 +12,7 @@ import { useState } from "react";
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
   password: z.string().min(6, "Password must be at least 6 characters long."),
-  role: z.enum([UserRoles.PATIENT, UserRoles.DENTIST], {
+  role: z.enum([UserRoles.PATIENT, UserRoles.DENTIST, UserRoles.ADMIN], {
     errorMap: () => {
       return { message: "Role must be either 'patient' or 'dentist'." };
     },
@@ -36,40 +36,40 @@ const LoginForm = () => {
     },
   });
 
-  // const onSubmit = async (data: FormData) => {
-  //   try {
-  //     const { email, password, role } = data;
-  //     await signIn("credentials", {
-  //       email,
-  //       password,
-  //       role,
-  //       redirect: true,
-  //       callbackUrl: "/",
-  //     });
-  //   } catch (error: any) {
-  //     console.error("Error:", error.response?.data || error.message);
-  //   }
-  // };
-
   const onSubmit = async (data: FormData) => {
     try {
       const { email, password, role } = data;
-      const response = await signIn("credentials", {
+      await signIn("credentials", {
         email,
         password,
         role,
-        redirect: false, // Prevent redirect
+        redirect: true,
+        callbackUrl: "/",
       });
-
-      if (response?.error) {
-        // Set error message if the signIn fails
-        setErrorMessage("Invalid email, password, or role.");
-      }
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
-      setErrorMessage("An unexpected error occurred. Please try again.");
     }
   };
+
+  // const onSubmit = async (data: FormData) => {
+  //   try {
+  //     const { email, password, role } = data;
+  //     const response = await signIn("credentials", {
+  //       email,
+  //       password,
+  //       role,
+  //       redirect: true, // Prevent redirect
+  //     });
+
+  //     if (response?.error) {
+  //       // Set error message if the signIn fails
+  //       setErrorMessage("Invalid email, password, or role.");
+  //     }
+  //   } catch (error: any) {
+  //     console.error("Error:", error.response?.data || error.message);
+  //     setErrorMessage("An unexpected error occurred. Please try again.");
+  //   }
+  // };
   return (
     <div className="w-full h-screen flex justify-center items-center bg-grey100 font-opus text-[#382F26]">
       <div className="absolute top-5">
@@ -133,6 +133,7 @@ const LoginForm = () => {
                 >
                   <option value={UserRoles.PATIENT}>Patient</option>
                   <option value={UserRoles.DENTIST}>Dentist</option>
+                  <option value={UserRoles.ADMIN}>Admin</option>
                 </select>
               )}
             />

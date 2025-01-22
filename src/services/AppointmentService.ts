@@ -1,5 +1,4 @@
 import { axiosInstance, ENDPOINTS } from "@/config/api-config";
-import axios from "axios";
 
 export const fetchAppointments = async () => {
   try {
