@@ -66,7 +66,7 @@ export async function PUT(req: NextRequest) {
     );
   }
 
-  const updatedAppointment = req.json();
+  const updatedAppointment = await req.json();
 
   try {
     await prisma.appointment.update({

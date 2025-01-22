@@ -44,21 +44,21 @@ model ReferralForm {
   medicalHistory        String?
   createdAt             DateTime @default(now())
   referralDetails       String[]
-  treatmentDetails      String?
   DOB                   String
   address               String
+  dentistId             String
   email                 String
   mobileNumber          String
   name                  String
   other                 String?
+  patientId             String
   referralAddress       String
   referralEmail         String
   referralGDC           String
   referralMobileNumber  String
   referralName          String
   treatMeantAppointment String
-  dentistId             String
-  patientId             String
+  treatmentDetails      String?
   Dentist               Dentist  @relation(fields: [dentistId], references: [id])
   Patient               Patient  @relation(fields: [patientId], references: [id])
 
@@ -66,12 +66,12 @@ model ReferralForm {
 }
 
 model Appointment {
-  id                String   @id
+  id                String   @id @default(cuid())
   dentistId         String
   appointmentDate   DateTime
   appointmentStatus String?
-  patientId         String
   downloadReport    String?
+  patientId         String
   service           String
   Dentist           Dentist  @relation(fields: [dentistId], references: [id])
   Patient           Patient  @relation(fields: [patientId], references: [id])
@@ -80,7 +80,7 @@ model Appointment {
 }
 
 model PatientTreatment {
-  id              String    @id
+  id              String    @id @default(cuid())
   dentistId       String
   patientId       String
   treatmentId     String
@@ -94,7 +94,7 @@ model PatientTreatment {
 }
 
 model Treatment {
-  id               String             @id
+  id               String             @id @default(cuid())
   name             String             @unique
   description      String
   cost             Decimal            @db.Decimal(10, 2)
@@ -102,7 +102,7 @@ model Treatment {
 }
 
 model User {
-  id       String   @id
+  id       String   @id @default(cuid())
   email    String   @unique
   password String
   role     String
@@ -112,7 +112,8 @@ model User {
 }
 
 model Admin {
-  id     String @id
+  id     String @id @default(cuid())
   userId String @unique
+  email  String @unique
   User   User   @relation(fields: [userId], references: [id])
 }
