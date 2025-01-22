@@ -1,5 +1,13 @@
+"use client";
 import HeroSection from "./components/HeroSection";
 
+
 export default function Admin() {
-  return <HeroSection />;
+  return (
+    <div>
+      <HeroSection />
+
+     
+    </div>
+  );
 }
