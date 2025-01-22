@@ -2,7 +2,7 @@
 
 import { NotificationBell, ProfilePic, DownIcon, UpIcon } from "@/assets";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 const notifications = [
@@ -35,16 +35,46 @@ const profileMenus = [
 ];
 
 export default function DropDown() {
-  const [dropdown, setDropDown] = useState(false);
+  const [profileDropdown, setProfileDropDown] = useState(false);
   const [notificationDropdown, setNotificationDropdown] = useState(false);
+
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
 
   const handleNotificationDropdown = () => {
     setNotificationDropdown(!notificationDropdown);
+    setProfileDropDown(false);
   };
+
+  const handleProfileDropdown = () => {
+    setProfileDropDown(!profileDropdown);
+    setNotificationDropdown(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Check if click is outside both dropdowns
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target as Node) &&
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node)
+      ) {
+        setProfileDropDown(false);
+        setNotificationDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="flex items-center gap-5">
-      <div className="relative">
+      <div className="relative" ref={notificationRef}>
         <Image
           src={NotificationBell}
           alt="Notifications"
@@ -78,7 +108,10 @@ export default function DropDown() {
         )}
       </div>
 
-      <div className="relative flex items-center gap-3">
+      <div
+        className="relative flex items-center gap-3"
+        ref={profileDropdownRef}
+      >
         <div className="p-3 rounded-full bg-gray-300">
           <Image
             src={ProfilePic}
@@ -92,17 +125,17 @@ export default function DropDown() {
         <div className="flex items-center gap-2 cursor-pointer">
           <p className="text-xl hidden md:block">Massab</p>
           <Image
-            src={dropdown === true ? UpIcon : DownIcon}
+            src={profileDropdown === true ? UpIcon : DownIcon}
             alt="Dropdown Icon"
             width={30}
             height={30}
             className="zoom-out flex items-center justify-center"
-            onClick={() => setDropDown(!dropdown)}
+            onClick={handleProfileDropdown}
           />
         </div>
 
-        {dropdown && (
-          <div className=" absolute top-full left-0 mt-2 w-48 bg-formBackground rounded-md shadow-lg z-50">
+        {profileDropdown && (
+          <div className="absolute top-full left-0 mt-2 w-48 bg-formBackground rounded-md shadow-lg z-50">
             <ul className="py-1">
               {profileMenus.map((menu, index) => (
                 <li key={index} className="hover:bg-gray-100">
