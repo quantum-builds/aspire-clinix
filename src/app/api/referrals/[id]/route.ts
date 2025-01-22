@@ -3,26 +3,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { ApiMethods } from "@/constants/ApiMethods";
 import { isValidCuid } from "@/utils/typeValidUtils";
 
-export async function GET(req:NextRequest){
-
-  if(req.method!==ApiMethods.GET){
+export async function GET(req: NextRequest) {
+  if (req.method !== ApiMethods.GET) {
     return NextResponse.json(
       { message: "Methond not allowed." },
       { status: 405 }
-    )
+    );
   }
-  const dentistId=req.nextUrl.searchParams.get('id')
+  const dentistId = req.nextUrl.searchParams.get("id");
 
-  try{
-    if(!dentistId || !isValidCuid(dentistId)){
+  try {
+    if (!dentistId || !isValidCuid(dentistId)) {
       return NextResponse.json(
         { message: "Invalid Dentist Id." },
-        { status: 400}
+        { status: 400 }
       );
     }
 
     const referralForms = await prisma.referralForm.findMany({
-      where: { referrerDentistId: dentistId },
+      where: { dentistId: dentistId },
     });
 
     if (!referralForms) {
@@ -39,7 +38,7 @@ export async function GET(req:NextRequest){
       },
       { status: 200 }
     );
-  }catch(error){
+  } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

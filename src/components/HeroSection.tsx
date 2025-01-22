@@ -50,7 +50,7 @@ export default function HeroSection({
         />
       </Link>
       <div className="zoom-out flex-1">
-        <Link href="/book-treatment" scroll={false}>
+        <Link href="/patient/book-treatment" scroll={false}>
           <button
             className="flex justify-center items-center ml-auto w-[90px] h-[42px] md:w-[170px] md:h-[60px] lg:w-[277px] lg:h-[77px] font-normal md:text-[20px] text-[13px] font-opus rounded-[5px] md:rounded-[20px]"
             style={{ backgroundColor: buttonColor }}

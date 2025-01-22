@@ -20,3 +20,5 @@ export { default as OperationRoom } from "@/assets/operation-room.png";
 export { default as ToothBrush } from "@/assets/toothbrush.jpg";
 export { default as WomanTreatment } from "@/assets/women-treatment.png";
 export { default as DoctorTooth } from "@/assets/doctor-tooth.jpg";
+export { default as NotificationBell } from "@/assets/notification-bell.svg";
+export { default as ProfilePic } from "@/assets/user-icon.svg";

@@ -1,7 +1,9 @@
 import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
 import { hashPassword } from "@/utils/passwordUtils";
+import { UserRoles } from "@/constants/UserRoles";
 import { NextResponse, NextRequest } from "next/server";
+import { Prisma } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   if (req.method !== ApiMethods.POST) {
@@ -11,17 +13,22 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { email, password } = await req.json();
+  const { email, password, role } = await req.json();
 
-  if (!email || !password) {
+  if (!email || !password || !role) {
     return NextResponse.json(
-      { message: "Email and password are required" },
+      { message: "Email, password and role are required" },
       { status: 400 }
     );
   }
 
+  // console.log(role);
+  if (role !== UserRoles.DENTIST && role !== UserRoles.PATIENT) {
+    return NextResponse.json({ messsage: "Role is invalid" }, { status: 400 });
+  }
+
   try {
-    const existingUser = await prisma.patient.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: { email: email },
     });
 
@@ -34,12 +41,37 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await hashPassword(password);
 
-    await prisma.patient.create({
+    const newUser = await prisma.user.create({
       data: {
         email: email,
         password: hashedPassword,
+        role: role,
       },
     });
+
+    // console.log(newUser);
+    if (newUser.role === UserRoles.DENTIST) {
+      await prisma.dentist.create({
+        data: {
+          userId: newUser.id,
+          email: newUser.email,
+        },
+      });
+    } else if (newUser.role === UserRoles.PATIENT) {
+      await prisma.patient.create({
+        data: {
+          userId: newUser.id,
+          email: newUser.email,
+        },
+      });
+    } else if (newUser.role === UserRoles.ADMIN) {
+      await prisma.admin.create({
+        data: {
+          userId: newUser.id,
+          email: newUser.email,
+        },
+      });
+    }
 
     return NextResponse.json(
       { message: "User registered successfully" },

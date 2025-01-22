@@ -8,65 +8,112 @@ datasource db {
 }
 
 model Patient {
-  id       String @id @default(cuid())
-  email    String @unique
-  password String
+  id               String             @id @default(cuid())
+  email            String             @unique
+  address          String?
+  dateOfBirth      DateTime?
+  mobileNumber     String?            @unique
+  name             String?
+  userId           String             @unique
+  Appointment      Appointment[]
+  User             User               @relation(fields: [userId], references: [id])
+  PatientTreatment PatientTreatment[]
+  ReferralForm     ReferralForm[]
+  Dentist          Dentist[]          @relation("PatientDentists")
 }
 
 model Dentist {
-  id       String @id @default(cuid())
-  email    String @unique
-  password String
+  id                String             @id @default(cuid())
+  email             String             @unique
+  GDCnumber         String?            @unique
+  address           String?
+  mobileNumber      String?            @unique
+  name              String?
+  specialty         String?
+  userId            String             @unique
+  yearsOfExperience Int?
+  Appointment       Appointment[]
+  User              User               @relation(fields: [userId], references: [id])
+  PatientTreatment  PatientTreatment[]
+  ReferralForm      ReferralForm[]
+  Patient           Patient[]          @relation("PatientDentists")
 }
 
 model ReferralForm {
-  id                  String   @id @default(cuid())
-  medicalHistory      String
-  requiredTreatment   String
-  attendAppointment   Boolean
-  createdAt           DateTime @default(now())
-  referralDetails     String[]
-  dentistEmail        String
-  dentistGCDNumber    String
-  dentistMobileNumber String
-  dentistName         String
-  pateintMobileNumber String
-  patientAddress      String
-  patientDateOfBirth  DateTime
-  patientEmail        String
-  patientName         String
-  referrerDentistId   String
+  id                    String   @id @default(cuid())
+  medicalHistory        String?
+  createdAt             DateTime @default(now())
+  referralDetails       String[]
+  DOB                   String
+  address               String
+  dentistId             String
+  email                 String
+  mobileNumber          String
+  name                  String
+  other                 String?
+  patientId             String
+  referralAddress       String
+  referralEmail         String
+  referralGDC           String
+  referralMobileNumber  String
+  referralName          String
+  treatMeantAppointment String
+  treatmentDetails      String?
+  Dentist               Dentist  @relation(fields: [dentistId], references: [id])
+  Patient               Patient  @relation(fields: [patientId], references: [id])
 
-  @@unique([patientEmail, dentistEmail])
+  @@unique([patientId, dentistId])
 }
 
 model Appointment {
-  id                String   @id
+  id                String   @id @default(cuid())
   dentistId         String
   appointmentDate   DateTime
-  appointmentStatus String
+  appointmentStatus String?
+  downloadReport    String?
   patientId         String
+  service           String
+  Dentist           Dentist  @relation(fields: [dentistId], references: [id])
+  Patient           Patient  @relation(fields: [patientId], references: [id])
+
+  @@unique([dentistId, patientId, appointmentDate])
 }
 
 model PatientTreatment {
-  id              String   @id
+  id              String    @id @default(cuid())
   dentistId       String
   patientId       String
   treatmentId     String
   treatmentDate   DateTime
   treatmentStatus String
+  Dentist         Dentist   @relation(fields: [dentistId], references: [id])
+  Patient         Patient   @relation(fields: [patientId], references: [id])
+  Treatment       Treatment @relation(fields: [treatmentId], references: [id])
+
+  @@unique([patientId, treatmentId, treatmentDate])
 }
 
 model Treatment {
-  id          String  @id
-  name        String  @unique
-  description String
-  cost        Decimal @db.Decimal(10, 2)
+  id               String             @id @default(cuid())
+  name             String             @unique
+  description      String
+  cost             Decimal            @db.Decimal(10, 2)
+  PatientTreatment PatientTreatment[]
 }
 
 model User {
-  id       String @id
-  email    String @unique
+  id       String   @id @default(cuid())
+  email    String   @unique
   password String
   role     String
+  Admin    Admin?
+  Dentist  Dentist?
+  Patient  Patient?
+}
+
+model Admin {
+  id     String @id @default(cuid())
+  userId String @unique
+  email  String @unique
+  User   User   @relation(fields: [userId], references: [id])
 }
