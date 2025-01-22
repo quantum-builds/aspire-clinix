@@ -1,6 +1,6 @@
 import HeroSection from "@/components/HeroSection";
 import PricingPlans from "./components/PricingPlans";
-import AppointmentsView from "./components/AppointmentCard";
+import AppointmentsView from "./components/AppointmentView";
 
 const HERO_SECTION_DATA = {
   title: "STAY ON TOP OF YOUR WELLNESS",

@@ -1,12 +1,17 @@
 "use client";
 interface HeroMenuProps {
   backgroundColor?: string;
+  role?: string;
 }
 
 import { useState } from "react";
 import Menu from "./Menu";
+import { UserRoles } from "@/constants/UserRoles";
 
-export default function HeroMenu({ backgroundColor }: HeroMenuProps) {
+export default function HeroMenu({
+  backgroundColor,
+  role = UserRoles.PATIENT,
+}: HeroMenuProps) {
   const [menuStatus, setMenuStatus] = useState(false);
   return (
     <>
@@ -19,7 +24,7 @@ export default function HeroMenu({ backgroundColor }: HeroMenuProps) {
       >
         <p className="zoom-out">MENU</p>
       </button>
-      <Menu menuStatus={menuStatus} setMenuStatus={setMenuStatus} />
+      <Menu menuStatus={menuStatus} setMenuStatus={setMenuStatus} role={role} />
     </>
   );
 }

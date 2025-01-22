@@ -2,15 +2,15 @@ import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 
 // interface AppointmentCardProps {
-//   dateTime: string;
-//   servie: string;
-//   dentist: string;
-//   status: string;
-//   actions: Array<string>;
+// dateTime: string;
+// servie: string;
+// dentist: string;
+// status: string;
+// actions: Array<string>;
 // }
 
 // export default function AppointmentCard() {
-//   return;
+// return;
 // }
 
 import React from "react";
@@ -162,7 +162,7 @@ const AppointmentsView: React.FC = () => {
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Upcoming Appointments</h2>
         <div className="overflow-x-auto">
-          <table className="table-auto w-full  shadow-md rounded-md">
+          <table className="table-auto w-full shadow-md rounded-md">
             <thead className="bg-[#C9BCA9]">
               <tr>
                 <th className="px-4 py-2">Date & Time</th>
