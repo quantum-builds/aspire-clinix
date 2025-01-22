@@ -1,7 +1,7 @@
 import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
 import { hashPassword } from "@/utils/passwordUtils";
-import { UserTypes } from "@/constants/UserRoles";
+import { UserRoles } from "@/constants/UserRoles";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   }
 
   // console.log(role);
-  if (role !== UserTypes.DENTIST && role !== UserTypes.PATIENT) {
+  if (role !== UserRoles.DENTIST && role !== UserRoles.PATIENT) {
     return NextResponse.json({ messsage: "Role is invalid" }, { status: 400 });
   }
 
@@ -49,14 +49,14 @@ export async function POST(req: NextRequest) {
     });
 
     // console.log(newUser);
-    if (newUser.role === UserTypes.DENTIST) {
+    if (newUser.role === UserRoles.DENTIST) {
       await prisma.dentist.create({
         data: {
           userId: newUser.id,
           email: newUser.email,
         },
       });
-    } else if (newUser.role === UserTypes.PATIENT) {
+    } else if (newUser.role === UserRoles.PATIENT) {
       await prisma.patient.create({
         data: {
           userId: newUser.id,

@@ -4,8 +4,10 @@ import { DownIcon, UpIcon, ArrowLeftIcon } from "@/assets";
 import Link from "next/link";
 import { Dispatch, SetStateAction, useState } from "react";
 import Image from "next/image";
+import { UserRoles } from "@/constants/UserRoles";
+import { routeModule } from "next/dist/build/templates/app-page";
 
-const MENU_LIST = [
+const USER_MENU_LIST = [
   {
     category: "ASPIRE",
     path: "/",
@@ -70,24 +72,34 @@ const MENU_LIST = [
   },
 ];
 
+const ADMIN_MENU_LIST = [
+  { category: "Dashboard Overview", path: "/admin", services: [] },
+  { category: "User Management", path: "/admin", services: [] },
+  { category: "Appointment Management", path: "/admin", services: [] },
+  { category: "Reports & Analytics", path: "/admin", services: [] },
+  { category: "Payment Transactions", path: "/admin", services: [] },
+  { category: "Settings", path: "/admin", services: [] },
+];
 interface MenuProps {
   menuStatus: boolean;
   setMenuStatus: Dispatch<SetStateAction<boolean>>;
+  role: string;
 }
 
-export default function HeroMenu({ menuStatus, setMenuStatus }: MenuProps) {
+export default function Menu({ menuStatus, setMenuStatus, role }: MenuProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const handleCategoryClick = (category: string) => {
     setActiveCategory((prevCategory) =>
       prevCategory === category ? null : category
     );
   };
+  const MENU_LIST = role === UserRoles.ADMIN ? ADMIN_MENU_LIST : USER_MENU_LIST;
 
   return (
     <nav
-      className={`  w-full lg:w-[40%] md:w-[60%] z-50 h-screen bg-menuBar fixed top-0 left-0 px-12 pt-20 pb-15 trasnform ${
+      className={` w-full lg:w-[40%] md:w-[60%] z-50 h-screen bg-menuBar fixed top-0 left-0 px-12 pt-20 pb-15 trasnform ${
         menuStatus ? "translate-x-0" : "-translate-x-full"
-      } transition-transform duration-500 ease-in-out font-gillSans`}
+      } transition-transform duration-500 ease-in-out font-gillSans `}
     >
       <Image
         className="absolute right-12 top-14 cursor-pointer"

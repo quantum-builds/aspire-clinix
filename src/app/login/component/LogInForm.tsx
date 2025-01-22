@@ -6,13 +6,13 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
-import { UserTypes } from "@/constants/UserRoles";
+import { UserRoles } from "@/constants/UserRoles";
 import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
   password: z.string().min(6, "Password must be at least 6 characters long."),
-  role: z.enum([UserTypes.PATIENT, UserTypes.DENTIST], {
+  role: z.enum([UserRoles.PATIENT, UserRoles.DENTIST], {
     errorMap: () => {
       return { message: "Role must be either 'patient' or 'dentist'." };
     },
@@ -32,7 +32,7 @@ const LoginForm = () => {
     defaultValues: {
       email: "",
       password: "",
-      role: UserTypes.PATIENT,
+      role: UserRoles.PATIENT,
     },
   });
 
@@ -131,8 +131,8 @@ const LoginForm = () => {
                   {...field}
                   className="w-[312px] p-3 bg-[#DAD7D3] rounded-md border-[1px] border-[#000000]"
                 >
-                  <option value={UserTypes.PATIENT}>Patient</option>
-                  <option value={UserTypes.DENTIST}>Dentist</option>
+                  <option value={UserRoles.PATIENT}>Patient</option>
+                  <option value={UserRoles.DENTIST}>Dentist</option>
                 </select>
               )}
             />

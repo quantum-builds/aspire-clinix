@@ -1,4 +1,4 @@
-import { UserTypes } from "@/constants/UserRoles";
+import { UserRoles } from "@/constants/UserRoles";
 
 const LOGIN = "/login";
 const ROOT = "/";

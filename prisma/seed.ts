@@ -4,7 +4,7 @@ import {
   AppointmentStatus,
 } from "../src/constants/AppointmentConstants";
 import { PatientTreatmentStatus } from "../src/constants/PatientTreatmentStatus";
-import { UserTypes } from "../src/constants/UserRoles";
+import { UserRoles } from "../src/constants/UserRoles";
 import { PrismaClient } from "@prisma/client";
 import App from "next/app";
 
@@ -20,7 +20,7 @@ async function main() {
     create: {
       email: "patient1@example.com",
       password: hashedPassword,
-      role: UserTypes.PATIENT,
+      role: UserRoles.PATIENT,
     },
   });
 
@@ -30,7 +30,7 @@ async function main() {
     create: {
       email: "dentist1@example.com",
       password: hashedPassword,
-      role: UserTypes.DENTIST,
+      role: UserRoles.DENTIST,
     },
   });
 
@@ -40,7 +40,7 @@ async function main() {
     create: {
       email: "patient2@example.com",
       password: hashedPassword,
-      role: UserTypes.PATIENT,
+      role: UserRoles.PATIENT,
     },
   });
 
@@ -50,7 +50,7 @@ async function main() {
     create: {
       email: "dentist2@example.com",
       password: hashedPassword,
-      role: UserTypes.DENTIST,
+      role: UserRoles.DENTIST,
     },
   });
 
@@ -60,7 +60,7 @@ async function main() {
     create: {
       email: "patient3@example.com",
       password: hashedPassword,
-      role: UserTypes.PATIENT,
+      role: UserRoles.PATIENT,
     },
   });
 
@@ -70,7 +70,7 @@ async function main() {
     create: {
       email: "dentist3@example.com",
       password: hashedPassword,
-      role: UserTypes.DENTIST,
+      role: UserRoles.DENTIST,
     },
   });
 

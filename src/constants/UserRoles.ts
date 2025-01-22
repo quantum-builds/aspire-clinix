@@ -1,4 +1,5 @@
-export enum UserTypes{
-    PATIENT="patient",
-    DENTIST="dentist"
+export enum UserRoles {
+  PATIENT = "patient",
+  DENTIST = "dentist",
+  ADMIN = "admin",
 }
