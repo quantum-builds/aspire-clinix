@@ -224,8 +224,19 @@ const UserManagementSection = () => {
       return;
     }
 
+    // Create new dentist object
+    const newDentist = {
+      id: users.length + 1, // You can change this logic for generating unique ids
+      name: formData.fullName,
+      email: formData.email,
+      type: "Dentist",
+    };
+
+    // Add the new dentist to the users list
+    setUsers((prevUsers) => [...prevUsers, newDentist]);
+
     // Show success toast
-    toast.success("Email sent successfully!");
+    toast.success("Dentist added successfully!");
 
     // Clear the form
     setFormData({
