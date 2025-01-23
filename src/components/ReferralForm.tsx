@@ -1,11 +1,11 @@
 "use client";
-import FormInput from "@/components/ui/FormInput";
+import FormInput from "../components/ui/FormInput";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckboxInput } from "@/components/ui/CheckboxInput";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/CustomButton";
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters long."),

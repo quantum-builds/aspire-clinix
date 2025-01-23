@@ -1,27 +1,5 @@
-import { AspireDarkLogo, NotificationBell } from "@/assets";
-import HeroMenu from "@/components/HeroMenu";
-import { UserRoles } from "@/constants/UserRoles";
+import { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import DropDown from "./DropDown";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "../../../components/ui/chart";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Card,
   CardContent,
@@ -29,87 +7,25 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "../../../components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../../components/ui/tabs";
+import { Overview } from "../components/overview";
+import { RecentSales } from "../components/recent-sales";
+import { UserRoles } from "@/constants/UserRoles";
+import HeroMenu from "@/components/HeroMenu";
+import Link from "next/link";
+import { AspireDarkLogo } from "@/assets";
+import DropDown from "./DropDown";
 
-const chartData = [
-  { month: "January", dentist: 200, patient: 80 },
-  { month: "February", dentist: 305, patient: 200 },
-  { month: "March", dentist: 237, patient: 120 },
-  { month: "April", dentist: 73, patient: 190 },
-  { month: "May", dentist: 209, patient: 130 },
-  { month: "June", dentist: 214, patient: 140 },
-];
-
-const recentAppointments = [
-  {
-    patient: "John Doe",
-    date: "Jan 20, 2025",
-    time: "10:00 AM",
-    doctor: "Dr. Smith",
-    status: "Confirmed",
-  },
-  {
-    patient: "Jane Smith",
-    date: "Jan 20, 2025",
-    time: "11:30 AM",
-    doctor: "Dr. Brown",
-    status: "Completed",
-  },
-  {
-    patient: "Emily Johnson",
-    date: "Jan 21, 2025",
-    time: "9:00 AM",
-    doctor: "Dr. Lee",
-    status: "Pending",
-  },
-  {
-    patient: "Emily Johnson",
-    date: "Jan 21, 2025",
-    time: "9:00 AM",
-    doctor: "Dr. Lee",
-    status: "Pending",
-  },
-  {
-    patient: "Michael Davis",
-    date: "Jan 22, 2025",
-    time: "1:00 PM",
-    doctor: "Dr. Wilson",
-    status: "Confirmed",
-  },
-  {
-    patient: "Sarah Miller",
-    date: "Jan 22, 2025",
-    time: "3:00 PM",
-    doctor: "Dr. Taylor",
-    status: "Cancelled",
-  },
-  {
-    patient: "David Anderson",
-    date: "Jan 23, 2025",
-    time: "10:30 AM",
-    doctor: "Dr. Carter",
-    status: "Completed",
-  },
-];
-
-const headers = [
-  { label: "Patient", align: "left" },
-  { label: "Date", align: "left" },
-  { label: "Time", align: "left" },
-  { label: "Doctor", align: "left" },
-  { label: "Status", align: "right" },
-];
-
-const chartConfig = {
-  dentist: {
-    label: "Dentist",
-    color: "#1D120C",
-  },
-  patient: {
-    label: "Patient",
-    color: "#423C36",
-  },
-} satisfies ChartConfig;
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Example dashboard app built using the components.",
+};
 
 export default function HeroSection() {
   const renderHeader = () => (
@@ -131,115 +47,85 @@ export default function HeroSection() {
       </div>
     </header>
   );
-
   return (
-    <div className="flex flex-col relative overflow-hidden bg-feeguidedark">
-      {renderHeader()}
-
-      {/* Main Content */}
-      <div className="flex flex-col justify-start gap-5 md:gap-12 mt-20 md:mt-32 px-6 md:px-12 z-10">
-        {/* Welcome Section */}
-        <div className="text-5xl font-extrabold font-opus">
-          <p>Welcome, Massab!</p>
-        </div>
-
-        {/* Cards Section */}
-        <div className="flex gap-6">
-          <Card className="bg-[#8A5E45]">
-            <CardHeader>
-              <CardTitle className="text-2xl font-semibold">
-                Total Booked Treatments
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xl">3459 Treatments </p>
-            </CardContent>
-            <CardFooter>
-              <p>70 treatments last month</p>
-            </CardFooter>
-          </Card>
-          <Card className="bg-[#8A5E45]">
-            <CardHeader>
-              <CardTitle className="text-2xl font-semibold">
-                Total Booked Appointment
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xl">3459 Appointments </p>
-            </CardContent>
-            <CardFooter>
-              <p>70 appointments last month</p>
-            </CardFooter>
-          </Card>
-        </div>
-
-        {/* Graph + List Section */}
-        <div className="flex flex-col xl:flex-row justify-between gap-4">
-          {/* Chart Section */}
-          <div className="rounded-md border border-[#423C36] flex-1 p-4">
-            <ChartContainer config={chartConfig} className=" z-10">
-              <BarChart accessibilityLayer data={chartData}>
-                <CartesianGrid
-                  vertical={false}
-                  stroke="#423C36" // Change the grid line color here
-                  strokeDasharray="3 3"
-                />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                  tickFormatter={(value) => value.slice(0, 3)}
-                />
-                <YAxis
-                  tickLine={false} // Optionally hide the ticks
-                  axisLine={false} // Optionally hide the axis line
-                  tickFormatter={(value) => `${value}`} // Format the Y-axis labels
-                />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <ChartLegend content={<ChartLegendContent />} />
-                <Bar dataKey="dentist" fill="var(--color-dentist)" radius={4} />
-                <Bar dataKey="patient" fill="var(--color-patient)" radius={4} />
-              </BarChart>
-            </ChartContainer>
+    <>
+      <div className="flex flex-col ">
+        {renderHeader()}
+        <div className="flex flex-col h-full gap-5 md:gap-12 mt-20 md:mt-32 px-6 md:px-12">
+          <div className="w-1/4 flex items-center justify-between space-y-2">
+            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
           </div>
+          <Tabs defaultValue="overview" className="flex-1">
+            <TabsList className="bg-[#423C36]">
+              <TabsTrigger value="overview" className="text-white">
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="text-white" disabled>
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="text-white" disabled>
+                Reports
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview" className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 flex-1">
+                <Card className="border border-[#ECE8E3]">
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-semibold">
+                      Total Booked Treatments
+                    </CardTitle>
+                  </CardHeader>
 
-          <div className="rounded-md border border-[#1D120C] flex-1 p-4">
-            <p className="text-lg font-bold mb-4">Recent Appointments</p>
-            <Table className="w-full">
-              <TableHeader>
-                <TableRow>
-                  {headers.map((header, index) => (
-                    <TableHead
-                      key={index}
-                      className={`${
-                        header.align === "right" ? "text-right" : ""
-                      } text-lg text-[#1D120C]`}
-                    >
-                      {header.label}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentAppointments.map((appointment, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">
-                      {appointment.patient}
-                    </TableCell>
-                    <TableCell>{appointment.date}</TableCell>
-                    <TableCell>{appointment.time}</TableCell>
-                    <TableCell>{appointment.doctor}</TableCell>
-                    <TableCell className="text-right">
-                      {appointment.status}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                  <CardContent>
+                    <p className="text-xl">3459 Treatments </p>
+                  </CardContent>
+
+                  <CardFooter>
+                    <p>265 treatments last month</p>
+                  </CardFooter>
+                </Card>
+
+                <Card className="border border-[#ECE8E3]">
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-semibold">
+                      Total Booked Appointment
+                    </CardTitle>
+                  </CardHeader>
+
+                  <CardContent>
+                    <p className="text-xl">3459 Appointments </p>
+                  </CardContent>
+
+                  <CardFooter>
+                    <p>400 appointments last month</p>
+                  </CardFooter>
+                </Card>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 flex-1">
+                <Card className="col-span-4 border border-[#ECE8E3]">
+                  <CardHeader>
+                    <CardTitle>Registered Users</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pl-2">
+                    <Overview />
+                  </CardContent>
+                </Card>
+                <Card className="col-span-3 border border-[#ECE8E3]">
+                  <CardHeader>
+                    <CardTitle>Top Paid Treatments</CardTitle>
+                    <CardDescription>
+                      You made 265 treatments this month.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <RecentSales />
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
-    </div>
+    </>
   );
 }
