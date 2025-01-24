@@ -1,11 +1,12 @@
 "use client";
 
-import AspireLogo from "../../patient/book-treatment/components/AspireLogo";
-import { signIn, useSession } from "next-auth/react";
+import AspireLogo from "@/app/patient/book-treatment/components/AspireLogo";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
+import { useRouter, useSearchParams } from "next/navigation";
+import Cookies from "js-cookie";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -15,6 +16,8 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const LoginForm = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const {
     handleSubmit,
     control,
@@ -28,20 +31,12 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (data: FormData) => {
-    try {
-      const { email, password } = data;
-      await signIn("credentials", {
-        email,
-        password,
-        redirect: true,
-        callbackUrl: "/dentistry",
-      });
+    const { email } = data;
+    const callback = searchParams.get("callback");
 
-      const cred = useSession();
-      console.log("credentials are", cred);
-    } catch (error: any) {
-      console.error("Error:", error.response?.data || error.message);
-    }
+    Cookies.set("key", email, { expires: 7, path: "/" });
+
+    router.push(callback || "/");
   };
   return (
     <div className="w-full h-screen flex justify-center items-center bg-grey100 font-opus text-[#382F26]">
@@ -70,7 +65,7 @@ const LoginForm = () => {
               inputMarginTop="10px"
               padding="12px"
               labelTextSize="20px"
-              className="w-[312px]"
+              className="w-full"
             />
           </div>
 
@@ -87,13 +82,13 @@ const LoginForm = () => {
               inputMarginTop="10px"
               padding="12px"
               labelTextSize="20px"
-              className="w-[312px]"
+              className="w-full"
             />
           </div>
 
           <button
             type="submit"
-            className="w-[153px] h-[45px] py-3 bg-feeGuide text-black rounded-md font-normal font-opus"
+            className="w-full h-[45px] py-3 bg-feeGuide text-black rounded-md font-normal font-opus"
           >
             Login
           </button>
