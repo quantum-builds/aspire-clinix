@@ -1,5 +1,5 @@
 import HeroSection from "@/components/HeroSection";
-import GeneralDentistryService from "./components/GeneralDentistryService";
+import GeneralDentistryService from "@/app/(landing)/general-dentistry/components/GeneralDentistryService";
 import AboutUsSection from "@/components/AboutUsSection";
 import {
   AiCartoon,
