@@ -28,8 +28,8 @@ export default function Patient() {
         backgroundContent={HERO_SECTION_DATA.backgroundContent}
       />
       {/* <SessionProvider>
-        <AppointmentsView />
       </SessionProvider> */}
+      <AppointmentsView />
       <PricingPlans />
     </div>
   );

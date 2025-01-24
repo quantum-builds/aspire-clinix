@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 
     const referralForms = await prisma.referralForm.findMany({
       where: { dentistId: dentistId },
-      include: { dentist: true, patient: true },
+      include: { Dentist: true, Patient: true },
     });
 
     if (referralForms.length === 0) {

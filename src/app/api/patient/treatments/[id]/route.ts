@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   try {
     const patientTreatments = await prisma.patientTreatment.findMany({
       where: { patientId: patientId },
-      include: { treatment: true },
+      include: { Treatment: true },
     });
 
     if (patientTreatments.length === 0) {

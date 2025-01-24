@@ -1,4 +1,4 @@
-import NextAuth, { AuthOptions, getServerSession } from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/db";
 import { verifyPassword } from "@/utils/passwordUtils";
@@ -22,8 +22,6 @@ const authOptions: AuthOptions = {
           throw new Error("Email, password and role are required");
         }
 
-        // const session = await getServerSession(authOptions);
-        // console.log(session);
         const { email, password } = credentials;
 
         const user = await prisma.user.findUnique({

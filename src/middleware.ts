@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+
 import {
   LOGIN,
   ROOT,
@@ -46,5 +47,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/patient/:path*", "/dentist/:path*", "/admin/:path*"],
+  matcher: ["/patient/:path*", "/dentist/:path*", "/admin/:path*", "/login"],
 };

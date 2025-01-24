@@ -1,13 +1,15 @@
 "use client";
 
-import AspireLogo from "../../patient/book-treatment/components/AspireLogo";
-import { signIn, useSession } from "next-auth/react";
+import AspireLogo from "@/app/patient/book-treatment/components/AspireLogo";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
+import { useRouter, useSearchParams } from "next/navigation";
+import Cookies from "js-cookie";
 import { UserRoles } from "@/constants/UserRoles";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -23,6 +25,8 @@ type FormData = z.infer<typeof formSchema>;
 
 const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const {
     handleSubmit,
     control,
@@ -51,25 +55,6 @@ const LoginForm = () => {
     }
   };
 
-  // const onSubmit = async (data: FormData) => {
-  //   try {
-  //     const { email, password, role } = data;
-  //     const response = await signIn("credentials", {
-  //       email,
-  //       password,
-  //       role,
-  //       redirect: true, // Prevent redirect
-  //     });
-
-  //     if (response?.error) {
-  //       // Set error message if the signIn fails
-  //       setErrorMessage("Invalid email, password, or role.");
-  //     }
-  //   } catch (error: any) {
-  //     console.error("Error:", error.response?.data || error.message);
-  //     setErrorMessage("An unexpected error occurred. Please try again.");
-  //   }
-  // };
   return (
     <div className="w-full h-screen flex justify-center items-center bg-grey100 font-opus text-[#382F26]">
       <div className="absolute top-5">
@@ -100,7 +85,7 @@ const LoginForm = () => {
               inputMarginTop="10px"
               padding="12px"
               labelTextSize="20px"
-              className="w-[312px]"
+              className="w-full"
             />
           </div>
 
@@ -117,7 +102,7 @@ const LoginForm = () => {
               inputMarginTop="10px"
               padding="12px"
               labelTextSize="20px"
-              className="w-[312px]"
+              className="w-full"
             />
           </div>
 
@@ -144,7 +129,7 @@ const LoginForm = () => {
 
           <button
             type="submit"
-            className="w-[153px] h-[45px] py-3 bg-feeGuide text-black rounded-md font-normal font-opus"
+            className="w-full h-[45px] py-3 bg-feeGuide text-black rounded-md font-normal font-opus"
           >
             Login
           </button>

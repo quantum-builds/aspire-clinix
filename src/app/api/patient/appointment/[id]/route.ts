@@ -27,8 +27,8 @@ export async function GET(req: NextRequest) {
         id: appointmentId,
       },
       include: {
-        dentist: true,
-        patient: true,
+        Dentist: true,
+        Patient: true,
       },
     });
 

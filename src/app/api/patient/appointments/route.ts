@@ -40,8 +40,8 @@ export async function GET(req: NextRequest) {
         appointmentDate: "asc",
       },
       include: {
-        dentist: true,
-        patient: true,
+        Dentist: true,
+        Patient: true,
       },
     });
 

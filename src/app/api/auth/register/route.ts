@@ -3,6 +3,7 @@ import prisma from "@/lib/db";
 import { hashPassword } from "@/utils/passwordUtils";
 import { UserRoles } from "@/constants/UserRoles";
 import { NextResponse, NextRequest } from "next/server";
+import { Prisma } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   if (req.method !== ApiMethods.POST) {
@@ -67,6 +68,7 @@ export async function POST(req: NextRequest) {
       await prisma.admin.create({
         data: {
           userId: newUser.id,
+          email: newUser.email,
         },
       });
     }

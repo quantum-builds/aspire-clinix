@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   try {
     const patientTreatment = await prisma.patientTreatment.findUnique({
       where: { id: patientTreatmentId },
-      include: { treatment: true },
+      include: { Treatment: true },
     });
 
     if (!patientTreatment) {

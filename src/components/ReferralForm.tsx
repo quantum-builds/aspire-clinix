@@ -1,11 +1,11 @@
 "use client";
-import FormInput from "@/components/ui/FormInput";
+import FormInput from "../components/ui/FormInput";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckboxInput } from "@/components/ui/CheckboxInput";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/CustomButton";
 import { formSchema } from "@/schemas/referralFormSchema";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -78,7 +78,6 @@ export default function ReferralForm() {
     onSuccess: () => {
       router.push("/");
     },
-    
   });
   const onSubmit = (data: FormData) => {
     submitForm(data);
@@ -284,17 +283,17 @@ export default function ReferralForm() {
                 patient and shadow the dentist?
               </p>
               <div className="grid justify-center items-start lg:gap-x-20 grid-cols-2 mt-3">
-                  {TREATMENT_APPOINTMENT.optionsDentist.map((option) => (
-                    <CheckboxInput
-                      type="radio"
-                      key={option.value}
-                      name={TREATMENT_APPOINTMENT.name}
-                      label={option.label}
-                      value={option.value}
-                      control={control}
-                      radioName="name"
-                    />
-                  ))}
+                {TREATMENT_APPOINTMENT.optionsDentist.map((option) => (
+                  <CheckboxInput
+                    type="radio"
+                    key={option.value}
+                    name={TREATMENT_APPOINTMENT.name}
+                    label={option.label}
+                    value={option.value}
+                    control={control}
+                    radioName="name"
+                  />
+                ))}
               </div>
             </div>
           </div>

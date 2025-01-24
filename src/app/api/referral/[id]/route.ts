@@ -4,6 +4,14 @@ import { ReferralForm } from "@prisma/client";
 import { ApiMethods } from "@/constants/ApiMethods";
 import { isValidCuid } from "@/utils/typeValidUtils";
 
+function verifyUserAccess(userId: string, updatedReferralForm: ReferralForm) {
+  if (userId === updatedReferralForm.id) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 export async function GET(req: NextRequest) {
   if (req.method !== ApiMethods.GET) {
     return NextResponse.json(
@@ -14,16 +22,16 @@ export async function GET(req: NextRequest) {
 
   const referralFormId = req.nextUrl.searchParams.get("id");
 
-  if (!referralFormId || !isValidCuid(referralFormId)) {
-    return NextResponse.json({ message: "Invalid Form Id." }, { status: 400 });
-  }
   try {
+    if (!referralFormId || !isValidCuid(referralFormId)) {
+      return NextResponse.json(
+        { message: "Invalid Form Id." },
+        { status: 400 }
+      );
+    }
+
     const referralForm = await prisma.referralForm.findUnique({
       where: { id: referralFormId },
-      include: {
-        dentist: true,
-        patient: true,
-      },
     });
 
     if (!referralForm) {

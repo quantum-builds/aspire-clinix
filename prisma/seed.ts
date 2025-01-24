@@ -89,6 +89,7 @@ async function main() {
     update: {},
     create: {
       userId: user0.id,
+      email: user0.email,
     },
   });
 
