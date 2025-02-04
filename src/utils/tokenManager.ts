@@ -3,18 +3,18 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import cookie from 'cookie';
 
 // Create an access token
-export function createAccessToken(userId:String): string {
-  return jwt.sign(userId, process.env.JWT_SECRET_KEY as string , {
-    expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRE_DAYS,
-  });
-}
+// export function createAccessToken(userId:String): string {
+//   return jwt.sign(userId, process.env.JWT_SECRET_KEY as string , {
+//     expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRE_DAYS,
+//   });
+// }
 
-// Create a refresh token
-export function createRefreshToken(userId: String): string {
-  return jwt.sign({},process.env.JWT_SECRET_KEY as string , {
-    expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE_DAYS,
-  });
-}
+// // Create a refresh token
+// export function createRefreshToken(userId: String): string {
+//   return jwt.sign({},process.env.JWT_SECRET_KEY as string , {
+//     expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE_DAYS,
+//   });
+// }
 
 // Verify a token and extract user info
 export function verifyToken(token: string): string | JwtPayload | null {
