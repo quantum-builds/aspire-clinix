@@ -64,7 +64,7 @@ export default function ReferralForm() {
     },
   });
 
-  const { mutate: submitForm } = useMutation({
+  const { mutate: submitForm, } = useMutation({
     mutationFn: async (data: FormData) => {
       const response = await axiosInstance.post(
         ENDPOINTS.referralForm.create,

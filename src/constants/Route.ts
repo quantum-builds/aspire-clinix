@@ -1,5 +1,3 @@
-import { UserRoles } from "@/constants/UserRoles";
-
 const LOGIN = "/login";
 const ROOT = "/";
 

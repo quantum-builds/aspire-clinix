@@ -7,6 +7,7 @@ import Button from "@/components/ui/CustomButton";
 import { AspireDarkLogo, Dentist } from "@/assets";
 import Image from "next/image";
 import axios from "axios";
+import { axiosInstance } from "@/config/api-config";
 
 const formSchema = z
   .object({
@@ -35,8 +36,8 @@ export default function RegistrationForm() {
   });
   const onSubmit = async (data: FormData) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/register",
+      const response = await axiosInstance.post(
+        `${process.env.API_BASE_URL}api/auth/register`,
         data,
         {
           headers: {
@@ -44,6 +45,7 @@ export default function RegistrationForm() {
           },
         }
       );
+      
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
     }

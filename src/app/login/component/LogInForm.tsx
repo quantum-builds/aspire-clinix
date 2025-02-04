@@ -23,6 +23,8 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
+const USER_ROLES = [UserRoles.ADMIN, UserRoles.PATIENT, UserRoles.DENTIST];
+
 const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const searchParams = useSearchParams();
@@ -30,6 +32,7 @@ const LoginForm = () => {
   const {
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -43,17 +46,20 @@ const LoginForm = () => {
   const onSubmit = async (data: FormData) => {
     try {
       const { email, password, role } = data;
-      await signIn("credentials", {
-        email,
-        password,
-        role,
-        redirect: true,
-        callbackUrl: "/",
-      });
+      // await signIn("credentials", {
+      //   email,
+      //   password,
+      //   role,
+      //   redirect: true,
+      //   callbackUrl: "/",
+      // });
+      console.log(" ", email, " ", password, " ", role);
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
     }
   };
+
+  const selectedRole = watch("role");
 
   return (
     <div className="w-full h-screen flex justify-center items-center bg-grey100 font-opus text-[#382F26]">
@@ -68,6 +74,36 @@ const LoginForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full md:w-1/2 h-full p-6 flex flex-col items-center justify-center bg-formBackground"
       >
+        <div className="mb-6 w-full xl:w-3/5 lg:mx-auto">
+          <label className="w-1/3 text-base lg:text-2xl font-normal font-opus text-nowrap mb-4">
+            Role
+          </label>
+          <Controller
+            name="role"
+            control={control}
+            render={({ field }) => (
+              <div className="flex justify-between items-center w-full gap-2">
+                {USER_ROLES.map((role, index) => (
+                  <div
+                    key={index}
+                    className={`p-5 lg:p-9 2xl:p-12 rounded-lg text-lg 2xl:text-2xl text-center cursor-pointer transition-colors bg-[#C9BCA9] text-black" 
+                      ${
+                        selectedRole === role ? "border-2 border-[#423C36]" : ""
+                      }
+                    `}
+                    onClick={() => field.onChange(role)}
+                  >
+                    {role}
+                  </div>
+                ))}
+              </div>
+            )}
+          />
+          {errors.role && (
+            <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
+          )}
+        </div>
+
         <div className="w-full md:w-1/2">
           {errorMessage && (
             <div className="text-red-500 text-sm mb-4">{errorMessage}</div>
@@ -106,30 +142,9 @@ const LoginForm = () => {
             />
           </div>
 
-          <div className="mb-6 ">
-            <label className="block text-[20px] mb-2">Role</label>
-            <Controller
-              name="role"
-              control={control}
-              render={({ field }) => (
-                <select
-                  {...field}
-                  className="w-[312px] p-3 bg-[#DAD7D3] rounded-md border-[1px] border-[#000000]"
-                >
-                  <option value={UserRoles.PATIENT}>Patient</option>
-                  <option value={UserRoles.DENTIST}>Dentist</option>
-                  <option value={UserRoles.ADMIN}>Admin</option>
-                </select>
-              )}
-            />
-            {errors.role && (
-              <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
-            )}
-          </div>
-
           <button
             type="submit"
-            className="w-full h-[45px] py-3 bg-feeGuide text-black rounded-md font-normal font-opus"
+            className="w-full h-[45px] py-3 bg-[#423C36] text-white rounded-md font-normal font-opus"
           >
             Login
           </button>

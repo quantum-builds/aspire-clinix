@@ -6,7 +6,7 @@ import {
   ROOT,
   PUBLIC_ROUTES,
   AUTHERIZED_ROUTES,
-} from "../src/lib/route";
+} from "./constants/Route";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
