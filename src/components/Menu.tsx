@@ -9,7 +9,7 @@ import { routeModule } from "next/dist/build/templates/app-page";
 
 const USER_MENU_LIST = [
   {
-    category: "ASPIRE",
+    category: "ASPIRE CLINIC",
     path: "/",
     services: [{ title: "Our Philosophy", path: "/" }],
   },
@@ -56,6 +56,11 @@ const USER_MENU_LIST = [
   },
   {
     category: "REFERRAL PORTAL",
+    path: "/dentist/referral#form",
+    services: [],
+  },
+  {
+    category: " PATIENT PORTAL",
     path: "/dentist/referral#form",
     services: [],
   },
