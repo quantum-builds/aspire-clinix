@@ -217,7 +217,7 @@ const HERO_SECTION_DATA = {
   contentWidth: 100,
   backgroundColor: "#FFFFFF",
   buttonColor: "#ECE8E3",
-  backgroundContent: "/videos/landing-page-video.mp4",
+  backgroundContent: "/videos/landing-page-video-1.mp4",
 };
 
 const ABOUT_US_SECTION_DATA = {
