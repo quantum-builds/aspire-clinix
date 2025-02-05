@@ -22,3 +22,6 @@ export { default as WomanTreatment } from "@/assets/women-treatment.png";
 export { default as DoctorTooth } from "@/assets/doctor-tooth.jpg";
 export { default as NotificationBell } from "@/assets/notification-bell.svg";
 export { default as ProfilePic } from "@/assets/user-icon.svg";
+export { default as image1 } from "@/assets/image-1.png";
+export { default as image2 } from "@/assets/image-2.png";
+export { default as image3 } from "@/assets/imag-3.png";

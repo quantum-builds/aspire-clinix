@@ -41,14 +41,14 @@ export default function ServiceDetailCard({
       />
       <div className="flex flex-col gap-[20px] absolute bottom-0 left-[6%] mb-10">
         <p
-          className="text-4xl whitespace-normal font-opus"
+          className="text-4xl whitespace-normal font-opus text-white"
           style={{ lineHeight: "40.86px" }}
         >
           {title}
         </p>
         {description && (
           <p
-            className="text-[#382F26] font-gillSans w-80 mb-7 text-base whitespace-normal tracking-widest"
+            className="text-white font-gillSans w-80 mb-7 text-base whitespace-normal tracking-widest"
             style={{ lineHeight: "18.18px" }}
           >
             {description}
