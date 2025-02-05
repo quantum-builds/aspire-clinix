@@ -22,7 +22,7 @@ export default function HeroMenu({
         }}
         style={{ color: `${backgroundColor}` }}
       >
-        <p className="zoom-out">MENU</p>
+        <p className="zoom-out text-white">MENU</p>
       </button>
       <Menu menuStatus={menuStatus} setMenuStatus={setMenuStatus} role={role} />
     </>

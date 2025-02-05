@@ -42,7 +42,7 @@ export default function HeroSection({
       </div>
       <Link href="/" scroll={false}>
         <Image
-          src={logoSrc}
+          src={AspireLightLogo}
           alt="Aspire Clinix"
           width={80}
           height={88}
@@ -64,8 +64,11 @@ export default function HeroSection({
   return (
     <div
       className="flex flex-col items-center justify-center h-screen relative overflow-hidden"
-      style={{ backgroundColor }}
+      // style={{
+      //   background: `linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 1)), ${backgroundColor}`,
+      // }}
     >
+      <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-black/100 to-black/100"></div>
       {backgroundContent &&
         (isVideo ? (
           <video
@@ -97,12 +100,10 @@ export default function HeroSection({
         {/* Title */}
         <h1
           className={clsx(
-            "text-center md:w-[500px] z-10 lg:w-[766px] xl:w-[1143px] w-[350px] font-opus font-normal md:leading-[70px] lg:leading-[100px]",
+            "text-center text-white md:w-[500px] z-10 lg:w-[766px] xl:w-[1143px] w-[350px] font-opus font-normal md:leading-[70px] lg:leading-[100px]",
             headingFontSize
           )}
-          style={{
-            color: textColor,
-          }}
+          style={{}}
         >
           {title}
         </h1>
@@ -110,10 +111,9 @@ export default function HeroSection({
         {/* Description */}
         {description && descLineHeight && (
           <p
-            className="text-center font-gillSans z-10 text-[16px] lg:w-[837px] lg:h-[126px]  md:text-[32px] px-4 sm:px-5"
+            className="text-center text-white font-gillSans z-10 text-[16px] lg:w-[837px] lg:h-[126px]  md:text-[32px] px-4 sm:px-5"
             style={{
               lineHeight: `${descLineHeight}px`,
-              color: textColor,
             }}
           >
             {description}
