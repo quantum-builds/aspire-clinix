@@ -15,12 +15,13 @@ export default function ServiceCard({ text, path, image }: CardProps) {
           src={image}
           alt=""
           className="object-cover w-full h-full"
+          style={{ filter: "brightness(0.5)" }}
           priority
         />
       </div>
 
       <div className="flex z-10 justify-center items-center flex-col">
-        <h2 className="text-[35px] md:text-[52px] md:text-wrap lg:text-nowrap leading-[59.02px] font-opus">
+        <h2 className="text-[35px] md:text-[52px] md:text-wrap lg:text-nowrap leading-[59.02px] font-opus text-white">
           {text}
         </h2>
       </div>

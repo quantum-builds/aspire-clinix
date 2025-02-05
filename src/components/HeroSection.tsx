@@ -1,6 +1,6 @@
 "use client";
 
-import { AspireDarkLogo, AspireLightLogo } from "@/assets";
+import { AspireDarkLogo, AspireLightLogo, image1 } from "@/assets";
 import Image, { StaticImageData } from "next/image";
 import HeroMenu from "./HeroMenu";
 import Link from "next/link";
@@ -74,7 +74,7 @@ export default function HeroSection({
           <video
             className="absolute top-0 left-0 w-full h-full  object-cover"
             src={backgroundContent as string}
-            style={{ height: "100vh" }}
+            style={{ height: "100vh", filter: "brightness(0.5)" }}
             autoPlay
             loop
             muted
@@ -83,7 +83,8 @@ export default function HeroSection({
           <Image
             className="absolute top-0 left-0 w-full h-full object-cover"
             alt="Background Image"
-            src={backgroundContent as StaticImageData}
+            style={{ filter: "brightness(0.5)" }}
+            src={image1}
           />
         ))}
 
