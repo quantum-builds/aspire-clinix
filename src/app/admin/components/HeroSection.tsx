@@ -37,6 +37,7 @@ export default function HeroSection() {
       <Link href="/" scroll={false}>
         <Image
           src={AspireLightLogo}
+         
           alt="Aspire Clinix"
           width={80}
           height={88}

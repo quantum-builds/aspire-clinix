@@ -15,6 +15,7 @@ export default function ServiceCard({ text, path, image }: CardProps) {
           src={image}
           alt=""
           className="object-cover w-full h-full"
+          style={{ filter: "brightness(0.5)" }}
           priority
         />
       </div>
