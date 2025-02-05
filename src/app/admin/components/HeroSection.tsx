@@ -20,7 +20,7 @@ import { RecentSales } from "../components/recent-sales";
 import { UserRoles } from "@/constants/UserRoles";
 import HeroMenu from "@/components/HeroMenu";
 import Link from "next/link";
-import { AspireDarkLogo } from "@/assets";
+import { AspireDarkLogo, AspireLightLogo } from "@/assets";
 import DropDown from "./DropDown";
 
 export const metadata: Metadata = {
@@ -36,7 +36,7 @@ export default function HeroSection() {
       </div>
       <Link href="/" scroll={false}>
         <Image
-          src={AspireDarkLogo}
+          src={AspireLightLogo}
           alt="Aspire Clinix"
           width={80}
           height={88}
