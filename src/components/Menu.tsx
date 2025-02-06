@@ -112,7 +112,7 @@ export default function Menu({ menuStatus, setMenuStatus, role }: MenuProps) {
         alt="Close Menu"
         onClick={() => setMenuStatus(false)}
       />
-      <ul className="zoom-out space-y-4 lg:overflow-y-auto scrollbar-none lg:h-[500px]">
+      <ul className="zoom-out space-y-4 overflow-y-auto h-[90%] scrollbar ">
         {MENU_LIST.map((categoryData, index) => (
           <li key={index} className="">
             <div className="flex items-center">
