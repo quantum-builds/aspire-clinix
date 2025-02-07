@@ -12,6 +12,15 @@ import {
   image2,
   image3,
   TeethCartoon,
+  Wellness1,
+  Wellness2,
+  Wellness3,
+  Wellness4,
+  Wellness5,
+  Wellness6,
+  Wellness7,
+  Wellness8,
+  Wellness9,
 } from "@/assets";
 import { title } from "process";
 
@@ -153,63 +162,63 @@ const WELLNESS_SERVICE = {
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image1,
+      backgroundContent: Wellness1,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image2,
+      backgroundContent: Wellness2,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image3,
+      backgroundContent: Wellness3,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image1,
+      backgroundContent: Wellness4,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image2,
+      backgroundContent: Wellness5,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image3,
+      backgroundContent: Wellness6,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image1,
+      backgroundContent: Wellness7,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image2,
+      backgroundContent: Wellness8,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image3,
+      backgroundContent: Wellness9,
     },
   ],
 };

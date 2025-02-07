@@ -5,6 +5,7 @@ import {
   image2,
   image3,
   TeethCartoon,
+  Wellness4,
 } from "@/assets";
 const SERVICE_SECTION = [
   {
@@ -20,13 +21,16 @@ const SERVICE_SECTION = [
   {
     title: "Wellness",
     path: "/#wellness",
-    image: image3,
+    image: Wellness4,
   },
 ];
 
 export default function ServiceSection() {
   return (
-    <div className=" flex flex-col justify-between md:flex-row gap-1 md:gap-2 h-auto font-opus">
+    <div
+      className=" flex flex-col justify-between md:flex-row gap-1 md:gap-2 h-auto font-opus "
+      style={{ backgroundColor: "#ECE8E3" }}
+    >
       {SERVICE_SECTION.map((service) => (
         <ServiceCard
           key={service.path}

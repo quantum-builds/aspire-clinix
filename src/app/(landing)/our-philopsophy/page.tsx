@@ -1,7 +1,7 @@
 import HeroSection from "@/components/HeroSection";
 import Component1 from "./components/Component1";
 import Component2 from "./components/Component2";
-import { image1 } from "@/assets/index";
+import { image1, image2 } from "@/assets/index";
 import AboutUsSection from "@/components/AboutUsSection";
 import SupplementSection from "../landing/components/SupplementSection";
 
@@ -15,7 +15,7 @@ const HERO_SECTION_DATA = {
   contentWidth: 100,
   backgroundColor: "#FFFFFF",
   buttonColor: "#ECE8E3",
-  backgroundContent: "/videos/landing-page-video-1.mp4",
+  backgroundContent: image1,
 };
 
 const FIRST_COMPONENT1 = {
@@ -82,7 +82,7 @@ export default function OurPhilosophy() {
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
         titleFontSize="md:text-[45px] text-[23px] lg:text-[70px]"
-        isVideo={true}
+        isVideo={false}
         backgroundContent={HERO_SECTION_DATA.backgroundContent}
       />
       <Component1

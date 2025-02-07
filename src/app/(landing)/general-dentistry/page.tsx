@@ -5,7 +5,12 @@ import {
   AiCartoon,
   AspireAesthetic,
   ClinicChair,
+  Dentist1,
+  Dentist2,
+  Dentist3,
   DentistTreatment,
+  DropDown4,
+  DropDown8,
   TeethCartoon,
 } from "@/assets";
 
@@ -30,7 +35,7 @@ const GENERAL_DENTISTRY_SERVICE = [
     description:
       "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
     container_side: "left",
-    imagePath: AiCartoon,
+    imagePath: DropDown8,
   },
 
   {
@@ -38,7 +43,7 @@ const GENERAL_DENTISTRY_SERVICE = [
     description:
       "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
     container_side: "right",
-    imagePath: TeethCartoon,
+    imagePath: Dentist1,
   },
 
   {
@@ -46,7 +51,7 @@ const GENERAL_DENTISTRY_SERVICE = [
     description:
       "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
     container_side: "left",
-    imagePath: TeethCartoon,
+    imagePath: DropDown4,
   },
 ];
 
@@ -68,7 +73,7 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Richard Porter",
-    backgroundContent: TeethCartoon,
+    backgroundContent: Dentist3,
   },
   {
     path: "/dr-raheelmalik",
@@ -76,7 +81,7 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Raheel Malik",
-    backgroundContent: AspireAesthetic,
+    backgroundContent: Dentist2,
   },
   {
     path: "/dr-aspireclinic",
@@ -84,7 +89,7 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Raheel Malik",
-    backgroundContent: DentistTreatment,
+    backgroundContent: Dentist1,
   },
 ];
 

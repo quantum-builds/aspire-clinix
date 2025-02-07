@@ -67,6 +67,7 @@ export default function HeroSection({
       </div>
     </header>
   );
+
   return (
     <div
       className="flex flex-col items-center justify-center h-screen relative overflow-hidden"
@@ -119,10 +120,10 @@ export default function HeroSection({
         )}
         {/* Title */}
         <h1
-        className={clsx(
-          "text-center text-white md:w-[500px] z-10 lg:w-[766px] xl:w-[1143px] w-[350px] font-opus font-normal md:leading-[70px] lg:leading-[100px]",
-          titleFontSize
-        )}
+          className={clsx(
+            "text-center text-white md:w-[500px] z-10 lg:w-[766px] xl:w-[1143px] w-[350px] font-opus font-normal md:leading-[70px] lg:leading-[100px]",
+            titleFontSize
+          )}
           style={{}}
         >
           {title}

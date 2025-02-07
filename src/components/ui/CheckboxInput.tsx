@@ -5,9 +5,8 @@ interface CheckboxInputProps {
   name: string;
   label: string;
   value: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: any;
-  type: string;
+  type: "checkbox" | "radio";
   radioName?: string;
 }
 
@@ -31,18 +30,22 @@ export function CheckboxInput({
             checked={
               type === "radio"
                 ? field.value === value
-                : field.value?.includes(value) || false
+                : Array.isArray(field.value) // If it's an array (multi-checkbox case)
+                ? field.value.includes(value)
+                : Boolean(field.value) // If it's a single checkbox, treat it as a boolean
             }
             onChange={(e) => {
               const isChecked = e.target.checked;
+              console.log("is checked", isChecked);
 
               if (type === "radio") {
-                field.onChange(value);
+                field.onChange(value); // Ensure radio updates correctly
               } else {
                 field.onChange(
                   isChecked
                     ? [...(field.value || []), value]
-                    : field.value.filter((item: string) => item !== value)
+                    : field.value?.filter((item: string) => item !== value) ||
+                        []
                 );
               }
             }}
@@ -50,7 +53,7 @@ export function CheckboxInput({
           />
         )}
       />
-      <label className="text-[16px] md:text-[20px] lg:text-[22px] text-nowrap">
+      <label className="text-[16px] md:text-[20px] lg:text-[22px]">
         {label}
       </label>
     </div>
