@@ -143,7 +143,7 @@ export default function Menu({ menuStatus, setMenuStatus, role }: MenuProps) {
             {activeCategory === categoryData.category &&
               categoryData.services.length > 0 && (
                 <ul
-                  className={`pl-4 mt-2 space-y-2 overflow-y-auto scrollbar-thin md:h-full ${
+                  className={`pl-4 mt-2 space-y-2 overflow-y-auto scrollbar md:h-full ${
                     categoryData.services.length > 3 ? "h-[170px]" : "h-auto"
                   }`}
                 >

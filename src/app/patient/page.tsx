@@ -21,7 +21,7 @@ export default function Patient() {
         contentWidth={HERO_SECTION_DATA.contentWidth}
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
-        headingFontSize="md:text-[45px] text-[23px] lg:text-[70px]"
+        titleFontSize="md:text-[45px] text-[23px] lg:text-[70px]"
         isVideo={true}
         backgroundContent={HERO_SECTION_DATA.backgroundContent}
       />

@@ -38,7 +38,7 @@ export default function AboutUsSection({
       </p>
 
       {hasButton && (
-        <Link href={"/fee-guide"}>
+        <Link href={"/our-philopsophy"}>
           <button
             className="zoom-out text-textColor font-opus text-[20px] flex justify-center items-center md:rounded-[20px] rounded-[5px] md:w-[232px] w-[155px] h-[50px] md:h-[77px]"
             style={{
