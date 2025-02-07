@@ -17,13 +17,13 @@ export default function Component1({
 }: Component1Props) {
   return (
     <div
-      className="flex justify-center items-center gap-16 md:gap-1 min-h-screen font-opus"
+      className="flex justify-center items-center gap-4 md:gap-16 min-h-screen font-opus"
       style={{ backgroundColor: backgroundColor }}
     >
       <div className="w-[50%] flex justify-center items-center">
         <h1
           className={clsx(
-            "text-center w-full xl:w-[60%] font-opus font-normal md:leading-[70px] lg:leading-[100px]",
+            "text-center w-full px-2 xl:w-[60%] font-opus font-normal md:leading-[70px] lg:leading-[100px]",
             titleFontSize
           )}
         >
@@ -31,17 +31,17 @@ export default function Component1({
         </h1>
       </div>
 
-      <div className="flex flex-col justify-center items-center gap-4 w-[50%] h-[70%] ">
-        <p className="zoom-out text-center w-[80%] md:h-[190px] px-2 md:px-0 h-[170px] text-base md:text-2xl font-opus">
+      <div className="flex flex-col justify-center items-center gap-10 w-[50%] h-[50%] ">
+        <p className="text-left zoom-out  md:w-[70%] px-2 md:px-0 text-base md:text-2xl lg:text-4xl font-opus">
           {descriptionText}
         </p>
-        <div className="w-[60%]">
+        <div className="md:w-[50%] flex flex-col gap-7">
           {descriptionBullets.map((text, index) => (
             <p
-              className="zoom-out text-center md:h-[190px] px-2 md:px-0 h-[170px] text-base md:text-2xl font-opus"
+              className="text-left zoom-out  px-2 md:px-0  text-base md:text-2xl lg:text-4xl font-opus"
               key={index}
             >
-              .{text}
+              &bull;{text}
             </p>
           ))}
         </div>

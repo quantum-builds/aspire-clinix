@@ -113,16 +113,12 @@ export default function GeneralDentistry() {
       ))}
       <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}
-        descriptionTextSize={ABOUT_US_SECTION_DATA.descriptionTextSize}
-        descriptionLeadingHeight={
-          ABOUT_US_SECTION_DATA.descriptionLeadingHeight
-        }
         hasButton={ABOUT_US_SECTION_DATA.hasButton}
         buttonText={ABOUT_US_SECTION_DATA.buttonText}
         backgroundColor={ABOUT_US_SECTION_DATA.backgroundColor}
         textColor={ABOUT_US_SECTION_DATA.textColor}
-        descriptionWidth={ABOUT_US_SECTION_DATA.descriptionWidth}
         buttonBackgroundColor="#ECE8E3"
+        buttonClickLink={"/"}
       />
 
       <div className=" zoom-out bg-feeGuide flex flex-col gap-20 w-full mx-auto">

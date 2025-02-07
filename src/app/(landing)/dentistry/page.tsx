@@ -128,16 +128,12 @@ export default function Denistry() {
       />
       <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}
-        descriptionTextSize={ABOUT_US_SECTION_DATA.descriptionTextSize}
-        descriptionLeadingHeight={
-          ABOUT_US_SECTION_DATA.descriptionLeadingHeight
-        }
         buttonBackgroundColor="#ECE8E3"
         hasButton={ABOUT_US_SECTION_DATA.hasButton}
         buttonText={ABOUT_US_SECTION_DATA.buttonText}
         backgroundColor={ABOUT_US_SECTION_DATA.backgroundColor}
         textColor={ABOUT_US_SECTION_DATA.textColor}
-        descriptionWidth={ABOUT_US_SECTION_DATA.descriptionWidth}
+        buttonClickLink={"/"}
       />
       <DentistryDetailSection services={DENTISTRY_SERVICES.services} />
     </div>
