@@ -10,27 +10,33 @@ import clsx from "clsx";
 interface HeroSectionProps {
   title: string | null;
   description?: string | null;
+  descTextSize?: number | null;
   descLineHeight?: number | null;
   contentWidth?: number | null;
   backgroundColor: string;
   buttonColor: string;
   textColor?: string;
-  headingFontSize?: string;
+  titleFontSize?: string;
   isVideo?: boolean;
   backgroundContent?: string | StaticImageData;
+  heading?: string | null;
+  headingSize?: number | null;
 }
 
 export default function HeroSection({
   title,
   description,
+  descTextSize,
   descLineHeight,
   contentWidth,
   backgroundColor,
   buttonColor,
   textColor,
-  headingFontSize,
+  titleFontSize,
   isVideo,
   backgroundContent,
+  heading,
+  headingSize,
 }: HeroSectionProps) {
   const pathname = usePathname();
   const renderHeader = (logoSrc: StaticImageData) => (
@@ -98,11 +104,23 @@ export default function HeroSection({
         className="zoom-out flex flex-col justify-center items-center gap-5 lg:gap-4 mt-16"
         style={{ width: contentWidth ? `${contentWidth}%` : "100%" }}
       >
+        {/* Heading */}
+        {heading && (
+          <p
+            className={clsx(
+              "text-center text-white font-gillSans z-10 text-xs md:text-xl px-4 sm:px-5",
+              headingSize
+            )}
+            style={{}}
+          >
+            {heading}
+          </p>
+        )}
         {/* Title */}
         <h1
           className={clsx(
             "text-center text-white md:w-[500px] z-10 lg:w-[766px] xl:w-[1143px] w-[350px] font-opus font-normal md:leading-[70px] lg:leading-[100px]",
-            headingFontSize
+            titleFontSize
           )}
           style={{}}
         >

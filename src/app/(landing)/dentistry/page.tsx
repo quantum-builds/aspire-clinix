@@ -122,7 +122,7 @@ export default function Denistry() {
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
         descLineHeight={36.6}
-        headingFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
+        titleFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
         isVideo={false}
         backgroundContent={ClinicChair}
       />
