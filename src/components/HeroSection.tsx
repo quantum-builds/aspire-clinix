@@ -67,6 +67,7 @@ export default function HeroSection({
       </div>
     </header>
   );
+
   return (
     <div
       className="flex flex-col items-center justify-center h-screen relative overflow-hidden"
@@ -84,6 +85,7 @@ export default function HeroSection({
             autoPlay
             loop
             muted
+            preload="auto"
           ></video>
         ) : (
           <Image

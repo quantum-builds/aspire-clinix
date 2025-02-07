@@ -21,7 +21,8 @@ export default function DoctorPage({
             autoPlay
             muted
             loop
-            src={videoSrc}
+            preload="auto"
+            src={"/videos/general-dentistry-01.mp4"}
           ></video>
         </div>
         <div className="flex flex-col p-4 lg:p-0  gap-3">

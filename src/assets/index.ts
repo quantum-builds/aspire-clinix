@@ -25,3 +25,20 @@ export { default as ProfilePic } from "@/assets/user-icon.svg";
 export { default as image1 } from "@/assets/image-1.png";
 export { default as image2 } from "@/assets/image-2.png";
 export { default as image3 } from "@/assets/imag-3.png";
+
+export { default as Wellness1 } from "@/assets/wellness_1.png";
+export { default as Wellness2 } from "@/assets/wellness_2.png";
+export { default as Wellness3 } from "@/assets/wellness_3.png";
+export { default as Wellness4 } from "@/assets/wellness_4.png";
+export { default as Wellness5 } from "@/assets/wellness_5.png";
+export { default as Wellness6 } from "@/assets/wellness_6.png";
+export { default as Wellness7 } from "@/assets/wellness_7.png";
+export { default as Wellness8 } from "@/assets/wellness_8.png";
+export { default as Wellness9 } from "@/assets/wellness_9.png";
+export { default as Wellness10 } from "@/assets/wellness_10.png";
+
+export { default as DropDown4 } from "@/assets/dropbox_4.jpg";
+export { default as DropDown8 } from "@/assets/dropbox_8.png";
+export { default as Dentist1 } from "@/assets/dentist_1.jpg";
+export { default as Dentist2 } from "@/assets/dentist_2.jpg";
+export { default as Dentist3 } from "@/assets/dentist_3.jpg";

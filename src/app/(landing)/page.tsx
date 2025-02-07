@@ -12,7 +12,17 @@ import {
   image2,
   image3,
   TeethCartoon,
+  Wellness1,
+  Wellness2,
+  Wellness3,
+  Wellness4,
+  Wellness5,
+  Wellness6,
+  Wellness7,
+  Wellness8,
+  Wellness9,
 } from "@/assets";
+import { title } from "process";
 
 const DENTAL_SERVICES = {
   title: "Dentistry",
@@ -152,63 +162,63 @@ const WELLNESS_SERVICE = {
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image1,
+      backgroundContent: Wellness1,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image2,
+      backgroundContent: Wellness2,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image3,
+      backgroundContent: Wellness3,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image1,
+      backgroundContent: Wellness4,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image2,
+      backgroundContent: Wellness5,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image3,
+      backgroundContent: Wellness6,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image1,
+      backgroundContent: Wellness7,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image2,
+      backgroundContent: Wellness8,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: image3,
+      backgroundContent: Wellness9,
     },
   ],
 };
@@ -228,11 +238,24 @@ const ABOUT_US_SECTION_DATA = {
     "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit.",
   descriptionTextSize: 40,
   descriptionLeadingHeight: 45.4,
+  buttonClickLink: "/our-philopsophy",
   hasButton: true,
   buttonText: "Our Philosophy",
   backgroundColor: "#1D120C",
   textColor: "#C9BCA9",
   descriptionWidth: 60,
+  buttonBackgroundColor: "#ECE8E3",
+};
+
+const SUPPLEMENTS_DATA = {
+  title: "Our Supplements",
+  description:
+    "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit.",
+  hasButton: true,
+  buttonText: "Contact Us",
+  buttonClickLink: "/",
+  backgroundColor: "#1D120C",
+  textColor: "#C9BCA9",
   buttonBackgroundColor: "#ECE8E3",
 };
 
@@ -251,16 +274,12 @@ export default function Home() {
       />
       <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}
-        descriptionTextSize={ABOUT_US_SECTION_DATA.descriptionTextSize}
-        descriptionLeadingHeight={
-          ABOUT_US_SECTION_DATA.descriptionLeadingHeight
-        }
         hasButton={ABOUT_US_SECTION_DATA.hasButton}
         buttonText={ABOUT_US_SECTION_DATA.buttonText}
         backgroundColor={ABOUT_US_SECTION_DATA.backgroundColor}
         textColor={ABOUT_US_SECTION_DATA.textColor}
-        descriptionWidth={ABOUT_US_SECTION_DATA.descriptionWidth}
         buttonBackgroundColor={ABOUT_US_SECTION_DATA.buttonBackgroundColor}
+        buttonClickLink={ABOUT_US_SECTION_DATA.buttonClickLink}
       />
       <LandingPageImage />
       <ServiceSection />
@@ -285,7 +304,16 @@ export default function Home() {
           services={WELLNESS_SERVICE.services}
         />
       </div>
-      <SupplementSection />
+      <SupplementSection
+        title={SUPPLEMENTS_DATA.title}
+        description={SUPPLEMENTS_DATA.description}
+        buttonClickLink={SUPPLEMENTS_DATA.buttonClickLink}
+        hasButton={SUPPLEMENTS_DATA.hasButton}
+        buttonText={SUPPLEMENTS_DATA.buttonText}
+        backgroundColor={SUPPLEMENTS_DATA.backgroundColor}
+        textColor={SUPPLEMENTS_DATA.textColor}
+        buttonBackgroundColor={SUPPLEMENTS_DATA.buttonBackgroundColor}
+      />
     </div>
   );
 }
