@@ -62,7 +62,7 @@ export default function ContactForm() {
 
   return (
     <div className="bg-feeGuide min-h-screen flex  flex-col items-center lg:flex-row">
-      <div className="w-1/2 flex justify-center items-center">
+      <div className="mt-6 w-3/4 lg:w-1/2 lg:mt-0 flex justify-center items-center bg-black">
         <Image
           src={image1}
           alt=""
@@ -165,7 +165,7 @@ export default function ContactForm() {
           )}
         </div>
 
-        <div className="mt-16 flex gap-4 ">
+        <div className="mt-16 ">
           <CheckboxInput
             type="checkbox"
             key="terms"
@@ -173,7 +173,7 @@ export default function ContactForm() {
             label={
               " I’ve read Aspire Clinic’s Privacy Policy and agree to the Terms & Conditions"
             }
-            value={"true"}
+            value={"false"}
             control={control}
           />
         </div>

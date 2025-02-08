@@ -30,9 +30,9 @@ export function CheckboxInput({
             checked={
               type === "radio"
                 ? field.value === value
-                : Array.isArray(field.value) // If it's an array (multi-checkbox case)
+                : Array.isArray(field.value)
                 ? field.value.includes(value)
-                : Boolean(field.value) // If it's a single checkbox, treat it as a boolean
+                : Boolean(field.value)
             }
             onChange={(e) => {
               const isChecked = e.target.checked;
@@ -49,7 +49,7 @@ export function CheckboxInput({
                 );
               }
             }}
-            className="w-4 h-4 md:w-[27px] md:h-[27px] mr-4 border-[#000000] border-[0.75px] rounded-[5px] appearance-none bg-[#ECE8E3] checked:text-black checked:bg-[#ECE8E3] flex items-center justify-center checked:before:content-['✔'] checked:before:text-base"
+            className="w-4 h-4 md:w-[27px] md:h-[27px] mr-4 border-[#000000] border-[0.75px] rounded-[5px] appearance-none bg-[#ECE8E3] checked:text-black checked:bg-[#ECE8E3] flex items-center justify-center flex-shrink-0 checked:before:content-['✔'] checked:before:text-base"
           />
         )}
       />
