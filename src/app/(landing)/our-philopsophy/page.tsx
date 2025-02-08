@@ -63,7 +63,7 @@ const CONTACT_US_SECTION = {
   descriptionLeadingHeight: 80,
   hasButton: true,
   buttonText: "Contact Us",
-  buttonClickLink: "/",
+  buttonClickLink: "/contact-us",
   backgroundColor: "#1D120C",
   textColor: "#C9BCA9",
   descriptionWidth: 60,
@@ -98,7 +98,7 @@ export default function OurPhilosophy() {
         secondDescriptionText={FIRST_COMPONENT2.secondDescriptionText}
         backgroundColor="#DCD4C9"
         imagePath={FIRST_COMPONENT2.imagePath}
-        titleFontSize="md:text-[35px] text-[23px] lg:text-[65px]"
+        titleFontSize="md:text-[35px] text-[23px] lg:text-[50px] xl:text-[65px]"
       />
       <Component1
         title={FIRST_COMPONENT1.title}
@@ -113,7 +113,7 @@ export default function OurPhilosophy() {
         secondDescriptionText={SECOND_COMPONENT2.secondDescriptionText}
         backgroundColor="#DCD4C9"
         imagePath={SECOND_COMPONENT2.imagePath}
-        titleFontSize="md:text-[35px] text-[23px] lg:text-[65px]"
+        titleFontSize="md:text-[35px] text-[23px] lg:text-[50px] xl:text-[65px]"
       />
       <SupplementSection
         description={CONTACT_US_SECTION.description}

@@ -73,7 +73,8 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Richard Porter",
-    backgroundContent: Dentist3,
+    backgroundContent: "/videos/general-dentistry-01.mp4",
+    is_video: true,
   },
   {
     path: "/dr-raheelmalik",
@@ -81,7 +82,8 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Raheel Malik",
-    backgroundContent: Dentist2,
+    backgroundContent: "/videos/general-dentistry-02.mp4",
+    is_video: true,
   },
   {
     path: "/dr-aspireclinic",
@@ -89,7 +91,8 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Raheel Malik",
-    backgroundContent: Dentist1,
+    backgroundContent: "/videos/landing-page-video-1.mp4",
+    is_video: true,
   },
 ];
 
@@ -140,6 +143,7 @@ export default function GeneralDentistry() {
               buttonText={card.buttonText}
               card_height={card.card_height}
               doc_name={card.doc_name}
+              isVideo={card.is_video}
               className="w-[320px] sm:w-[360px] md:w-[424px] h-auto xl:w-[380px] 2xl:w-[424px]"
             />
           ))}

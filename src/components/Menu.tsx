@@ -11,7 +11,7 @@ const USER_MENU_LIST = [
   {
     category: "ASPIRE CLINIC",
     path: "/",
-    services: [{ title: "Our Philosophy", path: "/" }],
+    services: [{ title: "Our Philosophy", path: "/our-philopsophy" }],
   },
   {
     category: "DENTISTRY",
@@ -56,7 +56,7 @@ const USER_MENU_LIST = [
   },
   {
     category: "REFERRAL PORTAL",
-    path: "/dentist/referral#form",
+    path: "/referral",
     services: [],
   },
   {
@@ -72,7 +72,7 @@ const USER_MENU_LIST = [
   { category: "FEE GUIDE", path: "/fee-guide", services: [] },
   {
     category: "CONTACT",
-    path: "/aspire",
+    path: "/contact-us",
     services: [],
   },
 ];

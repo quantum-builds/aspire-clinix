@@ -11,6 +11,7 @@ interface ServiceDetailCardProps {
   className?: string;
   doc_name?: string;
   backgroundContent?: string | StaticImageData;
+  isVideo?: boolean;
   onLoad?: () => void;
 }
 
@@ -23,6 +24,7 @@ export default function ServiceDetailCard({
   className,
   doc_name,
   backgroundContent,
+  isVideo = false,
   onLoad,
 }: ServiceDetailCardProps) {
   return (
@@ -32,14 +34,35 @@ export default function ServiceDetailCard({
       }  bg-cover bg-center bg-no-repeat`}
       style={{ height: card_height }}
     >
-      <Image
+      {/* <Image
         className="absolute top-0 left-0 w-full h-full object-cover"
         alt="Background Image"
         src={backgroundContent as StaticImageData}
         style={{ filter: "brightness(0.5)" }}
         onLoad={onLoad}
         priority
-      />
+      /> */}
+      {backgroundContent &&
+        (isVideo ? (
+          <video
+            className="absolute top-0 left-0 w-full h-full  object-cover"
+            src={backgroundContent as string}
+            style={{ filter: "brightness(0.5)" }}
+            autoPlay
+            loop
+            muted
+            preload="auto"
+          ></video>
+        ) : (
+          <Image
+            className="absolute top-0 left-0 w-full h-full object-cover"
+            alt="Background Image"
+            style={{ filter: "brightness(0.5)" }}
+            src={backgroundContent}
+            onLoad={onLoad}
+            priority
+          />
+        ))}
       <div className="flex flex-col gap-[20px] absolute bottom-0 left-[6%] mb-10">
         <p
           className="text-4xl whitespace-normal font-opus text-white"

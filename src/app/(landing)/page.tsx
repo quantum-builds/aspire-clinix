@@ -253,7 +253,7 @@ const SUPPLEMENTS_DATA = {
     "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit.",
   hasButton: true,
   buttonText: "Contact Us",
-  buttonClickLink: "/",
+  buttonClickLink: "/contact-us",
   backgroundColor: "#1D120C",
   textColor: "#C9BCA9",
   buttonBackgroundColor: "#ECE8E3",

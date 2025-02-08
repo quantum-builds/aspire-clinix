@@ -17,7 +17,7 @@ export default function Component1({
 }: Component1Props) {
   return (
     <div
-      className="flex justify-center items-center gap-4 md:gap-16 min-h-screen font-opus"
+      className="flex justify-center items-center gap-4 md:gap-16 h-[78vh] font-opus"
       style={{ backgroundColor: backgroundColor }}
     >
       <div className="w-[50%] flex justify-center items-center">
