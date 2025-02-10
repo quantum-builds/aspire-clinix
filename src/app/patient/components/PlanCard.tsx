@@ -27,12 +27,6 @@ export default function PlanCard({
     <div
       className={`relative flex flex-col items-center justify-center gap-4 h-full w-full font-opus overflow-hidden`}
     >
-      {/* <Image
-className="absolute top-0 left-0 w-full h-full object-cover"
-alt="Background Image"
-src={backgroundContent as StaticImageData}
-priority
-/> */}
 
       <div className="absolute top-0 left-0 w-full h-full bg-gray-400"></div>
 

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import LoginForm from "./component/LogInForm";
+import SigninForm from "./component/SignInForm";
 
 export default function LoginFormPage() {
   const Loader = () => {
@@ -11,7 +11,7 @@ export default function LoginFormPage() {
   };
   return (
     <Suspense fallback={<Loader />}>
-      <LoginForm />
+      <SigninForm />
     </Suspense>
   );
 }
