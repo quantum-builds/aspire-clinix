@@ -1,6 +1,6 @@
-import HeroSection from "@/components/HeroSection";
-import PricingPlans from "./components/PricingPlans";
-import AppointmentsView from "./components/AppointmentView";
+import Footer from "@/components/Footer";
+import SideBar from "./components/SideBar";
+import ContentSection from "./components/ContenteSection";
 
 const HERO_SECTION_DATA = {
   title: "STAY ON TOP OF YOUR WELLNESS",
@@ -14,19 +14,30 @@ const HERO_SECTION_DATA = {
 
 export default function Patient() {
   return (
-    <div className="flex flex-col w-full h-full">
-      <HeroSection
-        title={HERO_SECTION_DATA.title}
-        description={HERO_SECTION_DATA.description}
-        contentWidth={HERO_SECTION_DATA.contentWidth}
-        backgroundColor={HERO_SECTION_DATA.backgroundColor}
-        buttonColor={HERO_SECTION_DATA.buttonColor}
-        titleFontSize="md:text-[45px] text-[23px] lg:text-[70px]"
-        isVideo={true}
-        backgroundContent={HERO_SECTION_DATA.backgroundContent}
-      />
-      <AppointmentsView />
-      <PricingPlans />
+    <div>
+      <div className="h-[170vh] flex bg-feeguidedark">
+        <SideBar />
+        <ContentSection />
+      </div>
+      <Footer />
     </div>
   );
 }
+// export default function Patient() {
+//   return (
+//     <div className="flex flex-col w-full h-full">
+//       <HeroSection
+//         title={HERO_SECTION_DATA.title}
+//         description={HERO_SECTION_DATA.description}
+//         contentWidth={HERO_SECTION_DATA.contentWidth}
+//         backgroundColor={HERO_SECTION_DATA.backgroundColor}
+//         buttonColor={HERO_SECTION_DATA.buttonColor}
+//         titleFontSize="md:text-[45px] text-[23px] lg:text-[70px]"
+//         isVideo={true}
+//         backgroundContent={HERO_SECTION_DATA.backgroundContent}
+//       />
+//       <AppointmentsView />
+//       <PricingPlans />
+//     </div>
+//   );
+// }

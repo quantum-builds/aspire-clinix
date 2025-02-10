@@ -1,5 +1,5 @@
 export { default as AspireDarkLogo } from "./aspire-dark-logo.svg";
-export { default as AspireLightLogo } from "@/assets/aspire-light-logo.svg";
+export { default as AspireLightLogo } from "./aspire-light-logo.svg";
 export { default as ArrowLight } from "@/assets/arrow-light.svg";
 export { default as InstagramIcon } from "./instagram-icon.svg";
 export { default as LinkedinIcon } from "./linkedin-icon.svg";
@@ -42,3 +42,8 @@ export { default as DropDown8 } from "@/assets/dropbox_8.png";
 export { default as Dentist1 } from "@/assets/dentist_1.jpg";
 export { default as Dentist2 } from "@/assets/dentist_2.jpg";
 export { default as Dentist3 } from "@/assets/dentist_3.jpg";
+
+export { default as VideoIcon } from "@/assets/video-icon.svg";
+export { default as LocationIcon } from "@/assets/location-icon.svg";
+export { default as SheduleIcon } from "@/assets/schedule-icon.svg";
+export { default as LinkIcon } from "@/assets/link-icon.svg";

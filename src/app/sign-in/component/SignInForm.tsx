@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
 import { useRouter, useSearchParams } from "next/navigation";
+import Button from "@/components/ui/CustomButton";
 import Cookies from "js-cookie";
 
 const formSchema = z.object({
@@ -15,7 +16,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-const LoginForm = () => {
+const SigninForm = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const {
@@ -40,10 +41,11 @@ const LoginForm = () => {
   };
   return (
     <div className="w-full h-screen flex justify-center items-center bg-grey100 font-opus text-[#382F26]">
-      <div className="absolute top-5">
+      <div className="absolute top-5 flex flex-col gap-6">
         <AspireLogo />
-        <h2 className="mb-8 mt-5 text-center text-[24px] md:text-[32px] font-normal font-opus">
-          Login
+        <div className="text-center">Patient Dashboard</div>
+        <h2 className=" text-center text-[24px] md:text-[32px] font-normal font-opus">
+          Sign In
         </h2>
       </div>
 
@@ -85,17 +87,17 @@ const LoginForm = () => {
               className="w-full"
             />
           </div>
-
-          <button
-            type="submit"
-            className="w-full h-[45px] py-3 bg-feeGuide text-black rounded-md font-normal font-opus"
-          >
-            Login
-          </button>
+          <div className="flex justify-center items-center md:justify-start md:items-start ">
+            <Button
+              type="submit"
+              title="Sign In"
+              className="w-[153px] h-[45px] bg-feeGuide text-black rounded-[10px] mt-8 md:mt-4"
+            />
+          </div>
         </div>
       </form>
     </div>
   );
 };
 
-export default LoginForm;
+export default SigninForm;
