@@ -17,7 +17,7 @@ const USER_MENU_LIST = [
     category: "DENTISTRY",
     path: "/dentistry",
     services: [
-      { title: "General", path: "/dentistry" },
+      { title: "General", path: "/general-dentistry" },
       { title: "Cosmetic", path: "/" },
       { title: "Emergency", path: "/" },
       { title: "Implants", path: "/" },
@@ -31,7 +31,7 @@ const USER_MENU_LIST = [
   },
   {
     category: "AESTHETICS",
-    path: "/general-dentistry",
+    path: "/asthetics",
     services: [
       { title: "Anti Wrinkle Injections", path: "/" },
       { title: "Fillers", path: "/" },
@@ -40,7 +40,7 @@ const USER_MENU_LIST = [
   },
   {
     category: "WELLNESS",
-    path: "/dentist/referral",
+    path: "/wellness",
     services: [
       { title: "Cryotherapy", path: "/" },
       { title: "Infra-red Sauna", path: "/" },
