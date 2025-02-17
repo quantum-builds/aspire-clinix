@@ -44,21 +44,21 @@ model ReferralForm {
   medicalHistory        String?
   createdAt             DateTime @default(now())
   referralDetails       String[]
+  treatmentDetails      String?
   DOB                   String
   address               String
-  dentistId             String
   email                 String
   mobileNumber          String
   name                  String
   other                 String?
-  patientId             String
   referralAddress       String
   referralEmail         String
   referralGDC           String
   referralMobileNumber  String
   referralName          String
   treatMeantAppointment String
-  treatmentDetails      String?
+  dentistId             String
+  patientId             String
   Dentist               Dentist  @relation(fields: [dentistId], references: [id])
   Patient               Patient  @relation(fields: [patientId], references: [id])
 
@@ -70,8 +70,8 @@ model Appointment {
   dentistId         String
   appointmentDate   DateTime
   appointmentStatus String?
-  downloadReport    String?
   patientId         String
+  downloadReport    String?
   service           String
   Dentist           Dentist  @relation(fields: [dentistId], references: [id])
   Patient           Patient  @relation(fields: [patientId], references: [id])
@@ -101,6 +101,9 @@ model Treatment {
   PatientTreatment PatientTreatment[]
 }
 
+
+// TODO: need to uncomment Payment Payment[]
+
 model User {
   id       String   @id @default(cuid())
   email    String   @unique
@@ -108,12 +111,102 @@ model User {
   role     String
   Admin    Admin?
   Dentist  Dentist?
+  Invoices Invoice?
   Patient  Patient?
+  // Payment  Payment[]
+  plans UserSubscribedPlans[]
 }
+
+model Invoice {
+  id              String        @id @default(cuid())
+  userId          String        @unique
+  month           Int
+  year            Int
+  totalAmount     Float
+  stripePaymentId String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  status          InvoiceStatus @default(PENDING)
+  User            User          @relation(fields: [userId], references: [id])
+  Payment         Payment[]
+}
+
+
+// TODO : need to make userId unique and add uncomment the User User
+
+model Payment {
+  id              String        @id @default(cuid())
+  userId          String          
+  invoiceId       String?
+  stripePaymentId String        @unique
+  amount          Float
+  status          PaymentStatus @default(PENDING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  Invoice         Invoice?      @relation(fields: [invoiceId], references: [id])
+  // User            User          @relation(fields: [userId], references: [id])
+}
+
+model Plan {
+  id            String    @id @default(uuid())
+  name          String
+  description   String
+  price         Float   // Supports one-time or installment-based pricing
+  validity      Int       // Duration in months (e.g., 6, 12)
+  includedTreatments String[]
+  discountId    String?
+  discounts     Discount? @relation(fields: [discountId], references: [id])
+  status        PlanStatus @default(ACTIVE)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  users UserSubscribedPlans[]
+}
+
+model Discount {
+  id         String  @id @default(uuid())
+  type       DiscountType
+  value      Float // Percentage or fixed amount
+  expiresAt  DateTime?
+  plans      Plan[]
+}
+model UserSubscribedPlans{
+  userId String 
+  user User @relation(fields: [userId],references: [id])
+  planId String
+  plans Plan @relation(fields: [planId],references: [id])
+  subscribedAt DateTime
+
+  @@unique([userId,planId])
+}
+
 
 model Admin {
   id     String @id @default(cuid())
   userId String @unique
   email  String @unique
   User   User   @relation(fields: [userId], references: [id])
+}
+
+enum InvoiceStatus {
+  PENDING
+  PROCESSING
+  PAID
+  FAILED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+}
+
+enum PlanStatus {
+  ACTIVE
+  EXPIRED
+  UPCOMING
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
 }

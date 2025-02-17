@@ -3,6 +3,7 @@
 import HeroSection from "@/components/HeroSection";
 import PricingPlans from "./components/PricingPlans";
 import AppointmentsView from "./components/AppointmentView";
+import SubscribeComponent from "./components/Subscribe";
 
 const HERO_SECTION_DATA = {
   title: "STAY ON TOP OF YOUR WELLNESS",
@@ -17,7 +18,7 @@ const HERO_SECTION_DATA = {
 export default function Patient() {
   return (
     <div className="flex flex-col w-full h-full">
-      <HeroSection
+      {/* <HeroSection
         title={HERO_SECTION_DATA.title}
         description={HERO_SECTION_DATA.description}
         contentWidth={HERO_SECTION_DATA.contentWidth}
@@ -27,10 +28,14 @@ export default function Patient() {
         isVideo={true}
         backgroundContent={HERO_SECTION_DATA.backgroundContent}
       />
-      {/* <SessionProvider>
-      </SessionProvider> */}
+  
       <AppointmentsView />
-      <PricingPlans />
+      <PricingPlans /> */}
+      <SubscribeComponent
+        priceId={"price_1QsMlWRsBYmDUkzANYBPoU0U"}
+        price={"50.00"}
+        description={"Yearly Payment"}
+      />
     </div>
   );
 }
