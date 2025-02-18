@@ -4,6 +4,7 @@ import HeroSection from "@/components/HeroSection";
 import PricingPlans from "./components/PricingPlans";
 import AppointmentsView from "./components/AppointmentView";
 import SubscribeComponent from "./components/Subscribe";
+import { Suspense } from "react";
 
 const HERO_SECTION_DATA = {
   title: "STAY ON TOP OF YOUR WELLNESS",
@@ -31,11 +32,13 @@ export default function Patient() {
   
       <AppointmentsView />
       <PricingPlans /> */}
-      <SubscribeComponent
-        priceId={"price_1QsMlWRsBYmDUkzANYBPoU0U"}
-        price={"50.00"}
-        description={"Yearly Payment"}
-      />
+      <Suspense>
+        <SubscribeComponent
+          priceId={"price_1QsMlWRsBYmDUkzANYBPoU0U"}
+          price={"50.00"}
+          description={"Yearly Payment"}
+        />
+      </Suspense>
     </div>
   );
 }
