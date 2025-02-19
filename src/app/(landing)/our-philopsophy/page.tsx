@@ -3,7 +3,7 @@ import Component1 from "./components/Component1";
 import Component2 from "./components/Component2";
 import { image1, image2 } from "@/assets/index";
 import AboutUsSection from "@/components/AboutUsSection";
-import SupplementSection from "../landing/components/SupplementSection";
+import SupplementSection from "@/app/(landing)/components/SupplementSection";
 
 const HERO_SECTION_DATA = {
   title: "THE PURSUIT OF BALANCED LONGEVITY",

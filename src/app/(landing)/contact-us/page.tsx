@@ -1,6 +1,6 @@
 import { image1 } from "@/assets";
 import HeroSection from "@/components/HeroSection";
-import ServiceSection from "@/app/(landing)/landing/components/ServicesSection";
+import ServiceSection from "@/app/(landing)/components/ServicesSection";
 import GeneralDentistryService from "@/app/(landing)/general-dentistry/components/GeneralDentistryService";
 import ContactForm from "./components/ContactForm";
 
