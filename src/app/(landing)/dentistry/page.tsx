@@ -6,6 +6,9 @@ import {
   AiCartoon,
   ClinicChair,
   DentistTreatment,
+  image1,
+  image2,
+  image3,
   TeethCartoon,
 } from "@/assets";
 import LogoutButton from "@/components/LogoutButton";
@@ -42,70 +45,70 @@ const DENTISTRY_SERVICES = {
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: AiCartoon,
+      backgroundContent: image1,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: TeethCartoon,
+      backgroundContent: image2,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: AiCartoon,
+      backgroundContent: image3,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: DentistTreatment,
+      backgroundContent: image1,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: AiCartoon,
+      backgroundContent: image2,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: TeethCartoon,
+      backgroundContent: image3,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: TeethCartoon,
+      backgroundContent: image1,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: DentistTreatment,
+      backgroundContent: image2,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: TeethCartoon,
+      backgroundContent: image3,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
       path: "/",
-      backgroundContent: AiCartoon,
+      backgroundContent: image1,
     },
   ],
 };
@@ -120,22 +123,18 @@ export default function Denistry() {
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
         descLineHeight={36.6}
-        headingFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
+        titleFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
         isVideo={false}
         backgroundContent={ClinicChair}
       />
       <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}
-        descriptionTextSize={ABOUT_US_SECTION_DATA.descriptionTextSize}
-        descriptionLeadingHeight={
-          ABOUT_US_SECTION_DATA.descriptionLeadingHeight
-        }
         buttonBackgroundColor="#ECE8E3"
         hasButton={ABOUT_US_SECTION_DATA.hasButton}
         buttonText={ABOUT_US_SECTION_DATA.buttonText}
         backgroundColor={ABOUT_US_SECTION_DATA.backgroundColor}
         textColor={ABOUT_US_SECTION_DATA.textColor}
-        descriptionWidth={ABOUT_US_SECTION_DATA.descriptionWidth}
+        buttonClickLink={"/"}
       />
       <DentistryDetailSection services={DENTISTRY_SERVICES.services} />
     </div>

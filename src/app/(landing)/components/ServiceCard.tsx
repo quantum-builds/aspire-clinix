@@ -8,19 +8,20 @@ interface CardProps {
 }
 export default function ServiceCard({ text, path, image }: CardProps) {
   return (
-    <div className="zoom-out relative flex flex-col items-center justify-center gap-1 h-screen md:h-[1119px] w-full font-opus bg-gray-100  overflow-hidden">
+    <div className="zoom-out relative flex flex-col items-center justify-center gap-1 min-h-screen md:h-[1119px] w-full font-opus overflow-hidden rounded-md">
       <div className="absolute top-0 left-0 w-full h-full">
         {/* <Image src={image} alt="" layout="fill" objectFit="cover" priority /> */}
         <Image
           src={image}
           alt=""
           className="object-cover w-full h-full"
+          style={{ filter: "brightness(0.5)" }}
           priority
         />
       </div>
 
       <div className="flex z-10 justify-center items-center flex-col">
-        <h2 className="text-[35px] md:text-[52px] md:text-wrap lg:text-nowrap leading-[59.02px] font-opus">
+        <h2 className="text-[35px] md:text-[52px] md:text-wrap lg:text-nowrap leading-[59.02px] font-opus text-white">
           {text}
         </h2>
       </div>

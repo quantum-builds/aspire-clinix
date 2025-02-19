@@ -9,15 +9,15 @@ import { routeModule } from "next/dist/build/templates/app-page";
 
 const USER_MENU_LIST = [
   {
-    category: "ASPIRE",
+    category: "ASPIRE CLINIC",
     path: "/",
-    services: [{ title: "Our Philosophy", path: "/" }],
+    services: [{ title: "Our Philosophy", path: "/our-philopsophy" }],
   },
   {
     category: "DENTISTRY",
     path: "/dentistry",
     services: [
-      { title: "General", path: "/dentistry" },
+      { title: "General", path: "/general-dentistry" },
       { title: "Cosmetic", path: "/" },
       { title: "Emergency", path: "/" },
       { title: "Implants", path: "/" },
@@ -31,7 +31,7 @@ const USER_MENU_LIST = [
   },
   {
     category: "AESTHETICS",
-    path: "/general-dentistry",
+    path: "/asthetics",
     services: [
       { title: "Anti Wrinkle Injections", path: "/" },
       { title: "Fillers", path: "/" },
@@ -40,7 +40,7 @@ const USER_MENU_LIST = [
   },
   {
     category: "WELLNESS",
-    path: "/dentist/referral",
+    path: "/wellness",
     services: [
       { title: "Cryotherapy", path: "/" },
       { title: "Infra-red Sauna", path: "/" },
@@ -56,7 +56,12 @@ const USER_MENU_LIST = [
   },
   {
     category: "REFERRAL PORTAL",
-    path: "/dentist/referral#form",
+    path: "/referral",
+    services: [],
+  },
+  {
+    category: " PATIENT PORTAL",
+    path: "/patient",
     services: [],
   },
   {
@@ -67,7 +72,7 @@ const USER_MENU_LIST = [
   { category: "FEE GUIDE", path: "/fee-guide", services: [] },
   {
     category: "CONTACT",
-    path: "/aspire",
+    path: "/contact-us",
     services: [],
   },
 ];
@@ -97,7 +102,7 @@ export default function Menu({ menuStatus, setMenuStatus, role }: MenuProps) {
 
   return (
     <nav
-      className={` w-full lg:w-[20%] md:w-[40%] z-50 h-screen bg-menuBar fixed top-0 left-0 px-12 pt-20 pb-15 trasnform ${
+      className={` w-full lg:w-[40%] md:w-[60%] xl:w-[30%] z-50 h-screen bg-menuBar fixed top-0 left-0 px-12 pt-20 pb-15 trasnform ${
         menuStatus ? "translate-x-0" : "-translate-x-full"
       } transition-transform duration-500 ease-in-out font-gillSans `}
     >
@@ -107,7 +112,7 @@ export default function Menu({ menuStatus, setMenuStatus, role }: MenuProps) {
         alt="Close Menu"
         onClick={() => setMenuStatus(false)}
       />
-      <ul className="zoom-out space-y-4 lg:overflow-y-auto scrollbar-none lg:h-[500px]">
+      <ul className="zoom-out space-y-4 overflow-y-auto h-[90%] scrollbar ">
         {MENU_LIST.map((categoryData, index) => (
           <li key={index} className="">
             <div className="flex items-center">
@@ -138,7 +143,7 @@ export default function Menu({ menuStatus, setMenuStatus, role }: MenuProps) {
             {activeCategory === categoryData.category &&
               categoryData.services.length > 0 && (
                 <ul
-                  className={`pl-4 mt-2 space-y-2 overflow-y-auto scrollbar-thin md:h-full ${
+                  className={`pl-4 mt-2 space-y-2 overflow-y-auto scrollbar md:h-full ${
                     categoryData.services.length > 3 ? "h-[170px]" : "h-auto"
                   }`}
                 >

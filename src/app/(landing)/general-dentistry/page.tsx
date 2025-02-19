@@ -5,7 +5,12 @@ import {
   AiCartoon,
   AspireAesthetic,
   ClinicChair,
+  Dentist1,
+  Dentist2,
+  Dentist3,
   DentistTreatment,
+  DropDown4,
+  DropDown8,
   TeethCartoon,
 } from "@/assets";
 
@@ -30,7 +35,7 @@ const GENERAL_DENTISTRY_SERVICE = [
     description:
       "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
     container_side: "left",
-    imagePath: AiCartoon,
+    imagePath: DropDown8,
   },
 
   {
@@ -38,7 +43,7 @@ const GENERAL_DENTISTRY_SERVICE = [
     description:
       "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
     container_side: "right",
-    imagePath: TeethCartoon,
+    imagePath: Dentist1,
   },
 
   {
@@ -46,7 +51,7 @@ const GENERAL_DENTISTRY_SERVICE = [
     description:
       "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
     container_side: "left",
-    imagePath: TeethCartoon,
+    imagePath: DropDown4,
   },
 ];
 
@@ -68,7 +73,8 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Richard Porter",
-    backgroundContent: TeethCartoon,
+    backgroundContent: "/videos/general-dentistry-01.mp4",
+    is_video: true,
   },
   {
     path: "/dr-raheelmalik",
@@ -76,7 +82,8 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Raheel Malik",
-    backgroundContent: AspireAesthetic,
+    backgroundContent: "/videos/general-dentistry-02.mp4",
+    is_video: true,
   },
   {
     path: "/dr-aspireclinic",
@@ -84,7 +91,8 @@ const CARD_DATA = [
     buttonText: "Read Bio",
     card_height: 613,
     doc_name: "Dr. Raheel Malik",
-    backgroundContent: DentistTreatment,
+    backgroundContent: "/videos/landing-page-video-1.mp4",
+    is_video: true,
   },
 ];
 
@@ -98,7 +106,7 @@ export default function GeneralDentistry() {
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
         descLineHeight={36.6}
-        headingFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
+        titleFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
         isVideo={false}
         backgroundContent={ClinicChair}
       />
@@ -113,16 +121,12 @@ export default function GeneralDentistry() {
       ))}
       <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}
-        descriptionTextSize={ABOUT_US_SECTION_DATA.descriptionTextSize}
-        descriptionLeadingHeight={
-          ABOUT_US_SECTION_DATA.descriptionLeadingHeight
-        }
         hasButton={ABOUT_US_SECTION_DATA.hasButton}
         buttonText={ABOUT_US_SECTION_DATA.buttonText}
         backgroundColor={ABOUT_US_SECTION_DATA.backgroundColor}
         textColor={ABOUT_US_SECTION_DATA.textColor}
-        descriptionWidth={ABOUT_US_SECTION_DATA.descriptionWidth}
         buttonBackgroundColor="#ECE8E3"
+        buttonClickLink={"/"}
       />
 
       <div className=" zoom-out bg-feeGuide flex flex-col gap-20 w-full mx-auto">
@@ -139,6 +143,7 @@ export default function GeneralDentistry() {
               buttonText={card.buttonText}
               card_height={card.card_height}
               doc_name={card.doc_name}
+              isVideo={card.is_video}
               className="w-[320px] sm:w-[360px] md:w-[424px] h-auto xl:w-[380px] 2xl:w-[424px]"
             />
           ))}

@@ -1,17 +1,26 @@
+import { InstagramIcon, LinkedinIcon, XIcon } from "@/assets";
 import Image, { StaticImageData } from "next/image";
 
 interface GeneralDentistryServiceProp {
   title: string;
-  description: string;
+  description?: string;
   container_side: string;
   imagePath: string | StaticImageData;
+  isContact?: boolean;
+  phoneNumber?: string;
+  email?: string;
+  address?: string;
 }
 
 export default function GeneralDentistryService({
   title,
   description,
   container_side,
+  isContact = false,
   imagePath,
+  phoneNumber,
+  email,
+  address,
 }: GeneralDentistryServiceProp) {
   return (
     <div className="w-full bg-feeGuide py-[97px] px-[10%]">
@@ -25,9 +34,28 @@ export default function GeneralDentistryService({
           <h2 className="text-[22px] md:text-[52px] leading-[59.02px] font-bold font-opus">
             {title}
           </h2>
-          <p className="text-[16px] md:text-[24px] lg:w-[410px]  xl:w-[471px] md:w-[360px] md:h-[150px] lg:h-[107px] xl:h-[81px] leading-[27.27px] tracking-widest font-gillSans">
-            {description}
-          </p>
+
+          {!isContact ? (
+            <p className="text-[16px] md:text-[24px] lg:w-[410px]  xl:w-[471px] md:w-[360px] md:h-[150px] lg:h-[107px] xl:h-[81px] leading-[27.27px] tracking-widest font-gillSans">
+              {description}
+            </p>
+          ) : (
+            <div className="flex flex-col gap-4 md:gap-8 font-gillSans text-base md:text-xl xl:text-2xl">
+              <div className="flex flex-col gap-2 md:gap-4">
+                <p>Phone : {phoneNumber}</p>
+                <p>Email : {email}</p>
+                <p>Address : {address}</p>
+              </div>
+              <div className="flex flex-col gap-2 md:gap-4">
+                <p>Connect with us</p>
+                <div className="flex gap-4">
+                  <Image alt="instagram" src={InstagramIcon} />
+                  <Image alt="X" src={XIcon} />
+                  <Image alt="linkedIn" src={LinkedinIcon} />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Image Section */}
@@ -39,8 +67,8 @@ export default function GeneralDentistryService({
           <Image
             src={imagePath}
             alt={title}
-            width={705}
-            height={705}
+            width={800}
+            height={800}
             className="object-cover rounded-md"
           />
         </div>
