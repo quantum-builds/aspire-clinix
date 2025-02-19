@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const referralFormId = req.nextUrl.searchParams.get("id");
+  const referralFormId = req.nextUrl.pathname.split("/").pop();
 
   try {
     if (!referralFormId || !isValidCuid(referralFormId)) {
@@ -64,7 +64,7 @@ export async function PUT(req: NextRequest) {
     );
   }
 
-  const referralFormId = req.nextUrl.searchParams.get("id");
+  const referralFormId = req.nextUrl.pathname.split("/").pop();
 
   if (!referralFormId || !isValidCuid(referralFormId)) {
     return NextResponse.json({ message: "Invalid Form Id." }, { status: 400 });

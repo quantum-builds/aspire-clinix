@@ -101,20 +101,16 @@ model Treatment {
   PatientTreatment PatientTreatment[]
 }
 
-
-// TODO: need to uncomment Payment Payment[]
-
 model User {
-  id       String   @id @default(cuid())
-  email    String   @unique
+  id       String                @id @default(cuid())
+  email    String                @unique
   password String
   role     String
   Admin    Admin?
   Dentist  Dentist?
   Invoices Invoice?
   Patient  Patient?
-  // Payment  Payment[]
-  plans UserSubscribedPlans[]
+  plans    UserSubscribedPlans[]
 }
 
 model Invoice {
@@ -131,12 +127,9 @@ model Invoice {
   Payment         Payment[]
 }
 
-
-// TODO : need to make userId unique and add uncomment the User User
-
 model Payment {
   id              String        @id @default(cuid())
-  userId          String          
+  userId          String
   invoiceId       String?
   stripePaymentId String        @unique
   amount          Float
@@ -144,47 +137,55 @@ model Payment {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   Invoice         Invoice?      @relation(fields: [invoiceId], references: [id])
-  // User            User          @relation(fields: [userId], references: [id])
 }
 
 model Plan {
-  id            String    @id @default(uuid())
-  name          String
-  description   String
-  price         Float   // Supports one-time or installment-based pricing
-  validity      Int       // Duration in months (e.g., 6, 12)
+  id                 String                @id @default(uuid())
+  name               String
+  description        String
+  price              Float
+  validity           Int
   includedTreatments String[]
-  discountId    String?
-  discounts     Discount? @relation(fields: [discountId], references: [id])
-  status        PlanStatus @default(ACTIVE)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  users UserSubscribedPlans[]
+  discountId         String?
+  status             PlanStatus            @default(ACTIVE)
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  discounts          Discount?             @relation(fields: [discountId], references: [id])
+  users              UserSubscribedPlans[]
 }
 
 model Discount {
-  id         String  @id @default(uuid())
-  type       DiscountType
-  value      Float // Percentage or fixed amount
-  expiresAt  DateTime?
-  plans      Plan[]
+  id        String       @id @default(uuid())
+  type      DiscountType
+  value     Float
+  expiresAt DateTime?
+  plans     Plan[]
 }
-model UserSubscribedPlans{
-  userId String 
-  user User @relation(fields: [userId],references: [id])
-  planId String
-  plans Plan @relation(fields: [planId],references: [id])
+
+model UserSubscribedPlans {
+  userId       String
+  planId       String
   subscribedAt DateTime
+  plans        Plan     @relation(fields: [planId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
 
-  @@unique([userId,planId])
+  @@unique([userId, planId])
 }
-
 
 model Admin {
   id     String @id @default(cuid())
   userId String @unique
   email  String @unique
   User   User   @relation(fields: [userId], references: [id])
+}
+
+model Video {
+  id          String @id @default(cuid())
+  dentistId   String
+  patientId   String
+  fileContent String
+  fileName    String
+  fileType    String
 }
 
 enum InvoiceStatus {

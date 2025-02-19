@@ -1,7 +1,6 @@
+import { stripe } from "@/config/stripe-config";
 import prisma from "@/lib/db";
-import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export async function GET(req: NextRequest) {
   try {
@@ -57,6 +56,9 @@ export async function GET(req: NextRequest) {
     }
   } catch (error) {
     console.error("Stripe Error:", error);
-    return new NextResponse("Internal Server", { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

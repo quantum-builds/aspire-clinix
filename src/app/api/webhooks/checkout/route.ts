@@ -1,8 +1,8 @@
 import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { stripe } from "@/config/stripe-config";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(request: NextRequest) {
   const body = await request.text();

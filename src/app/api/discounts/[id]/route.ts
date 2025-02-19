@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const discountId = req.nextUrl.searchParams.get("id");
+  const discountId = req.nextUrl.pathname.split("/").pop();
 
   try {
     if (!discountId || !isValidCuid(discountId)) {
@@ -59,7 +59,7 @@ export async function PUT(req: NextRequest) {
     );
   }
 
-  const discountId = req.nextUrl.searchParams.get("id");
+  const discountId = req.nextUrl.pathname.split("/").pop();
 
   if (!discountId || !isValidCuid(discountId)) {
     return NextResponse.json(
@@ -89,6 +89,53 @@ export async function PUT(req: NextRequest) {
         { status: 404 }
       );
     }
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+// TODO : only admin can access
+
+export async function DELETE(req: NextRequest) {
+  if (req.method !== ApiMethods.DELETE) {
+    return NextResponse.json(
+      { message: "Method not allowed." },
+      { status: 405 }
+    );
+  }
+
+  const discountId = req.nextUrl.pathname.split("/").pop();
+
+  if (!discountId || !isValidCuid(discountId)) {
+    return NextResponse.json(
+      { message: "Invalid Discount Id." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const discount = await prisma.discount.findUnique({
+      where: { id: discountId },
+    });
+
+    if (!discount) {
+      return NextResponse.json(
+        { message: "Discount with this Id does not exist." },
+        { status: 404 }
+      );
+    }
+
+    await prisma.discount.delete({
+      where: { id: discountId },
+    });
+
+    return NextResponse.json(
+      { message: "Discount deleted successfully." },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },

@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+import { stripe } from "@/config/stripe-config";
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,6 +31,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ result: checkoutSession, status: 200 });
   } catch (error) {
     console.log(error);
-    return new NextResponse("Internal Server", { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

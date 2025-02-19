@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const planId = req.nextUrl.searchParams.get("id");
+  const planId = req.nextUrl.pathname.split("/").pop();
 
   try {
     if (!planId || !isValidCuid(planId)) {
@@ -55,13 +55,10 @@ export async function PUT(req: NextRequest) {
     );
   }
 
-  const planId = req.nextUrl.searchParams.get("id");
+  const planId = req.nextUrl.pathname.split("/").pop();
 
   if (!planId || !isValidCuid(planId)) {
-    return NextResponse.json(
-      { message: "Invalid Plan Id." },
-      { status: 400 }
-    );
+    return NextResponse.json({ message: "Invalid Plan Id." }, { status: 400 });
   }
 
   const updatedPlan = await req.json();
@@ -85,6 +82,48 @@ export async function PUT(req: NextRequest) {
         { status: 404 }
       );
     }
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  if (req.method !== ApiMethods.DELETE) {
+    return NextResponse.json(
+      { message: "Method not allowed." },
+      { status: 405 }
+    );
+  }
+
+  const planId = req.nextUrl.pathname.split("/").pop();
+
+  if (!planId || !isValidCuid(planId)) {
+    return NextResponse.json({ message: "Invalid Plan Id." }, { status: 400 });
+  }
+
+  try {
+    const discount = await prisma.plan.findUnique({
+      where: { id: planId },
+    });
+
+    if (!discount) {
+      return NextResponse.json(
+        { message: "Plan with this Id does not exist." },
+        { status: 404 }
+      );
+    }
+
+    await prisma.plan.delete({
+      where: { id: planId },
+    });
+
+    return NextResponse.json(
+      { message: "Plan deleted successfully." },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },

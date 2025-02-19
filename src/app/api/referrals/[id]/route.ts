@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
       { status: 405 }
     );
   }
-  const dentistId = req.nextUrl.searchParams.get("id");
+  const dentistId = req.nextUrl.pathname.split("/").pop();
 
   try {
     if (!dentistId || !isValidCuid(dentistId)) {
