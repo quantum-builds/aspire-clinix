@@ -3,7 +3,7 @@ import {
   AppointmentServices,
   AppointmentStatus,
 } from "../src/constants/AppointmentConstants";
-import { PatientTreatmentStatus } from "../src/constants/PatientTreatmentStatus";
+import { PatientTreatmentStatus } from "@prisma/client";
 import { UserRoles } from "../src/constants/UserRoles";
 import { PrismaClient } from "@prisma/client";
 import App from "next/app";

@@ -17,8 +17,8 @@ model Patient {
   userId           String             @unique
   Appointment      Appointment[]
   User             User               @relation(fields: [userId], references: [id])
-  PatientTreatment PatientTreatment[]
-  ReferralForm     ReferralForm[]
+  // PatientTreatment PatientTreatment[]
+  // ReferralForm     ReferralForm[]
   Dentist          Dentist[]          @relation("PatientDentists")
 }
 
@@ -34,8 +34,8 @@ model Dentist {
   yearsOfExperience Int?
   Appointment       Appointment[]
   User              User               @relation(fields: [userId], references: [id])
-  PatientTreatment  PatientTreatment[]
-  ReferralForm      ReferralForm[]
+  // PatientTreatment  PatientTreatment[]
+  // ReferralForm      ReferralForm[]
   Patient           Patient[]          @relation("PatientDentists")
 }
 
@@ -59,8 +59,8 @@ model ReferralForm {
   treatMeantAppointment String
   dentistId             String
   patientId             String
-  Dentist               Dentist  @relation(fields: [dentistId], references: [id])
-  Patient               Patient  @relation(fields: [patientId], references: [id])
+  // Dentist               Dentist  @relation(fields: [dentistId], references: [id])
+  // Patient               Patient  @relation(fields: [patientId], references: [id])
 
   @@unique([patientId, dentistId])
 }
@@ -79,15 +79,17 @@ model Appointment {
   @@unique([dentistId, patientId, appointmentDate])
 }
 
+
+// TODO : relation with patient and dentist
 model PatientTreatment {
   id              String    @id @default(cuid())
   dentistId       String
   patientId       String
   treatmentId     String
   treatmentDate   DateTime
-  treatmentStatus String
-  Dentist         Dentist   @relation(fields: [dentistId], references: [id])
-  Patient         Patient   @relation(fields: [patientId], references: [id])
+  treatmentStatus PatientTreatmentStatus @default(PENDING)
+  // Dentist         Dentist   @relation(fields: [dentistId], references: [id])
+  // Patient         Patient   @relation(fields: [patientId], references: [id])
   Treatment       Treatment @relation(fields: [treatmentId], references: [id])
 
   @@unique([patientId, treatmentId, treatmentDate])
@@ -210,4 +212,16 @@ enum PlanStatus {
 enum DiscountType {
   PERCENTAGE
   FIXED_AMOUNT
+}
+
+enum PatientTreatmentStatus {
+  SCHEDULED 
+  PENDING 
+  RESCHEDULED
+  ONGOING 
+  COMPLETED 
+  CANCELED 
+  NO_SHOW 
+  FAILED 
+  EXPIRED 
 }

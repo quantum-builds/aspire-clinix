@@ -91,13 +91,6 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  if (req.method !== ApiMethods.DELETE) {
-    return NextResponse.json(
-      { message: "Method not allowed." },
-      { status: 405 }
-    );
-  }
-
   const planId = req.nextUrl.pathname.split("/").pop();
 
   if (!planId || !isValidCuid(planId)) {
@@ -105,11 +98,11 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    const discount = await prisma.plan.findUnique({
+    const plan = await prisma.plan.findUnique({
       where: { id: planId },
     });
 
-    if (!discount) {
+    if (!plan) {
       return NextResponse.json(
         { message: "Plan with this Id does not exist." },
         { status: 404 }

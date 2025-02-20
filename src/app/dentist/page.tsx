@@ -72,7 +72,11 @@ export default function VideoUpload() {
       try {
         const response: any = await axiosInstance.post(
           "api/video",
-          fileDataJson,
+          {
+            fileDataJson,
+            patientId: "11",
+            dentistId: "12",
+          },
           {
             headers: {
               "Content-Type": "application/json",

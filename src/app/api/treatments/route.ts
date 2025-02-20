@@ -1,15 +1,7 @@
-import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
-  if (req.method !== ApiMethods.GET) {
-    return NextResponse.json(
-      { message: "Methond not allowed." },
-      { status: 405 }
-    );
-  }
-
+export async function GET() {
   try {
     const treatments = await prisma.treatment.findMany({});
 
@@ -34,3 +26,25 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export async function POST(req: NextRequest) {
+  const treatment = await req.json();
+
+  try {
+    await prisma.treatment.create({
+      data: treatment,
+    });
+
+    return NextResponse.json(
+      { message: "Treatment created successfully. " },
+      { status: 201 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+

@@ -1,17 +1,13 @@
 import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
 import { isValidCuid } from "@/utils/typeValidUtils";
+import { Console } from "console";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  if (req.method !== ApiMethods.GET) {
-    return NextResponse.json(
-      { message: "Methond not allowed." },
-      { status: 405 }
-    );
-  }
+  const treatmentId = req.nextUrl.pathname.split("/").pop();
 
-  const treatmentId = req.nextUrl.searchParams.get("id");
   if (!treatmentId || !isValidCuid(treatmentId)) {
     return NextResponse.json(
       { message: "Invalid treament Id." },
@@ -47,25 +43,18 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  if (req.method !== ApiMethods.PUT) {
-    return NextResponse.json(
-      { message: "Methond not allowed." },
-      { status: 405 }
-    );
-  }
-
-  const treatmentId = req.nextUrl.searchParams.get("id");
+  const treatmentId = req.nextUrl.pathname.split("/").pop();
 
   if (!treatmentId || !isValidCuid(treatmentId)) {
     return NextResponse.json(
-      { message: "Invalid treatmen Id." },
+      { message: "Invalid treament Id." },
       { status: 400 }
     );
   }
 
-  const updatedTreatment = await req.json();
-
   try {
+    const updatedTreatment = await req.json();
+
     await prisma.treatment.update({
       where: { id: treatmentId },
       data: updatedTreatment,
@@ -73,6 +62,44 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json(
       { message: "Treatment updated successfully." },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const treatmentId = req.nextUrl.pathname.split("/").pop();
+
+  if (!treatmentId || !isValidCuid(treatmentId)) {
+    return NextResponse.json(
+      { message: "Invalid Treatment Id." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const discount = await prisma.treatment.findUnique({
+      where: { id: treatmentId },
+    });
+
+    if (!discount) {
+      return NextResponse.json(
+        { message: "Treatmet with this Id does not exist." },
+        { status: 404 }
+      );
+    }
+
+    await prisma.treatment.delete({
+      where: { id: treatmentId },
+    });
+
+    return NextResponse.json(
+      { message: "Treatment deleted successfully." },
       { status: 200 }
     );
   } catch (error) {
