@@ -13,7 +13,6 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // const patientId = req.nextUrl.searchParams.get("id");
   const token = await getToken({
     req: req,
     secret: process.env.NEXTAUTH_SECRET,

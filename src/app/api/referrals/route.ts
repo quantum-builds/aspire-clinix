@@ -60,9 +60,10 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const dentistId = req.nextUrl.searchParams.get("dentistId");
+  const searchParams = req.nextUrl.searchParams;
 
   try {
+    const dentistId = searchParams.get("dentistId");
     // TODO Add is valid cuid
     if (!dentistId) {
       return NextResponse.json(

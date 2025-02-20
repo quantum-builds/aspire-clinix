@@ -3,8 +3,9 @@ import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
   try {
-    const sessionId = req.nextUrl.searchParams.get("session_id");
+    const sessionId = searchParams.get("session_id");
     if (!sessionId) {
       throw new Error("Session ID is required.");
     }

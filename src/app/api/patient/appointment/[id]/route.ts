@@ -2,30 +2,31 @@ import { ApiMethods } from "@/constants/ApiMethods";
 import prisma from "@/lib/db";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { getServerSession } from "next-auth";
+import { isDynamicServerError } from "next/dist/client/components/hooks-server-context";
+import Error from "next/error";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  if (req.method !== ApiMethods.GET) {
-    return NextResponse.json(
-      { message: "Methond not allowed." },
-      { status: 405 }
-    );
-  }
-
-  const appointmentId = req.nextUrl.searchParams.get("id");
+  const searchParams = req.nextUrl.searchParams;
 
   try {
-    if (!appointmentId || !isValidCuid(appointmentId)) {
+    const appointmentId = searchParams.get("appointmentId");
+    if (!appointmentId) {
       return NextResponse.json(
-        { message: "Invalid Form Id." },
+        { message: "Missing required parameter: id" },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidCuid(appointmentId)) {
+      return NextResponse.json(
+        { message: "Invalid appointment ID format." },
         { status: 400 }
       );
     }
 
     const appointment = await prisma.appointment.findUnique({
-      where: {
-        id: appointmentId,
-      },
+      where: { id: appointmentId },
       include: {
         Dentist: true,
         Patient: true,
@@ -34,7 +35,7 @@ export async function GET(req: NextRequest) {
 
     if (!appointment) {
       return NextResponse.json(
-        { message: "This appointment does not exist." },
+        { message: "Appointment not found." },
         { status: 404 }
       );
     }
@@ -48,32 +49,26 @@ export async function GET(req: NextRequest) {
     );
   } catch (error) {
     return NextResponse.json(
-      { message: "Internal server error" },
+      { message: "Internal server error." },
       { status: 500 }
     );
   }
 }
 
 export async function PUT(req: NextRequest) {
-  if (req.method !== ApiMethods.PUT) {
-    return NextResponse.json(
-      { message: "Methond not allowed." },
-      { status: 405 }
-    );
-  }
-
-  const appointmentId = req.nextUrl.searchParams.get("id");
-
-  if (!appointmentId || !isValidCuid(appointmentId)) {
-    return NextResponse.json(
-      { message: "Invalid Appointment Id." },
-      { status: 400 }
-    );
-  }
-
-  const updatedAppointment = await req.json();
+  const searchParams = req.nextUrl.searchParams;
 
   try {
+    const appointmentId = searchParams.get("appointmentId");
+
+    if (!appointmentId || !isValidCuid(appointmentId)) {
+      return NextResponse.json(
+        { message: "Invalid Appointment Id." },
+        { status: 400 }
+      );
+    }
+
+    const updatedAppointment = await req.json();
     const { dentistId, patientId } = updatedAppointment;
 
     console.log(dentistId + " " + patientId);

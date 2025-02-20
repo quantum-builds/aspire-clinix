@@ -3,9 +3,9 @@ import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
   try {
-    const patientId = request.nextUrl.searchParams.get("patientId");
-
+    const patientId = searchParams.get("patientId");
     if (patientId) {
       // Fetch videos for a specific patient
       const videos = await prisma.video.findMany({

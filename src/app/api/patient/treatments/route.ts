@@ -4,8 +4,7 @@ import { isValidCuid } from "@/utils/typeValidUtils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const patientId = req.nextUrl.searchParams.get("patientId");
-
+  const searchParams = req.nextUrl.searchParams;
   // if (!patientId || !isValidCuid(patientId)) {
   //   return NextResponse.json(
   //     { message: "Invalid patient Id." },
@@ -13,13 +12,14 @@ export async function GET(req: NextRequest) {
   //   );
   // }
 
-  if (!patientId) {
-    return NextResponse.json(
-      { message: "Invalid patient Id." },
-      { status: 400 }
-    );
-  }
   try {
+    const patientId = searchParams.get("patientId");
+    if (!patientId) {
+      return NextResponse.json(
+        { message: "Invalid patient Id." },
+        { status: 400 }
+      );
+    }
     const patientTreatments = await prisma.patientTreatment.findMany({
       where: { patientId: patientId },
       include: { Treatment: true },
