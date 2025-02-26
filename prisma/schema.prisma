@@ -160,7 +160,7 @@ model Discount {
   id        String       @id @default(uuid())
   type      DiscountType
   value     Float
-  expiresAt DateTime?
+  expiresAt DateTime
   plans     Plan[]
 }
 

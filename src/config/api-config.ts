@@ -61,8 +61,46 @@ export const ENDPOINTS = {
     },
   },
 
+  plan: {
+    getAll: "/api/plans",
+    get: (id: string) => `/api/plans/${id}`,
+    update: (id: string) => `/api/plans/${id}`,
+    create: "/api/plans",
+    delete: (id: string) => `/api/plans/${id}`,
+  },
+
+  discount: {
+    getAll: "/api/discounts",
+    get: (id: string) => `/api/discounts/${id}`,
+    update: (id: string) => `/api/discounts/${id}`,
+    create: "/api/discounts",
+    delete: (id: string) => `/api/discounts/${id}`,
+  },
+
   referralForm: {
-    create: `/api/referral`,
+    create: `/api/referrals`,
+    get: (id: string) => `/api/referrals/${id}`,
+    getDentistForms: (dentistId: string) =>
+      `/api/referral?dentistId=${dentistId}`,
+    update: (id: string) => `/api/referrals/${id}`,
+    delete: (id: string) => `/api/referrals/${id}`,
+  },
+
+  treatment: {
+    create: `/api/treatments`,
+    get: (id: string) => `/api/treatments/${id}`,
+    getAll: "/api/treatments",
+    update: (id: string) => `/api/treatments/${id}`,
+    delete: (id: string) => `/api/treatments/${id}`,
+  },
+
+  patientTreatment: {
+    getAll: (patientId: string) =>
+      `/api/patient/treatments?patientId=${patientId}`,
+    get: (id: string) => `/api/patient/treatments/${id}`,
+    create: `/api/patient/treatments`,
+    update: (id: string) => `/api/patient/treatments/${id}`,
+    delete: (id: string) => `/api/patient/treatments/${id}`,
   },
 
   appointment: {
