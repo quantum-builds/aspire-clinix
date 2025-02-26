@@ -1,6 +1,8 @@
 import Footer from "@/components/Footer";
 import SideBar from "./components/SideBar";
 import ContentSection from "./components/ContenteSection";
+import SubscribeComponent from "./components/Subscribe";
+import { Suspense } from "react";
 
 const HERO_SECTION_DATA = {
   title: "STAY ON TOP OF YOUR WELLNESS",
@@ -15,19 +17,19 @@ const HERO_SECTION_DATA = {
 export default function Patient() {
   return (
     <div>
-      <div className="h-[170vh] flex bg-feeguidedark">
+      {/* <div className="h-[170vh] flex bg-feeguidedark">
         <SideBar />
         <ContentSection />
       </div>
-      <Footer />
+      <Footer /> */}
 
-      {/* <Suspense>
+      <Suspense>
         <SubscribeComponent
           priceId={"price_1QsMlWRsBYmDUkzANYBPoU0U"}
           price={"50.00"}
           description={"Yearly Payment"}
         />
-      </Suspense> */}
+      </Suspense>
     </div>
   );
 }

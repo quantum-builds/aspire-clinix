@@ -67,21 +67,22 @@ export async function PUT(req: NextRequest) {
     const plan = await prisma.plan.findUnique({
       where: { id: planId },
     });
-    if (plan) {
-      await prisma.plan.update({
-        where: { id: planId },
-        data: updatedPlan,
-      });
+
+    if (!plan) {
       return NextResponse.json(
-        { message: "Plan updated successfully." },
-        { status: 200 }
-      );
-    } else {
-      return NextResponse.json(
-        { message: "Plan with this Id does not exists." },
+        { message: "Plan with this Id does not exist." },
         { status: 404 }
       );
     }
+
+    await prisma.plan.update({
+      where: { id: planId },
+      data: updatedPlan,
+    });
+    return NextResponse.json(
+      { message: "Plan updated successfully." },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },

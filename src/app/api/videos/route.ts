@@ -46,14 +46,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const {
-      fileContent: fileDataJson,
-      patientId,
-      dentistId,
-    } = await request.json();
+    const { fileDataJson, patientId, dentistId } = await request.json();
 
+    console.log("file content is ", fileDataJson);
     const uploadedFile = await cloudinary.v2.uploader.upload(
-      `data:video/mp4;base64,${fileDataJson}`,
+      `data:video/mp4;base64,${fileDataJson.fileContent}`,
       {
         resource_type: "video",
         folder: "aspire_dental_videos",

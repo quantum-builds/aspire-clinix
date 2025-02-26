@@ -28,9 +28,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const treatment = await req.json();
-
   try {
+    const treatment = await req.json();
+
     await prisma.treatment.create({
       data: treatment,
     });
@@ -46,5 +46,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-
