@@ -1,5 +1,5 @@
 import { axiosDentallyInstance, ENDPOINTS } from "@/config/api-config";
-import { convertSnakeCaseToCamelCase } from "@/utils/typeConventionConvertor";
+import { convertCamelCaseToSnakeCase } from "@/utils/typeConventionConvertor";
 import { useMutation } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { string } from "zod";
@@ -21,7 +21,7 @@ export const getADentist = async (id: string) => {
 
 export const { mutate: updateDentist } = useMutation({
   mutationFn: async ({ dentist, id }: { dentist: EditDentist; id: string }) => {
-    const reqParams = convertSnakeCaseToCamelCase(dentist);
+    const reqParams = convertCamelCaseToSnakeCase(dentist);
     const accessToken = Cookies.get("dentally_access_token");
 
     const response = await axiosDentallyInstance.put(

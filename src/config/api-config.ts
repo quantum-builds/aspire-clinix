@@ -1,3 +1,4 @@
+import { convertCamelCaseToSnakeCase } from "@/utils/typeConventionConvertor";
 import axios from "axios";
 
 const DENTALLY_BASE_URL = "https://api.dentally.co";
@@ -15,8 +16,10 @@ export const ENDPOINTS = {
     put: (id: string) => `/v1/patients/${id}`,
     delete: (id: string) => `/v1/patients/${id}`,
     list: (queryParams: ListPatient) => {
+      const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
+
       const queryString = new URLSearchParams(
-        Object.entries(queryParams).reduce((acc, [key, value]) => {
+        Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
           if (value !== undefined && value !== null) {
             acc[key] =
               value instanceof Date ? value.toISOString() : value.toString();
@@ -25,12 +28,14 @@ export const ENDPOINTS = {
         }, {} as Record<string, string>)
       ).toString();
 
-      return `v1/patients?${queryString}`;
+      return `/v1/patients?${queryString}`;
     },
     getStats: (id: string) => `v1/patients/${id}/stats`,
     listStats: (queryParams: ListPatientStats) => {
+      const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
+
       const queryString = new URLSearchParams(
-        Object.entries(queryParams).reduce((acc, [key, value]) => {
+        Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
           if (value !== undefined && value !== null) {
             acc[key] =
               value instanceof Date ? value.toISOString() : value.toString();
@@ -39,7 +44,7 @@ export const ENDPOINTS = {
         }, {} as Record<string, string>)
       ).toString();
 
-      return `v1/patient_stats?${queryString}`;
+      return `/v1/patient_stats?${queryString}`;
     },
   },
 
@@ -47,8 +52,10 @@ export const ENDPOINTS = {
     get: (id: string) => `/v1/practitioners/${id}`,
     put: (id: string) => `/v1/practitioners/${id}`,
     list: (queryParams: ListDentist) => {
+      const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
+
       const queryString = new URLSearchParams(
-        Object.entries(queryParams).reduce((acc, [key, value]) => {
+        Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
           if (value !== undefined && value !== null) {
             acc[key] =
               value instanceof Date ? value.toISOString() : value.toString();
@@ -58,6 +65,44 @@ export const ENDPOINTS = {
       ).toString();
 
       return `/v1/practitioners?${queryString}`;
+    },
+  },
+
+  appointment: {
+    create: "/v1/appointments",
+    get: (id: number) => `/v1/appointments/${id}`,
+    put: (id: number) => `/v1/appointments/${id}`,
+    delete: (id: number) => `/v1/appointments/${id}`,
+    reason: (deleted: boolean) => `/v1/appointment_reasons/${deleted}`,
+    list: (queryParams: ListAppointment) => {
+      const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
+
+      const queryString = new URLSearchParams(
+        Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
+          if (value !== undefined && value !== null) {
+            acc[key] =
+              value instanceof Date ? value.toISOString() : value.toString();
+          }
+          return acc;
+        }, {} as Record<string, string>)
+      ).toString();
+
+      return `/v1/appointments?${queryString}`;
+    },
+    available: (queryParams: ListAppointment) => {
+      const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
+
+      const queryString = new URLSearchParams(
+        Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
+          if (value !== undefined && value !== null) {
+            acc[key] =
+              value instanceof Date ? value.toISOString() : value.toString();
+          }
+          return acc;
+        }, {} as Record<string, string>)
+      ).toString();
+
+      return `/v1/appointments/availability?${queryString}`;
     },
   },
 
@@ -101,10 +146,6 @@ export const ENDPOINTS = {
     create: `/api/patient/treatments`,
     update: (id: string) => `/api/patient/treatments/${id}`,
     delete: (id: string) => `/api/patient/treatments/${id}`,
-  },
-
-  appointment: {
-    get: "/api/patient/appointments",
   },
 };
 

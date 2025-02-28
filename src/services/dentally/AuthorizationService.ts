@@ -3,7 +3,7 @@ import {
   GetATokenParams,
   RequestAuthorizationParams,
 } from "@/types/dentally-authentication";
-import { convertSnakeCaseToCamelCase } from "@/utils/typeConventionConvertor";
+import { convertCamelCaseToSnakeCase } from "@/utils/typeConventionConvertor";
 import { useMutation } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 
@@ -11,7 +11,7 @@ export const requestAuthorization = async (
   params: RequestAuthorizationParams
 ) => {
   try {
-    const reqParams = convertSnakeCaseToCamelCase(params);
+    const reqParams = convertCamelCaseToSnakeCase(params);
 
     const response = await axiosDentallyInstance.get(
       ENDPOINTS.auth.dentallyPatientRegister,
@@ -28,9 +28,9 @@ export const requestAuthorization = async (
     console.log("Error in requesting authorization", error);
   }
 };
-export const { mutate: getAToken ,isPending:LoadingGetAToken} = useMutation({
+export const { mutate: getAToken, isPending: LoadingGetAToken } = useMutation({
   mutationFn: async (params: GetATokenParams) => {
-    const reqParams = convertSnakeCaseToCamelCase(params);
+    const reqParams = convertCamelCaseToSnakeCase(params);
 
     if (reqParams.grantType !== "authorization_code") {
       throw new Error("Invalid grant_type");

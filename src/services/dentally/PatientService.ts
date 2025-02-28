@@ -1,11 +1,11 @@
 import { axiosDentallyInstance, ENDPOINTS } from "@/config/api-config";
-import { convertSnakeCaseToCamelCase } from "@/utils/typeConventionConvertor";
+import { convertCamelCaseToSnakeCase } from "@/utils/typeConventionConvertor";
 import { useMutation } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 
 export const { mutate: createPatient } = useMutation({
   mutationFn: async ({ patient }: { patient: CreatePatient }) => {
-    const reqParams = convertSnakeCaseToCamelCase(patient);
+    const reqParams = convertCamelCaseToSnakeCase(patient);
     const accessToken = Cookies.get("dentally_access_token");
     const response = await axiosDentallyInstance.post(
       ENDPOINTS.patient.create,
@@ -45,7 +45,7 @@ export const { mutate: updatePatient } = useMutation({
     patient: Partial<EditPatient>;
     id: string;
   }) => {
-    const reqParams = convertSnakeCaseToCamelCase(patient);
+    const reqParams = convertCamelCaseToSnakeCase(patient);
     const accessToken = Cookies.get("dentally_access_token");
 
     const response = await axiosDentallyInstance.put(
