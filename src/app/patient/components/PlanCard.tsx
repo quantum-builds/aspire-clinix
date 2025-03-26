@@ -30,7 +30,7 @@ export default function PlanCard({
 
       <div className="absolute top-0 left-0 w-full h-full bg-gray-400"></div>
 
-      <div className="flex flex-col items-center gap-7 px-6 py-10">
+      <div className="flex flex-col items-center gap-7  px-6 py-10">
         <div className="z-10 flex flex-col items-center text-center gap-6">
           <h2 className="text-[35px] md:text-[52px] leading-[59.02px] font-bold ">
             {title}

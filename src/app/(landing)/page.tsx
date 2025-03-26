@@ -1,9 +1,9 @@
 import LandingPageImage from "@/components/LandingPageImage";
 import AboutUsSection from "@/components/AboutUsSection";
 import HeroSection from "@/components/HeroSection";
-import ServiceDetailSection from "@/app/(landing)/landing/components/ServiceDetailsSection";
-import ServiceSection from "@/app/(landing)/landing/components/ServicesSection";
-import SupplementSection from "@/app/(landing)/landing/components/SupplementSection";
+import ServiceDetailSection from "@/app/(landing)/components/ServiceDetailsSection";
+import ServiceSection from "@/app/(landing)/components/ServicesSection";
+import SupplementSection from "@/app/(landing)/components/SupplementSection";
 import {
   AiCartoon,
   DentistTreatment,
@@ -317,3 +317,74 @@ export default function Home() {
     </div>
   );
 }
+
+// "use client";
+// import { sendEmail } from "@/services/EmailService";
+// import { useState } from "react";
+
+// export default function EmailSender() {
+//   const [emailData, setEmailData] = useState({
+//     to: "",
+//     subject: "",
+//     text: "",
+//   });
+
+//   const handleChange = (e: any) => {
+//     const { name, value } = e.target;
+//     setEmailData({ ...emailData, [name]: value });
+//   };
+
+//   const handleSubmit = async (e: any) => {
+//     e.preventDefault();
+//     // try {
+//     //   const response = await axios.post("/api/send-email", emailData);
+//     //   alert("Email sent successfully!");
+//     //   console.log(response.data);
+//     // } catch (error) {
+//     //   console.error("Error sending email:", error);
+//     //   alert("Failed to send email.");
+//     // }
+//     const response = await sendEmail(emailData);
+//     console.log("response from email sent ", response);
+//   };
+
+//   return (
+//     <div className="max-w-xl mx-auto p-6 bg-white shadow-lg rounded-2xl">
+//       <h2 className="text-2xl font-bold mb-6">Send an Email</h2>
+//       <form onSubmit={handleSubmit} className="space-y-4">
+//         <input
+//           type="email"
+//           name="to"
+//           placeholder="Recipient Email"
+//           value={emailData.to}
+//           onChange={handleChange}
+//           className="w-full p-2 border rounded-lg"
+//           required
+//         />
+//         <input
+//           type="text"
+//           name="subject"
+//           placeholder="Subject"
+//           value={emailData.subject}
+//           onChange={handleChange}
+//           className="w-full p-2 border rounded-lg"
+//           required
+//         />
+//         <textarea
+//           name="text"
+//           placeholder="Email content"
+//           value={emailData.text}
+//           onChange={handleChange}
+//           className="w-full p-2 border rounded-lg"
+//           required
+//         ></textarea>
+//         <button
+//           type="submit"
+//           className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+//         >
+//           Send Email
+//         </button>
+//       </form>
+//     </div>
+//   );
+// }

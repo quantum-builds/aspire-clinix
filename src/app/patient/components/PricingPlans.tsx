@@ -54,7 +54,7 @@ export default function PricingPlans() {
   ];
 
   return (
-    <div className="zoom-out flex flex-col gap-20 w-full min-h-screen mx-auto bg-feeGuide">
+    <div className="zoom-out flex flex-col gap-20 w-full min-h-screen  mx-auto bg-feeGuide">
       <h2 className=" text-[40px] font-opus md:text-[52px] mx-auto container text-center font-normal pt-[3.5rem]">
         Choose Your Plan
       </h2>

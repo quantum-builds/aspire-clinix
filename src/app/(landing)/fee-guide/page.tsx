@@ -1,10 +1,13 @@
 import HeroSection from "@/components/HeroSection";
 import CheckupAndRoutine from "./components/CheckupAndRoutine";
-import ConsultationCosts from "./components/ConsultationCosts";
 import DentalImplants from "./components/DentalImplants";
-import DentureAndBridges from "./components/DenturesAndBridges";
-import FillingsAndExtractions from "./components/FillingsAndExtractions";
-import InvisalignAndRetainer from "./components/InvisalignAndRetainer";
+import CosmeticsDentistry from "./components/CosmeticsDentistry";
+import Gums from "./components/Gums";
+import RootCanal from "./components/RootCanal";
+import OralSurgery from "./components/OralSurgery";
+import Orthodontics from "./components/Orthodontics";
+import Dentures from "./components/Dentures";
+import ChildrenDentistry from "./components/ChildrenDentistry";
 
 export default function FeeGuidePage() {
   const heroBackgroundColor = "#1D120C";
@@ -23,15 +26,14 @@ export default function FeeGuidePage() {
         titleFontSize="md:text-[48px] text-[25px]"
       />
       <CheckupAndRoutine />
-
-      <InvisalignAndRetainer />
-
+      <CosmeticsDentistry />
+      <Gums />
+      <RootCanal />
       <DentalImplants />
-
-      <FillingsAndExtractions />
-
-      <DentureAndBridges />
-      <ConsultationCosts />
+      <OralSurgery />
+      <Orthodontics />
+      <Dentures />
+      <ChildrenDentistry />
     </div>
   );
 }

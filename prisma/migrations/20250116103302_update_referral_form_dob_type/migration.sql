@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "ReferralForm" ALTER COLUMN "DOB" SET DATA TYPE TEXT;

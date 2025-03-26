@@ -11,6 +11,7 @@ import {
   image3,
   TeethCartoon,
 } from "@/assets";
+import LogoutButton from "@/components/LogoutButton";
 
 const HERO_SECTION_DATA = {
   title: "DENTISTRY",

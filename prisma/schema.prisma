@@ -17,8 +17,8 @@ model Patient {
   userId           String             @unique
   Appointment      Appointment[]
   User             User               @relation(fields: [userId], references: [id])
-  PatientTreatment PatientTreatment[]
-  ReferralForm     ReferralForm[]
+  // PatientTreatment PatientTreatment[]
+  // ReferralForm     ReferralForm[]
   Dentist          Dentist[]          @relation("PatientDentists")
 }
 
@@ -34,8 +34,8 @@ model Dentist {
   yearsOfExperience Int?
   Appointment       Appointment[]
   User              User               @relation(fields: [userId], references: [id])
-  PatientTreatment  PatientTreatment[]
-  ReferralForm      ReferralForm[]
+  // PatientTreatment  PatientTreatment[]
+  // ReferralForm      ReferralForm[]
   Patient           Patient[]          @relation("PatientDentists")
 }
 
@@ -44,23 +44,23 @@ model ReferralForm {
   medicalHistory        String?
   createdAt             DateTime @default(now())
   referralDetails       String[]
+  treatmentDetails      String?
   DOB                   String
   address               String
-  dentistId             String
   email                 String
   mobileNumber          String
   name                  String
   other                 String?
-  patientId             String
   referralAddress       String
   referralEmail         String
   referralGDC           String
   referralMobileNumber  String
   referralName          String
   treatMeantAppointment String
-  treatmentDetails      String?
-  Dentist               Dentist  @relation(fields: [dentistId], references: [id])
-  Patient               Patient  @relation(fields: [patientId], references: [id])
+  dentistId             String
+  patientId             String
+  // Dentist               Dentist  @relation(fields: [dentistId], references: [id])
+  // Patient               Patient  @relation(fields: [patientId], references: [id])
 
   @@unique([patientId, dentistId])
 }
@@ -70,8 +70,8 @@ model Appointment {
   dentistId         String
   appointmentDate   DateTime
   appointmentStatus String?
-  downloadReport    String?
   patientId         String
+  downloadReport    String?
   service           String
   Dentist           Dentist  @relation(fields: [dentistId], references: [id])
   Patient           Patient  @relation(fields: [patientId], references: [id])
@@ -79,15 +79,17 @@ model Appointment {
   @@unique([dentistId, patientId, appointmentDate])
 }
 
+
+// TODO : relation with patient and dentist
 model PatientTreatment {
   id              String    @id @default(cuid())
   dentistId       String
   patientId       String
   treatmentId     String
   treatmentDate   DateTime
-  treatmentStatus String
-  Dentist         Dentist   @relation(fields: [dentistId], references: [id])
-  Patient         Patient   @relation(fields: [patientId], references: [id])
+  treatmentStatus PatientTreatmentStatus @default(PENDING)
+  // Dentist         Dentist   @relation(fields: [dentistId], references: [id])
+  // Patient         Patient   @relation(fields: [patientId], references: [id])
   Treatment       Treatment @relation(fields: [treatmentId], references: [id])
 
   @@unique([patientId, treatmentId, treatmentDate])
@@ -102,13 +104,74 @@ model Treatment {
 }
 
 model User {
-  id       String   @id @default(cuid())
-  email    String   @unique
+  id       String                @id @default(cuid())
+  email    String                @unique
   password String
   role     String
   Admin    Admin?
   Dentist  Dentist?
+  Invoices Invoice?
   Patient  Patient?
+  plans    UserSubscribedPlans[]
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  userId          String        @unique
+  month           Int
+  year            Int
+  totalAmount     Float
+  stripePaymentId String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  status          InvoiceStatus @default(PENDING)
+  User            User          @relation(fields: [userId], references: [id])
+  Payment         Payment[]
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  userId          String
+  invoiceId       String?
+  stripePaymentId String        @unique
+  amount          Float
+  status          PaymentStatus @default(PENDING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  Invoice         Invoice?      @relation(fields: [invoiceId], references: [id])
+}
+
+model Plan {
+  id                 String                @id @default(uuid())
+  name               String
+  description        String
+  price              Float
+  validity           Int
+  includedTreatments String[]
+  discountId         String?
+  status             PlanStatus            @default(ACTIVE)
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  discounts          Discount?             @relation(fields: [discountId], references: [id])
+  users              UserSubscribedPlans[]
+}
+
+model Discount {
+  id        String       @id @default(uuid())
+  type      DiscountType
+  value     Float
+  expiresAt DateTime
+  plans     Plan[]
+}
+
+model UserSubscribedPlans {
+  userId       String
+  planId       String
+  subscribedAt DateTime
+  plans        Plan     @relation(fields: [planId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, planId])
 }
 
 model Admin {
@@ -116,4 +179,49 @@ model Admin {
   userId String @unique
   email  String @unique
   User   User   @relation(fields: [userId], references: [id])
+}
+
+model Video {
+  id          String @id @default(cuid())
+  dentistId   String
+  patientId   String
+  fileContent String
+  fileName    String
+  fileType    String
+}
+
+enum InvoiceStatus {
+  PENDING
+  PROCESSING
+  PAID
+  FAILED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+}
+
+enum PlanStatus {
+  ACTIVE
+  EXPIRED
+  UPCOMING
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+enum PatientTreatmentStatus {
+  SCHEDULED 
+  PENDING 
+  RESCHEDULED
+  ONGOING 
+  COMPLETED 
+  CANCELED 
+  NO_SHOW 
+  FAILED 
+  EXPIRED 
 }

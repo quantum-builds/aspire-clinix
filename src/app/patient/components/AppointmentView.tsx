@@ -1,5 +1,10 @@
-import Image, { StaticImageData } from "next/image";
-import Link from "next/link";
+// "use client";
+// import { fetchAppointments } from "@/services/AppointmentService";
+// import { getToken } from "next-auth/jwt";
+// import { useSession } from "next-auth/react";
+// import { cookies } from "next/headers";
+// import Image, { StaticImageData } from "next/image";
+// import Link from "next/link";
 
 // interface AppointmentCardProps {
 // dateTime: string;
