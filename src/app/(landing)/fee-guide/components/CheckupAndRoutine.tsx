@@ -6,56 +6,83 @@ export default function CheckupAndRoutine() {
   const backgroundColor = "#ECE8E3";
   const rows = [
     {
-      description: "New Patient Exam Child / Adult",
-      price: "£XX",
+      description: "New Patient Consult (inc xrays)",
+      price: "£245.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Routine Exam Child / Adult",
-      price: "£XX",
+      description: "Maintenance consult  (inc xrays)",
+      price: "£170.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Hygiene Session Child 20mins / Adult 30/45mins",
-      price: "£XX",
+      description: "New patient emergency (exc treatment)",
+      price: "£240.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Root Scale Debridement 30mins per quadrant",
-      price: "£XX",
+      description: "Existing patient emergency (exc treatment)",
+      price: "£160.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description:
-        "New Patient Emergency (Excluding Treatment costs, Including 1 x X-ray)",
-      price: "£XX",
+      description: "Hygiene (60 mins)",
+      price: "£185.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description:
-        "Existing Patient Emergency (Excluding Treatment costs, Including 1 x X-ray)",
-      price: "£XX",
+      description: "Hygiene (45 mins)",
+      price: "£145.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Panoral (OPG X-Ray)",
-      price: "£XX",
+      description: "Fillings from",
+      price: "£375.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "CBCT Scan",
-      price: "£XX",
+      description: "Onlays from",
+      price: "£1500.00",
       lineTop: true,
       lineBottom: false,
     },
-    { description: "sedation", price: "£XX", lineTop: true, lineBottom: true },
+    {
+      description: "Crowns from",
+      price: "£1200.00",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Onlays from",
+      price: "£1500.00",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Crowns from",
+      price: "£1200.00",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Night Gaurds",
+      price: "£760.00",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Sports Gaurds",
+      price: "£750.00",
+      lineTop: true,
+      lineBottom: true,
+    },
   ];
 
   return (

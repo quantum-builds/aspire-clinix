@@ -1,53 +1,54 @@
 import PriceList from "@/components/PriceList";
 
-export default function DentalImplants() {
-  const title = "Dental Implants";
+export default function OralSurgery() {
+  const title = "Root Canal";
   const prices = "Prices starting from";
-  const backgroundColor = "#ECE8E3";
+  const backgroundColor = "#DCD4C9";
   const rows = [
     {
-      description: "New Patient Consult",
+      description: "New Patient Consult ",
       price: "£245.00",
       lineTop: true,
       lineBottom: false,
     },
     {
       description: "Reviews",
-      price: "£180.00",
+      price: "£160.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Implants from",
-      price: "£3700.00",
+      description: "Tooth Extraction from",
+      price: "£350.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "CT Scan per jaw ",
-      price: "£180.00",
+      description: "Surgical Extractions from",
+      price: "£450.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Bone Augmentation ",
-      price: "POA",
+      description: "Wisdom tooth extraction from",
+      price: "£750.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Implant removal",
-      price: "POA",
+      description: "Surgery from",
+      price: "£995.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Implant supported denture from",
-      price: "£5800.00",
+      description: "Tongue Tie",
+      price: "£450.00",
       lineTop: true,
       lineBottom: true,
     },
   ];
+
   return (
     <PriceList
       title={title}
