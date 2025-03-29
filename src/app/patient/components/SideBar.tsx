@@ -5,13 +5,14 @@ import AspireLogo from "../book-treatment/components/AspireLogo";
 import { Menu, X } from "lucide-react"; // Icons for open/close
 import Image from "next/image"; // Import Image component
 import { ArrowLeftIcon } from "@/assets";
+import Link from "next/link";
 
 const SIDEBAR_DATA = [
-  { title: "APPOINTMENTS" },
-  { title: "PLANS, PACKAGES & SUBSCRIPTIONS" },
-  { title: "VIDEOS" },
-  { title: "CONSENT" },
-  { title: "STORE" },
+  { title: "APPOINTMENTS", link: "/patient" },
+  { title: "PLANS, PACKAGES & SUBSCRIPTIONS", link: "/patient" },
+  { title: "RESOURCES", link: "/patient/resources" },
+  { title: "CONSENT", link: "/patient" },
+  { title: "STORE", link: "/patient" },
 ];
 
 export default function SideBar() {
@@ -45,7 +46,7 @@ export default function SideBar() {
   }, [isOpen]);
 
   return (
-    <div>
+    <>
       <div
         className="lg:hidden p-4 cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
@@ -54,10 +55,10 @@ export default function SideBar() {
       </div>
 
       <div
-        className={`sidebar bg-feeGuide lg:w-3/4 h-full lg:px-10 lg:py-10 flex flex-col gap-20 
+        className={`sidebar bg-feeGuide lg:w-1/5 min-h-screen lg:px-10 lg:py-10 flex flex-col gap-20 
         ${
           isOpen
-            ? "fixed left-0 top-0 w-full md:w-2/4 h-full p-6 shadow-lg z-50"
+            ? "fixed left-0 top-0 w-full md:w-1/3 h-full p-6 shadow-lg z-50"
             : "hidden lg:flex"
         }`}
       >
@@ -68,18 +69,20 @@ export default function SideBar() {
           onClick={() => setIsOpen(false)}
           priority
         />
-        <AspireLogo />
-        <div className="flex flex-col gap-6 lg:gap-14">
+        <AspireLogo navigationLink={"/patient"} />
+        <div className="flex flex-col gap-6 md:gap-8 lg:gap-10 ">
           {SIDEBAR_DATA.map((data, index) => (
-            <p
-              key={index}
-              className="text-2xl font-normal font-opus cursor-pointer"
-            >
-              {data.title}
-            </p>
+            <Link href={data.link}>
+              <p
+                key={index}
+                className="text-lg lg:text-xl xl:text-2xl font-normal font-opus cursor-pointer"
+              >
+                {data.title}
+              </p>
+            </Link>
           ))}
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,8 +1,8 @@
 import PriceList from "@/components/PriceList";
 
 export default function Dentures() {
-  const title = "Root Canal";
-  const prices = "Prices starting from";
+  const title = "Dentures";
+  const prices = "Prices";
   const backgroundColor = "#DCD4C9";
   const rows = [
     {

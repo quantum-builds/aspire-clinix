@@ -1,8 +1,8 @@
 import PriceList from "@/components/PriceList";
 
 export default function ChildrenDentistry() {
-  const title = "Cosmetics Dentistry";
-  const prices = "Prices starting from";
+  const title = "Children Dentistry";
+  const prices = "Prices";
   const backgroundColor = "#ECE8E3";
   const rows = [
     {
@@ -27,7 +27,7 @@ export default function ChildrenDentistry() {
       description: "Maintenance consult 3-16",
       price: "£175.00",
       lineTop: true,
-      lineBottom: true,
+      lineBottom: false,
     },
     {
       description: "New patient emergency (exc treatment)",

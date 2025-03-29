@@ -24,6 +24,7 @@ export default function FeeGuidePage() {
         buttonColor={herobuttonColor}
         textColor="white"
         titleFontSize="md:text-[48px] text-[25px]"
+        heroScreenHieght="min-h-[55vh] md:min-h-[70vh]"
       />
       <CheckupAndRoutine />
       <CosmeticsDentistry />

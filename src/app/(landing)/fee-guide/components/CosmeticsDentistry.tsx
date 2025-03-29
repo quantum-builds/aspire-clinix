@@ -2,7 +2,7 @@ import PriceList from "@/components/PriceList";
 
 export default function CosmeticsDentistry() {
   const title = "Cosmetics Dentistry";
-  const prices = "Prices starting from";
+  const prices = "Prices";
   const backgroundColor = "#DCD4C9";
   const rows = [
     {

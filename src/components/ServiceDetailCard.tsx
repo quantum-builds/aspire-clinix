@@ -3,6 +3,7 @@ import Link from "next/link";
 
 interface ServiceDetailCardProps {
   title?: string | null;
+  titleColor?: string | null;
   description?: string | null;
   path: string;
   card_width?: number;
@@ -17,6 +18,7 @@ interface ServiceDetailCardProps {
 
 export default function ServiceDetailCard({
   title,
+  titleColor = "trueBlack",
   description,
   path,
   buttonText,
@@ -55,7 +57,7 @@ export default function ServiceDetailCard({
           ></video>
         ) : (
           <Image
-            className="absolute top-0 left-0 w-full h-full object-cover"
+            className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl"
             alt="Background Image"
             style={{ filter: "brightness(0.5)" }}
             src={backgroundContent}
@@ -82,7 +84,7 @@ export default function ServiceDetailCard({
       <div>
         <Link href={path}>
           <button
-            className="absolute font-gillSans bottom-0 rounded-tl-2xl w-[150px] h-[65px] right-0 bg-feeGuide text-base tracking-widest"
+            className="absolute font-gillSans bottom-0 rounded-tl-2xl rounded-br-2xl w-[150px] h-[65px] right-0 bg-feeGuide text-base tracking-widest"
             style={{ lineHeight: "18.18px" }}
           >
             {buttonText}
@@ -90,8 +92,10 @@ export default function ServiceDetailCard({
         </Link>
       </div>
       {doc_name && (
-        <div className="absolute bottom-[-30px] left-0 w-full">
-          <p className="text-lg font-semibold">{doc_name}</p>
+        <div className="absolute bottom-[-40px] left-0 w-full">
+          <p className="text-lg md:text-xl xl:text-2xl font-opus text-white">
+            {doc_name}
+          </p>
         </div>
       )}
     </div>

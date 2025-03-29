@@ -6,6 +6,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import Image from "next/image";
 import { UserRoles } from "@/constants/UserRoles";
 import { routeModule } from "next/dist/build/templates/app-page";
+import path from "path";
 
 const USER_MENU_LIST = [
   {
@@ -18,61 +19,67 @@ const USER_MENU_LIST = [
     path: "/dentistry",
     services: [
       { title: "General", path: "/general-dentistry" },
-      { title: "Cosmetic", path: "/" },
-      { title: "Emergency", path: "/" },
-      { title: "Implants", path: "/" },
-      { title: "Gums", path: "/" },
-      { title: "Oral Surgery", path: "/" },
-      { title: "Dentures", path: "/" },
-      { title: "Root Canals", path: "/" },
-      { title: "Orthodontic", path: "/" },
-      { title: "Kids", path: "/" },
+      { title: "Cosmetic", path: "/service-page" },
+      { title: "Emergency", path: "/service-page" },
+      { title: "Implants", path: "/service-page" },
+      { title: "Gums", path: "/service-page" },
+      { title: "Oral Surgery", path: "/service-page" },
+      { title: "Dentures", path: "/service-page" },
+      { title: "Root Canals", path: "/service-page" },
+      { title: "Orthodontic", path: "/service-page" },
+      { title: "Kids", path: "/service-page" },
     ],
   },
   {
     category: "AESTHETICS",
     path: "/asthetics",
     services: [
-      { title: "Anti Wrinkle Injections", path: "/" },
-      { title: "Fillers", path: "/" },
-      { title: "Skin Boosters", path: "/" },
+      { title: "Anti Wrinkle Injections", path: "/service-page/" },
+      { title: "Fillers", path: "/service-page" },
+      { title: "Skin Boosters", path: "/service-page" },
     ],
   },
   {
     category: "WELLNESS",
     path: "/wellness",
     services: [
-      { title: "Cryotherapy", path: "/" },
-      { title: "Infra-red Sauna", path: "/" },
-      { title: "Contrast Therapy", path: "/" },
-      { title: "Hyperbaric Oxygen", path: "/" },
-      { title: "Ice Baths", path: "/" },
-      { title: "Massage", path: "/" },
-      { title: "Red Light Therapy", path: "/" },
-      { title: "Compression Therapy", path: "/" },
-      { title: "IV Lounge", path: "/" },
-      { title: "Longevity Concierge", path: "/" },
+      { title: "Cryotherapy", path: "/service-page" },
+      { title: "Infra-red Sauna", path: "/service-page" },
+      { title: "Contrast Therapy", path: "/service-page" },
+      { title: "Hyperbaric Oxygen", path: "/service-page" },
+      { title: "Ice Baths", path: "/service-page" },
+      { title: "Massage", path: "/service-page" },
+      { title: "Red Light Therapy", path: "/service-page" },
+      { title: "Compression Therapy", path: "/service-page" },
+      { title: "IV Lounge", path: "/service-page" },
+      { title: "Longevity Concierge", path: "/service-page" },
     ],
   },
-  {
-    category: "REFERRAL PORTAL",
-    path: "/referral",
-    services: [],
-  },
+  { category: "FEE GUIDE", path: "/fee-guide", services: [] },
   {
     category: " PATIENT PORTAL",
     path: "/patient",
     services: [],
   },
   {
-    category: "ASPIRE DENTAL ACADEMY",
-    path: "/aspire",
+    category: "REFERRAL PORTAL",
+    path: "/dentist/referral",
     services: [],
   },
-  { category: "FEE GUIDE", path: "/fee-guide", services: [] },
+  {
+    category: "MEET THE TEAM",
+    path: "/meet-the-team",
+    services: [],
+  },
   {
     category: "CONTACT",
     path: "/contact-us",
+    services: [],
+  },
+  { category: "PRIVACY POLICY", path: "/privacy-policy", services: [] },
+  {
+    category: "ASPIRE DENTAL ACADEMY",
+    path: "/aspire",
     services: [],
   },
 ];

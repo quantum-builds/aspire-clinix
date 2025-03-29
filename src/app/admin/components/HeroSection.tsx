@@ -20,7 +20,7 @@ import { RecentSales } from "../components/recent-sales";
 import { UserRoles } from "@/constants/UserRoles";
 import HeroMenu from "@/components/HeroMenu";
 import Link from "next/link";
-import { AspireDarkLogo, AspireLightLogo } from "@/assets";
+import { AspireLightLogo } from "@/assets";
 import DropDown from "./DropDown";
 
 export const metadata: Metadata = {
@@ -32,12 +32,11 @@ export default function HeroSection() {
   const renderHeader = () => (
     <header className="flex justify-between items-center absolute w-full top-0 h-20 md:h-32 px-5 lg:px-12 z-20">
       <div className="flex-1">
-        <HeroMenu role={UserRoles.ADMIN} />
+        <HeroMenu role={UserRoles.ADMIN} textColor={"trueBlack"} />
       </div>
       <Link href="/" scroll={false}>
         <Image
           src={AspireLightLogo}
-         
           alt="Aspire Clinix"
           width={80}
           height={88}

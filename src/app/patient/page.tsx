@@ -16,20 +16,16 @@ const HERO_SECTION_DATA = {
 
 export default function Patient() {
   return (
-    <div>
-      {/* <div className="h-[170vh] flex bg-feeguidedark">
-        <SideBar />
-        <ContentSection />
-      </div>
-      <Footer /> */}
+    <div className="bg-feeguidedark w-full">
+      <ContentSection />
 
-      <Suspense>
+      {/* <Suspense>
         <SubscribeComponent
           priceId={"price_1QsMlWRsBYmDUkzANYBPoU0U"}
           price={"50.00"}
           description={"Yearly Payment"}
         />
-      </Suspense>
+      </Suspense> */}
     </div>
   );
 }
