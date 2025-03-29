@@ -18,17 +18,17 @@ export default function ServiceDetailSection({
   services,
 }: ServiceDetailProps) {
   return (
-    <div className="zoom-out grid justify-center items-center gap-[0.5rem] w-full md:grid-cols-2 pl-2 md:pl-[5%] bg-feeGuide py-10 overflow-hidden">
+    <div className="zoom-out grid justify-center items-center gap-[0.5rem] w-full md:grid-cols-3 pl-2 md:pl-[5%] bg-feeGuide py-10 overflow-hidden">
       <div className="w-full flex flex-col gap-7 md:w-[70%]">
         <h2 className="flex text-left text-[35px] md:text-nowrap font-normal md:text-[50px] lg:text-[64px] font-opus">
           {title}
         </h2>
-        <p className="flex w-[100%] md:text-ellipsis justify-center items-center text-[16px] md:text-[24px] font-gillSans break-words whitespace-normal">
+        <p className="flex w-full md:text-ellipsis justify-center items-center text-[16px] md:text-[24px] font-gillSans break-words whitespace-normal">
           {description}
         </p>
       </div>
       <div
-        className="md:h-[403px] w-full overflow-y-auto mb-20 scrollbar-hide pt-[5%]"
+        className="md:h-[450px] w-full overflow-y-auto mb-20 scrollbar-hide pt-[5%] col-span-2"
         style={{
           height: "auto",
           overflow: "hidden",

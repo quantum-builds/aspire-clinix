@@ -13,7 +13,7 @@ const HERO_SECTION_DATA = {
   descLineHeight: 36.36,
   heading: "ASPIRE CLINIC’S PHILOPSOPHY",
   contentWidth: 100,
-  backgroundColor: "#FFFFFF",
+  backgroundColor: "#ECE8E3",
   buttonColor: "#ECE8E3",
   backgroundContent: image1,
 };
@@ -89,7 +89,7 @@ export default function OurPhilosophy() {
         title={FIRST_COMPONENT1.title}
         descriptionText={FIRST_COMPONENT1.descriptionText}
         descriptionBullets={FIRST_COMPONENT1.descriptionBullets}
-        backgroundColor="#FFFFFF"
+        backgroundColor="#ECE8E3"
         titleFontSize="md:text-[40px] text-[20px] lg:text-[60px]"
       />
       <Component2
@@ -104,7 +104,7 @@ export default function OurPhilosophy() {
         title={FIRST_COMPONENT1.title}
         descriptionText={SECOND_COMPONENT1.descriptionText}
         descriptionBullets={SECOND_COMPONENT1.descriptionBullets}
-        backgroundColor="#FFFFFF"
+        backgroundColor="#ECE8E3"
         titleFontSize="md:text-[40px] text-[20px] lg:text-[60px]"
       />
       <Component2

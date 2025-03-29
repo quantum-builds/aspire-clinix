@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import LogoutButton from "./LogoutButton";
+import HeroNav from "./HeroNav";
 
 interface HeroSectionProps {
   title: string | null;
@@ -22,6 +23,7 @@ interface HeroSectionProps {
   backgroundContent?: string | StaticImageData;
   heading?: string | null;
   headingSize?: number | null;
+  heroScreenHieght?: string;
 }
 
 export default function HeroSection({
@@ -38,40 +40,13 @@ export default function HeroSection({
   backgroundContent,
   heading,
   headingSize,
+  heroScreenHieght = "h-screen",
 }: HeroSectionProps) {
   const pathname = usePathname();
-  const renderHeader = (logoSrc: StaticImageData) => (
-    <header className="  flex justify-between items-center absolute w-full top-0 h-16 md:h-32 px-5 lg:px-12 z-20">
-      <div className="flex-1">
-        <HeroMenu
-          backgroundColor={pathname === "/fee-guide" ? "white" : undefined}
-        />
-      </div>
-      <Link href="/" scroll={false}>
-        <Image
-          src={AspireLightLogo}
-          alt="Aspire Clinix"
-          width={80}
-          height={88}
-          className="zoom-out flex items-center justify-center w-[80px] h-[40px] md:w-[189px] md:h-[88px] "
-        />
-      </Link>
-      <div className="zoom-out flex-1">
-        <Link href="/patient/book-treatment" scroll={false}>
-          <button
-            className="flex justify-center items-center ml-auto w-[90px] h-[42px] md:w-[170px] md:h-[60px] lg:w-[277px] lg:h-[77px] font-normal md:text-[20px] text-[13px] font-opus rounded-[5px] md:rounded-[20px]"
-            style={{ backgroundColor: buttonColor }}
-          >
-            BOOK A TREATMENT
-          </button>
-        </Link>
-      </div>
-    </header>
-  );
 
   return (
     <div
-      className="flex flex-col items-center justify-center h-screen relative overflow-hidden"
+      className={`flex flex-col items-center justify-center ${heroScreenHieght} relative overflow-hidden`}
       // style={{
       //   background: `linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 1)), ${backgroundColor}`,
       // }}
@@ -97,10 +72,14 @@ export default function HeroSection({
           />
         ))}
 
-      {/* Header Section */}
-      {renderHeader(
-        pathname === "/fee-guide" ? AspireLightLogo : AspireDarkLogo
-      )}
+      <HeroNav
+        buttonColor={buttonColor}
+        aspireLogo={
+          pathname === "/fee-guide" || "/meet-the-team"
+            ? AspireLightLogo
+            : AspireDarkLogo
+        }
+      />
 
       {/* Main Content */}
       <div

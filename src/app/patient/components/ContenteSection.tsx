@@ -65,7 +65,7 @@ const MESSAGES_DATA = [
 ];
 export default function ContentSection() {
   return (
-    <div className="zoom-out flex-1 p-2 md:p-10 lg:px-10 lg:py-14 flex flex-col gap-11">
+    <div className="zoom-out flex-1 p-2 md:p-10 lg:px-[10%] lg:py-[7%] flex flex-col gap-11">
       <div className="flex flex-col gap-6">
         <p className="text-5xl font-normal font-opus">Hello again, Damien</p>
         <p className="text-xl font-light font-gillSans">
@@ -77,10 +77,10 @@ export default function ContentSection() {
           <p className="flex-1 text-3xl font-opus text-start">
             Next Appointments
           </p>
-          <p className="flex-1 text-3xl font-opus text-start">Resources</p>
+          {/* <p className="flex-1 text-3xl font-opus text-start">Resources</p> */}
         </div>
-        <div className="flex lg:flex-row flex-col gap-7">
-          <div className="flex-1 bg-feeGuide flex flex-col  gap-10 px-10 py-14 rounded-xl">
+        <div className="grid grid-cols-2 gap-7">
+          <div className="col-span-1 bg-feeGuide flex flex-col  gap-10 px-10 py-14 rounded-xl">
             <p className="text-2xl font-gillSans font-semibold">
               {APPOINTMENT_BLOCK_DATA.date}
             </p>
@@ -115,7 +115,7 @@ export default function ContentSection() {
             <div className="w-full h-[2px] bg-black"></div>
             <p className="text-2xl font-opus text-center">Manage Appointment</p>
           </div>
-          <div className="flex-1 bg-feeGuide flex flex-col gap-10 px-10 py-14 rounded-xl">
+          {/* <div className="col-span-1 bg-feeGuide flex flex-col gap-10 px-10 py-14 rounded-xl">
             <div className="flex gap-4 items-center">
               <Image src={VideoIcon} alt="video-icon" width={30} height={30} />
               <p className="text-2xl font-gillSans">{RESOURSES_DATA.video}</p>
@@ -124,9 +124,9 @@ export default function ContentSection() {
               <Image src={LinkIcon} alt="link-icon" width={20} height={20} />
               <p className="text-2xl font-gillSans">{RESOURSES_DATA.links}</p>
             </div>
-          </div>
+          </div> */}
         </div>
-        <p className=" text-3xl font-opus text-start">New Messages</p>
+        {/* <p className=" text-3xl font-opus text-start">New Messages</p>
         <div className="bg-feeGuide flex flex-col gap-10 px-10 py-14 rounded-xl max-h-[60vh] md:max-h-[70vh] lg:max-h-[100vh] xl:max-h-[120vh] overflow-y-auto scrollbar">
           {MESSAGES_DATA.map((data, index) => (
             <div key={index}>
@@ -147,7 +147,7 @@ export default function ContentSection() {
               <div className="w-full h-[2px] bg-black"></div>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );

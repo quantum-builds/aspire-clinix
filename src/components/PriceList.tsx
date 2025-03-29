@@ -23,10 +23,10 @@ export default function PriceList({
 }: TableProps) {
   return (
     <div
-      className={`w-full min-h-screen bg-${backgroundColor} flex justify-center items-center py-[7%]`}
+      className={`w-full min-h-[70vh] bg-${backgroundColor} flex justify-center items-center py-[7%]`}
       style={{ backgroundColor: `${backgroundColor}` }}
     >
-      <div className="zoom-out w-full p-2 md:w-[80%] py-10 overflow-auto">
+      <div className="zoom-out w-full p-2 md:w-4/6 py-10 overflow-auto">
         <div className=" grid items-center justify-between grid-cols-2 mb-4 w-full">
           <div>
             <h1 className=" text-[16px] sm:text-[18px] md:text-[30px] text-left pl-4 md:pl-0 font-normal font-opus w-full sm:w-auto">
@@ -34,7 +34,7 @@ export default function PriceList({
             </h1>
           </div>
           <div>
-            <h5 className="text-[16px] sm:text-[18px] md:text-[30px] text-right font-normal font-opus w-full sm:w-auto">
+            <h5 className="text-[16px] sm:text-[18px] md:text-[30px] text-right pr-4 md:pr-0 font-normal font-opus w-full sm:w-auto">
               {prices}
             </h5>
           </div>

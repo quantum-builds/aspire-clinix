@@ -61,31 +61,22 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="bg-feeGuide min-h-screen flex  flex-col items-center lg:flex-row">
-      <div className="mt-6 w-3/4 lg:w-1/2 lg:mt-0 flex justify-center items-center bg-black">
-        <Image
-          src={image1}
-          alt=""
-          width={800}
-          height={800}
-          className="object-cover rounded-md"
-        />
-      </div>
+    <div className="bg-feeGuide min-h-screen items-center lg:flex-row">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="md:w-1/2 p-4 lg:p-14  bg-feeGuide "
+        className="md:w-1/2 mx-auto p-4 lg:p-14  bg-feeGuide "
       >
-        <div className="grid grid-cols-1 lg:grid-cols-2 flex-wrap justify-between flex-1 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 flex-wrap justify-between flex-1 gap-4">
           <FormInput
             type="text"
             name="firstName"
             label="First Name"
             control={control}
             errorMessage={errors.firstName?.message}
-            className="flex-1 w-full"
+            className="flex-1 w-full "
             backgroundColor="#ECE8E3"
-            marginTop="50px"
-            padding="8px"
+            marginTop="40px"
+            padding="12px"
           />
           <FormInput
             type="text"
@@ -95,8 +86,8 @@ export default function ContactForm() {
             errorMessage={errors.lastName?.message}
             className="flex-1 w-full"
             backgroundColor="#ECE8E3"
-            marginTop="50px"
-            padding="8px"
+            marginTop="40px"
+            padding="12px"
           />
           <FormInput
             type="text"
@@ -106,8 +97,8 @@ export default function ContactForm() {
             errorMessage={errors.phoneNumber?.message}
             className="flex-1 w-full"
             backgroundColor="#ECE8E3"
-            marginTop="50px"
-            padding="8px"
+            marginTop="30px"
+            padding="12px"
           />
           <FormInput
             type="text"
@@ -117,11 +108,11 @@ export default function ContactForm() {
             errorMessage={errors.email?.message}
             className="flex-1 w-full"
             backgroundColor="#ECE8E3"
-            marginTop="50px"
-            padding="8px"
+            marginTop="30px"
+            padding="12px"
           />
         </div>
-        <div className="mt-16">
+        <div className="mt-10">
           <label
             htmlFor="message"
             className="text-[16] md:text-[24px] font-normal block mb-4"
@@ -141,7 +132,7 @@ export default function ContactForm() {
             )}
           />
         </div>
-        <div className="mt-16">
+        <div className="mt-10">
           <p className="text-[16px] md:text-[24px] font-normal font-opus mb-4">
             How did you hear about us
           </p>
@@ -165,7 +156,7 @@ export default function ContactForm() {
           )}
         </div>
 
-        <div className="mt-16 ">
+        <div className="mt-8 ">
           <CheckboxInput
             type="checkbox"
             key="terms"
@@ -181,7 +172,7 @@ export default function ContactForm() {
           <p className="text-red-500 text-sm mt-2">{errors.terms.message}</p>
         )}
 
-        <div className=" my-20 flex md:justify-start justify-center items-center md:items-start">
+        <div className=" my-10 flex md:justify-end justify-center items-center md:items-start">
           <Button
             type="submit"
             title="Create Account"

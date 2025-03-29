@@ -2,7 +2,7 @@ import PriceList from "@/components/PriceList";
 
 export default function Gums() {
   const title = "Gums";
-  const prices = "Prices starting from";
+  const prices = "Prices";
   const backgroundColor = "#ECE8E3";
   const rows = [
     {

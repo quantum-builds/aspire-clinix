@@ -20,7 +20,7 @@ export default function AboutUsSection({
 }: AboutUsSectionProps) {
   return (
     <div
-      className={`flex flex-col justify-center items-center gap-3 md:gap-8 xl:gap-16 min-h-screen font-opus`}
+      className={`flex flex-col justify-center items-center gap-3 md:gap-8 xl:gap-16 min-h-[80vh] font-opus`}
       style={{ backgroundColor: backgroundColor }}
     >
       <p

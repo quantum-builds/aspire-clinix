@@ -3,11 +3,15 @@ import Image from "next/image";
 import { AspireDarkLogo } from "@/assets";
 import { useRouter } from "next/navigation";
 
-export default function AspireLogo() {
+interface AspireLogoProps {
+  navigationLink?: string;
+}
+
+export default function AspireLogo({ navigationLink = "/" }: AspireLogoProps) {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push("/"); // Navigate to the home page
+    router.push(navigationLink); // Navigate to the home page
   };
 
   return (

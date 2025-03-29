@@ -2,7 +2,7 @@ import PriceList from "@/components/PriceList";
 
 export default function CheckupAndRoutine() {
   const title = "Checkup & Routine Treatment";
-  const prices = "Prices starting from";
+  const prices = "Prices";
   const backgroundColor = "#ECE8E3";
   const rows = [
     {

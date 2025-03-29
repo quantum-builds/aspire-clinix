@@ -17,10 +17,10 @@ export default function PriceItemList({
                 ${lineTop ? "border-t" : ""}
                 ${lineBottom ? "border-b" : ""}`}
     >
-      <p className="text-left text-[16px] text-[#382F26] py-1 max-h-screen sm:text-[20px] lg:text-[30px] font-normal w-[60%] md:w-[65%]">
+      <p className="text-left text-base text-[#382F26] py-1 max-h-screen sm:text-xl lg:text-2xl font-normal w-[60%] md:w-[65%]">
         {description}
       </p>
-      <h1 className="text-right text-[16px] text-nowrap sm:text-[20px] font-normal w-[20%] md:w-[25%] lg:text-[30px]">
+      <h1 className="text-right text-base text-nowrap sm:text-xl font-normal w-[20%] md:w-[25%] lg:text-2xl">
         {price}
       </h1>
     </div>
