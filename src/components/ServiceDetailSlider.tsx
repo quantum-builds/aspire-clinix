@@ -196,7 +196,7 @@ export default function ServiceDetailSlider({
             path={service.path}
             buttonText={"Learn More"}
             card_height={723}
-            className="w-[350px] h-[full] md:w-[562px] md:h-[723px]"
+            className="w-[350px] h-[full] md:w-[562px] md:h-[723px] "
             onLoad={handleImageLoad}
           />
         ))}

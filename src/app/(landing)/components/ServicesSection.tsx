@@ -27,18 +27,17 @@ const SERVICE_SECTION = [
 
 export default function ServiceSection() {
   return (
-    <div
-      className=" flex flex-col justify-between md:flex-row gap-1 md:gap-2 h-auto font-opus "
-      style={{ backgroundColor: "#ECE8E3" }}
-    >
-      {SERVICE_SECTION.map((service) => (
-        <ServiceCard
-          key={service.path}
-          text={service.title}
-          path={service.path}
-          image={service.image}
-        />
-      ))}
+    <div className="min-h-[90vh] font-opus bg-feeGuide flex items-center">
+      <div className="w-4/5 mx-auto flex flex-col justify-between items-center lg:flex-row gap-1 md:gap-2 ">
+        {SERVICE_SECTION.map((service) => (
+          <ServiceCard
+            key={service.path}
+            text={service.title}
+            path={service.path}
+            image={service.image}
+          />
+        ))}
+      </div>
     </div>
   );
 }

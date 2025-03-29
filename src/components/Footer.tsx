@@ -22,7 +22,7 @@ export default function Footer() {
     <footer className="bg-footerBackground">
       <div className="zoom-out grid gap-12 md:gap-[3rem] md:px-3 lg:px-0 md:grid-cols-4 px-3 justify-items-start md:justify-items-center py-12">
         {/* Logo and Address Section */}
-        <div className="flex flex-col items-start gap-8">
+        <div className="flex flex-col items-start gap-10 col-span-1">
           <Image
             src={AspireLightLogo}
             alt="Aspire Clinic Logo"
@@ -34,20 +34,22 @@ export default function Footer() {
             <p>hello@aspireclinic.co.uk</p>
             <p>27 Mortimer Street</p>
             <p>W1N 7RJ, London, UK</p>
-            <p>0207 333 333</p>
           </address>
+          <p className="text-left text-white font-opus">
+            Copyright 2025 Aspire Clinic
+          </p>
         </div>
 
         {/* Newsletter Signup Section */}
-        <div className="flex flex-col  items-start gap-9">
+        {/* <div className="flex flex-col  items-start gap-9">
           <p className="text-[16px] sm:text-[20px] text-white font-normal font-opus">
             Sign up to our newsletter
           </p>
           <EmailInput />
-        </div>
+        </div> */}
 
         {/* Quick Links Section */}
-        <div className="flex flex-col items-start gap-4">
+        <div className="flex flex-col items-start gap-4 col-span-1">
           <p className="text-white text-[18px] sm:text-[20px] font-normal font-opus">
             Quick Links
           </p>
@@ -66,7 +68,7 @@ export default function Footer() {
         </div>
 
         {/* Social Icons Section */}
-        <div className="flex flex-col items-start gap-4">
+        <div className="flex flex-col items-start gap-4 col-span-1">
           <p className="text-[16px] lg:text-[20px] text-white font-normal font-opus">
             Connect with us
           </p>
@@ -84,9 +86,6 @@ export default function Footer() {
             ))}
           </div>
         </div>
-        <p className="text-left text-white font-opus">
-          Copyright 2024 Aspire Clinic
-        </p>
       </div>
     </footer>
   );

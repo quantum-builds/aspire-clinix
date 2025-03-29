@@ -282,7 +282,9 @@ export default function Home() {
         buttonClickLink={ABOUT_US_SECTION_DATA.buttonClickLink}
       />
       <LandingPageImage />
-      <ServiceSection />
+      <div className="bg-feeGuide">
+        <ServiceSection />
+      </div>
       <div id="dentistry">
         <ServiceDetailSection
           title={DENTAL_SERVICES.title}
@@ -304,7 +306,7 @@ export default function Home() {
           services={WELLNESS_SERVICE.services}
         />
       </div>
-      <SupplementSection
+      {/* <SupplementSection
         title={SUPPLEMENTS_DATA.title}
         description={SUPPLEMENTS_DATA.description}
         buttonClickLink={SUPPLEMENTS_DATA.buttonClickLink}
@@ -313,7 +315,7 @@ export default function Home() {
         backgroundColor={SUPPLEMENTS_DATA.backgroundColor}
         textColor={SUPPLEMENTS_DATA.textColor}
         buttonBackgroundColor={SUPPLEMENTS_DATA.buttonBackgroundColor}
-      />
+      /> */}
     </div>
   );
 }

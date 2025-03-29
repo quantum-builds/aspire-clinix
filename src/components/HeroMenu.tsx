@@ -1,6 +1,7 @@
 "use client";
 interface HeroMenuProps {
   backgroundColor?: string;
+  textColor: string;
   role?: string;
 }
 
@@ -10,6 +11,7 @@ import { UserRoles } from "@/constants/UserRoles";
 
 export default function HeroMenu({
   backgroundColor,
+  textColor,
   role = UserRoles.PATIENT,
 }: HeroMenuProps) {
   const [menuStatus, setMenuStatus] = useState(false);
@@ -22,7 +24,7 @@ export default function HeroMenu({
         }}
         style={{ color: `${backgroundColor}` }}
       >
-        <p className="zoom-out text-white">MENU</p>
+        <p className={`zoom-out text-${textColor}`}>MENU</p>
       </button>
       <Menu menuStatus={menuStatus} setMenuStatus={setMenuStatus} role={role} />
     </>

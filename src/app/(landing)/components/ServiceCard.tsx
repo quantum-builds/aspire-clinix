@@ -8,7 +8,7 @@ interface CardProps {
 }
 export default function ServiceCard({ text, path, image }: CardProps) {
   return (
-    <div className="zoom-out relative flex flex-col items-center justify-center gap-1 min-h-screen md:h-[1119px] w-full font-opus overflow-hidden rounded-md">
+    <div className="zoom-out relative flex flex-col items-center justify-center gap-1 w-full md:w-1/2 lg:w-[30%] h-[100vh] font-opus overflow-hidden rounded-3xl hover:scale-105 duration-500 transition-transform">
       <div className="absolute top-0 left-0 w-full h-full">
         {/* <Image src={image} alt="" layout="fill" objectFit="cover" priority /> */}
         <Image
@@ -25,7 +25,7 @@ export default function ServiceCard({ text, path, image }: CardProps) {
           {text}
         </h2>
       </div>
-      <div className="absolute bottom-[4rem]">
+      <div className="absolute bottom-[6rem]">
         <Link className="" href={path}>
           <button className="bg-feeGuide text-[18px] md:text-xl md:rounded-[20px] md:w-[232px] rounded-[10px] w-[150px] h-[50px] md:h-[77px] font-opus">
             Explore

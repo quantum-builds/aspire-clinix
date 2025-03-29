@@ -17,13 +17,13 @@ export default function Component1({
 }: Component1Props) {
   return (
     <div
-      className="flex justify-center items-center gap-4 md:gap-16 h-[78vh] font-opus"
+      className="flex justify-center items-center gap-0 md:gap-16 h-[78vh] font-opus"
       style={{ backgroundColor: backgroundColor }}
     >
       <div className="w-[50%] flex justify-center items-center">
         <h1
           className={clsx(
-            "text-center w-full px-2 xl:w-[60%] font-opus font-normal md:leading-[70px] lg:leading-[100px]",
+            " w-full px-2 md:w-4/5 xl:w-3/5 font-opus font-normal md:leading-[50px] lg:leading-[70px] text-start ",
             titleFontSize
           )}
         >
@@ -35,7 +35,7 @@ export default function Component1({
         <p className="text-left zoom-out  md:w-[70%] px-2 md:px-0 text-base md:text-2xl lg:text-4xl font-opus">
           {descriptionText}
         </p>
-        <div className="md:w-[50%] flex flex-col gap-7">
+        <div className="md:w-[65%] flex flex-col gap-7">
           {descriptionBullets.map((text, index) => (
             <p
               className="text-left zoom-out  px-2 md:px-0  text-base md:text-2xl lg:text-4xl font-opus"

@@ -60,6 +60,7 @@
     "tailwind-scrollbar": "^3.1.0",
     "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss-animate": "^1.0.7",
+    "video.js": "^8.22.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
