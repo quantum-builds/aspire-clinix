@@ -12,6 +12,7 @@ const config: Config = {
     extend: {
       colors: {
         feeGuide: "#ECE8E3",
+        patientSideBar:"#FBF8F8",
         trueBlack: "#382F26",
         feeguidedark: "#DCD4C9",
         menuBar: "rgba(201, 188, 169, 1)",

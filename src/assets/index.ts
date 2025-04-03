@@ -47,3 +47,5 @@ export { default as VideoIcon } from "@/assets/video-icon.svg";
 export { default as LocationIcon } from "@/assets/location-icon.svg";
 export { default as SheduleIcon } from "@/assets/schedule-icon.svg";
 export { default as LinkIcon } from "@/assets/link-icon.svg";
+export { default as ShoppingCart } from "@/assets/Shopping cart.svg";
+export { default as ShoppingBag } from "@/assets/Shopping bag.svg";
