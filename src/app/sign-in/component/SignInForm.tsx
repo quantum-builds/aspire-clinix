@@ -1,6 +1,5 @@
 "use client";
 
-import AspireLogo from "@/app/patient/book-treatment/components/AspireLogo";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -8,6 +7,7 @@ import FormInput from "@/components/ui/FormInput";
 import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@/components/ui/CustomButton";
 import Cookies from "js-cookie";
+import AspireLogo from "@/components/AspireLogo";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
