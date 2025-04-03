@@ -76,7 +76,7 @@ export default function ItemGrid({ setBagCount, items }: ItemGridProps) {
             {/* Product info */}
             <div className="mt-1 text-xs sm:text-sm">
               <p className="font-medium text-gray-800">{product.title}</p>
-              <p className="text-gray-600">{product.price}</p>
+              <p className="text-gray-600">£ {product.price}</p>
             </div>
           </div>
         ))}

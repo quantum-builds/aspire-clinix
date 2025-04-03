@@ -63,7 +63,7 @@ const USER_MENU_LIST = [
   },
   {
     category: "REFERRAL PORTAL",
-    path: "/dentist/referral",
+    path: "/referral",
     services: [],
   },
   {

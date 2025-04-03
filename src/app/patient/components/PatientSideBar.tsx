@@ -1,11 +1,11 @@
-"use client"; // Ensure it's a Client Component
-
+"use client";
 import { useState, useEffect } from "react";
-import AspireLogo from "../book-treatment/components/AspireLogo";
-import { Menu, X } from "lucide-react"; // Icons for open/close
-import Image from "next/image"; // Import Image component
+import { usePathname } from "next/navigation";
+import { Menu, X } from "lucide-react";
+import Image from "next/image";
 import { ArrowLeftIcon } from "@/assets";
 import Link from "next/link";
+import AspireLogo from "@/components/AspireLogo";
 
 const SIDEBAR_DATA = [
   { title: "APPOINTMENTS", link: "/patient" },
@@ -15,8 +15,9 @@ const SIDEBAR_DATA = [
   { title: "STORE", link: "/patient/store" },
 ];
 
-export default function SideBar() {
+export default function PatientSideBar() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,7 +49,7 @@ export default function SideBar() {
   return (
     <>
       <div
-        className="lg:hidden p-4 cursor-pointer"
+        className="lg:hidden p-4 cursor-pointer bg-feeguidedark inline-block"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? <X size={30} /> : <Menu size={30} />}
@@ -70,12 +71,13 @@ export default function SideBar() {
           priority
         />
         <AspireLogo navigationLink={"/patient"} />
-        <div className="flex flex-col gap-6 md:gap-8 lg:gap-10 ">
+        <div className="flex flex-col gap-6 md:gap-8 lg:gap-10">
           {SIDEBAR_DATA.map((data, index) => (
-            <Link href={data.link}>
+            <Link href={data.link} key={index}>
               <p
-                key={index}
-                className="text-lg lg:text-xl xl:text-2xl font-normal font-opus cursor-pointer"
+                className={`text-lg lg:text-xl xl:text-2xl font-normal font-opus cursor-pointer pb-2 ${
+                  pathname === data.link ? "border-b-2 border-black" : ""
+                }`}
               >
                 {data.title}
               </p>
