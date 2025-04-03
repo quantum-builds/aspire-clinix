@@ -12,7 +12,7 @@ const SIDEBAR_DATA = [
   { title: "PLANS, PACKAGES & SUBSCRIPTIONS", link: "/patient" },
   { title: "RESOURCES", link: "/patient/resources" },
   { title: "CONSENT", link: "/patient" },
-  { title: "STORE", link: "/patient" },
+  { title: "STORE", link: "/patient/store" },
 ];
 
 export default function SideBar() {
