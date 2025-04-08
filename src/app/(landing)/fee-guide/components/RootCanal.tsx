@@ -12,13 +12,13 @@ export default function RootCanal() {
       lineBottom: false,
     },
     {
-      description: "Root Canal from",
+      description: "Root Canal From",
       price: "£1300.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Re-Root Canal from",
+      description: "Re-Root Canal From",
       price: "£1600.00",
       lineTop: true,
       lineBottom: true,

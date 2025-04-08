@@ -33,10 +33,10 @@ const RESOURCES_DATA = [
 
 export default function Resources() {
   return (
-    <div className="zoom-out flex-1 p-8 md:p-10 lg:px-[7%] lg:py-[9%] flex flex-col gap-11 bg-feeguidedark">
-      <div className="flex flex-col gap-6">
+    <div className="zoom-out min-h-screen w-full">
+      <div className=" flex-1 p-8 md:p-10 lg:px-[7%] lg:py-[9%] flex flex-col gap-11 bg-feeguidedark">
         <p className="text-4xl font-normal font-opus">RESOURCES</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-7">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-7">
           {RESOURCES_DATA.map((resource) => (
             <div className="flex flex-col gap-4 ">
               {/* <video

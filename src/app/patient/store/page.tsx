@@ -78,7 +78,7 @@ export default async function StorePage() {
     },
   ];
   return (
-    <div className="min-h-screen w-full">
+    <div className="zoom-out min-h-screen w-full">
       {/* <HeroNav
         aspireLogo={AspireAcademyDarkLogo2}
         textColor="trueBlack"

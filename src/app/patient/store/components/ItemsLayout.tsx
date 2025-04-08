@@ -30,7 +30,7 @@ export default function ItemLayout({ items }: ItemLayoutProps) {
 
   return (
     <>
-      <div className="zoom-out flex-1 p-8 md:p-10 lg:px-[7%] lg:py-[9%] flex flex-col gap-11 bg-feeguidedark">
+      <div className=" flex-1 p-8 md:p-10 lg:px-[7%] lg:py-[9%] flex flex-col gap-11 bg-feeguidedark">
         <h1 className="text-3xl sm:text-4xl md:text-5xl xl:text-6xl font-normal mb-3 font-opus">
           Store
         </h1>

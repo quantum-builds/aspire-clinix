@@ -66,7 +66,7 @@ const APPOINTMENT_BLOCK_DATA = {
 
 export default function ContentSection() {
   return (
-    <div className="zoom-out flex-1 px-5 py-6 md:p-10 lg:px-[10%] lg:py-[7%] flex flex-col gap-11">
+    <div className="flex-1 px-5 py-6 md:p-10 lg:px-[10%] lg:py-[7%] flex flex-col gap-11">
       <div className="flex flex-col gap-6">
         <p className="text-5xl font-normal font-opus">Hello again, Damien</p>
         <p className="text-xl font-light font-gillSans">
