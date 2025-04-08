@@ -12,7 +12,7 @@ const USER_MENU_LIST = [
   {
     category: "ASPIRE CLINIC",
     path: "/",
-    services: [{ title: "Our Philosophy", path: "/our-philopsophy" }],
+    services: [{ title: "Our Philosophy", path: "/our-philosophy" }],
   },
   {
     category: "DENTISTRY",

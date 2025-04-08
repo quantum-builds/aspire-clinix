@@ -4,7 +4,7 @@ import EmailInput from "./EmailInput";
 import Link from "next/link";
 
 const IN_PAGE_NAV_LINKS = [
-  { label: "Our Philosophy", path: "/our-philopsophy" },
+  { label: "Our Philosophy", path: "/our-philosophy" },
   { label: "Dentistry", path: "/#dentistry" },
   { label: "Aesthetics", path: "/#aesthetic" },
   { label: "Wellness", path: "/landing#wellness" },

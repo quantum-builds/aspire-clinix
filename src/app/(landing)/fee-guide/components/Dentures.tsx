@@ -12,19 +12,19 @@ export default function Dentures() {
       lineBottom: false,
     },
     {
-      description: "Acrylic denture from",
+      description: "Acrylic Denture From",
       price: "£XX",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Chrome denture per arch from",
+      description: "Chrome Denture Per Arch From",
       price: "£XX",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Full Upper denture (per jaw)",
+      description: "Full Upper Denture (Per Jaw)",
       price: "£2400.00",
       lineTop: true,
       lineBottom: false,

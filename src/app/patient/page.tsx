@@ -2,7 +2,7 @@ import ContentSection from "./components/ContenteSection";
 
 export default function Patient() {
   return (
-    <div className="bg-feeguidedark w-full">
+    <div className="zoom-out  bg-feeguidedark w-full">
       <ContentSection />
 
       {/* <Suspense>

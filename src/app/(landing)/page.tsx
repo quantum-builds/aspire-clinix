@@ -238,7 +238,7 @@ const ABOUT_US_SECTION_DATA = {
     "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit.",
   descriptionTextSize: 40,
   descriptionLeadingHeight: 45.4,
-  buttonClickLink: "/our-philopsophy",
+  buttonClickLink: "/our-philosophy",
   hasButton: true,
   buttonText: "Our Philosophy",
   backgroundColor: "#1D120C",

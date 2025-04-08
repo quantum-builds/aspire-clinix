@@ -1,8 +1,7 @@
 import HeroSection from "@/components/HeroSection";
 import Component1 from "./components/Component1";
 import Component2 from "./components/Component2";
-import { image1, image2 } from "@/assets/index";
-import AboutUsSection from "@/components/AboutUsSection";
+import { image1 } from "@/assets/index";
 import SupplementSection from "@/app/(landing)/components/SupplementSection";
 
 const HERO_SECTION_DATA = {
@@ -11,7 +10,7 @@ const HERO_SECTION_DATA = {
     "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit.",
   descTextSize: 32,
   descLineHeight: 36.36,
-  heading: "ASPIRE CLINIC’S PHILOPSOPHY",
+  heading: "ASPIRE CLINIC’S PHILOSOPHY",
   contentWidth: 100,
   backgroundColor: "#ECE8E3",
   buttonColor: "#ECE8E3",
