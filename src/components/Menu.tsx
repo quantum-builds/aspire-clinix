@@ -32,7 +32,7 @@ const USER_MENU_LIST = [
   },
   {
     category: "AESTHETICS",
-    path: "/asthetics",
+    path: "/aesthetics",
     services: [
       { title: "Anti Wrinkle Injections", path: "/service-page/" },
       { title: "Fillers", path: "/service-page" },
@@ -72,7 +72,7 @@ const USER_MENU_LIST = [
     services: [],
   },
   {
-    category: "CONTACT",
+    category: "CONTACT US",
     path: "/contact-us",
     services: [],
   },

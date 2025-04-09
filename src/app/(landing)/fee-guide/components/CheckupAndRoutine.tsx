@@ -42,36 +42,6 @@ export default function CheckupAndRoutine() {
       lineBottom: false,
     },
     {
-      description: "Fillings From",
-      price: "£375.00",
-      lineTop: true,
-      lineBottom: false,
-    },
-    {
-      description: "Onlays From",
-      price: "£1500.00",
-      lineTop: true,
-      lineBottom: false,
-    },
-    {
-      description: "Crowns From",
-      price: "£1200.00",
-      lineTop: true,
-      lineBottom: false,
-    },
-    {
-      description: "Onlays From",
-      price: "£1500.00",
-      lineTop: true,
-      lineBottom: false,
-    },
-    {
-      description: "Crowns From",
-      price: "£1200.00",
-      lineTop: true,
-      lineBottom: false,
-    },
-    {
       description: "Night Guards",
       price: "£760.00",
       lineTop: true,
@@ -80,6 +50,36 @@ export default function CheckupAndRoutine() {
     {
       description: "Sports Guards",
       price: "£750.00",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Fillings ",
+      price: "from £375.00",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Onlays",
+      price: "from £1500.00",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Crowns",
+      price: "from £1200.00",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Onlays",
+      price: "from £1500.00",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Crowns",
+      price: "from £1200.00",
       lineTop: true,
       lineBottom: true,
     },

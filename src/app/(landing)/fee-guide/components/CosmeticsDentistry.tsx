@@ -18,14 +18,14 @@ export default function CosmeticsDentistry() {
       lineBottom: false,
     },
     {
-      description: "Porcelain Veneers Per Tooth From",
-      price: "£1500.00",
+      description: "ICON Per Tooth",
+      price: "£350.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "ICON Per Tooth",
-      price: "£350.00",
+      description: "Porcelain Veneers Per Tooth",
+      price: "from £1500.00",
       lineTop: true,
       lineBottom: true,
     },

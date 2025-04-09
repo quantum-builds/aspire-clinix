@@ -12,18 +12,6 @@ export default function Orthodontics() {
       lineBottom: false,
     },
     {
-      description: "Clear Aligners (Invisalign or Spark) from",
-      price: "£4,000.00",
-      lineTop: true,
-      lineBottom: false,
-    },
-    {
-      description: "Fixed Braces From",
-      price: "£5,000.00",
-      lineTop: true,
-      lineBottom: false,
-    },
-    {
       description: "Bonded Fixed Retainer Per Arch",
       price: "£265.00",
       lineTop: true,
@@ -32,6 +20,18 @@ export default function Orthodontics() {
     {
       description: "Removable Retainers",
       price: "£175.00",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Clear Aligners (Invisalign or Spark)",
+      price: "from £4,000.00",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Fixed Braces",
+      price: "from £5,000.00",
       lineTop: true,
       lineBottom: true,
     },

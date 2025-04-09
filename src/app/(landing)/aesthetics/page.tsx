@@ -13,7 +13,7 @@ import {
 } from "@/assets";
 
 const HERO_SECTION_DATA = {
-  title: "ASTHETICS",
+  title: "AESTHETICS",
   titleTextSize: 64,
   titleLineHeight: 72.64,
   description:
@@ -37,7 +37,7 @@ const ABOUT_US_SECTION_DATA = {
   descriptionWidth: 60,
 };
 
-const ASTHETICS_SERVICES = {
+const AESTHETICS_SERVICES = {
   services: [
     {
       title: "General Dentistry",
@@ -112,9 +112,9 @@ const ASTHETICS_SERVICES = {
   ],
 };
 
-export default function Asthetics() {
+export default function Aesthetics() {
   return (
-    <div className="flex flex-col" id="asthetics">
+    <div className="flex flex-col" id="aesthetics">
       <HeroSection
         title={HERO_SECTION_DATA.title}
         description={HERO_SECTION_DATA.description}
@@ -135,7 +135,7 @@ export default function Asthetics() {
         textColor={ABOUT_US_SECTION_DATA.textColor}
         buttonClickLink={"/"}
       />
-      <DentistryDetailSection services={ASTHETICS_SERVICES.services} />
+      <DentistryDetailSection services={AESTHETICS_SERVICES.services} />
     </div>
   );
 }
