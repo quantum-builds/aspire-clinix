@@ -8,7 +8,7 @@ const HERO_SECTION_DATA = {
   heading: "CONTACT US",
   title: "OUR DEDICATED TEAM IS AT YOUR SERVICE",
   description:
-    "Embark on your path to a healthier, revitalized you with just a click or call. Discover the luxury and expert care that make Aspire Clinic exceptional.",
+    "Embark on your path to a healthier, revitalised you with just a click or call. Discover the luxury and expert care that make Aspire Clinic exceptional.",
   descTextSize: 32,
   descLineHeight: 36.36,
   contentWidth: 100,

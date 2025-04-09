@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const SERVICES = [
   { title: "Aspire Dental", path: "/" },
-  { title: "Aspire Asthetics", path: "/" },
+  { title: "Aspire Aesthetics", path: "/" },
   { title: "Aspire Wellness", path: "/" },
 ];
 
