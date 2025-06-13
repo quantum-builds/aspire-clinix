@@ -44,70 +44,70 @@ const DENTISTRY_SERVICES = {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+      path: "/service-page",
       backgroundContent: image1,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+      path: "/service-page",
       backgroundContent: image2,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+      path: "/service-page",
       backgroundContent: image3,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+      path: "/service-page",
       backgroundContent: image1,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+      path: "/service-page",
       backgroundContent: image2,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+      path: "/service-page",
       backgroundContent: image3,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+      path: "/service-page",
       backgroundContent: image1,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+      path: "/service-page",
       backgroundContent: image2,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+      path: "/service-page",
       backgroundContent: image3,
     },
     {
       title: "General Dentistry",
       description:
         "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+      path: "/service-page",
       backgroundContent: image1,
     },
   ],

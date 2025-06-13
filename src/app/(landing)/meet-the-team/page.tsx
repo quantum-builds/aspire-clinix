@@ -36,7 +36,7 @@ const CARD_DATA = [
     backgroundContent: Dentist1,
   },
   {
-    path: "/dr-muhammadisham",
+    path: "/dr-muhammedisham",
     card_width: 424,
     buttonText: "Read Bio",
     card_height: 613,
@@ -60,7 +60,7 @@ const CARD_DATA = [
     backgroundContent: Dentist1,
   },
   {
-    path: "/dr-muhammadisham",
+    path: "/dr-muhammedisham",
     card_width: 424,
     buttonText: "Read Bio",
     card_height: 613,
