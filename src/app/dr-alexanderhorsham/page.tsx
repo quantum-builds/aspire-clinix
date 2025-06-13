@@ -1,9 +1,9 @@
 import DoctorPage from "@/components/DoctorPage";
 
-export default function DrRichardPorter() {
+export default function DrAlexanderHorshan() {
   return (
     <DoctorPage
-      doctorName="Dr. Richard Porter"
+      doctorName="Dr. Alexander Horshan"
       videoSrc="/videos/general-dentistry-01.mp4"
       doctorDescription={`Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit.\n
         Lorem ipsum odor amet, consectetuer adipiscing elit. Convallis nec justo ipsum pretium risus. Mauris interdum phasellus tincidunt hendrerit mi integer. Nullam efficitur bibendum scelerisque ligula taciti magna velit aliquet. Ultrices mollis felis arcu sit interdum. Diam maximus sit mollis hac quis senectus potenti montes fringilla. Fames velit aptent tempor; placerat faucibus habitasse\n
