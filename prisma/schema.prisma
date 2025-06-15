@@ -190,6 +190,21 @@ model Video {
   fileType    String
 }
 
+
+model SubService{
+  id String @id @default(cuid())
+  name String
+  description String?
+  serviceId String
+  service Service @relation(fields: [serviceId], references: [id])
+}
+model Service{
+  id String @id @default(cuid())
+  name String
+  description String?
+  subservices SubService[]
+}
+
 enum InvoiceStatus {
   PENDING
   PROCESSING

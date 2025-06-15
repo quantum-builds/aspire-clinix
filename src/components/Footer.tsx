@@ -1,6 +1,5 @@
 import { AspireLightLogo, InstagramIcon, LinkedinIcon, XIcon } from "@/assets";
 import Image from "next/image";
-import EmailInput from "./EmailInput";
 import Link from "next/link";
 
 const IN_PAGE_NAV_LINKS = [

@@ -147,6 +147,23 @@ export const ENDPOINTS = {
     update: (id: string) => `/api/patient/treatments/${id}`,
     delete: (id: string) => `/api/patient/treatments/${id}`,
   },
+  subServices: {
+    getSubServiceByServiceId: (serviceId: string) =>
+      `/api/sub-service?serviceId=${serviceId}`,
+    createSubService: "/api/sub-service",
+    getASubService: (id: string) => `/api/sub-service/${id}`,
+    updateASubService: (id: string) => `/api/sub-service/${id}`,
+    patchASubService: (id: string) => `/api/sub-service/${id}`,
+    deleteASubService: (id: string) => `/api/sub-service/${id}`,
+  },
+  services: {
+    getService: `/api/service`,
+    createService: "/api/service",
+    getAService: (id: string) => `/api/service/${id}`,
+    updateAService: (id: string) => `/api/service/${id}`,
+    patchAService: (id: string) => `/api/service/${id}`,
+    deleteAService: (id: string) => `/api/service/${id}`,
+  },
 };
 
 export const axiosInstance = axios.create({
