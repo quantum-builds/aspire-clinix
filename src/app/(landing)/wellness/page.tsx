@@ -16,8 +16,8 @@ const HERO_SECTION_DATA = {
   title: "WELLNESS",
   titleTextSize: 64,
   titleLineHeight: 72.64,
-  description:
-    "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit.",
+ description: "At Aspire Wellness, we adopt an integrative approach to your health, offering services that nourish both body and mind.<br/>Our focus — cultivating long-term vitality, relaxation, and equilibrium, empowering you to achieve a flourished and energised life of true balance.",
+
   descTextSize: 32,
   descLineHeight: 36.36,
   contentWidth: 100,
@@ -26,8 +26,8 @@ const HERO_SECTION_DATA = {
 };
 
 const ABOUT_US_SECTION_DATA = {
-  description:
-    "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit.",
+ description: "While many speak of prevention being better than cure, few truly put it into practice. At our wellness clinic, we offer you that very opportunity.<br/><br/>We believe the mind and body are inseparable, and true wellness must address both. At Aspire, we combine advanced therapies such as red light treatment, invigorating cold exposure, and the healing power of touch, with in-depth analysis of your body’s stress levels, inflammatory profile, and psychological wellbeing.<br/><br/>The answers you’ve been searching for may begin here.",
+
   descriptionTextSize: 40,
   descriptionLeadingHeight: 45.4,
   hasButton: false,

@@ -1,50 +1,74 @@
-import clsx from "clsx";
-import Image, { StaticImageData } from "next/image";
+import clsx from "clsx"
+import Image, { type StaticImageData } from "next/image"
 
 interface Component2Props {
-  title: string;
-  firstDescriptionText: string;
-  secondDescriptionText: string;
-  backgroundColor: string;
-  titleFontSize?: string;
-  imagePath: StaticImageData;
+  title: string
+  firstDescriptionText: string
+  secondDescriptionText: string
+  thirdDescriptionText?: string
+  fourthDescriptionText?: string
+  backgroundColor: string
+  titleFontSize?: string
+  imagePath: StaticImageData
 }
+
 export default function Component2({
   title,
   firstDescriptionText,
   secondDescriptionText,
+  thirdDescriptionText,
+  fourthDescriptionText,
   backgroundColor,
   titleFontSize,
   imagePath,
 }: Component2Props) {
   return (
     <div
-      className=" flex flex-col md:flex-row justify-center gap-6 md:gap-10 xl:gap-20 items-center h-[78vh] font-opus"
+      className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 min-h-[45vh] font-opus py-6 md:py-8 px-4 md:px-8"
       style={{ backgroundColor: backgroundColor }}
     >
-      <div className="w-2/3 md:w-1/2 flex p-2 ">
-        <Image
-          src={imagePath}
-          alt={title}
-          className="w-full h-full xl:w-5/6 xl:h-5/6 mx-auto object-cover rounded-2xl"
-        />
+      {/* Image Section */}
+      <div className="w-full md:w-[45%] lg:w-[50%] flex justify-center md:justify-start items-center">
+        <div className="w-full max-w-none md:max-w-[85%] lg:max-w-[75%] xl:max-w-[80%]">
+          <Image src={imagePath || "/placeholder.svg"} alt={title} className="w-full h-auto object-cover rounded-2xl" />
+        </div>
       </div>
-      <div className="flex flex-col justify-center gap-5 md:gap-10 w-2/3  md:w-1/2 h-1/2 ">
+
+      {/* Content Section */}
+      <div className="flex flex-col justify-center items-start gap-4 md:gap-6 w-full md:w-[55%] lg:w-[50%]">
+        {/* Title */}
         <h1
           className={clsx(
-            "text-left font-opus font-normal md:leading-[50px] lg:leading-[70px]  md:w-[80%]",
-            titleFontSize
+            "w-full max-w-none md:max-w-[85%] lg:max-w-[75%] font-opus font-normal leading-tight md:leading-[1.2] lg:leading-[1.3] text-center md:text-start",
+            titleFontSize,
           )}
         >
           {title}
         </h1>
-        <p className="text-left zoom-out  md:w-[80%] px-2 md:px-0 text-base md:text-2xl xl:text-4xl font-opus">
-          {firstDescriptionText}
-        </p>
-        <p className="text-left zoom-out  md:w-[80%] px-2 md:px-0 text-base md:text-2xl xl:text-4xl font-opus">
-          {secondDescriptionText}
-        </p>
+
+        {/* Description Texts - Reduced spacing */}
+        <div className="w-full md:w-[85%] lg:w-[75%] flex flex-col gap-3 md:gap-4">
+          <p className="text-left text-sm sm:text-base md:text-lg lg:text-xl font-opus leading-relaxed">
+            {firstDescriptionText}
+          </p>
+
+          <p className="text-left text-sm sm:text-base md:text-lg lg:text-xl font-opus leading-relaxed">
+            {secondDescriptionText}
+          </p>
+
+          {thirdDescriptionText && (
+            <p className="text-left text-sm sm:text-base md:text-lg lg:text-xl font-opus leading-relaxed">
+              {thirdDescriptionText}
+            </p>
+          )}
+
+          {fourthDescriptionText && (
+            <p className="text-left text-sm sm:text-base md:text-lg lg:text-xl font-opus leading-relaxed">
+              {fourthDescriptionText}
+            </p>
+          )}
+        </div>
       </div>
     </div>
-  );
+  )
 }

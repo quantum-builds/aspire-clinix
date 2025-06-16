@@ -1,51 +1,35 @@
-import clsx from "clsx";
-import { title } from "process";
-
 interface Component1Props {
-  title: string;
-  descriptionText: string;
-  descriptionBullets: string[];
-  backgroundColor: string;
-  titleFontSize?: string;
+  title: string
+  descriptionText: string
+  backgroundColor?: string
+  titleFontSize?: string
 }
+
 export default function Component1({
   title,
   descriptionText,
-  descriptionBullets,
-  backgroundColor,
-  titleFontSize,
+  backgroundColor = "#ECE8E3",
+  titleFontSize = "text-[16px] sm:text-[20px] md:text-[28px] lg:text-[36px] xl:text-[44px]",
 }: Component1Props) {
   return (
     <div
-      className="flex justify-center items-center gap-0 md:gap-16 h-[78vh] font-opus"
-      style={{ backgroundColor: backgroundColor }}
+      className="w-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 sm:py-10 md:py-12 lg:py-16 xl:py-20"
+      style={{ backgroundColor }}
     >
-      <div className="w-[50%] flex justify-center items-center">
-        <h1
-          className={clsx(
-            " w-full px-2 md:w-4/5 xl:w-3/5 font-opus font-normal md:leading-[50px] lg:leading-[70px] text-start ",
-            titleFontSize
-          )}
-        >
-          {title}
-        </h1>
-      </div>
+      <div className="w-full max-w-7xl flex flex-col lg:flex-row items-start lg:items-center gap-6 md:gap-8 lg:gap-12 xl:gap-16">
+        {/* Title */}
+        <div className="w-full lg:w-[40%] xl:w-[35%] flex items-center">
+          <h2 className={`${titleFontSize} font-opus text-left text-[#1D120C] leading-tight`}>{title}</h2>
+        </div>
 
-      <div className="flex flex-col justify-center items-center gap-10 w-[50%] h-[50%] ">
-        <p className="text-left zoom-out  md:w-[70%] px-2 md:px-0 text-base md:text-2xl lg:text-4xl font-opus">
-          {descriptionText}
-        </p>
-        <div className="md:w-[65%] flex flex-col gap-7">
-          {descriptionBullets.map((text, index) => (
-            <p
-              className="text-left zoom-out  px-2 md:px-0  text-base md:text-2xl lg:text-4xl font-opus"
-              key={index}
-            >
-              &bull;{text}
-            </p>
-          ))}
+        {/* Description Text */}
+        <div className="w-full lg:w-[60%] xl:w-[65%] flex flex-col gap-3 md:gap-4 lg:gap-5">
+          <div
+            className="text-left text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-opus leading-relaxed text-[#1D120C]"
+            dangerouslySetInnerHTML={{ __html: descriptionText }}
+          />
         </div>
       </div>
     </div>
-  );
+  )
 }

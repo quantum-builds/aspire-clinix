@@ -9,6 +9,7 @@ interface AboutUsSectionProps {
   buttonBackgroundColor: string;
   buttonClickLink: string;
 }
+
 export default function AboutUsSection({
   description,
   hasButton,
@@ -20,18 +21,16 @@ export default function AboutUsSection({
 }: AboutUsSectionProps) {
   return (
     <div
-      className={`flex flex-col justify-center items-center gap-3 md:gap-8 xl:gap-16 min-h-[80vh] font-opus`}
+      className={`flex flex-col justify-center items-center gap-8 min-h-[70vh] py-16 md:py-20 lg:py-24 font-opus px-8 md:px-16`}
       style={{ backgroundColor: backgroundColor }}
     >
-      <p
-        className={`zoom-out text-center w-full md:w-3/4 2xl:w-2/3 px-2 md:px-0 text-base sm:text-3xl xl:text-6xl leading-[25px] md:leading-[50px] xl:leading-[80px] font-opus`}
+      <div
+        className={`text-center max-w-4xl text-xl md:text-2xl lg:text-3xl leading-relaxed font-opus`}
         style={{
           color: textColor,
         }}
-      >
-        {description}
-      </p>
-
+        dangerouslySetInnerHTML={{ __html: description }}
+      />
       {hasButton && (
         <Link href={buttonClickLink}>
           <button
