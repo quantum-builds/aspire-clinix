@@ -27,7 +27,7 @@ import { title } from "process";
 const DENTAL_SERVICES = {
   title: "Dentistry",
   description:
-    "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit.",
+    "We provide advanced general and specialist dental care with a personal touch. Our hand-picked and superbly skilled team offers a wide range of treatments...",
   services: [
     {
       title: "General Dentistry",
@@ -105,7 +105,7 @@ const DENTAL_SERVICES = {
 const ASTHETIC_SERVICE = {
   title: "Aesthetics",
   description:
-    "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+        "We provide a wide range of tailored treatments to subtly enhance your natural beauty with precision and care. Our facial aesthetics team, carefully selected for their expertise, takes the time to understand your unique..." ,
   services: [
     {
       title: "General Dentistry",
@@ -155,7 +155,7 @@ const ASTHETIC_SERVICE = {
 const WELLNESS_SERVICE = {
   title: "Wellness",
   description:
-    "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+"At Aspire Wellness, we adopt an integrative approach to your health, offering services that nourish both body and mind.Our focus- cultivating long-term vitality, relaxation...",
   services: [
     {
       title: "General Dentistry",
@@ -224,40 +224,43 @@ const WELLNESS_SERVICE = {
 };
 
 const HERO_SECTION_DATA = {
-  title: "HOLISTIC WELLNESS IS A JOURNEY THAT STARTS HERE",
+  title: "Your journey to holistic wellness, radiant smiles, vibrant energy, and a flourishing life starts here.",
   description: null,
   descTextSize: null,
   contentWidth: 100,
   backgroundColor: "#FFFFFF",
   buttonColor: "#ECE8E3",
   backgroundContent: "/videos/landing-page-video-1.mp4",
-};
+}
 
 const ABOUT_US_SECTION_DATA = {
   description:
-    "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit.",
-  descriptionTextSize: 40,
-  descriptionLeadingHeight: 45.4,
+"Welcome to the Aspire Clinic – enhancing your body and mind through expert care, state-of-the-art facilities, emotional wellbeing programmes, precision aesthetics, world-class dentistry, and a strong emphasis on prevention.<br/>At Aspire, we're committed to supporting your journey towards better health, providing personalised dental and wellness services that prioritise your unique needs. We believe that true well-being stems from a holistic approach, where exceptional care and meaningful connections work together to elevate your health and quality of life.<br/>Our wellness clinic is designed to engage all your senses, offering enriching experiences that focus on preventive health and wellbeing - all delivered with expertise and elegance in one of London's most stunning clinics.",  descriptionTextSize: 28,
+  descriptionLeadingHeight: 36,
   buttonClickLink: "/our-philosophy",
   hasButton: true,
   buttonText: "Our Philosophy",
   backgroundColor: "#1D120C",
   textColor: "#C9BCA9",
-  descriptionWidth: 60,
+  descriptionWidth: 90,
   buttonBackgroundColor: "#ECE8E3",
-};
+}
+
+
 
 const SUPPLEMENTS_DATA = {
   title: "Our Supplements",
   description:
-    "Lorem ipsum odor amet, consectetuer adipiscing elit. Sociosqu a nec magna habitant nec. Ullamcorper dui varius volutpat primis lacinia elit morbi velit.",
+    "Premium, scientifically-formulated supplements designed to support your wellness journey and optimize your health from within.",
   hasButton: true,
   buttonText: "Contact Us",
   buttonClickLink: "/contact-us",
   backgroundColor: "#1D120C",
   textColor: "#C9BCA9",
   buttonBackgroundColor: "#ECE8E3",
-};
+}
+
+
 
 export default function Home() {
   return (

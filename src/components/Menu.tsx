@@ -12,7 +12,7 @@ const USER_MENU_LIST = [
   {
     category: "ASPIRE CLINIC",
     path: "/",
-    services: [{ title: "Our Philosophy", path: "/our-philosophy" }],
+    services: [{ title: "Our Philosophy", path: "/our-philopsophy" }],
   },
   {
     category: "DENTISTRY",
@@ -32,7 +32,7 @@ const USER_MENU_LIST = [
   },
   {
     category: "AESTHETICS",
-    path: "/aesthetics",
+    path: "/asthetics",
     services: [
       { title: "Anti Wrinkle Injections", path: "/service-page/" },
       { title: "Fillers", path: "/service-page" },
@@ -63,7 +63,7 @@ const USER_MENU_LIST = [
   },
   {
     category: "REFERRAL PORTAL",
-    path: "/referral",
+    path: "/dentist/referral",
     services: [],
   },
   {
@@ -72,7 +72,7 @@ const USER_MENU_LIST = [
     services: [],
   },
   {
-    category: "CONTACT US",
+    category: "CONTACT",
     path: "/contact-us",
     services: [],
   },

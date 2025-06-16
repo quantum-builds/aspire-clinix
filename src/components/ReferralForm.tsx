@@ -301,7 +301,7 @@ export default function ReferralForm() {
             <Button
               type="submit"
               title="Submit Referral"
-              className="w-[190px] h-[70px] text-black bg-bookATreatmentBackground rounded-[5px] md:rounded-xl text-xl"
+              className="w-[190px] h-[70px] text-black bg-white rounded-[5px] md:rounded-xl text-lg"
             />
           </div>
         </form>

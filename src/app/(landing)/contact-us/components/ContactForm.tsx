@@ -115,7 +115,7 @@ export default function ContactForm() {
         <div className="mt-10">
           <label
             htmlFor="message"
-            className="text-[16] md:text-[24px] font-normal block mb-4 font-opus"
+            className="text-[16] md:text-[24px] font-normal block mb-4"
           >
             Message
           </label>
@@ -136,7 +136,7 @@ export default function ContactForm() {
           <p className="text-[16px] md:text-[24px] font-normal font-opus mb-4">
             How did you hear about us
           </p>
-          <div className="xl:grid flex flex-col justify-center items-start lg:gap-x-20 grid-cols-2 mt-3 font-opus">
+          <div className="xl:grid flex flex-col justify-center items-start lg:gap-x-20 grid-cols-2 mt-3">
             {HEAR_ABOUT_US.optionsSource.map((option) => (
               <CheckboxInput
                 type="radio"
@@ -156,7 +156,7 @@ export default function ContactForm() {
           )}
         </div>
 
-        <div className="mt-8 font-opus">
+        <div className="mt-8 ">
           <CheckboxInput
             type="checkbox"
             key="terms"
@@ -176,7 +176,7 @@ export default function ContactForm() {
           <Button
             type="submit"
             title="Create Account"
-            className="w-[180px] h-[60px] text-black bg-white rounded-[5px] md:rounded-lg text-lg font-opus"
+            className="w-[180px] h-[60px] text-black bg-white rounded-[5px] md:rounded-lg text-lg"
           />
         </div>
       </form>

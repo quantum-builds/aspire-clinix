@@ -1,8 +1,22 @@
+import Footer from "@/components/Footer";
+import SideBar from "./components/SideBar";
 import ContentSection from "./components/ContenteSection";
+import SubscribeComponent from "./components/Subscribe";
+import { Suspense } from "react";
+
+const HERO_SECTION_DATA = {
+  title: "STAY ON TOP OF YOUR WELLNESS",
+  description: null,
+  descTextSize: null,
+  contentWidth: 100,
+  backgroundColor: "#FFFFFF",
+  buttonColor: "#ECE8E3",
+  backgroundContent: "/videos/landing-page-video.mp4",
+};
 
 export default function Patient() {
   return (
-    <div className="zoom-out  bg-feeguidedark w-full">
+    <div className="bg-feeguidedark w-full">
       <ContentSection />
 
       {/* <Suspense>

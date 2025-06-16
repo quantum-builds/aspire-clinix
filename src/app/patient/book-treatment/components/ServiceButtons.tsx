@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 const SERVICES = [
-  { title: "Aspire Dental", path: "/dentistry" },
-  { title: "Aspire Aesthetics", path: "/aesthetics" },
-  { title: "Aspire Wellness", path: "/wellness" },
+  { title: "Aspire Dental", path: "/" },
+  { title: "Aspire Asthetics", path: "/" },
+  { title: "Aspire Wellness", path: "/" },
 ];
 
 export default function ServiceButtons() {

@@ -12,7 +12,19 @@ export default function Dentures() {
       lineBottom: false,
     },
     {
-      description: "Full Upper Denture (Per Jaw)",
+      description: "Acrylic denture from",
+      price: "£XX",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Chrome denture per arch from",
+      price: "£XX",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "Full Upper denture (per jaw)",
       price: "£2400.00",
       lineTop: true,
       lineBottom: false,
@@ -20,18 +32,6 @@ export default function Dentures() {
     {
       description: "Denutre Repair",
       price: "£350.00",
-      lineTop: true,
-      lineBottom: false,
-    },
-    {
-      description: "Acrylic Denture",
-      price: "from £XX",
-      lineTop: true,
-      lineBottom: false,
-    },
-    {
-      description: "Chrome Denture Per Arch",
-      price: "from £XX",
       lineTop: true,
       lineBottom: true,
     },

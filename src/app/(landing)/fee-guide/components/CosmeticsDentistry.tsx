@@ -1,7 +1,7 @@
 import PriceList from "@/components/PriceList";
 
 export default function CosmeticsDentistry() {
-  const title = "Cosmetic Dentistry";
+  const title = "Cosmetics Dentistry";
   const prices = "Prices";
   const backgroundColor = "#DCD4C9";
   const rows = [
@@ -12,20 +12,20 @@ export default function CosmeticsDentistry() {
       lineBottom: false,
     },
     {
-      description: "Composite Bonding Per Tooth",
+      description: "Composite bonding per tooth",
       price: "£360.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "ICON Per Tooth",
-      price: "£350.00",
+      description: "Porcelain Veneers per tooth from",
+      price: "£1500.00",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Porcelain Veneers Per Tooth",
-      price: "from £1500.00",
+      description: "ICON Per tooth",
+      price: "£350.00",
       lineTop: true,
       lineBottom: true,
     },

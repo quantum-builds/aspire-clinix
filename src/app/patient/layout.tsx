@@ -1,17 +1,13 @@
 import Footer from "@/components/Footer";
-import PatientSideBar from "@/app/patient/components/PatientSideBar";
-import Link from "next/link";
-import Image from "next/image";
-import BackNavigation from "./components/BackNavigation";
+import SideBar from "./components/SideBar";
 
-export default function PatientLandingLayout({
+export default function LandingLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-      <div className="flex min-h-screen bg-feeguidedark">
-        <PatientSideBar />
-        <BackNavigation />
+      <div className="flex min-h-screen">
+        <SideBar />
         {children}
       </div>
       <Footer />

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
 import { TanStackProvider } from "@/providers/TanStackProvider";
-import { AspireLightLogo } from "@/assets";
 
 const gillSans = localFont({
   src: "../app/fonts/GillSans.otf",
@@ -16,9 +15,6 @@ const opus = localFont({
 
 export const metadata: Metadata = {
   title: "Aspire Dental Clinic",
-  icons: {
-    icon: "/assets/aspire-light-logo.svg",
-  },
   description:
     "Providing expert dental care and comprehensive treatments to help you achieve a healthy, beautiful smile",
 };

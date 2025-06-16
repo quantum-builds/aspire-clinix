@@ -1,7 +1,6 @@
 export { default as AspireDarkLogo } from "./aspire-dark-logo.svg";
 export { default as AspireLightLogo } from "./aspire-light-logo.svg";
 export { default as ArrowLight } from "@/assets/arrow-light.svg";
-export { default as ArrowDark } from "@/assets/arrow-right-icon.svg";
 export { default as InstagramIcon } from "./instagram-icon.svg";
 export { default as LinkedinIcon } from "./linkedin-icon.svg";
 export { default as XIcon } from "./x-ixon.svg";
@@ -48,5 +47,3 @@ export { default as VideoIcon } from "@/assets/video-icon.svg";
 export { default as LocationIcon } from "@/assets/location-icon.svg";
 export { default as SheduleIcon } from "@/assets/schedule-icon.svg";
 export { default as LinkIcon } from "@/assets/link-icon.svg";
-export { default as ShoppingCart } from "@/assets/Shopping cart.svg";
-export { default as ShoppingBag } from "@/assets/Shopping bag.svg";

@@ -18,7 +18,13 @@ export default function DentalImplants() {
       lineBottom: false,
     },
     {
-      description: "CT Scan Per Jaw ",
+      description: "Implants from",
+      price: "£3700.00",
+      lineTop: true,
+      lineBottom: false,
+    },
+    {
+      description: "CT Scan per jaw ",
       price: "£180.00",
       lineTop: true,
       lineBottom: false,
@@ -30,20 +36,14 @@ export default function DentalImplants() {
       lineBottom: false,
     },
     {
-      description: "Implant Removal",
+      description: "Implant removal",
       price: "POA",
       lineTop: true,
       lineBottom: false,
     },
     {
-      description: "Implants",
-      price: "from £3700.00",
-      lineTop: true,
-      lineBottom: false,
-    },
-    {
-      description: "Implant Supported Denture",
-      price: "from £5800.00",
+      description: "Implant supported denture from",
+      price: "£5800.00",
       lineTop: true,
       lineBottom: true,
     },

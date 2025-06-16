@@ -1,23 +1,22 @@
-"use client";
+"use client"; // Ensure it's a Client Component
+
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
-import Image from "next/image";
+import AspireLogo from "../book-treatment/components/AspireLogo";
+import { Menu, X } from "lucide-react"; // Icons for open/close
+import Image from "next/image"; // Import Image component
 import { ArrowLeftIcon } from "@/assets";
 import Link from "next/link";
-import AspireLogo from "@/components/AspireLogo";
 
 const SIDEBAR_DATA = [
   { title: "APPOINTMENTS", link: "/patient" },
   { title: "PLANS, PACKAGES & SUBSCRIPTIONS", link: "/patient" },
   { title: "RESOURCES", link: "/patient/resources" },
   { title: "CONSENT", link: "/patient" },
-  { title: "STORE", link: "/patient/store" },
+  { title: "STORE", link: "/patient" },
 ];
 
-export default function PatientSideBar() {
+export default function SideBar() {
   const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
     const handleResize = () => {
@@ -49,7 +48,7 @@ export default function PatientSideBar() {
   return (
     <>
       <div
-        className="lg:hidden p-4 cursor-pointer bg-feeguidedark inline-block"
+        className="lg:hidden p-4 cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? <X size={30} /> : <Menu size={30} />}
@@ -71,13 +70,12 @@ export default function PatientSideBar() {
           priority
         />
         <AspireLogo navigationLink={"/patient"} />
-        <div className="flex flex-col gap-6 md:gap-8 lg:gap-10">
+        <div className="flex flex-col gap-6 md:gap-8 lg:gap-10 ">
           {SIDEBAR_DATA.map((data, index) => (
-            <Link href={data.link} key={index}>
+            <Link href={data.link}>
               <p
-                className={`text-lg lg:text-xl xl:text-2xl font-normal font-opus cursor-pointer pb-2 ${
-                  pathname === data.link ? "border-b-2 border-black" : ""
-                }`}
+                key={index}
+                className="text-lg lg:text-xl xl:text-2xl font-normal font-opus cursor-pointer"
               >
                 {data.title}
               </p>
