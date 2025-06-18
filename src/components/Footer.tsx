@@ -30,7 +30,7 @@ export default function Footer() {
             height={88}
             className="w-[100px] h-[50px] lg:w-[189px] lg:h-[88px] md:w-[120px] md:h-[50px]"
           />
-          <address className="not-italic  md:text-[16px] text-[16px] sm:text-[20px] text-white flex flex-col items-start font-gillSans gap-2">
+<address className="not-italic text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[26px] text-white flex flex-col items-start font-gillSans gap-2">
             <p>hello@aspireclinic.co.uk</p>
             <p>27 Mortimer Street</p>
             <p>W1N 7RJ, London, UK</p>
@@ -50,7 +50,7 @@ export default function Footer() {
 
         {/* Quick Links Section */}
         <div className="flex flex-col items-start gap-4 col-span-1">
-          <p className="text-white text-[18px] sm:text-[20px] font-normal font-opus">
+          <p className="text-white text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[26px] font-normal font-opus">
             Quick Links
           </p>
           <ul className="flex flex-col gap-2">
@@ -58,7 +58,7 @@ export default function Footer() {
               <li key={index}>
                 <Link
                   href={link.path}
-                  className="font-gillSans text-white hover:underline"
+                  className="font-gillSans text-white hover:underline text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[26px]"
                 >
                   {link.label}
                 </Link>
@@ -69,7 +69,7 @@ export default function Footer() {
 
         {/* Social Icons Section */}
         <div className="flex flex-col items-start gap-4 col-span-1">
-          <p className="text-[16px] lg:text-[20px] text-white font-normal font-opus">
+          <p className="text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[26px] text-white font-normal font-opus">
             Connect with us
           </p>
           <div className="flex pr-2  gap-6">

@@ -39,73 +39,73 @@ description: "Our team shares a common goal: to prevent every patient from ever 
 const DENTISTRY_SERVICES = {
   services: [
     {
-      title: "General Dentistry",
+      title: "General ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
+     "Your oral health is one of the foundations of your overall well-being and at Aspire we treat it with the care it deserves.",
       path: "/",
       backgroundContent: image1,
     },
     {
-      title: "General Dentistry",
+      title: "Emergency ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+     "When urgent dental care is needed, Aspire is here to provide prompt, professional support.we can to relieve your discomfort as quickly as possible.",
+      path: "/services/emergency",
       backgroundContent: image2,
     },
     {
-      title: "General Dentistry",
+      title: "Cosmetic ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+     "At our Cosmetic Clinic, we specialise in enhancing your smile to reflect your true confidence and individuality.",
+      path: "/services/cosmetic",
       backgroundContent: image3,
     },
     {
-      title: "General Dentistry",
+      title: "Implants ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+     "Dental implants are a long-lasting, natural-looking solution for replacing missing teeth—restoring both function and confidence.",
+      path: "/services/implants",
       backgroundContent: image1,
     },
     {
-      title: "General Dentistry",
+    title: "Gums ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+     "Your gums are the foundation of a strong, beautiful smile. Having healthy and beautiful gums is a key foundation to all dental health.",
+      path: "/services/gums",
       backgroundContent: image2,
     },
     {
-      title: "General Dentistry",
+     title: "Oral Surgery",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+     "Our expert team at Aspire specialises in a wide range of oral surgical procedures, from managing wisdom tooth problems to simple dental extractions.",
+      path: "/services/surgery",
       backgroundContent: image3,
     },
     {
-      title: "General Dentistry",
+      title: "Dentures ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+     "Our expert team at Aspire specialises in a wide range of oral surgical procedures, from managing wisdom tooth problems to simple dental extractions.",
+      path: "/services/dentures",
       backgroundContent: image1,
     },
     {
-      title: "General Dentistry",
+      title: "Root Canals",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+     "Root canal treatment (Endodontics) is often the best way to preserve a natural tooth that has been damaged by decay or trauma reaching the nerve.",
+      path: "/services/root",
       backgroundContent: image2,
     },
     {
-      title: "General Dentistry",
+       title: "Orthodontic",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+     "Our Orthodontic Clinic offers expert care to help you achieve a beautifully aligned smile",
+      path: "/services/orthodontic",
       backgroundContent: image3,
     },
     {
-      title: "General Dentistry",
+        title: "Kids ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+     "Our Kids' Clinic is dedicated to providing a welcoming and friendly environment where children can receive top-quality dental care.",
+      path: "/services/kid",
       backgroundContent: image1,
     },
   ],

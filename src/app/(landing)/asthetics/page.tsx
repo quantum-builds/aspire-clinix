@@ -40,75 +40,29 @@ const ABOUT_US_SECTION_DATA = {
 const ASTHETICS_SERVICES = {
   services: [
     {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+     title: "Anti Wrinkle Injections",
+      description: "Our Anti-Wrinkle Injections are designed to help you achieve a smoother, more youthful appearance with minimal downtime."
+,
+      path: "/services/anti-wrinkle",
       backgroundContent: image1,
     },
     {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+      title: "Fillers",
+      description: "Our Dermal Fillers are crafted to enhance your natural features and restore youthful volume.Each treatment is designed to smooth lines, restore balance"
+,
+      path: "/services/fillers",
       backgroundContent: image2,
     },
+   
     {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: image3,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+      title: "Skin Boosters",
+      description: "Our Skin Boosters are designed to deeply hydrate and rejuvenate your skin from within, restoring a radiant, glowing complexion."
+,
+      path: "/services/boosters",
       backgroundContent: image1,
     },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: image2,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: image3,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: image1,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: image2,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: image3,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: image1,
-    },
+   
+  
   ],
 };
 

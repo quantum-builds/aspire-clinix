@@ -40,75 +40,62 @@ const ABOUT_US_SECTION_DATA = {
 const WELLNESS_SERVICES = {
   services: [
     {
-      title: "General Dentistry",
+     title: "Cryotherapy",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+        "Cryotherapy is a cutting-edge wellness treatment that harnesses the power of cold to promote recovery, dramatically reduce inflammation, and boost overall well-being. ",
+      path: "/services/crypo",
       backgroundContent: image1,
     },
     {
-      title: "General Dentistry",
+      title: "Infra-red Sauna",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+        "Our Sunlighten Infrared Sauna offers a relaxing and rejuvenating experience that promotes deep detoxification, improved circulation, and enhanced relaxation. ",
+      path: "/services/sauna",
       backgroundContent: image2,
     },
     {
-      title: "General Dentistry",
+     title: "Contrast Therapy",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+        "Contrast Therapy combines the powerful benefits of heat and cold to support recovery, improve circulation, and ease muscle tension. ",
+      path: "/services/contrast",
       backgroundContent: image3,
     },
     {
-      title: "General Dentistry",
+     title: "Hyperbaric Oxygen",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+        "Hyperbaric Oxygen Therapy is a powerful treatment designed to accelerate healing and promote overall wellness. ",
+      path: "/services/oxygen",
       backgroundContent: image1,
     },
     {
-      title: "General Dentistry",
+      title: "Ice Baths",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+        "Ice Baths are a powerful and dynamic recovery tool that helps reduce muscle soreness, promote healing, and boost overall wellness. ",
+      path: "/services/ice",
       backgroundContent: image2,
     },
     {
-      title: "General Dentistry",
+      title: "Massage",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+        "Our Massage Therapy services at Aspire are designed to relax both body and mind, helping to ease tension, improve circulation, and enhance overall wellness.",
+      path: "/services/massage",
       backgroundContent: image3,
     },
     {
-      title: "General Dentistry",
+      title: "Compression Therapy",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+        "Experience the rejuvenating benefits of Compression Therapy at Aspire. ",
+      path: "/services/compression",
       backgroundContent: image1,
     },
     {
-      title: "General Dentistry",
+      title: "IV Lounge",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
+        "Revitalise your body and mind at Aspire's IV Lounge, where personalised intravenous treatments deliver essential nutrients ",
+      path: "/services/lounge",
       backgroundContent: image2,
     },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: image3,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/",
-      backgroundContent: image1,
-    },
+   
   ],
 };
 
