@@ -30,73 +30,74 @@ const DENTAL_SERVICES = {
     "We provide advanced general and specialist dental care with a personal touch. Our hand-picked and superbly skilled team offers a wide range of treatments...",
   services: [
     {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+      title: "General ",
+    description:
+     "Your oral health is one of the foundations of your overall well-being and at Aspire we treat it with the care it deserves.",
+
+      path: "/general-dentistry",
       backgroundContent: image1,
     },
     {
-      title: "General Dentistry",
+      title: "Emergency ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+     "When urgent dental care is needed, Aspire is here to provide prompt, professional support.we can to relieve your discomfort as quickly as possible. ",
+      path: "/services/emergency",
       backgroundContent: image2,
     },
     {
-      title: "General Dentistry",
+      title: "Cosmetic ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+     "At our Cosmetic Clinic, we specialise in enhancing your smile to reflect your true confidence and individuality.",
+      path: "/services/cosmetic",
       backgroundContent: image3,
     },
     {
-      title: "General Dentistry",
+      title: "Implants ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+     "Dental implants are a long-lasting, natural-looking solution for replacing missing teeth—restoring both function and confidence.",
+      path: "/services/implants",
       backgroundContent: image1,
     },
     {
-      title: "General Dentistry",
+      title: "Gums ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+     "Your gums are the foundation of a strong, beautiful smile. Having healthy and beautiful gums is a key foundation to all dental health.",
+      path: "/services/gums",
       backgroundContent: image2,
     },
     {
-      title: "General Dentistry",
+      title: "Oral Surgery",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+     "Our expert team at Aspire specialises in a wide range of oral surgical procedures, from managing wisdom tooth problems to simple dental extractions.",
+      path: "/services/surgery",
       backgroundContent: image3,
     },
     {
-      title: "General Dentistry",
+      title: "Dentures ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+     "Our expert team at Aspire specialises in a wide range of oral surgical procedures, from managing wisdom tooth problems to simple dental extractions.",
+      path: "/services/dentures",
       backgroundContent: image1,
     },
     {
-      title: "General Dentistry",
+      title: "Root Canals",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+     "Root canal treatment (Endodontics) is often the best way to preserve a natural tooth that has been damaged by decay or trauma reaching the nerve.",
+      path: "/services/root",
       backgroundContent: image2,
     },
     {
-      title: "General Dentistry",
+      title: "Orthodontic",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+     "Our Orthodontic Clinic offers expert care to help you achieve a beautifully aligned smile",
+      path: "/services/orthodontic",
       backgroundContent: image3,
     },
     {
-      title: "General Dentistry",
+      title: "Kids ",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+     "Our Kids' Clinic is dedicated to providing a welcoming and friendly environment where children can receive top-quality dental care.",
+      path: "/services/kid",
       backgroundContent: image1,
     },
   ],
@@ -108,47 +109,32 @@ const ASTHETIC_SERVICE = {
         "We provide a wide range of tailored treatments to subtly enhance your natural beauty with precision and care. Our facial aesthetics team, carefully selected for their expertise, takes the time to understand your unique..." ,
   services: [
     {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+      title: "Anti Wrinkle Injections",
+      description: "Our Anti-Wrinkle Injections are designed to help you achieve a smoother, more youthful appearance with minimal downtime."
+,
+      path: "/services/anti-wrinkle",
       backgroundContent: image1,
     },
+
+
     {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+      title: "Fillers",
+      description: "Our Dermal Fillers are crafted to enhance your natural features and restore youthful volume.Each treatment is designed to smooth lines, restore balance,"
+,
+      path: "/services/fillers",
       backgroundContent: image2,
     },
+
     {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+      title: "Skin Boosters",
+      description: "Our Skin Boosters are designed to deeply hydrate and rejuvenate your skin from within, restoring a radiant, glowing complexion."
+,
+      path: "/services/boosters",
       backgroundContent: image3,
     },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
-      backgroundContent: image1,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
-      backgroundContent: image2,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
-      backgroundContent: image3,
-    },
+
+   
+   
   ],
 };
 
@@ -158,66 +144,60 @@ const WELLNESS_SERVICE = {
 "At Aspire Wellness, we adopt an integrative approach to your health, offering services that nourish both body and mind.Our focus- cultivating long-term vitality, relaxation...",
   services: [
     {
-      title: "General Dentistry",
+      title: "Cryotherapy",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+        "Cryotherapy is a cutting-edge wellness treatment that harnesses the power of cold to promote recovery, dramatically reduce inflammation, and boost overall well-being. ",
+      path: "/services/crypo",
       backgroundContent: Wellness1,
     },
     {
-      title: "General Dentistry",
+      title: "Infra-red Sauna",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+        "Our Sunlighten Infrared Sauna offers a relaxing and rejuvenating experience that promotes deep detoxification, improved circulation, and enhanced relaxation. ",
+      path: "/services/sauna",
       backgroundContent: Wellness2,
     },
     {
-      title: "General Dentistry",
+      title: "Contrast Therapy",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+        "Contrast Therapy combines the powerful benefits of heat and cold to support recovery, improve circulation, and ease muscle tension. ",
+      path: "/services/contrast",
       backgroundContent: Wellness3,
     },
     {
-      title: "General Dentistry",
+      title: "Hyperbaric Oxygen",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+        "Hyperbaric Oxygen Therapy is a powerful treatment designed to accelerate healing and promote overall wellness. ",
+      path: "/services/oxygen",
       backgroundContent: Wellness4,
     },
     {
-      title: "General Dentistry",
+      title: "Ice Baths",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+        "Ice Baths are a powerful and dynamic recovery tool that helps reduce muscle soreness, promote healing, and boost overall wellness. ",
+      path: "/services/ice",
       backgroundContent: Wellness5,
     },
     {
-      title: "General Dentistry",
+      title: "Massage",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+        "Our Massage Therapy services at Aspire are designed to relax both body and mind, helping to ease tension, improve circulation, and enhance overall wellness.",
+      path: "/services/massage",
       backgroundContent: Wellness6,
     },
+    
     {
-      title: "General Dentistry",
+      title: "Compression Therapy",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
-      backgroundContent: Wellness7,
-    },
-    {
-      title: "General Dentistry",
-      description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+        "Experience the rejuvenating benefits of Compression Therapy at Aspire. ",
+      path: "/services/compression",
       backgroundContent: Wellness8,
     },
     {
-      title: "General Dentistry",
+      title: "IV Lounge",
       description:
-        "Ullamcorper dui varius volutpat primis lacinia elit morbi velit. Lorem ipsum odor amet, consectetuer adipiscing elit. ",
-      path: "/service-page",
+        "Revitalise your body and mind at Aspire's IV Lounge, where personalised intravenous treatments deliver essential nutrients ",
+      path: "/services/lounge",
       backgroundContent: Wellness9,
     },
   ],
@@ -237,7 +217,7 @@ const ABOUT_US_SECTION_DATA = {
   description:
 "Welcome to the Aspire Clinic – enhancing your body and mind through expert care, state-of-the-art facilities, emotional wellbeing programmes, precision aesthetics, world-class dentistry, and a strong emphasis on prevention.<br/>At Aspire, we're committed to supporting your journey towards better health, providing personalised dental and wellness services that prioritise your unique needs. We believe that true well-being stems from a holistic approach, where exceptional care and meaningful connections work together to elevate your health and quality of life.<br/>Our wellness clinic is designed to engage all your senses, offering enriching experiences that focus on preventive health and wellbeing - all delivered with expertise and elegance in one of London's most stunning clinics.",  descriptionTextSize: 28,
   descriptionLeadingHeight: 36,
-  buttonClickLink: "/our-philosophy",
+  buttonClickLink: "/our-philopsophy",
   hasButton: true,
   buttonText: "Our Philosophy",
   backgroundColor: "#1D120C",

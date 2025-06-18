@@ -65,18 +65,17 @@ export default function ServiceDetailCard({
             priority
           />
         ))}
-      <div className="flex flex-col gap-[20px] absolute bottom-0 left-[6%] mb-10">
+      <div className="flex flex-col gap-[20px] absolute bottom-0 left-[6%] mb-10 ">
         <p
-          className="text-4xl whitespace-normal font-opus text-white"
-          style={{ lineHeight: "40.86px" }}
+className="text-4xl md:text-5xl lg:text-5xl xl:text-6xl whitespace-normal font-opus text-white "          style={{ lineHeight: "40.86px" }}
         >
           {title}
         </p>
         {description && (
           <p
-            className="text-white font-gillSans w-80 mb-7 text-base whitespace-normal tracking-widest"
-            style={{ lineHeight: "18.18px" }}
-          >
+  className="text-white font-gillSans w-80 sm:w-96 md:w-full mb-7 text-sm sm:text-[40px] md:text-lg lg:text-xl xl:text-1.5xl whitespace-normal tracking-widest"
+  style={{ lineHeight: "24.18px" }}
+>
             {description}
           </p>
         )}
@@ -84,7 +83,7 @@ export default function ServiceDetailCard({
       <div>
         <Link href={path}>
           <button
-            className="absolute font-gillSans bottom-0 rounded-tl-2xl rounded-br-2xl w-[150px] h-[65px] right-0 bg-feeGuide text-base tracking-widest"
+            className="absolute font-gillSans bottom-0 rounded-tl-2xl rounded-br-2xl w-[150px] h-[65px] right-0 bg-feeGuide text-base tracking-widest "
             style={{ lineHeight: "18.18px" }}
           >
             {buttonText}

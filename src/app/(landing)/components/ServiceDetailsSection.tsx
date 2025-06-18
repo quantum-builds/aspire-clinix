@@ -20,11 +20,10 @@ export default function ServiceDetailSection({
   return (
     <div className="zoom-out grid justify-center items-center gap-[0.5rem] w-full md:grid-cols-3 pl-2 md:pl-[5%] bg-feeGuide py-10 overflow-hidden">
       <div className="w-full flex flex-col gap-7 md:w-[70%]">
-        <h2 className="flex text-left text-[35px] md:text-nowrap font-normal md:text-[50px] lg:text-[64px] font-opus">
+        <h2 className="flex text-left text-[55px] md:text-nowrap font-normal md:text-[60px] lg:text-[74px] font-opus">
           {title}
         </h2>
-        <p className="flex w-full md:text-ellipsis justify-center items-center text-[16px] md:text-[24px] font-gillSans break-words whitespace-normal">
-          {description}
+<p className="flex w-full md:text-ellipsis justify-center items-center text-[21px] md:text-[22px] lg:text-[27px] xl:text-[30px] font-gillSans break-words whitespace-normal">          {description}
         </p>
       </div>
       <div

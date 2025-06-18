@@ -112,10 +112,12 @@ export default function HeroSection({
         {/* Description */}
         {description && descLineHeight && (
           <div
-            className="text-center text-white font-gillSans z-10 text-[16px] lg:w-[837px] lg:h-[126px] md:text-[32px] px-4 sm:px-5"
-            style={{
-              lineHeight: `${descLineHeight}px`,
-            }}
+
+className="text-center text-white font-gillSans z-10 max-w-5xl text-xl md:text-3xl lg:text-4xl leading-relaxed px-4 sm:px-5 "
+
+
+style={{ 
+lineHeight: `40px`,            }}
             dangerouslySetInnerHTML={{ __html: description }}
           />
         )}
