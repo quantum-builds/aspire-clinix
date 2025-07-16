@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { stripe } from "@/config/stripe-config";
 
-
 export async function POST(request: NextRequest) {
   const body = await request.text();
 

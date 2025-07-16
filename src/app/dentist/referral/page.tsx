@@ -13,6 +13,7 @@ export default function ReferralPage() {
         buttonColor={herobuttonColor}
         textColor="#423C36"
         descLineHeight={45.4}
+        heroScreenHieght="min-h-[55vh] md:min-h-[70vh]"
       />
       <div id="form">
         <ReferralForm />

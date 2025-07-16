@@ -76,7 +76,7 @@ export default function ReferralForm() {
       console.error("Error:", error);
     },
     onSuccess: () => {
-      router.push("/");
+      router.replace("/");
     },
   });
   const onSubmit = (data: FormData) => {
@@ -85,7 +85,7 @@ export default function ReferralForm() {
 
   return (
     <div className="bg-feeGuide w-full h-full py-16 font-opus flex justify-center items-center ">
-      <div className="zoom-out w-11/12 md:w-3/4 mx-auto flex justify-center items-center flex-col">
+      <div className="zoom-out w-11/12 md:w-3/4 mx-auto flex justify-center items-start flex-col">
         <form onSubmit={handleSubmit(onSubmit)} className="max-w-[75%]">
           <h1 className="text-[40px] md:text-[52px] font-normal text-left">
             Referral Form
@@ -301,7 +301,7 @@ export default function ReferralForm() {
             <Button
               type="submit"
               title="Submit Referral"
-              className="w-[190px] h-[70px] text-black bg-white rounded-[5px] md:rounded-xl text-lg"
+              className="w-[190px] h-[70px] text-black bg-bookATreatmentBackground rounded-[5px] md:rounded-xl text-lg"
             />
           </div>
         </form>
