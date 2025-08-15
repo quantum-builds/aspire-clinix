@@ -1,6 +1,6 @@
 "use client";
 
-import AspireLogo from "@/app/patient/book-treatment/components/AspireLogo";
+import AspireLogo from "@/app/appointment/book-treatment/components/AspireLogo";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

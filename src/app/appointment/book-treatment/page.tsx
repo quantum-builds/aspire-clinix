@@ -1,7 +1,7 @@
 import AspireLogo from "./components/AspireLogo";
 import ServiceButtons from "./components/ServiceButtons";
 import ExistingPatientSignIn from "./components/ExistingPatientSignIn";
-import { ClinicChair, image2 } from "@/assets";
+import {  image2 } from "@/assets";
 import Image from "next/image";
 
 export default function BookTreatment() {

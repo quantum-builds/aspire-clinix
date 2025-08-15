@@ -1,7 +1,7 @@
 "use client"; // Ensure it's a Client Component
 
 import { useState, useEffect } from "react";
-import AspireLogo from "../book-treatment/components/AspireLogo";
+import AspireLogo from "../../appointment/book-treatment/components/AspireLogo";
 import { Menu, X } from "lucide-react"; // Icons for open/close
 import Image from "next/image"; // Import Image component
 import { ArrowLeftIcon } from "@/assets";
