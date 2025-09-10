@@ -1,9 +1,11 @@
 interface DoctorPageProps {
+  videoSrc: string;
   doctorName: string;
   academicDetails: string;
   doctorDescription: string;
 }
 export default function DoctorPage({
+  videoSrc,
   doctorName,
   academicDetails,
   doctorDescription,
