@@ -27,7 +27,7 @@ export default function ServiceCard({ text, path, image }: CardProps) {
       </div>
       <div className="absolute bottom-[6rem]">
         <Link className="" href={path}>
-          <button className="bg-feeGuide text-[18px] md:text-xl md:rounded-[20px] md:w-[232px] rounded-[10px] w-[150px] h-[50px] md:h-[77px] font-opus">
+          <button className="bg-feeGuide text-[18px] md:text-xl lg:text-2xl md:rounded-[20px] px-11 py-5 rounded-[10px] font-opus">
             Explore
           </button>
         </Link>

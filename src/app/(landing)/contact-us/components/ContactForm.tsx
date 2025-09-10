@@ -5,8 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import FormInput from "@/components/ui/FormInput";
 import { CheckboxInput } from "@/components/ui/CheckboxInput";
-import { image1 } from "@/assets";
-import Image from "next/image";
 import Button from "@/components/ui/CustomButton";
 
 // Schema validation using zod
@@ -61,7 +59,7 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="bg-feeGuide min-h-screen items-center lg:flex-row">
+    <div className="bg-feeGuide min-h-screen items-center lg:flex-row zoom-out">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="md:w-1/2 mx-auto p-4 lg:p-14  bg-feeGuide "
@@ -76,7 +74,7 @@ export default function ContactForm() {
             className="flex-1 w-full "
             backgroundColor="#ECE8E3"
             marginTop="40px"
-            padding="12px"
+            padding="13px"
           />
           <FormInput
             type="text"
@@ -87,7 +85,7 @@ export default function ContactForm() {
             className="flex-1 w-full"
             backgroundColor="#ECE8E3"
             marginTop="40px"
-            padding="12px"
+            padding="13px"
           />
           <FormInput
             type="text"
@@ -98,7 +96,7 @@ export default function ContactForm() {
             className="flex-1 w-full"
             backgroundColor="#ECE8E3"
             marginTop="30px"
-            padding="12px"
+            padding="13px"
           />
           <FormInput
             type="text"
@@ -109,13 +107,13 @@ export default function ContactForm() {
             className="flex-1 w-full"
             backgroundColor="#ECE8E3"
             marginTop="30px"
-            padding="12px"
+            padding="13px"
           />
         </div>
         <div className="mt-10">
           <label
             htmlFor="message"
-            className="text-[16] md:text-[24px] font-normal block mb-4"
+            className="text-[22px] md:text-[24px] block mb-4 font-opus"
           >
             Message
           </label>
@@ -132,8 +130,8 @@ export default function ContactForm() {
             )}
           />
         </div>
-        <div className="mt-10">
-          <p className="text-[16px] md:text-[24px] font-normal font-opus mb-4">
+        <div className="mt-10 font-opus">
+          <p className="text-[22px] md:text-[24px] font-normal font-opus mb-4">
             How did you hear about us
           </p>
           <div className="xl:grid flex flex-col justify-center items-start lg:gap-x-20 grid-cols-2 mt-3">
@@ -156,7 +154,7 @@ export default function ContactForm() {
           )}
         </div>
 
-        <div className="mt-8 ">
+        <div className="mt-8 font-opus">
           <CheckboxInput
             type="checkbox"
             key="terms"
@@ -176,7 +174,7 @@ export default function ContactForm() {
           <Button
             type="submit"
             title="Create Account"
-            className="w-[180px] h-[60px] text-black bg-white rounded-[5px] md:rounded-lg text-lg"
+            className="px-11 py-6 text-black bg-white rounded-[5px] md:rounded-xl text-2xl"
           />
         </div>
       </form>

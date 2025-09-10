@@ -8,7 +8,7 @@ const HERO_SECTION_DATA = {
   heading: "CONTACT US",
   title: "OUR DEDICATED TEAM IS AT YOUR SERVICE",
   description:
-    "Embark on your path to a healthier, revitalized you with just a click or call. Discover the luxury and expert care that make Aspire Clinic exceptional.",
+    "Embark on your path to a healthier, revitalised you with just a click or call. Discover the luxury and expert care that make Aspire Clinic exceptional.",
   descTextSize: 32,
   descLineHeight: 36.36,
   contentWidth: 100,
@@ -21,7 +21,7 @@ const CONTACT_INFO = {
   title: "Contact Us",
   isContact: true,
   phoneNumber: "+44 XXXXXXXXXX",
-  email: "hello@aspireclinic.com",
+  email: "info@theaspireclinic.com",
   address: "27 Mortimer Street, W1N 7RJ, London, UK",
   container_side: "left",
   imagePath: image1,

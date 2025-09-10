@@ -53,7 +53,7 @@ export function CheckboxInput({
           />
         )}
       />
-      <label className="text-[16px] md:text-[20px] lg:text-[22px]">
+      <label className="text-[18px] md:text-[22px] lg:text-[25px]">
         {label}
       </label>
     </div>

@@ -16,7 +16,8 @@ const HERO_SECTION_DATA = {
   title: "WELLNESS",
   titleTextSize: 64,
   titleLineHeight: 72.64,
- description: "At Aspire Wellness, we adopt an integrative approach to your health, offering services that nourish both body and mind.<br/>Our focus — cultivating long-term vitality, relaxation, and equilibrium, empowering you to achieve a flourished and energised life of true balance.",
+  description:
+    "At Aspire Wellness, we adopt an integrative approach to your health, offering services that nourish both body and mind.<br/>Our focus — cultivating long-term vitality, relaxation, and equilibrium, empowering you to achieve a flourished and energised life of true balance.",
 
   descTextSize: 32,
   descLineHeight: 36.36,
@@ -26,7 +27,8 @@ const HERO_SECTION_DATA = {
 };
 
 const ABOUT_US_SECTION_DATA = {
- description: "While many speak of prevention being better than cure, few truly put it into practice. At our wellness clinic, we offer you that very opportunity.<br/><br/>We believe the mind and body are inseparable, and true wellness must address both. At Aspire, we combine advanced therapies such as red light treatment, invigorating cold exposure, and the healing power of touch, with in-depth analysis of your body’s stress levels, inflammatory profile, and psychological wellbeing.<br/><br/>The answers you’ve been searching for may begin here.",
+  description:
+    "While many speak of prevention being better than cure, few truly put it into practice. At our wellness clinic, we offer you that very opportunity.<br/><br/>We believe the mind and body are inseparable, and true wellness must address both. At Aspire, we combine advanced therapies such as red light treatment, invigorating cold exposure, and the healing power of touch, with in-depth analysis of your body’s stress levels, inflammatory profile, and psychological wellbeing.<br/><br/>The answers you’ve been searching for may begin here.",
 
   descriptionTextSize: 40,
   descriptionLeadingHeight: 45.4,
@@ -40,10 +42,10 @@ const ABOUT_US_SECTION_DATA = {
 const WELLNESS_SERVICES = {
   services: [
     {
-     title: "Cryotherapy",
+      title: "Cryotherapy",
       description:
         "Cryotherapy is a cutting-edge wellness treatment that harnesses the power of cold to promote recovery, dramatically reduce inflammation, and boost overall well-being. ",
-      path: "/services/crypo",
+      path: "/services/cryotherapy-chamber",
       backgroundContent: image1,
     },
     {
@@ -54,14 +56,14 @@ const WELLNESS_SERVICES = {
       backgroundContent: image2,
     },
     {
-     title: "Contrast Therapy",
+      title: "Contrast Therapy",
       description:
         "Contrast Therapy combines the powerful benefits of heat and cold to support recovery, improve circulation, and ease muscle tension. ",
       path: "/services/contrast",
       backgroundContent: image3,
     },
     {
-     title: "Hyperbaric Oxygen",
+      title: "Hyperbaric Oxygen",
       description:
         "Hyperbaric Oxygen Therapy is a powerful treatment designed to accelerate healing and promote overall wellness. ",
       path: "/services/oxygen",
@@ -95,7 +97,6 @@ const WELLNESS_SERVICES = {
       path: "/services/lounge",
       backgroundContent: image2,
     },
-   
   ],
 };
 
@@ -109,7 +110,7 @@ export default function Wellness() {
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
         descLineHeight={36.6}
-        titleFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
+        titleFontSize="text-[35]px md:text-[60px] lg:text-[64px]"
         isVideo={false}
         backgroundContent={ClinicChair}
       />

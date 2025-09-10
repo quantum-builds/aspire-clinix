@@ -1,8 +1,8 @@
 interface Component1Props {
-  title: string
-  descriptionText: string
-  backgroundColor?: string
-  titleFontSize?: string
+  title: string;
+  descriptionText: string;
+  backgroundColor?: string;
+  titleFontSize?: string;
 }
 
 export default function Component1({
@@ -18,12 +18,16 @@ export default function Component1({
     >
       <div className="w-full max-w-7xl flex flex-col lg:flex-row items-start lg:items-center gap-6 md:gap-8 lg:gap-12 xl:gap-16">
         {/* Title */}
-        <div className="w-full lg:w-[40%] xl:w-[35%] flex items-center">
-          <h2 className={`${titleFontSize} font-opus text-left text-[#1D120C] leading-tight`}>{title}</h2>
+        <div className="w-full lg:w-[40%] xl:w-[37%] flex items-center justify-center">
+          <h2
+            className={`${titleFontSize} font-opus  text-[#1D120C] leading-tight`}
+          >
+            {title}
+          </h2>
         </div>
 
         {/* Description Text */}
-        <div className="w-full lg:w-[60%] xl:w-[65%] flex flex-col gap-3 md:gap-4 lg:gap-5">
+        <div className="w-full lg:w-[60%] xl:w-[49%] flex flex-col gap-3 md:gap-4 lg:gap-5 ml-auto">
           <div
             className="text-left text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-opus leading-relaxed text-[#1D120C]"
             dangerouslySetInnerHTML={{ __html: descriptionText }}
@@ -31,5 +35,5 @@ export default function Component1({
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -65,7 +65,7 @@ const SigninForm = () => {
               backgroundColor="#DAD7D3"
               marginTop="15px"
               inputMarginTop="10px"
-              padding="12px"
+              padding="13px"
               labelTextSize="20px"
               className="w-full"
             />
@@ -82,7 +82,7 @@ const SigninForm = () => {
               backgroundColor="#DAD7D3"
               marginTop="15px"
               inputMarginTop="10px"
-              padding="12px"
+              padding="13px"
               labelTextSize="20px"
               className="w-full"
             />

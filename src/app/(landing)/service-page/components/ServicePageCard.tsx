@@ -1,15 +1,15 @@
-import Image, { type StaticImageData } from "next/image"
-import Link from "next/link"
+import Image, { type StaticImageData } from "next/image";
+import Link from "next/link";
 
 interface ServicePageCardProps {
-  title: string
-  description: string
-  descriptionList: string[]
-  image?: StaticImageData
-  reverse?: boolean
-  buttonText?: string
-  buttonLink?: string
-  centerOnly?: boolean
+  title?: string;
+  description: string;
+  descriptionList: string[];
+  image?: StaticImageData;
+  reverse?: boolean;
+  buttonText?: string;
+  buttonLink?: string;
+  centerOnly?: boolean;
 }
 
 export default function ServicePageCard({
@@ -24,22 +24,40 @@ export default function ServicePageCard({
 }: ServicePageCardProps) {
   if (centerOnly) {
     return (
-      <div className="h-full py-12 xl:py-24 px-[10%] flex justify-center items-center">
-        <div className="flex flex-col items-center gap-10 max-w-4xl text-center">
+      <div className="h-full py-12  px-[10%] flex justify-center items-center">
+        <div className="flex flex-col items-center gap-8 max-w-4xl text-center">
           <p className="font-opus text-3xl md:text-4xl">{title}</p>
-          <span className="font-gillSans text-xl leading-6" dangerouslySetInnerHTML={{ __html: description }} />
+          <span
+            className="font-gillSans text-xl leading-6"
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div
-      className={`h-full md:min-h-[80vh] flex flex-col ${reverse ? "xl:flex-row-reverse" : "xl:flex-row"} gap-16 xl:gap-36 py-12 xl:py-24 px-[10%] items-center`}
+      className={`h-full md:min-h-[60vh] flex flex-col ${
+        reverse ? "xl:flex-row-reverse" : "xl:flex-row"
+      } gap-16 xl:gap-36 py-12  px-[10%] items-center`}
     >
-      <div className="flex flex-col items-start gap-10 xl:w-1/2">
+      <div className="flex flex-col items-start gap-8 xl:w-1/2">
         <p className="font-opus text-3xl md:text-4xl">{title}</p>
-        <span className="font-gillSans text-xl leading-6" dangerouslySetInnerHTML={{ __html: description }} />
+        <span
+          className="font-gillSans text-xl leading-6"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
+        {descriptionList.length > 0 && (
+          <div className="font-opus flex flex-col gap-4">
+            <p className="font-semibold text-xl">Benefits</p>
+            <ul className="list-disc list-inside font-gillSans text-lg leading-6">
+              {descriptionList.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         {buttonText && buttonLink && (
           <Link
             href={buttonLink}
@@ -61,5 +79,5 @@ export default function ServicePageCard({
         </div>
       )}
     </div>
-  )
+  );
 }

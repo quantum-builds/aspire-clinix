@@ -30,14 +30,14 @@ export default function GeneralDentistryService({
       <div className="zoom-out py-[5%] grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-16 ">
         {/* Text Section */}
         <div
-          className={`flex flex-col justify-center gap-6 md:gap-7 lg:gap-[67px] w-full ${
+          className={`flex flex-col justify-center gap-6 md:gap-7 lg:gap-[40px] w-full ${
             container_side === "right" ? "md:order-2 md:text-left" : "md:order-1 md:text-left"
           }`}
         >
           <h2 className="text-[22px] md:text-[52px] leading-[59.02px] font-bold font-opus ">{title}</h2>
 
           {!isContact ? (
-            <p className="text-base md:text-2xl lg:w-[410px] xl:w-[471px] md:w-[360px] md:h-[150px] lg:h-[107px] xl:h-[81px] leading-[27.27px] tracking-widest font-gillSans">
+            <p className="text-base md:text-2xl lg:w-[410px] xl:w-[471px] md:w-[360px]  leading-[27.27px] tracking-widest font-gillSans">
               {description}
             </p>
           ) : (
@@ -62,7 +62,7 @@ export default function GeneralDentistryService({
             <div className="w-full flex justify-start ">
               <Link href={buttonLink || "/service-page"}>
                 <button
-                  className="font-gillSans rounded-2xl px-16 py-8 bg-[#D9D9D9] text-base md:text-2xl tracking-widest"
+                  className="font-opus rounded-2xl px-16 py-8 bg-[#D9D9D9] text-base md:text-2xl tracking-widest"
                   style={{ lineHeight: "18.18px" }}
                 >
                   Learn More

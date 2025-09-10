@@ -1,102 +1,93 @@
-import LandingPageImage from "@/components/LandingPageImage";
 import AboutUsSection from "@/components/AboutUsSection";
 import HeroSection from "@/components/HeroSection";
 import ServiceDetailSection from "@/app/(landing)/components/ServiceDetailsSection";
 import ServiceSection from "@/app/(landing)/components/ServicesSection";
-import SupplementSection from "@/app/(landing)/components/SupplementSection";
 import {
-  AiCartoon,
-  DentistTreatment,
-  DoctorTooth,
   image1,
   image2,
   image3,
-  TeethCartoon,
   Wellness1,
   Wellness2,
   Wellness3,
   Wellness4,
   Wellness5,
   Wellness6,
-  Wellness7,
   Wellness8,
   Wellness9,
 } from "@/assets";
-import { title } from "process";
 
 const DENTAL_SERVICES = {
   title: "Dentistry",
   description:
-    "We provide advanced general and specialist dental care with a personal touch. Our hand-picked and superbly skilled team offers a wide range of treatments...",
+    "We deliver advanced general and specialist dental care, led by renowned educators and hand-picked clinicians. <strong>Our focus:</strong> long-term health, prevention, and natural, radiant smiles.",
   services: [
     {
       title: "General ",
-    description:
-     "Your oral health is one of the foundations of your overall well-being and at Aspire we treat it with the care it deserves.",
-
+      description:
+        "Your oral health is one of the foundations of your overall well-being and at Aspire we treat it with the care it deserves.",
       path: "/general-dentistry",
       backgroundContent: image1,
     },
     {
       title: "Emergency ",
       description:
-     "When urgent dental care is needed, Aspire is here to provide prompt, professional support.we can to relieve your discomfort as quickly as possible. ",
+        "When urgent dental care is needed, Aspire is here to provide prompt, professional support.we can to relieve your discomfort as quickly as possible. ",
       path: "/services/emergency",
       backgroundContent: image2,
     },
     {
       title: "Cosmetic ",
       description:
-     "At our Cosmetic Clinic, we specialise in enhancing your smile to reflect your true confidence and individuality.",
+        "At our Cosmetic Clinic, we specialise in enhancing your smile to reflect your true confidence and individuality.",
       path: "/services/cosmetic",
       backgroundContent: image3,
     },
     {
       title: "Implants ",
       description:
-     "Dental implants are a long-lasting, natural-looking solution for replacing missing teeth—restoring both function and confidence.",
+        "Dental implants are a long-lasting, natural-looking solution for replacing missing teeth—restoring both function and confidence.",
       path: "/services/implants",
       backgroundContent: image1,
     },
     {
       title: "Gums ",
       description:
-     "Your gums are the foundation of a strong, beautiful smile. Having healthy and beautiful gums is a key foundation to all dental health.",
+        "Your gums are the foundation of a strong, beautiful smile. Having healthy and beautiful gums is a key foundation to all dental health.",
       path: "/services/gums",
       backgroundContent: image2,
     },
     {
       title: "Oral Surgery",
       description:
-     "Our expert team at Aspire specialises in a wide range of oral surgical procedures, from managing wisdom tooth problems to simple dental extractions.",
+        "Our expert team at Aspire specialises in a wide range of oral surgical procedures, from managing wisdom tooth problems to simple dental extractions.",
       path: "/services/surgery",
       backgroundContent: image3,
     },
     {
       title: "Dentures ",
       description:
-     "Our expert team at Aspire specialises in a wide range of oral surgical procedures, from managing wisdom tooth problems to simple dental extractions.",
+        "Our expert team at Aspire specialises in a wide range of oral surgical procedures, from managing wisdom tooth problems to simple dental extractions.",
       path: "/services/dentures",
       backgroundContent: image1,
     },
     {
       title: "Root Canals",
       description:
-     "Root canal treatment (Endodontics) is often the best way to preserve a natural tooth that has been damaged by decay or trauma reaching the nerve.",
+        "Root canal treatment (Endodontics) is often the best way to preserve a natural tooth that has been damaged by decay or trauma reaching the nerve.",
       path: "/services/root",
       backgroundContent: image2,
     },
     {
       title: "Orthodontic",
       description:
-     "Our Orthodontic Clinic offers expert care to help you achieve a beautifully aligned smile",
+        "Our Orthodontic Clinic offers expert care to help you achieve a beautifully aligned smile",
       path: "/services/orthodontic",
       backgroundContent: image3,
     },
     {
       title: "Kids ",
       description:
-     "Our Kids' Clinic is dedicated to providing a welcoming and friendly environment where children can receive top-quality dental care.",
+        "Our Kids' Clinic is dedicated to providing a welcoming and friendly environment where children can receive top-quality dental care.",
       path: "/services/kid",
       backgroundContent: image1,
     },
@@ -106,48 +97,44 @@ const DENTAL_SERVICES = {
 const ASTHETIC_SERVICE = {
   title: "Aesthetics",
   description:
-        "We provide a wide range of tailored treatments to subtly enhance your natural beauty with precision and care. Our facial aesthetics team, carefully selected for their expertise, takes the time to understand your unique..." ,
+    "Our aesthetics team specialises in subtle, natural enhancements that respect your individuality. Using the latest techniques, we deliver refined, harmonious results helping you look refreshed and confident, never artificial.",
   services: [
     {
       title: "Anti Wrinkle Injections",
-      description: "Our Anti-Wrinkle Injections are designed to help you achieve a smoother, more youthful appearance with minimal downtime."
-,
+      description:
+        "Our Anti-Wrinkle Injections are designed to help you achieve a smoother, more youthful appearance with minimal downtime.",
       path: "/services/anti-wrinkle",
       backgroundContent: image1,
     },
 
-
     {
       title: "Fillers",
-      description: "Our Dermal Fillers are crafted to enhance your natural features and restore youthful volume.Each treatment is designed to smooth lines, restore balance,"
-,
+      description:
+        "Our Dermal Fillers are crafted to enhance your natural features and restore youthful volume.Each treatment is designed to smooth lines, restore balance,",
       path: "/services/fillers",
       backgroundContent: image2,
     },
 
     {
       title: "Skin Boosters",
-      description: "Our Skin Boosters are designed to deeply hydrate and rejuvenate your skin from within, restoring a radiant, glowing complexion."
-,
+      description:
+        "Our Skin Boosters are designed to deeply hydrate and rejuvenate your skin from within, restoring a radiant, glowing complexion.",
       path: "/services/boosters",
       backgroundContent: image3,
     },
-
-   
-   
   ],
 };
 
 const WELLNESS_SERVICE = {
   title: "Wellness",
   description:
-"At Aspire Wellness, we adopt an integrative approach to your health, offering services that nourish both body and mind.Our focus- cultivating long-term vitality, relaxation...",
+    "At Aspire Wellness, we see the mind and body as inseparable. Our integrative therapies from red light and cold exposure to massage, and hyperbaric oxygen are designed to restore balance, build resilience, and unlock long-term vitality and longevity.",
   services: [
     {
       title: "Cryotherapy",
       description:
         "Cryotherapy is a cutting-edge wellness treatment that harnesses the power of cold to promote recovery, dramatically reduce inflammation, and boost overall well-being. ",
-      path: "/services/crypo",
+      path: "/services/cryotherapy-chamber",
       backgroundContent: Wellness1,
     },
     {
@@ -185,7 +172,7 @@ const WELLNESS_SERVICE = {
       path: "/services/massage",
       backgroundContent: Wellness6,
     },
-    
+
     {
       title: "Compression Therapy",
       description:
@@ -204,29 +191,29 @@ const WELLNESS_SERVICE = {
 };
 
 const HERO_SECTION_DATA = {
-  title: "Your journey to holistic wellness, radiant smiles, vibrant energy, and a flourishing life starts here.",
+  title:
+    "Your journey to holistic wellness, radiant smiles, vibrant energy, and a flourishing life starts here.",
   description: null,
   descTextSize: null,
   contentWidth: 100,
   backgroundColor: "#FFFFFF",
   buttonColor: "#ECE8E3",
   backgroundContent: "/videos/landing-page-video-1.mp4",
-}
+};
 
 const ABOUT_US_SECTION_DATA = {
   description:
-"Welcome to the Aspire Clinic – enhancing your body and mind through expert care, state-of-the-art facilities, emotional wellbeing programmes, precision aesthetics, world-class dentistry, and a strong emphasis on prevention.<br/>At Aspire, we're committed to supporting your journey towards better health, providing personalised dental and wellness services that prioritise your unique needs. We believe that true well-being stems from a holistic approach, where exceptional care and meaningful connections work together to elevate your health and quality of life.<br/>Our wellness clinic is designed to engage all your senses, offering enriching experiences that focus on preventive health and wellbeing - all delivered with expertise and elegance in one of London's most stunning clinics.",  descriptionTextSize: 28,
+    "Welcome to the Aspire Clinic enhancing your body and mind through expert care, state-of-the-art facilities, emotional wellbeing programmes, precision aesthetics, world-class dentistry, and a strong emphasis on prevention.<br/>At Aspire, we're committed to supporting your journey towards better health, providing personalised dental and wellness services that prioritise your unique needs. We believe that true well-being stems from a holistic approach, where exceptional care and meaningful connections work together to elevate your health and quality of life.<br/>Our wellness clinic is designed to engage all your senses, offering enriching experiences that focus on preventive health and wellbeing - all delivered with expertise and elegance in one of London's most stunning clinics.",
+  descriptionTextSize: 28,
   descriptionLeadingHeight: 36,
   buttonClickLink: "/our-philopsophy",
   hasButton: true,
   buttonText: "Our Philosophy",
-  backgroundColor: "#1D120C",
-  textColor: "#C9BCA9",
+  backgroundColor: "#C9BCA9",
+  textColor: "#423C36",
   descriptionWidth: 90,
   buttonBackgroundColor: "#ECE8E3",
-}
-
-
+};
 
 const SUPPLEMENTS_DATA = {
   title: "Our Supplements",
@@ -238,9 +225,7 @@ const SUPPLEMENTS_DATA = {
   backgroundColor: "#1D120C",
   textColor: "#C9BCA9",
   buttonBackgroundColor: "#ECE8E3",
-}
-
-
+};
 
 export default function Home() {
   return (
@@ -264,7 +249,7 @@ export default function Home() {
         buttonBackgroundColor={ABOUT_US_SECTION_DATA.buttonBackgroundColor}
         buttonClickLink={ABOUT_US_SECTION_DATA.buttonClickLink}
       />
-      <LandingPageImage />
+      {/* <LandingPageImage /> */}
       <div className="bg-feeGuide">
         <ServiceSection />
       </div>

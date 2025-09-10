@@ -1,6 +1,5 @@
 import { AspireLightLogo, InstagramIcon, LinkedinIcon, XIcon } from "@/assets";
 import Image from "next/image";
-import EmailInput from "./EmailInput";
 import Link from "next/link";
 
 const IN_PAGE_NAV_LINKS = [
@@ -30,8 +29,8 @@ export default function Footer() {
             height={88}
             className="w-[100px] h-[50px] lg:w-[189px] lg:h-[88px] md:w-[120px] md:h-[50px]"
           />
-<address className="not-italic text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[26px] text-white flex flex-col items-start font-gillSans gap-2">
-            <p>hello@aspireclinic.co.uk</p>
+          <address className="not-italic text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] xl:text-[26px] text-white flex flex-col items-start font-gillSans gap-2">
+            <p>info@aspireclinic.co.uk</p>
             <p>27 Mortimer Street</p>
             <p>W1N 7RJ, London, UK</p>
           </address>

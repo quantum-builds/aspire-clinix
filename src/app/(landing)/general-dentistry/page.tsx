@@ -1,26 +1,25 @@
-import HeroSection from "@/components/HeroSection"
-import GeneralDentistryService from "@/app/(landing)/general-dentistry/components/GeneralDentistryService"
-import { ClinicChair, Dentist1, DropDown4, DropDown8 } from "@/assets"
-import AboutUsSection from "@/components/AboutUsSection"
+import HeroSection from "@/components/HeroSection";
+import GeneralDentistryService from "@/app/(landing)/general-dentistry/components/GeneralDentistryService";
+import { ClinicChair, Dentist1, DropDown4, DropDown8 } from "@/assets";
 
 const HERO_SECTION_DATA = {
   title: "General Dentistry",
   titleTextSize: 64,
   titleLineHeight: 72.64,
   description:
-    "Your oral health is one of the foundations of your overall well-being—and at Aspire, we treat it with the care it deserves. Our general dentistry services go beyond check-ups and cleanings.",
+    "Your oral health is the foundation of your overall well-being. At Aspire, we go beyond routine check-ups with a proactive, prevention-first approach to protect your smile for life.<br/><br/>If treatment is needed, we’ll guide you to the best solution and then focus on preventing future problems with a personalised prevention plan designed around you.<br/><br/>From gentle hygiene care and precise diagnostics to advanced restorative treatments, every visit is calm, thorough, and tailored to your needs. Comfort, clear communication, and kindness are at the heart of everything we do.<br/><br/>Our goal is simple: to keep your natural teeth healthy, functional, and beautiful for life",
   descTextSize: 32,
   descLineHeight: 36.36,
   contentWidth: 100,
   backgroundColor: "#D9D9D9",
   buttonColor: "#ECE8E3",
-}
+};
 
 const GENERAL_DENTISTRY_SERVICE = [
   {
     title: "Fillings",
     description:
-      "Fillings play a vital role in restoring teeth that have been affected by decay or minor damage",
+      "Restore teeth affected by decay or minor damage with natural-looking composite fillings designed to blend seamlessly and preserve tooth structure.",
     container_side: "left",
     imagePath: DropDown8,
     buttonLink: "/services/fillings",
@@ -29,7 +28,7 @@ const GENERAL_DENTISTRY_SERVICE = [
   {
     title: "Porcelain Crowns and Onlays",
     description:
-      "Porcelain crowns and onlays are advanced solutions for restoring teeth that are heavily worn, damaged, or weakened",
+      "Strengthen and restore worn, damaged, or weakened teeth with custom porcelain crowns and onlays that protect, preserve, and look beautifully natural.",
     container_side: "right",
     imagePath: Dentist1,
     buttonLink: "/services/crowns-onlays",
@@ -38,12 +37,12 @@ const GENERAL_DENTISTRY_SERVICE = [
   {
     title: "Bridges and Denture Clinic",
     description:
-      "Replacing missing teeth may be crucial not only for restoring your smile but also for maintaining proper bite function and oral health.",
+      "Replace missing teeth with secure, natural-looking solutions that restore both your smile and proper bite function.",
     container_side: "left",
     imagePath: DropDown4,
     buttonLink: "/services/bridges-dentures",
   },
-]
+];
 
 const ABOUT_US_SECTION_DATA = {
   description:
@@ -54,7 +53,7 @@ const ABOUT_US_SECTION_DATA = {
   buttonText: null,
   backgroundColor: "#F5F5F5",
   textColor: "#1D120C",
-}
+};
 
 const CARD_DATA = [
   {
@@ -84,7 +83,7 @@ const CARD_DATA = [
     backgroundContent: "/videos/landing-page-video-1.mp4",
     is_video: true,
   },
-]
+];
 
 export default function GeneralDentistry() {
   return (
@@ -96,11 +95,11 @@ export default function GeneralDentistry() {
         backgroundColor={HERO_SECTION_DATA.backgroundColor}
         buttonColor={HERO_SECTION_DATA.buttonColor}
         descLineHeight={36.6}
-        titleFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
+        titleFontSize="text-[35]px md:text-[60px] lg:text-[64px]"
         isVideo={false}
         backgroundContent={ClinicChair}
       />
-      <AboutUsSection
+      {/* <AboutUsSection
         description={ABOUT_US_SECTION_DATA.description}
         hasButton={ABOUT_US_SECTION_DATA.hasButton}
         buttonText={ABOUT_US_SECTION_DATA.buttonText}
@@ -108,7 +107,7 @@ export default function GeneralDentistry() {
         textColor={ABOUT_US_SECTION_DATA.textColor}
         buttonBackgroundColor="#ECE8E3"
         buttonClickLink=""
-      />
+      /> */}
       {GENERAL_DENTISTRY_SERVICE.map((service, index) => (
         <GeneralDentistryService
           key={index}
@@ -120,5 +119,5 @@ export default function GeneralDentistry() {
         />
       ))}
     </div>
-  )
+  );
 }

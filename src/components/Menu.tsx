@@ -5,8 +5,6 @@ import Link from "next/link";
 import { Dispatch, SetStateAction, useState } from "react";
 import Image from "next/image";
 import { UserRoles } from "@/constants/UserRoles";
-import { routeModule } from "next/dist/build/templates/app-page";
-import path from "path";
 
 const USER_MENU_LIST = [
   {
@@ -43,16 +41,14 @@ const USER_MENU_LIST = [
     category: "WELLNESS",
     path: "/wellness",
     services: [
-      { title: "Cryotherapy", path: "/services/crypo" },
+      { title: "Cryotherapy", path: "/services/cryotherapy-chamber" },
       { title: "Infra-red Sauna", path: "/services/sauna" },
       { title: "Contrast Therapy", path: "/services/contrast" },
       { title: "Hyperbaric Oxygen", path: "/services/oxygen" },
       { title: "Ice Baths", path: "/services/ice" },
       { title: "Massage", path: "/services/massage" },
-      { title: "Red Light Therapy", path: "/service-page" },
       { title: "Compression Therapy", path: "/services/compression" },
       { title: "IV Lounge", path: "/services/lounge" },
-      { title: "Longevity Concierge", path: "/service-page" },
     ],
   },
   { category: "FEE GUIDE", path: "/fee-guide", services: [] },
@@ -62,7 +58,7 @@ const USER_MENU_LIST = [
     services: [],
   },
   {
-    category: "REFERRAL PORTAL",
+    category: "REFERRAL FORM",
     path: "/dentist/referral",
     services: [],
   },

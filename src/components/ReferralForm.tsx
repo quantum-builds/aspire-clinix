@@ -84,13 +84,13 @@ export default function ReferralForm() {
   };
 
   return (
-    <div className="bg-feeGuide w-full h-full py-16 font-opus flex justify-center items-center ">
-      <div className="zoom-out w-11/12 md:w-3/4 mx-auto flex justify-center items-start flex-col">
-        <form onSubmit={handleSubmit(onSubmit)} className="max-w-[75%]">
+    <div className="bg-feeGuide w-full min-h-screen py-16 font-opus flex justify-center items-center">
+      <div className="zoom-out w-11/12 md:w-3/4 mx-auto flex justify-center items-center flex-col">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-6xl">
           <h1 className="text-[40px] md:text-[52px] font-normal text-left">
             Referral Form
           </h1>
-          <h2 className="text-[32px] font-normal mt-16 mb-8">
+          <h2 className="text-[28px] md:text-[40px] font-medium mt-16 mb-8">
             Patient Details
           </h2>
           <FormInput
@@ -101,7 +101,7 @@ export default function ReferralForm() {
             errorMessage={errors.name?.message}
             backgroundColor="#ECE8E3"
             marginTop="50px"
-            padding="8px"
+            padding="13px"
           />
           <FormInput
             type="date"
@@ -111,7 +111,7 @@ export default function ReferralForm() {
             errorMessage={errors.DOB?.message}
             backgroundColor="#ECE8E3"
             marginTop="50px"
-            padding="8px"
+            padding="13px"
           />
           <FormInput
             type="text"
@@ -121,7 +121,7 @@ export default function ReferralForm() {
             errorMessage={errors.address?.message}
             backgroundColor="#ECE8E3"
             marginTop="50px"
-            padding="8px"
+            padding="13px"
           />
           <div className="grid grid-cols-1 lg:grid-cols-2 flex-wrap justify-between flex-1 gap-16">
             <FormInput
@@ -133,7 +133,7 @@ export default function ReferralForm() {
               className="flex-1 w-full"
               backgroundColor="#ECE8E3"
               marginTop="50px"
-              padding="8px"
+              padding="13px"
             />
             <FormInput
               type="text"
@@ -144,11 +144,11 @@ export default function ReferralForm() {
               className="flex-1 w-full"
               backgroundColor="#ECE8E3"
               marginTop="50px"
-              padding="8px"
+              padding="13px"
             />
           </div>
           <div className="mt-6">
-            <h2 className="text-[16px] md:text-[24px] font-normal">
+            <h2 className="text-[20px] md:text-[30px] font-normal ">
               Medical History
             </h2>
             <br />
@@ -159,7 +159,7 @@ export default function ReferralForm() {
             <br />
           </div>
           <div>
-            <h3 className="font-opus text-[16px] md:text-[24px]">
+            <h3 className="font-opus text-[20px] md:text-[30px]">
               Referral Details
             </h3>
             <div className="grid mt-4 justify-center items-start md:grid-cols-2 gap-1 lg:gap-2 lg:gap-x-20 min-w-max">
@@ -178,7 +178,7 @@ export default function ReferralForm() {
           <div className="mt-5 flex items-center">
             <label
               htmlFor="other"
-              className="text-[16px] md:text-[22px] font-normal"
+              className="text-[18px] md:text-[25px] font-normal"
             >
               Other
             </label>
@@ -191,7 +191,7 @@ export default function ReferralForm() {
                   type="text"
                   {...field}
                   id="other"
-                  className="ml-8 w-[200px] h-[40px] md:w-[334px] md:h-[55px] rounded-lg bg-feeGuide border border-black px-2 outline-none"
+                  className="ml-8 w-[200px] h-[40px] md:w-[334px] md:h-[55px] text-[24px] rounded-lg bg-feeGuide border border-black px-2 outline-none"
                 />
               )}
             />
@@ -199,7 +199,7 @@ export default function ReferralForm() {
           <div className="mt-16">
             <label
               htmlFor="treatmentDetails"
-              className="text-[16] md:text-[24px] font-normal block mb-4"
+              className="text-[18px] md:text-[25px] font-normal block mb-4"
             >
               Please describe the treatment required in as much detail as
               possible
@@ -212,13 +212,13 @@ export default function ReferralForm() {
                 <textarea
                   {...field}
                   id="treatmentDetails"
-                  className="w-full h-[223px] bg-feeGuide border border-black rounded-lg p-4 outline-none"
+                  className="w-full h-[223px] text-[24px]  bg-feeGuide border border-black rounded-lg p-4 outline-none"
                 />
               )}
             />
           </div>
           <div className="mt-24">
-            <h2 className="text-[16px] md:text-[32px] font-normal">
+            <h2 className="text-[28px] md:text-[40px] font-normal">
               Referring Dentist Details
             </h2>
             <FormInput
@@ -229,7 +229,7 @@ export default function ReferralForm() {
               errorMessage={errors.referralName?.message}
               backgroundColor="#ECE8E3"
               marginTop="50px"
-              padding="8px"
+              padding="13px"
             />
             <FormInput
               type="text"
@@ -239,7 +239,7 @@ export default function ReferralForm() {
               errorMessage={errors.referralGDC?.message}
               backgroundColor="#ECE8E3"
               marginTop="50px"
-              padding="8px"
+              padding="13px"
             />
             <FormInput
               type="text"
@@ -249,7 +249,7 @@ export default function ReferralForm() {
               errorMessage={errors.referralAddress?.message}
               backgroundColor="#ECE8E3"
               marginTop="50px"
-              padding="8px"
+              padding="13px"
             />
             <div className="flex flex-wrap justify-between gap-16">
               <div className="flex flex-1 items-center">
@@ -262,7 +262,7 @@ export default function ReferralForm() {
                   className="flex-1"
                   backgroundColor="#ECE8E3"
                   marginTop="50px"
-                  padding="8px"
+                  padding="13px"
                 />
               </div>
               <FormInput
@@ -274,11 +274,11 @@ export default function ReferralForm() {
                 className="flex-1"
                 backgroundColor="#ECE8E3"
                 marginTop="50px"
-                padding="8px"
+                padding="13px"
               />
             </div>
             <div className="mt-16">
-              <p className="text-[16px] md:text-[24px] font-normal font-opus mb-4">
+              <p className="text-[18px] md:text-[25px] font-normal font-opus mb-4">
                 Would you like to attend the treatment appointment with the
                 patient and shadow the dentist?
               </p>
@@ -301,7 +301,7 @@ export default function ReferralForm() {
             <Button
               type="submit"
               title="Submit Referral"
-              className="w-[190px] h-[70px] text-black bg-bookATreatmentBackground rounded-[5px] md:rounded-xl text-lg"
+              className="px-11 py-6 text-black bg-bookATreatmentBackground rounded-[5px] md:rounded-xl text-2xl"
             />
           </div>
         </form>

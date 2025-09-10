@@ -23,8 +23,12 @@ export default function ServiceDetailSection({
         <h2 className="flex text-left text-[55px] md:text-nowrap font-normal md:text-[60px] lg:text-[74px] font-opus">
           {title}
         </h2>
-<p className="flex w-full md:text-ellipsis justify-center items-center text-[21px] md:text-[22px] lg:text-[27px] xl:text-[30px] font-gillSans break-words whitespace-normal">          {description}
-        </p>
+        {description && (
+          <p
+            className="w-full md:-ellipsis text-[21px] md:text-[22px] lg:text-[27px] xl:text-[30px] font-gillSans break-words whitespace-normal"
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
+        )}
       </div>
       <div
         className="md:h-[450px] w-full overflow-y-auto mb-20 scrollbar-hide pt-[5%] col-span-2"

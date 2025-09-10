@@ -2,11 +2,8 @@
 
 import { AspireDarkLogo, AspireLightLogo, image1 } from "@/assets";
 import Image, { StaticImageData } from "next/image";
-import HeroMenu from "./HeroMenu";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import LogoutButton from "./LogoutButton";
 import HeroNav from "./HeroNav";
 
 interface HeroSectionProps {
@@ -90,7 +87,7 @@ export default function HeroSection({
         {heading && (
           <p
             className={clsx(
-              "text-center text-white font-gillSans z-10 text-xs md:text-xl px-4 sm:px-5",
+              "text-center text-white font-gillSans z-10 px-4 sm:px-5",
               headingSize
             )}
             style={{}}
@@ -112,12 +109,10 @@ export default function HeroSection({
         {/* Description */}
         {description && descLineHeight && (
           <div
-
-className="text-center text-white font-gillSans z-10 max-w-5xl text-xl md:text-3xl lg:text-4xl leading-relaxed px-4 sm:px-5 "
-
-
-style={{ 
-lineHeight: `40px`,            }}
+            className="text-center text-white font-gillSans z-10 max-w-6xl text-xl md:text-3xl lg:text-4xl leading-relaxed px-4 sm:px-5 "
+            style={{
+              lineHeight: `40px`,
+            }}
             dangerouslySetInnerHTML={{ __html: description }}
           />
         )}

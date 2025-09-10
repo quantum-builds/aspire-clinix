@@ -1,6 +1,6 @@
-import HeroSection from "@/components/HeroSection"
-import ServicePageCard from "../components/ServicePageCard"
-import { DropDown4, DropDown8 } from "@/assets"
+import HeroSection from "@/components/HeroSection";
+import ServicePageCard from "../components/ServicePageCard";
+import { DropDown4, DropDown8 } from "@/assets";
 
 const HERO_SECTION_DATA = {
   title: "Aesthetics Treatment",
@@ -10,9 +10,9 @@ const HERO_SECTION_DATA = {
   descLineHeight: 40.86,
   buttonColor: "#ECE8E3",
   textColor: "white",
-  titleFontSize: "md:text-[48px] text-[25px]",
+  titleFontSize: "text-[35px] md:text-[60px]",
   heroScreenHieght: "min-h-[55vh] md:min-h-[70vh]",
-}
+};
 
 const ABOUT_US_SECTION_DATA = {
   description: "",
@@ -22,7 +22,7 @@ const ABOUT_US_SECTION_DATA = {
   textColor: "#1D120C",
   buttonBackgroundColor: "#ECE8E3",
   buttonClickLink: "",
-}
+};
 
 const SERVICE_PAGE_CARD_DATA = [
   {
@@ -64,7 +64,7 @@ const SERVICE_PAGE_CARD_DATA = [
     image: DropDown4,
     reverse: false,
   },
-]
+];
 
 export default function ServiceDetailPage() {
   return (
@@ -91,19 +91,9 @@ export default function ServiceDetailPage() {
               image={data.image}
               reverse={data.reverse}
             />
-          )
+          );
         })}
       </div>
-
-      <div className="flex justify-center items-center mx-0 px-3 lg:mx-auto min-h-[40vh] lg:min-h-[70vh] bg-feeGuide w-full py-[4%] xl:py-0">
-        <video
-          className="top-0 left-0 w-full h-full object-cover lg:w-[70vw] xl:w-[50vw] lg:h-[50vh] xl:h-[60vh]"
-          src="/videos/landing-page-video-1.mp4"
-          controls
-          loop
-          preload="auto"
-        ></video>
-      </div>
     </div>
-  )
+  );
 }

@@ -5,66 +5,66 @@ import ServiceDetailCard from "@/components/ServiceDetailCard";
 const CARD_DATA = [
   {
     path: "/dr-richardporter",
-    card_width: 424,
+    cardWidth: 424,
     buttonText: "Read Bio",
-    card_height: 613,
-    doc_name: "Dr. Richard Porter",
+    cardHeight: 613,
+    docName: "Dr. Richard Porter",
     backgroundContent: Dentist1,
   },
   {
     path: "/dr-raheelmalik",
-    card_width: 424,
+    cardWidth: 424,
     buttonText: "Read Bio",
-    card_height: 613,
-    doc_name: "Dr. Raheel Malik",
+    cardHeight: 613,
+    docName: "Dr. Raheel Malik",
     backgroundContent: Dentist2,
   },
   {
     path: "/dr-liuxinyang",
-    card_width: 424,
+    cardWidth: 424,
     buttonText: "Read Bio",
-    card_height: 613,
-    doc_name: "Dr. Liu Xin Yang",
+    cardHeight: 613,
+    docName: "Dr. Liu Xin Yang",
     backgroundContent: Dentist3,
   },
   {
     path: "/dr-alexanderhorsham",
-    card_width: 424,
+    cardWidth: 424,
     buttonText: "Read Bio",
-    card_height: 613,
-    doc_name: "Dr. Alexander Horsham",
+    cardHeight: 613,
+    docName: "Dr. Alexander Horsham",
     backgroundContent: Dentist1,
   },
   {
     path: "/dr-muhammadisham",
-    card_width: 424,
+    cardWidth: 424,
     buttonText: "Read Bio",
-    card_height: 613,
-    doc_name: "Dr. Muhammed Isham",
+    cardHeight: 613,
+    docName: "Dr. Muhammed Isham",
     backgroundContent: Dentist2,
   },
   {
     path: "/dr-liuxinyang",
-    card_width: 424,
+    cardWidth: 424,
     buttonText: "Read Bio",
-    card_height: 613,
-    doc_name: "Dr. Liu Xin Yang",
+    cardHeight: 613,
+    docName: "Dr. Liu Xin Yang",
     backgroundContent: Dentist3,
   },
   {
     path: "/dr-alexanderhorsham",
-    card_width: 424,
+    cardWidth: 424,
     buttonText: "Read Bio",
-    card_height: 613,
-    doc_name: "Dr. Alexander Horsham",
+    cardHeight: 613,
+    docName: "Dr. Alexander Horsham",
     backgroundContent: Dentist1,
   },
   {
     path: "/dr-muhammadisham",
-    card_width: 424,
+    cardWidth: 424,
     buttonText: "Read Bio",
-    card_height: 613,
-    doc_name: "Dr. Muhammed Isham",
+    cardHeight: 613,
+    docName: "Dr. Muhammed Isham",
     backgroundContent: Dentist2,
   },
 ];
@@ -92,11 +92,11 @@ export default function GeneralDentistry() {
         description={HERO_SECTION_DATA.description}
         contentWidth={HERO_SECTION_DATA.contentWidth}
         descLineHeight={HERO_SECTION_DATA.descLineHeight}
-        titleFontSize="md:text-[45px] text-[25px] lg:text-[64px]"
+        titleFontSize="text-[35]px md:text-[60px] lg:text-[64px]"
         isVideo={false}
         backgroundContent={image1}
       />
-      <div className="zoom-out bg-footerBackground flex flex-col gap-16 md:gap-20 lg:gap-28 w-full mx-auto min-h-screen py-[5%]">
+      <div className="zoom-out bg-footerBackground flex flex-col gap-16 md:gap-20 lg:gap-28 w-full mx-auto min-h-screen py-[4%]">
         <div className="flex flex-col w-full gap-16 md:gap-20 lg:gap-28 lg:px-12">
           {/* First Row - 2 Columns */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 md:gap-x-4 lg:gap-x-16 gap-y-16 md:gap-y-20 lg:gap-y-28 justify-items-center mx-0 md:mx-auto">
@@ -105,10 +105,10 @@ export default function GeneralDentistry() {
                 key={index}
                 path={card.path}
                 backgroundContent={card.backgroundContent}
-                card_width={card.card_width}
+                cardWidth={card.cardWidth}
                 buttonText={card.buttonText}
-                card_height={card.card_height}
-                doc_name={card.doc_name}
+                cardHeight={card.cardHeight}
+                docName={card.docName}
                 className="w-[320px] sm:w-[360px] md:w-[424px] h-auto xl:w-[380px] 2xl:w-[424px]"
               />
             ))}
@@ -121,10 +121,10 @@ export default function GeneralDentistry() {
                 key={index + 2}
                 path={card.path}
                 backgroundContent={card.backgroundContent}
-                card_width={card.card_width}
+                cardWidth={card.cardWidth}
                 buttonText={card.buttonText}
-                card_height={card.card_height}
-                doc_name={card.doc_name}
+                cardHeight={card.cardHeight}
+                docName={card.docName}
                 className="w-[320px] sm:w-[360px] md:w-[424px] h-auto xl:w-[380px] 2xl:w-[424px]"
               />
             ))}

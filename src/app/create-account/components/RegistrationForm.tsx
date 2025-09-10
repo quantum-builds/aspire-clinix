@@ -45,7 +45,6 @@ export default function RegistrationForm() {
           },
         }
       );
-      
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
     }
@@ -85,7 +84,7 @@ export default function RegistrationForm() {
                 backgroundColor="#DAD7D3"
                 marginTop="15px"
                 inputMarginTop="10px"
-                padding="12px"
+                padding="13px"
                 labelTextSize="20px"
                 className="w-[312px]"
               />
@@ -100,7 +99,7 @@ export default function RegistrationForm() {
                 backgroundColor="#DAD7D3"
                 marginTop="15px"
                 inputMarginTop="10px"
-                padding="12px"
+                padding="13px"
                 labelTextSize="20px"
                 className="w-[312px]"
               />
@@ -114,7 +113,7 @@ export default function RegistrationForm() {
                 backgroundColor="#DAD7D3"
                 marginTop="15px"
                 inputMarginTop="10px"
-                padding="12px"
+                padding="13px"
                 labelTextSize="20px"
                 className="w-[312px]"
               />

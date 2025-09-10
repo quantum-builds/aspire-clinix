@@ -23,7 +23,7 @@ export default function FeeGuidePage() {
         descLineHeight={40.86}
         buttonColor={herobuttonColor}
         textColor="white"
-        titleFontSize="md:text-[48px] text-[25px]"
+        titleFontSize="text-[35px] md:text-[60px]"
         heroScreenHieght="min-h-[55vh] md:min-h-[70vh]"
       />
       <CheckupAndRoutine />

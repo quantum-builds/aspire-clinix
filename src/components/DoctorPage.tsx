@@ -1,11 +1,9 @@
 interface DoctorPageProps {
-  videoSrc: string;
   doctorName: string;
   academicDetails: string;
   doctorDescription: string;
 }
 export default function DoctorPage({
-  videoSrc,
   doctorName,
   academicDetails,
   doctorDescription,
@@ -13,7 +11,7 @@ export default function DoctorPage({
   const descriptionLines = doctorDescription.split("\n");
   return (
     <div className="w-full bg-feeGuide flex justify-center lg:items-center min-h-screen">
-      <div className="zoom-out flex flex-col lg:flex-row gap-14">
+      <div className=" flex flex-col lg:flex-row gap-14">
         <div>
           <video
             className="w-full h-full xl:w-[900px] p-8 lg:p-0"

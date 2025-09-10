@@ -1,14 +1,14 @@
-import HeroSection1 from "@/components/HeroSection"
-import Component1 from "./components/Component1"
-import Component2 from "./components/Component2"
-import { image1 } from "@/assets/index"
-import SupplementSection from "@/app/(landing)/components/SupplementSection"
-import AboutUsSection from "@/components/AboutUsSection"
+import HeroSection1 from "@/components/HeroSection";
+import Component1 from "./components/Component1";
+import Component2 from "./components/Component2";
+import { image1, image2 } from "@/assets/index";
+import SupplementSection from "@/app/(landing)/components/SupplementSection";
+import AboutUsSection from "@/components/AboutUsSection";
 
 const HERO_SECTION_DATA = {
   title: "THE PURSUIT OF BALANCED FLOURISHING",
   description:
-    "Life isn't simply about living longer — it's about living fully. A life filled with joy, enriching experiences, and moments that bring hope and excitement to each and every day.",
+    "Life isn’t about simply living longer it’s about living fully. At Aspire, we combine preventative medicine, dentistry, aesthetics, and whole-body wellness to help you live with strength, balance, and joy.<br/><br/>We focus on your long-term health and happiness, creating an environment where emotional well-being, vitality, and lifestyle can thrive.",
   descTextSize: 20,
   descLineHeight: 25,
   heading: "ASPIRE CLINIC'S PHILOSOPHY",
@@ -16,7 +16,7 @@ const HERO_SECTION_DATA = {
   backgroundColor: "#ECE8E3",
   buttonColor: "#ECE8E3",
   backgroundContent: image1,
-}
+};
 
 const PHILOSOPHY_SECTION = {
   description:
@@ -27,19 +27,19 @@ const PHILOSOPHY_SECTION = {
   textColor: "#1D120C",
   buttonBackgroundColor: "#ECE8E3",
   buttonClickLink: "",
-}
+};
 
 const FIRST_COMPONENT1 = {
   title: "A Holistic Approach to Longevity",
   descriptionText:
-    "Our approach blends cutting-edge science with evidence-based practices to support your health, vitality, and well-being at every stage of life. It's no longer just about how long you live — it's about how much joy you feel along the way.<br/><br/>We go beyond quick fixes and isolated treatments. Instead, we take the time to understand you—your body, your lifestyle, and your goals.<br/><br/>From dental health and aesthetic treatments to wellness therapies and lifestyle guidance, everything we do is grounded in the belief that true longevity comes from balance: of mind, body, and spirit.<br/><br/>Whether you're here to prevent, restore, or enhance, our integrative approach ensures that every element of your care contributes to long-term health, not just short-term results. Because real longevity is intentional—and it starts today.",
-}
+    "True longevity is about quality, not just years. Our integrative approach blends science and evidence-based practice to support mind, body, and spirit at every stage of life.<br/><br/>We take time to understand your health, goals, and lifestyle so every treatment contributes to lasting results, not quick fixes.",
+};
 
 const SCIENCE_COMPONENT1 = {
   title: "The Science of Balance and Well-being",
   descriptionText:
-    "Well-being isn't a luxury—it's a foundation. At Aspire, we view health through a scientific lens, where every system in the body is interconnected and balance is key to optimal performance.<br/><br/>Our team draws from the latest research in medicine, psychology, dentistry, nutrition, and neuroscience to craft tailored strategies that support physical health, mental clarity, and emotional resilience.<br/><br/>We use in-depth consultations to create care plans that are as personal as they are effective, delivering long-term improvements that feel as good as they look.<br/><br/>For too long, the connection between our emotions, psychology, and physical health has been overlooked. But the evidence is now overwhelming—and deeply compelling.<br/><br/>By understanding the mind-body link, we can offer you a far richer opportunity to thrive in every aspect of life. Reactive medicine is a relic of the past—the future lies in a happier, healthier you.",
-}
+    "Well-being is a foundation, not a luxury. Drawing on research in medicine, psychology, dentistry, nutrition, and neuroscience, we design personalised care that builds resilience, clarity, and long-term health.<br/><br/>By recognising the powerful link between mind and body, we move beyond reactive medicine. The future is proactive, holistic care helping you thrive, flourish, and feel exactly how you want to feel.",
+};
 
 const CONTACT_US_SECTION = {
   description:
@@ -53,7 +53,7 @@ const CONTACT_US_SECTION = {
   textColor: "#C9BCA9",
   descriptionWidth: 60,
   buttonBackgroundColor: "#ECE8E3",
-}
+};
 
 export default function OurPhilosophy() {
   return (
@@ -71,9 +71,9 @@ export default function OurPhilosophy() {
         isVideo={false}
         backgroundContent={HERO_SECTION_DATA.backgroundContent}
       />
-      
+
       {/* New Philosophy Section */}
-      <AboutUsSection
+      {/* <AboutUsSection
         description={PHILOSOPHY_SECTION.description}
         hasButton={PHILOSOPHY_SECTION.hasButton}
         buttonText={PHILOSOPHY_SECTION.buttonText}
@@ -81,21 +81,22 @@ export default function OurPhilosophy() {
         textColor={PHILOSOPHY_SECTION.textColor}
         buttonBackgroundColor={PHILOSOPHY_SECTION.buttonBackgroundColor}
         buttonClickLink={PHILOSOPHY_SECTION.buttonClickLink}
-      />
-      
+      /> */}
+
       <Component1
         title={FIRST_COMPONENT1.title}
         descriptionText={FIRST_COMPONENT1.descriptionText}
         backgroundColor="#ECE8E3"
-        titleFontSize="text-[16px] sm:text-[20px] md:text-[28px] lg:text-[36px] xl:text-[44px]"
+        titleFontSize="text-[18px] sm:text-[24px] md:text-[32px] lg:text-[42px] xl:text-[52px]"
       />
-      <Component1
+      <Component2
         title={SCIENCE_COMPONENT1.title}
         descriptionText={SCIENCE_COMPONENT1.descriptionText}
         backgroundColor="#DCD4C9"
         titleFontSize="text-[18px] sm:text-[24px] md:text-[32px] lg:text-[42px] xl:text-[52px]"
+        imagePath={image2}
       />
-      <SupplementSection
+      {/* <SupplementSection
         description={CONTACT_US_SECTION.description}
         buttonClickLink={CONTACT_US_SECTION.buttonClickLink}
         hasButton={CONTACT_US_SECTION.hasButton}
@@ -103,7 +104,7 @@ export default function OurPhilosophy() {
         backgroundColor={CONTACT_US_SECTION.backgroundColor}
         textColor={CONTACT_US_SECTION.textColor}
         buttonBackgroundColor={CONTACT_US_SECTION.buttonBackgroundColor}
-      />
+      /> */}
     </div>
-  )
+  );
 }

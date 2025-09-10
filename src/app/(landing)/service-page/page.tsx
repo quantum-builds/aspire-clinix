@@ -39,10 +39,10 @@ export default function ServiceDetailPage() {
         descLineHeight={40.86}
         buttonColor="#ECE8E3"
         textColor="white"
-        titleFontSize="md:text-[48px] text-[25px]"
+        titleFontSize="text-[35px] md:text-[60px]"
         heroScreenHieght="min-h-[55vh] md:min-h-[70vh]"
       />
-      <div className="bg-feeGuide"> 
+      <div className="bg-feeGuide">
         {SERVICE_PAGE_CARD_DATA.map((data) => {
           return (
             <ServicePageCard

@@ -37,7 +37,7 @@ const FormInput = <T extends FieldValues>({
         htmlFor={name}
         style={{
           display: "block",
-          marginBottom: "0.5rem",
+          marginBottom: "0.2rem",
           fontSize: `${labelTextSize}`,
         }}
         className="w-1/3 text-[16px] md:text-[24px] font-normal font-opus text-nowrap pb-3"
@@ -57,7 +57,7 @@ const FormInput = <T extends FieldValues>({
           marginTop: `${inputMarginTop}`,
           padding: `${padding}`,
         }}
-        className="font-opus px-3 outline-none flex-1 "
+        className="font-opus px-3 outline-none flex-1 text-[24px] "
       />
       {error && (
         <span style={{ color: "red", fontSize: "0.875rem" }}>
