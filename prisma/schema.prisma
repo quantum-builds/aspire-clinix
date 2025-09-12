@@ -181,6 +181,95 @@ model Admin {
   User   User   @relation(fields: [userId], references: [id])
 }
 
+// PATIENT MODELS
+
+model Resource{
+  id          String   @id @default(cuid())
+  title       String
+  fileUrl     String
+  fileType    ResoucrceType
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([fileType])
+}
+
+model Report{
+  id          String   @id @default(cuid())
+  dentistId   String
+  patientId   String
+  title       String
+  fileUrl     String
+  fileType    ResoucrceType
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([dentistId])
+  @@index([patientId])
+  @@index([fileType])
+}
+
+model Product {
+  id       String     @id @default(cuid())
+  name     String
+  price    Float
+  stock    Int
+  ratings  Float
+  imageUrl String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cartProducts CartProduct[]
+  purchasedProducts PurchasedProduct[]
+
+}
+
+model Cart{
+  id        String   @id @default(cuid())
+  patientId String   @unique
+
+  cartProducts CartProduct[]
+}
+
+model CartProduct{
+  id        String   @id @default(cuid())
+  cartId    String
+  productId String
+  quantity  Int
+  Cart      Cart     @relation(fields: [cartId], references: [id],onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
+}
+
+model PurchasedProduct{
+  id          String   @id @default(cuid())
+  patientId   String
+  productId   String
+  productPaymentId String 
+  purchaseDate DateTime @default(now())
+  quantity    Int
+  product     Product  @relation(fields: [productId], references: [id])
+  payment     ProductPayment @relation(fields: [productPaymentId], references: [id])
+
+  @@index([patientId])
+}
+
+model ProductPayment{
+  id              String        @id @default(cuid())
+  patientId       String
+  email           String        
+  paymentIntent   String        
+  amount          Float
+  status          PaymentStatus @default(PENDING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  products        PurchasedProduct[]
+
+  @@unique([email,paymentIntent]) 
+}
+
+
 model Video {
   id          String @id @default(cuid())
   dentistId   String
@@ -197,11 +286,7 @@ enum InvoiceStatus {
   FAILED
 }
 
-enum PaymentStatus {
-  PENDING
-  SUCCESSFUL
-  FAILED
-}
+
 
 enum PlanStatus {
   ACTIVE
@@ -224,4 +309,20 @@ enum PatientTreatmentStatus {
   NO_SHOW 
   FAILED 
   EXPIRED 
+}
+
+// PATIENT ENUMS
+
+enum ResoucrceType{
+  VIDEO
+  PDF
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+  REFUNDED
+  REFUND_PENDING
+  REFUND_FAILED
 }

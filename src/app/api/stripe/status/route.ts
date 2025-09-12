@@ -1,65 +1,54 @@
 import { stripe } from "@/config/stripe-config";
-import prisma from "@/lib/db";
+import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const searchParams = req.nextUrl.searchParams;
   try {
+    const searchParams = req.nextUrl.searchParams;
     const sessionId = searchParams.get("session_id");
+
     if (!sessionId) {
-      throw new Error("Session ID is required.");
+      return NextResponse.json(
+        createResponse(false, "Session ID is required.", null),
+        { status: 400 }
+      );
     }
 
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-    const metadata = session.metadata;
-
-    if (!metadata || !metadata.userId) {
-      throw new Error("Invalid metadata in payment intent.");
-    }
 
     if (!session) {
-      throw new Error("Session not found.");
+      return NextResponse.json(
+        createResponse(false, "Session not found.", null),
+        { status: 404 }
+      );
     }
-
-    if (!session.amount_total) {
-      throw new Error("Invalid amount");
-    }
-
-    // invoice code
 
     if (session.payment_status === "paid") {
-      prisma.payment.create({
-        data: {
-          userId: metadata.userId,
-          stripePaymentId: session.payment_intent as string,
-          amount: session.amount_total,
-          status: "SUCCESSFUL",
-        },
-      });
-
-      return NextResponse.json({
-        status: 200,
-        action: session.payment_status,
-        message: "payment successful",
-      });
+      return NextResponse.json(
+        createResponse(true, "Payment successful", null),
+        { status: 200 }
+      );
+    } else if (session.payment_status === "no_payment_required") {
+      return NextResponse.json(
+        createResponse(true, "No payment required", null),
+        { status: 204 }
+      );
     } else if (session.payment_status === "unpaid") {
-      return NextResponse.json({
-        status: 200,
-        action: session.payment_status,
-        message: "payment pending",
-      });
+      return NextResponse.json(
+        createResponse(false, "Payment unpaid or pending", null),
+        { status: 402 }
+      );
     } else {
-      return NextResponse.json({
-        status: 200,
-        action: session.payment_status,
-        message: "payment failed",
-      });
+      return NextResponse.json(
+        createResponse(false, "Unknown payment status", null),
+        { status: 500 }
+      );
     }
   } catch (error) {
     console.error("Stripe Error:", error);
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 }
-    );
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(createResponse(false, errorMessage, null), {
+      status: 500,
+    });
   }
 }
