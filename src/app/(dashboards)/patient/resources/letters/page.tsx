@@ -1,7 +1,7 @@
 import { TResource } from "@/types/common";
 import NoContent from "../../components/NoContent";
 import { Suspense } from "react";
-import SearchBar from "../../components/SearchBar";
+import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import ResourceGrid from "./components/ResourceGrid";
 
 const RESOURCE: TResource[] = [
