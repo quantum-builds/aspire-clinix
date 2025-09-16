@@ -52,8 +52,8 @@ export default function PastAppointmentCard({
         </div>
       </div>
       <div className="flex justify-between items-center">
-        <Button text="See Reports" href="/patient/appointments/reports" />
-        <p className="text-lg italic text-right text-lg">
+        <Button text="See Reports" href="/dentist/appointments/reports" />
+        <p className="text-lg italic text-right ">
           Appointment.no: {appointment.appointmentNumber}
         </p>
       </div>

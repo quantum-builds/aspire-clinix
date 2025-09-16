@@ -1,9 +1,10 @@
-import { TDentistDeatils, TReport } from "@/types/common";
+import { TDentistDeatils, TPatientDetails, TReport } from "@/types/common";
 import NoContent from "@/app/(dashboards)/components/NoContent";
 import { Suspense } from "react";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import BackButton from "@/app/(dashboards)/components/BackButton";
-import ReportGrid from "./component/ReportGrid";
+import Button from "@/app/(dashboards)/components/Button";
+import ReportGrid from "./components/ReportGrid";
 
 const REPORTS: TReport[] = [
   {
@@ -78,16 +79,17 @@ const REPORTS: TReport[] = [
   },
 ];
 
-const DENTIST_DETAILS: TDentistDeatils = {
-  id: "1",
-  name: "Dr. Kavin Smith",
-  gdcNo: "192 168 209",
-  phoneNo: "+971 1121 1189",
-  email: "drkavinsmith@gmail.com",
-  practiceAddress: "Clinic 208, Street 408, Oslo, Norway",
+const PATEINT_DETAILS: TPatientDetails = {
   date: "2025-09-16",
   time: "09:00",
   appointmentNumber: "APT001",
+  disease: "Toothache",
+  patientId: "P001",
+  patientName: "Ali Khan",
+  patientGender: "Male",
+  patientAge: "28",
+  patientPhone: "03001234567",
+  patientEmail: "alikhan22@example.com",
 };
 
 export default async function ReportsPage(props: {
@@ -97,7 +99,6 @@ export default async function ReportsPage(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
-  //   const dentistId = searchParams?.dentistId || "";  // will be used when fetching data from frontend
   const title = searchParams?.query || "";
 
   const filteredReports = REPORTS.filter((report) =>
@@ -117,10 +118,17 @@ export default async function ReportsPage(props: {
           <BackButton />
         </div>
       </div>
+      <div className="flex justify-end">
+        <Button
+          text="Create New Report"
+          href={"/dentist/appointments/reports/new"}
+          className="w-fit"
+        />
+      </div>
       <Suspense key={title} fallback={<div>Loading.....</div>}>
         <ReportGrid
           reports={filteredReports}
-          dentistDetails={DENTIST_DETAILS}
+          patientDetails={PATEINT_DETAILS}
         />
       </Suspense>
     </div>

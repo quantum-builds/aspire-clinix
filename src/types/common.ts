@@ -26,6 +26,9 @@ export interface TDentistDeatils {
   gdcNo: string;
   phoneNo: string;
   email: string;
+  date: string;
+  time: string;
+  appointmentNumber: string;
   practiceAddress: string;
 }
 
@@ -112,4 +115,8 @@ export interface TAppointmentDentist {
   patientGender: string;
   patientAge: string;
   patientPhone: string;
+}
+
+export interface TPatientDetails extends TAppointmentDentist {
+  patientEmail: string;
 }

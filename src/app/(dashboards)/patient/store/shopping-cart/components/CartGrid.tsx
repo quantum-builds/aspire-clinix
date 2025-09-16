@@ -54,9 +54,9 @@ export default function CartGrid({ cartProducts }: CartGridProps) {
       <div className="grid grid-cols-4 gap-6">
         <div className="col-span-3 flex flex-col gap-6">
           {cart.length > 0 ? (
-            cart.map((product) => (
+            cart.map((product, index) => (
               <CartCard
-                key={product.id}
+                key={index}
                 cartProduct={product}
                 onIncrease={handleIncrease}
                 onDecrease={handleDecrease}

@@ -1,17 +1,17 @@
-import { TDentistDeatils, TReport } from "@/types/common";
-import DentistDetails from "./DentistDetails";
-import { ResoucrceType } from "@prisma/client";
 import LetterReportGrid from "@/app/(dashboards)/components/LetterReportGrid";
 import VideoReportGrid from "@/app/(dashboards)/components/VideoReportGrid";
+import { TDentistDeatils, TPatientDetails, TReport } from "@/types/common";
+import { ResoucrceType } from "@prisma/client";
+import PatientDetails from "./PatientDetails";
 
 interface ReportGridProps {
   reports: TReport[];
-  dentistDetails: TDentistDeatils;
+  patientDetails: TPatientDetails;
 }
 
 export default function ReportGrid({
   reports,
-  dentistDetails,
+  patientDetails,
 }: ReportGridProps) {
   const videoReports = reports.filter(
     (report) => report.fileType !== ResoucrceType.PDF
@@ -21,7 +21,7 @@ export default function ReportGrid({
   );
   return (
     <div className="flex flex-col gap-7 bg-dashboardBackground">
-      <DentistDetails dentistDetails={dentistDetails} />
+      <PatientDetails patientDetails={patientDetails} />
       <div className="flex flex-col gap-10 bg-dashboardBarBackground rounded-2xl p-6">
         <VideoReportGrid reports={videoReports} />
         <LetterReportGrid reports={letterReports} />

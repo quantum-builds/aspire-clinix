@@ -56,7 +56,7 @@ export default function UpcomingAppointmentCard({
         </div>
       </div>
       <div className="flex justify-between items-center">
-        <Button text="See Reports" href="/patient/appointments/reports" />
+        <Button text="See Reports" href="/dentist/appointments/reports" />
         <p className="text-xl italic">
           Appointment Number: {appointment.appointmentNumber}
         </p>

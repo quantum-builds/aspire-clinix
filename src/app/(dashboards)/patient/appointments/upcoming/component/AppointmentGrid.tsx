@@ -13,8 +13,8 @@ export default function AppointmentGrid({
       <FirstUpcomingAppointmentCard appointment={appointments[0]} />
       {appointments.length > 1 && (
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 p-6 border border-green rounded-2xl">
-          {appointments.slice(1).map((appointment) => (
-            <UpcomingAppointmentCard appointment={appointment} />
+          {appointments.slice(1).map((appointment,index) => (
+            <UpcomingAppointmentCard appointment={appointment} key={index} />
           ))}
         </div>
       )}
