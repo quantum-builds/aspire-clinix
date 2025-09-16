@@ -28,7 +28,7 @@ const CARD_DATA = [
     backgroundContent: Dentist3,
   },
   {
-    path: "/dr-alexanderhorsham",
+    path: "/dr-richardporter",
     cardWidth: 424,
     buttonText: "Read Bio",
     cardHeight: 613,
@@ -36,7 +36,7 @@ const CARD_DATA = [
     backgroundContent: Dentist1,
   },
   {
-    path: "/dr-muhammadisham",
+    path: "/dr-raheelmalik",
     cardWidth: 424,
     buttonText: "Read Bio",
     cardHeight: 613,
@@ -52,7 +52,7 @@ const CARD_DATA = [
     backgroundContent: Dentist3,
   },
   {
-    path: "/dr-alexanderhorsham",
+    path: "/dr-raheelmalik",
     cardWidth: 424,
     buttonText: "Read Bio",
     cardHeight: 613,
@@ -60,7 +60,7 @@ const CARD_DATA = [
     backgroundContent: Dentist1,
   },
   {
-    path: "/dr-muhammadisham",
+    path: "/dr-richardporter",
     cardWidth: 424,
     buttonText: "Read Bio",
     cardHeight: 613,
