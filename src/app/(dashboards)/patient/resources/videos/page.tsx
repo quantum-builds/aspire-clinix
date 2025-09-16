@@ -1,4 +1,4 @@
-import { TReport, TResource } from "@/types/common";
+import { TResource } from "@/types/common";
 import NoContent from "../../components/NoContent";
 import { Suspense } from "react";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";

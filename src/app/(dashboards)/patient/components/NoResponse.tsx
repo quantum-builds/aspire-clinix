@@ -1,7 +1,7 @@
 import Image from "next/image";
 import BackButton from "../profile/component/BackButton";
 import { NoContentImage } from "@/assets";
-import SearchBar from "./SearchBar";
+import SearchBar from "@/app/(dashboards)/components/SearchBar";
 
 interface NoResponseProps {
   title: string;

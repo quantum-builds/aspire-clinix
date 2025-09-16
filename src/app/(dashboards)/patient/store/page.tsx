@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import NoContent from "../components/NoContent";
-import SearchBar from "../components/SearchBar";
+import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import ProductGrid from "./components/ProductGrid";
 import { TProduct } from "@/types/common";
 import ProductGridHeader from "./components/ProductGridHeader";
