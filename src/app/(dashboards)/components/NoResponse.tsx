@@ -1,5 +1,5 @@
 import Image from "next/image";
-import BackButton from "../profile/component/BackButton";
+import BackButton from "@/app/(dashboards)/components/BackButton";
 import { NoContentImage } from "@/assets";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
 

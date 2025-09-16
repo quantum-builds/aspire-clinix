@@ -1,10 +1,10 @@
 import Button from "@/app/(dashboards)/components/Button";
 import { CalenderInputIcon, TimeIcon } from "@/assets";
-import { TUpcomingAppointment } from "@/types/common";
+import { TUpcomingAppointmentPatient } from "@/types/common";
 import Image from "next/image";
 
 interface UpcomingAppointmentCardProps {
-  appointment: TUpcomingAppointment;
+  appointment: TUpcomingAppointmentPatient;
 }
 
 export default function UpcomingAppointmentCard({

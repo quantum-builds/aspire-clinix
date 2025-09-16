@@ -1,8 +1,8 @@
-import { TPastAppointment } from "@/types/common";
+import { TPastAppointmentPatient } from "@/types/common";
 import PastAppointmentCard from "./PastAppointmentCard";
 
 interface AppointmentGridProps {
-  appointments: TPastAppointment[];
+  appointments: TPastAppointmentPatient[];
 }
 export default function AppointmentGrid({
   appointments,

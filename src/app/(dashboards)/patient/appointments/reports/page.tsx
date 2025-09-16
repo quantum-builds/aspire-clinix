@@ -1,9 +1,9 @@
 import { TDentistDeatils, TReport } from "@/types/common";
-import NoContent from "../../components/NoContent";
+import NoContent from "@/app/(dashboards)/components/NoContent";
 import { Suspense } from "react";
 import ReportGrid from "./component/ReportGrid";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
-import BackButton from "../../profile/component/BackButton";
+import BackButton from "@/app/(dashboards)/components/BackButton";
 
 const REPORTS: TReport[] = [
   {

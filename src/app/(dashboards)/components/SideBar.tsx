@@ -32,7 +32,9 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
             matched = true;
           }
         });
-        if (section.href && !matched) {
+
+        // to show black bg when on reports page
+        if (section.href && !matched && !pathname.includes("/profile")) {
           setActiveSection(section.name);
           setOpenSection(null);
           setActivePage(null);

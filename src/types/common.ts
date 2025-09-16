@@ -77,7 +77,7 @@ export interface TPurchasedProduct {
   }[];
 }
 
-export interface TUpcomingAppointment {
+export interface TUpcomingAppointmentPatient {
   date: string;
   time: string;
   appointmentNumber: string;
@@ -91,7 +91,7 @@ export interface TUpcomingAppointment {
   specialization: string;
 }
 
-export interface TPastAppointment {
+export interface TPastAppointmentPatient {
   date: string;
   time: string;
   appointmentNumber: string;
@@ -100,4 +100,16 @@ export interface TPastAppointment {
   gdcNumber: string;
   dentistPhone: string;
   disease: string;
+}
+
+export interface TAppointmentDentist {
+  date: string;
+  time: string;
+  appointmentNumber: string;
+  disease: string;
+  patientId: string;
+  patientName: string;
+  patientGender: string;
+  patientAge: string;
+  patientPhone: string;
 }

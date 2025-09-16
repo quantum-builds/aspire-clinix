@@ -1,10 +1,10 @@
 import { CalenderInputIcon, TimeIcon } from "@/assets";
-import { TPastAppointment } from "@/types/common";
+import { TPastAppointmentPatient } from "@/types/common";
 import Image from "next/image";
 import Button from "@/app/(dashboards)/components/Button";
 
 interface UpcomingAppointmentCardProps {
-  appointment: TPastAppointment;
+  appointment: TPastAppointmentPatient;
 }
 
 export default function PastAppointmentCard({
@@ -12,18 +12,21 @@ export default function PastAppointmentCard({
 }: UpcomingAppointmentCardProps) {
   return (
     <div className="flex flex-col gap-8 p-6 rounded-2xl bg-dashboardBackground">
-      <div className="flex justify-end gap-3 items-center">
-        <div className="flex items-center gap-1">
-          <Image
-            src={CalenderInputIcon}
-            alt="Calendar Icon"
-            className="w-4 h-4"
-          />
-          <p className="text-lg">{appointment.date}</p>
-        </div>
-        <div className="flex items-center gap-1">
-          <Image src={TimeIcon} alt="TIme Icon" className="w-4 h-4" />
-          <p className="text-lg">{appointment.time}</p>
+      <div className="flex justify-between gap-3 items-center">
+        <p className="text-green font-medium text-xl">Dentist Details</p>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <Image
+              src={CalenderInputIcon}
+              alt="Calendar Icon"
+              className="w-4 h-4"
+            />
+            <p className="text-lg">{appointment.date}</p>
+          </div>
+          <div className="flex items-center gap-1">
+            <Image src={TimeIcon} alt="TIme Icon" className="w-4 h-4" />
+            <p className="text-lg">{appointment.time}</p>
+          </div>
         </div>
       </div>
       <div className="flex flex-wrap gap-y-5 justify-between">

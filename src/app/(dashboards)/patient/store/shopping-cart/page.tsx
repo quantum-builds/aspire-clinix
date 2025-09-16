@@ -1,12 +1,12 @@
 import { TCartProduct } from "@/types/common";
-import BackButton from "../../profile/component/BackButton";
+import BackButton from "@/app/(dashboards)/components/BackButton";
 import CartGrid from "./components/CartGrid";
 
 const CART: TCartProduct[] = [
   {
     id: "1",
     cartId: "001",
-    quantity: 2 ,
+    quantity: 2,
     price: 59.99,
     total: 59.99,
     title: "Electric Toothbrush",

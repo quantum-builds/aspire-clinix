@@ -1,10 +1,10 @@
-import { TPastAppointment } from "@/types/common";
+import { TPastAppointmentPatient } from "@/types/common";
 import { Suspense } from "react";
-import NoContent from "../../components/NoContent";
 import AppointmentGrid from "./component/AppointmentGrid";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
+import NoContent from "@/app/(dashboards)/components/NoContent";
 
-const APPOINTMENT: TPastAppointment[] = [
+const APPOINTMENT: TPastAppointmentPatient[] = [
   {
     date: "July 07, 2025",
     time: "10:00 AM",

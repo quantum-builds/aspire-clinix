@@ -75,7 +75,7 @@ export default function PatientLayout({
       </div>
 
       <div className="col-start-2 border-b">
-        <TopBar />
+        <TopBar role="Patient" profileLink="/patient/profile" />
       </div>
 
       {/* make only main scrollable */}

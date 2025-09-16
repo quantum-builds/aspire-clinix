@@ -1,0 +1,348 @@
+"use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { TextInputIcon } from "@/assets";
+import { z } from "zod";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// Zod schema for form validation
+const profileFormSchema = z.object({
+  fullName: z
+    .string()
+    .min(2, "Full name must be at least 2 characters")
+    .max(100, "Full name must be less than 100 characters"),
+  email: z
+    .string()
+    .email("Please enter a valid email address")
+    .min(1, "Email is required"),
+  phoneNumber: z
+    .string()
+    .min(10, "Phone number must be at least 10 digits")
+    .regex(/^\+?[\d\s\-\(\)]+$/, "Please enter a valid phone number"),
+  gdcNumber: z
+    .string()
+    .min(4, "GDC number must be at least 4 characters")
+    .max(20, "GDC number must be less than 20 characters"),
+  practiceAddress: z
+    .string()
+    .min(5, "Practice address must be at least 5 characters")
+    .max(200, "Practice address must be less than 200 characters"),
+  profileImage: z
+    .instanceof(File)
+    .refine(
+      (file) => file.size <= 5 * 1024 * 1024,
+      "Image must be less than 5MB"
+    )
+    .refine(
+      (file) =>
+        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+          file.type
+        ),
+      "Only JPEG, PNG, and WebP images are allowed"
+    ),
+});
+
+type FormData = z.infer<typeof profileFormSchema>;
+
+// Default values constant
+// const defaultValues = {
+//   fullName: "Jane Smith",
+//   email: "jane.smith@gmail.com",
+//   phoneNumber: "+44 7700 900123",
+//   dateOfBirth: new Date("1995-06-15"),
+//   gender: "female",
+//   country: "uk",
+//   profileImage: undefined,
+// };
+
+const defaultValues = {
+  fullName: "",
+  email: "",
+  phoneNumber: "",
+  gdcNumber: "",
+  practiceAddress: "",
+  profileImage: undefined,
+};
+
+export default function ProfileForm() {
+  const [image, setImage] = useState<string | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  const {
+    handleSubmit,
+    control,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues,
+  });
+
+  const watchedValues = watch();
+
+  // Check if form values have changed from default values
+  useEffect(() => {
+    const isChanged =
+      watchedValues.fullName !== defaultValues.fullName ||
+      watchedValues.email !== defaultValues.email ||
+      watchedValues.phoneNumber !== defaultValues.phoneNumber ||
+      watchedValues.gdcNumber !== defaultValues.gdcNumber ||
+      watchedValues.practiceAddress !== defaultValues.practiceAddress ||
+      watchedValues.profileImage !== defaultValues.profileImage;
+
+    setHasChanges(isChanged);
+  }, [watchedValues]);
+
+  const onSubmit = (data: FormData) => {
+    console.log("Form submitted:", data);
+    // Handle form submission here
+    // Reset hasChanges after successful submission
+    setHasChanges(false);
+  };
+
+  const handleCancel = () => {
+    reset(defaultValues);
+    setHasChanges(false);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate the image file using Zod
+      try {
+        const imageSchema = z
+          .instanceof(File)
+          .refine(
+            (file) => file.size <= 5 * 1024 * 1024,
+            "Image must be less than 5MB"
+          )
+          .refine(
+            (file) =>
+              ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+                file.type
+              ),
+            "Only JPEG, PNG, and WebP images are allowed"
+          );
+
+        imageSchema.parse(file);
+
+        const imageUrl = URL.createObjectURL(file);
+        setImage(imageUrl);
+        // setValue("profileImage", file);
+      } catch (error) {
+        setImage(null);
+        console.error("Image validation failed:", error);
+      }
+    } else {
+      setImage(null);
+    }
+  };
+
+  return (
+    <form className="flex flex-col gap-7" onSubmit={handleSubmit(onSubmit)}>
+      <div className="bg-dashboardBarBackground rounded-2xl p-6 flex flex-col gap-8">
+        <p className="font-medium text-2xl text-green">Your Details</p>
+        <div className="flex items-center gap-4">
+          <div className="bg-gray rounded-2xl h-[120px] w-[120px] overflow-hidden flex items-center justify-center">
+            {image ? (
+              <Image
+                src={image}
+                alt="Profile Preview"
+                width={120}
+                height={120}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <span className="text-sm text-gray-500">No Image</span>
+            )}
+          </div>
+          <div className="flex flex-col gap-3">
+            <Label className="font-medium text-lg">Profile Picture</Label>
+            <Input
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              onChange={handleImageChange}
+            />
+            {errors.profileImage && (
+              <p className="text-sm text-red-500">
+                {errors.profileImage.message}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
+          <div className="space-y-2">
+            <Label htmlFor="fullName" className="text-lg font-medium">
+              Full Name<span className="text-red-500 text-sm ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <Controller
+                name="fullName"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="fullName"
+                    placeholder="Enter your full name"
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              <Image
+                src={TextInputIcon}
+                alt="text-input"
+                className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
+              />
+            </div>
+            {errors.fullName && (
+              <p className="text-sm text-red-500">{errors.fullName.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-lg font-medium">
+              Email<span className="text-red-500 text-sm ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email address"
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              <Image
+                src={TextInputIcon}
+                alt="text-input"
+                className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
+              />
+            </div>
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email.message}</p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="" className="text-lg font-medium">
+              Phone Number<span className="text-red-500 text-sm ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <Controller
+                name="phoneNumber"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="phoneNumber"
+                    type="tel"
+                    placeholder="Enter your phone number"
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              <Image
+                src={TextInputIcon}
+                alt="text-input"
+                className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
+              />
+            </div>
+            {errors.phoneNumber && (
+              <p className="text-sm text-red-500">
+                {errors.phoneNumber.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gdcNumber" className="text-lg font-medium">
+              GDC No<span className="text-red-500 text-sm ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <Controller
+                name="gdcNumber"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="gdcNumber"
+                    placeholder="Enter your gdc number"
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              <Image
+                src={TextInputIcon}
+                alt="text-input"
+                className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
+              />
+            </div>
+            {errors.gdcNumber && (
+              <p className="text-sm text-red-500">{errors.gdcNumber.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="practiceAddress" className="text-lg font-medium">
+              Practice Address
+              <span className="text-red-500 text-sm ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <Controller
+                name="practiceAddress"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="practiceAddress"
+                    placeholder="Enter your practice address"
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              <Image
+                src={TextInputIcon}
+                alt="text-input"
+                className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
+              />
+            </div>
+            {errors.practiceAddress && (
+              <p className="text-sm text-red-500">
+                {errors.practiceAddress.message}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Conditionally render buttons only when there are changes */}
+      {hasChanges && (
+        <div className="w-full flex justify-end items-center gap-3">
+          <Button
+            type="button"
+            onClick={handleCancel}
+            className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
+          >
+            Save Changes
+          </Button>
+        </div>
+      )}
+    </form>
+  );
+}

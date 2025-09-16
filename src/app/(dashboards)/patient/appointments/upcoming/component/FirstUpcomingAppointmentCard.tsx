@@ -1,10 +1,10 @@
 import Button from "@/app/(dashboards)/components/Button";
 import { CalenderInputIcon, TimeIcon } from "@/assets";
-import { TUpcomingAppointment } from "@/types/common";
+import { TUpcomingAppointmentPatient } from "@/types/common";
 import Image from "next/image";
 
 interface FirstUpcomingAppointmentCardProps {
-  appointment: TUpcomingAppointment;
+  appointment: TUpcomingAppointmentPatient;
 }
 export default function FirstUpcomingAppointmentCard({
   appointment,
@@ -40,14 +40,14 @@ export default function FirstUpcomingAppointmentCard({
       </div>
       <div className="flex flex-col gap-5">
         <p className="text-2xl font-medium text-green">Dentist Details</p>
-        <div className="grid grid-row-2 gap-y-5 gap-x-5">
+        <div className="grid grid-row-3 gap-y-5 gap-x-5">
           {/* First column - 2 items */}
-          <div className="flex items-center gap-2">
-            <p className="flex-[25%] text-xl">
+          <div className="flex items-center gap-2  text-xl">
+            <p className="flex-[25%] ">
               Name:{" "}
               <span className="font-medium">{appointment.dentistName}</span>
             </p>
-            <p className="flex-[25%] text-xl">
+            <p className="flex-[25%]">
               GDC no:{" "}
               <span className="font-medium">{appointment.gdcNumber}</span>
             </p>

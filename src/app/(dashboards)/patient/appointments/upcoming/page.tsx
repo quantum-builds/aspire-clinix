@@ -1,10 +1,10 @@
-import { TUpcomingAppointment } from "@/types/common";
+import { TUpcomingAppointmentPatient } from "@/types/common";
 import AppointmentGrid from "./component/AppointmentGrid";
 import { Suspense } from "react";
-import NoContent from "../../components/NoContent";
+import NoContent from "@/app/(dashboards)/components/NoContent";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
 
-const APPOINTMENT: TUpcomingAppointment[] = [
+const APPOINTMENT: TUpcomingAppointmentPatient[] = [
   {
     date: "July 07, 2025",
     time: "10:00 AM",

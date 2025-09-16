@@ -23,7 +23,12 @@ import {
 import Notifications from "./Notifications";
 import Link from "next/link";
 
-export default function TopBar() {
+interface TopBarProps {
+  role: string;
+  profileLink:string
+}
+
+export default function TopBar({ role, profileLink }: TopBarProps) {
   return (
     <div className="fixed top-0 left-[344px] w-[calc(100%-344px)] h-[90px] bg-dashboardBarBackground border-b border-gray-200 flex items-center justify-end gap-8 px-6">
       <Popover>
@@ -63,7 +68,7 @@ export default function TopBar() {
         />
         <div className="flex flex-col gap-[1px]">
           <p className="font-semibold text-lg">Harry Kane</p>
-          <p className="text-lightBlack">Patient</p>
+          <p className="text-lightBlack">{role}</p>
         </div>
       </div>
 
@@ -84,7 +89,7 @@ export default function TopBar() {
           className="text-dashboardTextBlack"
         >
           <DropdownMenuItem asChild>
-            <Link className="flex gap-2 cursor-pointer" href="/patient/profile">
+            <Link className="flex gap-2 cursor-pointer" href={profileLink}>
               <Image src={ProfileIcon} alt="Profile Icon" className="w-4 h-4" />
               Profile
             </Link>

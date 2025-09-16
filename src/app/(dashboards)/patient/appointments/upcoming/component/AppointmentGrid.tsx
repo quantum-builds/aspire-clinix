@@ -1,9 +1,9 @@
-import { TUpcomingAppointment } from "@/types/common";
+import { TUpcomingAppointmentPatient } from "@/types/common";
 import FirstUpcomingAppointmentCard from "./FirstUpcomingAppointmentCard";
 import UpcomingAppointmentCard from "./UpcomingAppointmentCard";
 
 interface AppointmentGridProps {
-  appointments: TUpcomingAppointment[];
+  appointments: TUpcomingAppointmentPatient[];
 }
 export default function AppointmentGrid({
   appointments,
