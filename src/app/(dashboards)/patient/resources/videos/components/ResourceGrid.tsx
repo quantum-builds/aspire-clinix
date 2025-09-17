@@ -24,11 +24,14 @@ export default async function ResourceGridWrapper({
     title,
     "VIDEO"
   );
-  const resources = response.data.resources.videos;
-
-  if (!resources || resources.length === 0) {
+  if (
+    !response.status ||
+    !response.data.resources.videos ||
+    response.data.resources.videos.length === 0
+  ) {
     return <NoContent title="Resources" placeholder="Enter Resource title" />;
   }
+  const resources = response.data.resources.videos;
 
   return (
     <>

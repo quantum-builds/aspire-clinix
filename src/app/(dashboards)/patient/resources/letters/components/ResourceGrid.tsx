@@ -24,12 +24,16 @@ export default async function ResourceGridWrapper({
     title,
     "PDF"
   );
-  const resources = response.data.resources.pdfs;
 
-  if (!resources || resources.length === 0) {
+  if (
+    !response.status ||
+    !response.data ||
+    !response.data.resources.pdfs ||
+    response.data.resources.pdfs.length === 0
+  ) {
     return <NoContent title="Resources" placeholder="Enter Resource title" />;
   }
-
+  const resources = response.data.resources.pdfs;
   return (
     <>
       <div className="flex items-center justify-between">
