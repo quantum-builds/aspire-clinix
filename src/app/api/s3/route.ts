@@ -7,24 +7,35 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   try {
     const fileName = searchParams.get("fileName");
-    const fileType = searchParams.get("fileType");
+    const fileType = searchParams.get("fileType"); // images, video, pdf
 
     if (!fileName || !fileType) {
       return NextResponse.json(
         { success: false, message: "Missing file details" },
         { status: 400 }
       );
+    } // Map fileType to folder
+    let folder = "";
+    switch (fileType.toLowerCase()) {
+      case "images":
+        folder = "uploads/aspire-clinic/images";
+        break;
+      case "video":
+        folder = "uploads/aspire-clinic/videos";
+        break;
+      case "pdf":
+        folder = "uploads/aspire-clinic/pdfs";
+        break;
+      default:
+        folder = "uploads/aspire-clinic/others"; // fallback
     }
-
     const params = {
       Bucket: process.env.AWS_BUCKET_NAME!,
-      Key: `uploads/images/${fileName}`,
+      Key: `${folder}/${fileName}`,
       ContentType: fileType,
     };
-
     const command = new PutObjectCommand(params);
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
-
     return NextResponse.json({ success: true, url: signedUrl });
   } catch (error) {
     console.error("Error generating upload URL:", error);

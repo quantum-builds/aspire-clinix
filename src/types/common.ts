@@ -40,7 +40,6 @@ export interface TReport {
   createdAt: Date;
 }
 
-export interface TResource extends TReport {}
 
 export interface TProduct {
   id: string;
@@ -146,4 +145,10 @@ export interface TUnAttendedReferrals extends TTotalReferrals {}
 export interface TAverageReferrals {
   percentage: number;
   percentageChange: number;
+}
+
+export enum FILE_TYPE {
+  VIDEO = "video",
+  PDF = "pdf",
+  IMAGES = "images",
 }
