@@ -18,7 +18,6 @@ export async function GET(req: NextRequest) {
             Bucket: process.env.AWS_BUCKET_NAME!,
             Key: fileName,
           });
-
           const url = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
           return { url, fileName };
         })
@@ -32,7 +31,7 @@ export async function GET(req: NextRequest) {
       // List all media files
       const command = new ListObjectsV2Command({
         Bucket: process.env.AWS_BUCKET_NAME!,
-        Prefix: "uploads/images", // Ensure this matches your file upload path
+        Prefix: "uploads/aspire-clinic",
       });
 
       const { Contents } = await s3.send(command);
@@ -42,7 +41,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ success: true, media: [] }, { status: 200 });
       }
 
-      // Filter media files by extension
+      // File extensions by category
       const videoExtensions = [".mp4", ".mov", ".avi", ".mkv"];
       const imageExtensions = [
         ".jpg",
@@ -52,11 +51,19 @@ export async function GET(req: NextRequest) {
         ".webp",
         ".svg",
       ];
+      const pdfExtensions = [".pdf"];
+      const wordExtensions = [".doc", ".docx"];
 
+      const allExtensions = [
+        ...videoExtensions,
+        ...imageExtensions,
+        ...pdfExtensions,
+        ...wordExtensions,
+      ];
+
+      // Filter files by allowed extensions
       const mediaFiles = Contents.filter((file) =>
-        [...videoExtensions, ...imageExtensions].some((ext) =>
-          file.Key?.toLowerCase().endsWith(ext)
-        )
+        allExtensions.some((ext) => file.Key?.toLowerCase().endsWith(ext))
       );
 
       // Generate signed URLs
@@ -72,14 +79,28 @@ export async function GET(req: NextRequest) {
             { expiresIn: 60 * 5 }
           );
 
+          let type = "other";
+          if (
+            videoExtensions.some((ext) => file.Key?.toLowerCase().endsWith(ext))
+          )
+            type = "video";
+          else if (
+            imageExtensions.some((ext) => file.Key?.toLowerCase().endsWith(ext))
+          )
+            type = "image";
+          else if (
+            pdfExtensions.some((ext) => file.Key?.toLowerCase().endsWith(ext))
+          )
+            type = "pdf";
+          else if (
+            wordExtensions.some((ext) => file.Key?.toLowerCase().endsWith(ext))
+          )
+            type = "word";
+
           return {
             fileName: file.Key,
             url: signedUrl,
-            type: videoExtensions.some((ext) =>
-              file.Key?.toLowerCase().endsWith(ext)
-            )
-              ? "video"
-              : "image",
+            type,
           };
         })
       );

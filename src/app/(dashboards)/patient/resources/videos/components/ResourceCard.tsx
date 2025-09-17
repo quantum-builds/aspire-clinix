@@ -1,5 +1,11 @@
-import { CalenderInputIcon, ResourceImage, TimeIcon } from "@/assets";
-import { TResource } from "@/types/common";
+import { VideoModal } from "@/app/(dashboards)/components/VideoModal";
+import {
+  AspireDarkLogo,
+  CalenderInputIcon,
+  TimeIcon,
+} from "@/assets";
+import { formatDate, formatTime } from "@/lib/formatDateTime";
+import { TResource } from "@/types/resources";
 import Image from "next/image";
 
 interface ResourceCardProps {
@@ -16,24 +22,25 @@ export default function ResourceCard({ resource }: ResourceCardProps) {
             alt="calender-icon"
             className="w-5 h-5"
           />
-          <p className="text-lg">{resource.createdAt.toLocaleDateString()}</p>
+          <p className="text-lg">{formatDate(resource.createdAt)}</p>
         </div>
         <div className="flex gap-1 items-center">
           <Image src={TimeIcon} alt="time-icon" className="w-5 h-5" />
-          <p className="text-lg">
-            {resource.createdAt.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </p>
+          <p className="text-lg">{formatTime(resource.createdAt)}</p>
         </div>
       </div>
 
-      <Image
+      {/* <Image
         src={ResourceImage}
         alt="resource image"
         className="rounded-2xl w-[420px] h-[240px]"
-      />
+      /> */}
+
+      {resource.file ? (
+        <VideoModal video={resource.file} thumbnail={AspireDarkLogo} />
+      ) : (
+        <div className="bg-dashboardBackground rounded-2xl w-[420px] h-[240px]"></div>
+      )}
       <p className="text-center text-green font-medium text-lg">
         {resource.title}
       </p>

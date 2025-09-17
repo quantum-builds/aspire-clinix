@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { NoContentImage } from "@/assets";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
+import BackButton from "@/app/(dashboards)/components/BackButton";
 
 interface NoContentProps {
   title: string;
@@ -16,7 +17,7 @@ export default function NoContent({
         <h1 className="font-medium text-3xl">{title}</h1>
         <div className="flex items-center gap-2">
           <SearchBar placeholder={placeholder} />
-          {/* <BackButton /> */}
+          <BackButton />
         </div>
       </div>
       <div className="bg-dashboardBarBackground py-[60px] px-6 flex flex-col items-center justify-center gap-4">

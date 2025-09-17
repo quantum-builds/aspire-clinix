@@ -147,6 +147,18 @@ export const ENDPOINTS = {
     update: (id: string) => `/api/patient/treatments/${id}`,
     delete: (id: string) => `/api/patient/treatments/${id}`,
   },
+
+  s3: {
+    getSignedUrl: "/api/s3",
+  },
+  uploads: {
+    getMedia: "/api/uploads",
+  },
+
+  resources: {
+    getAll: (page?: number, fileType?: string, search?: string) =>
+      `/api/resources?page=${page}&fileType=${fileType}&search=${search}`,
+  },
 };
 
 export const axiosInstance = axios.create({
