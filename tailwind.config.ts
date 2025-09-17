@@ -31,7 +31,7 @@ const config: Config = {
         green: "var(--green)",
         lightBlack: "var(--light-black)",
         gray: "var(--gray)",
-        lightGray:"var(--light-gray)",
+        lightGray: "var(--light-gray)",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
@@ -80,6 +80,9 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      letterSpacing: {
+        tightest: "-0.04em",
       },
     },
   },
