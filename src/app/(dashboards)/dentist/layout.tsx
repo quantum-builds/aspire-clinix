@@ -26,7 +26,7 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
   {
     name: "Referral Request",
     icon: ReferralRequestIcon,
-    href: "/dentist/referal-request",
+    href: "/dentist/referral-request",
   },
   {
     name: "Referral History",

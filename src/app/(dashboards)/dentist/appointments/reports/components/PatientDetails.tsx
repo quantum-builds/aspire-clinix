@@ -43,11 +43,11 @@ export default function DentistDetails({
               <span className="font-medium">{patientDetails.patientName}</span>
             </p>
             <p className="flex-[25%] text-xl">
-              Disease{" "}
+              Disease:{" "}
               <span className="font-medium">{patientDetails.disease}</span>
             </p>
-            <div className="flex-[50%]">
-              Email{" "}
+            <div className="flex-[50%] text-xl">
+              Email:{" "}
               <span className="font-medium">{patientDetails.patientEmail}</span>
             </div>
           </div>

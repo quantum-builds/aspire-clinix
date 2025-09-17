@@ -120,3 +120,30 @@ export interface TAppointmentDentist {
 export interface TPatientDetails extends TAppointmentDentist {
   patientEmail: string;
 }
+
+export interface TReferralRequestDataTable {
+  id: string;
+  patientName: string;
+  referringDentistName: string;
+  disease: string;
+  referralDate: string;
+}
+
+export interface TReferraLRequestCards {
+  totalReferrals: TTotalReferrals;
+  attendedReferrals: TAttendedReferrals;
+  unattendedReferrals: TUnAttendedReferrals;
+  averageReferrals: TAverageReferrals;
+}
+
+export interface TTotalReferrals {
+  count: number;
+  percentageChange: number;
+}
+
+export interface TAttendedReferrals extends TTotalReferrals {}
+export interface TUnAttendedReferrals extends TTotalReferrals {}
+export interface TAverageReferrals {
+  percentage: number;
+  percentageChange: number;
+}
