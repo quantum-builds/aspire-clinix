@@ -92,3 +92,8 @@ export { default as FavouriteRedIcon } from "@/assets/favourite-red-icon.svg";
 
 export { default as ReferralRequestIcon } from "@/assets/referral-request-icon.svg";
 export { default as LoyaltyPointsIcon } from "@/assets/loyalty-points-icon.svg";
+
+export { default as CalenderGreenIcon } from "@/assets/calender-green.svg";
+export { default as ExportIcon } from "@/assets/export.svg";
+export { default as NextIcon } from "@/assets/next-icon.svg";
+export { default as PreviousIcon } from "@/assets/previous-icon.svg";

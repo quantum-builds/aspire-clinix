@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import AppointmentGrid from "./component/AppointmentGrid";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import NoContent from "@/app/(dashboards)/components/NoContent";
+import DateFilter from "@/app/(dashboards)/components/DateFilter";
+import Pagination from "@/app/(dashboards)/components/Pagination";
 
 const APPOINTMENT: TPastAppointmentPatient[] = [
   {
@@ -114,13 +116,15 @@ export default async function PastAppointments(props: {
       <div className=" w-full h-full flex flex-col gap-7">
         <div className="flex items-center justify-between">
           <h1 className="font-medium text-3xl">Appointments</h1>
-          <div>
+          <div className="flex gap-2">
             <SearchBar placeholder="Enter Dentist Name or Appointment Number" />
+            <DateFilter />
           </div>
         </div>
         <Suspense key={query} fallback={<div>Loading.....</div>}>
           <AppointmentGrid appointments={filteredAppointments} />
         </Suspense>
+        <Pagination page={1} />
       </div>
     </div>
   );
