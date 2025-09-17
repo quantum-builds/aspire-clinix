@@ -7,7 +7,7 @@ const IN_PAGE_NAV_LINKS = [
   { label: "Dentistry", path: "/#dentistry" },
   { label: "Aesthetics", path: "/#aesthetic" },
   { label: "Wellness", path: "/landing#wellness" },
-  { label: "Referral Portal", path: "/dentist/referral#form" },
+  { label: "Referral Portal", path: "/referral#form" },
 ];
 
 const SOCIAL_ICONS = [

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { stripe } from "@/config/stripe-config";
 import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";

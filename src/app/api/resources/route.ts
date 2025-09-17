@@ -1,5 +1,5 @@
 import prisma from "@/lib/db";
-import { PaginationNumbers } from "@/types/common";
+import { TPaginationNumbers } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
 import { Prisma, Resource } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
@@ -20,7 +20,7 @@ export async function GET(req: Request) {
       : {};
 
     let resources: { pdfs?: Resource[]; videos?: Resource[] } = {};
-    let pagination: { pdf: PaginationNumbers; video: PaginationNumbers } = {
+    let pagination: { pdf: TPaginationNumbers; video: TPaginationNumbers } = {
       pdf: { total: 0, totalPages: 0 },
       video: { total: 0, totalPages: 0 },
     };

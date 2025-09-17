@@ -25,6 +25,13 @@ const config: Config = {
         bookATreatmentBackground: "#C9BCA9",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        dashboardBarBackground: "var(--dasboard-bar-background)",
+        dashboardBackground: "var(--dashboard-background)",
+        dashboardTextBlack: "var(--dashboard-text-black)",
+        green: "var(--green)",
+        lightBlack: "var(--light-black)",
+        gray: "var(--gray)",
+        lightGray:"var(--light-gray)",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
@@ -65,6 +72,7 @@ const config: Config = {
         },
       },
       fontFamily: {
+        inter: ["InterVariable", "sans-serif"],
         opus: ["var(--font-opus)"],
         gillSans: ["var(--font-gill-sans)"],
       },

@@ -54,12 +54,12 @@ const USER_MENU_LIST = [
   { category: "FEE GUIDE", path: "/fee-guide", services: [] },
   {
     category: " PATIENT PORTAL",
-    path: "/patient",
+    path: "/patient/appointments/upcoming",
     services: [],
   },
   {
     category: "REFERRAL FORM",
-    path: "/dentist/referral",
+    path: "/referral",
     services: [],
   },
   {
