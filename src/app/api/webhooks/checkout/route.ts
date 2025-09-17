@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { stripe } from "@/config/stripe-config";
-import { PurchasedProduct } from "@/types/common";
+import { TPurchasedProduct } from "@/types/common";
 import { PaymentStatus } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
@@ -67,7 +67,7 @@ const handleItemPaymentSuccess = async (
     const metadata = eventObject.metadata;
     if (!metadata) throw new Error("Metadata missing in Stripe session.");
 
-    const products = JSON.parse(metadata.products) as PurchasedProduct;
+    const products = JSON.parse(metadata.products) as TPurchasedProduct;
     const patientId = metadata.patient_id as string;
 
     if (products.products.length === 0) {
@@ -150,7 +150,7 @@ const handleItemPaymentFailure = async (eventObject: Stripe.PaymentIntent) => {
     const metadata = eventObject.metadata;
     if (!metadata) throw new Error("Metadata missing in Stripe session.");
 
-    const products = JSON.parse(metadata.products) as PurchasedProduct;
+    const products = JSON.parse(metadata.products) as TPurchasedProduct;
     const patientId = metadata.patient_id as string;
 
     if (products.products.length === 0) {

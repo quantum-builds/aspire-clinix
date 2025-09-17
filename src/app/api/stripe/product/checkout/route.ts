@@ -1,5 +1,5 @@
 import { stripe } from "@/config/stripe-config";
-import { PurchasedProduct } from "@/types/common";
+import { TPurchasedProduct } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
@@ -17,9 +17,13 @@ export async function POST(req: NextRequest) {
 
     const data = await req.json();
 
-    const products: PurchasedProduct = data.products;
+    const products: TPurchasedProduct = data.products;
 
-    if (!Array.isArray(products.products) || products.products.length === 0 || products.cartId===undefined)  {
+    if (
+      !Array.isArray(products.products) ||
+      products.products.length === 0 ||
+      products.cartId === undefined
+    ) {
       return NextResponse.json(
         createResponse(false, "No Product in the cart", null),
         { status: 400 }
@@ -29,7 +33,7 @@ export async function POST(req: NextRequest) {
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
     for (const product of products.products) {
-      const productId = String( product.productId?? "").trim();
+      const productId = String(product.productId ?? "").trim();
       const quantity = product.quantity ?? 1;
 
       if (!productId || typeof quantity !== "number" || quantity <= 0) {

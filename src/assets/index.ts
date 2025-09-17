@@ -47,3 +47,48 @@ export { default as VideoIcon } from "@/assets/video-icon.svg";
 export { default as LocationIcon } from "@/assets/location-icon.svg";
 export { default as SheduleIcon } from "@/assets/schedule-icon.svg";
 export { default as LinkIcon } from "@/assets/link-icon.svg";
+
+export { default as AppointmentsIcon } from "@/assets/appointments-icon.svg";
+export { default as ResourcesIcon } from "@/assets/resources-icon.svg";
+export { default as PlansIcon } from "@/assets/plans-icon.svg";
+export { default as ConsentIcon } from "@/assets/consent-icon.svg";
+export { default as StoreIcon } from "@/assets/store-icon.svg";
+export { default as ActiveIcon } from "@/assets/active-icon.svg";
+export { default as InActiveIcon } from "@/assets/inactive-icon.svg";
+export { default as BackToWebsiteIcon } from "@/assets/back-to-website.svg";
+
+export { default as NotificationIcon } from "@/assets/notification-icon.svg";
+export { default as CalenderIcon } from "@/assets/calender-icon.svg";
+export { default as DropDownIcon } from "@/assets/drop-down-icon.svg";
+export { default as HarryKaneImage } from "@/assets/harry-kane.png";
+export { default as LogoutIcon } from "@/assets/logout-icon.svg";
+export { default as ProfileIcon } from "@/assets/profile-icon.svg";
+
+export { default as BackButtonIcon } from "@/assets/back-button-icon.svg";
+
+export { default as TextInputIcon } from "@/assets/text-input.svg";
+export { default as CalenderInputIcon } from "@/assets/calender-input.svg";
+export { default as TimeIcon } from "@/assets/time-icon.svg";
+
+export { default as SearchIcon } from "@/assets/search-icon.svg";
+export { default as NoContentImage } from "@/assets/no-content.svg";
+
+export { default as PDFImage } from "@/assets/pdf-image.png";
+export { default as ReportImage } from "@/assets/report-image.png";
+export { default as ResourceImage } from "@/assets/resource-image.png";
+export { default as CartBagIcon } from "@/assets/cart-bag.svg";
+export { default as StoreImage1 } from "@/assets/store-image-1.png";
+export { default as StoreImage2 } from "@/assets/store-image-2.png";
+
+export { default as FavouriteIcon } from "@/assets/favourite-icon.svg";
+export { default as AddToCarIcon } from "@/assets/add-to-cart-icon.svg";
+
+export { default as ComminSoonImage } from "@/assets/coming-soon.svg";
+
+export { default as CancelOrderIcon } from "@/assets/cancel-order-icon.svg";
+export { default as MinusIcon } from "@/assets/minus-icon.svg";
+export { default as PlusIcon } from "@/assets/plus-icon.svg";
+export { default as FavouriteRedIcon } from "@/assets/favourite-red-icon.svg";
+
+export { default as ReferralRequestIcon } from "@/assets/referral-request-icon.svg";
+export { default as LoyaltyPointsIcon } from "@/assets/loyalty-points-icon.svg";

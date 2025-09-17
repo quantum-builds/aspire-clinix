@@ -100,6 +100,13 @@ html {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --dasboard-bar-background: #ffffff;
+    --dashboard-background: #f3f5f7;
+    --dashboard-text-black: #505050;
+    --green: #54bd95;
+    --light-black: #7e7e7e;
+    --gray: #f3f5f7;
+    --light-gray: #D0D0D0;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -126,6 +133,13 @@ html {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --dasboard-bar-background: #ffffff;
+    --dashboard-background: #f3f5f7;
+    --dashboard-text-black: #505050;
+    --green: #54bd95;
+    --light-black: #7e7e7e;
+    --gray: #f3f5f7;
+    --light-gray: #D0D0D0;
   }
 }
 

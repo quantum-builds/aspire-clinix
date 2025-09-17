@@ -1,11 +1,11 @@
 import prisma from "@/lib/db";
-import { PaginationNumbers } from "@/types/common";
+import { TPaginationNumbers } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
 import { Prisma, Report } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
 
@@ -13,7 +13,14 @@ export async function GET(req: Request) {
     const search = searchParams.get("search") || "";
     const filterType = searchParams.get("fileType") || null;
     const dentistId = searchParams.get("dentistId") || null;
-    const patientId = searchParams.get("patientId") || null;
+    let patientId = null;
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    if (token && token.role === "patient") {
+      patientId = token.id;
+    }
 
     const limitPerType = 5;
     const skip = (page - 1) * limitPerType;
@@ -31,29 +38,11 @@ export async function GET(req: Request) {
       ...(patientId ? { patientId } : {}),
     };
 
-    let reports: { pdfs?: Report[]; videos?: Report[] } = {};
-    let pagination: { pdf: PaginationNumbers; video: PaginationNumbers } = {
-      pdf: { total: 0, totalPages: 0 },
+    let reports: { videos?: Report[]; pdfs?: Report[] } = {};
+    let pagination: { video: TPaginationNumbers; pdf: TPaginationNumbers } = {
       video: { total: 0, totalPages: 0 },
+      pdf: { total: 0, totalPages: 0 },
     };
-
-    if (!filterType || filterType === "PDF") {
-      const [pdfs, pdfCount] = await Promise.all([
-        prisma.report.findMany({
-          where: { ...baseWhere, fileType: "PDF" },
-          skip,
-          take: limitPerType,
-          orderBy: { createdAt: "desc" },
-        }),
-        prisma.report.count({ where: { ...baseWhere, fileType: "PDF" } }),
-      ]);
-
-      reports.pdfs = pdfs;
-      pagination.pdf = {
-        total: pdfCount,
-        totalPages: Math.ceil(pdfCount / limitPerType),
-      };
-    }
 
     if (!filterType || filterType === "VIDEO") {
       const [videos, videoCount] = await Promise.all([
@@ -70,6 +59,24 @@ export async function GET(req: Request) {
       pagination.video = {
         total: videoCount,
         totalPages: Math.ceil(videoCount / limitPerType),
+      };
+    }
+
+    if (!filterType || filterType === "PDF") {
+      const [pdfs, pdfCount] = await Promise.all([
+        prisma.report.findMany({
+          where: { ...baseWhere, fileType: "PDF" },
+          skip,
+          take: limitPerType,
+          orderBy: { createdAt: "desc" },
+        }),
+        prisma.report.count({ where: { ...baseWhere, fileType: "PDF" } }),
+      ]);
+
+      reports.pdfs = pdfs;
+      pagination.pdf = {
+        total: pdfCount,
+        totalPages: Math.ceil(pdfCount / limitPerType),
       };
     }
 

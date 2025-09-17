@@ -59,7 +59,7 @@ const USER_MENU_LIST = [
   },
   {
     category: "REFERRAL FORM",
-    path: "/dentist/referral",
+    path: "/referral",
     services: [],
   },
   {
