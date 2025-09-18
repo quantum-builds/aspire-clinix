@@ -184,3 +184,9 @@ export interface TLoyaltyPointsDataTable {
   otherPoints: number;
   referralDate: string;
 }
+
+export enum FILE_TYPE {
+  VIDEO = "video",
+  PDF = "pdf",
+  IMAGES = "images",
+}
