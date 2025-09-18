@@ -36,7 +36,7 @@ export default function PastAppointmentCard({
           <p className="flex-[50%] text-lg">
             Name: <span className="font-medium">{appointment.patientName}</span>
           </p>
-          <p className="flex-[50%] text-lg">
+          <p className="flex-[50%] text-lg text-right">
             Disease: <span className="font-medium">{appointment.disease}</span>
           </p>
         </div>
@@ -45,7 +45,7 @@ export default function PastAppointmentCard({
             Phone No:{" "}
             <span className="font-medium">{appointment.patientPhone}</span>
           </p>
-          <p className="flex-[40%] text-lg">
+          <p className="flex-[40%] text-lg text-right">
             Age:
             <span className="font-medium">{appointment.patientAge}</span>
           </p>

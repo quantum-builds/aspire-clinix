@@ -1,6 +1,5 @@
 import { ResoucrceType } from "@prisma/client";
 import { StaticImageData } from "next/image";
-import { string } from "zod";
 
 export interface Response<T> {
   status: boolean;
@@ -40,7 +39,7 @@ export interface TReport {
   createdAt: Date;
 }
 
-export interface TResource extends TReport {}
+export type TResource = TReport;
 
 export interface TProduct {
   id: string;
@@ -139,11 +138,49 @@ export interface TReferraLRequestCards {
 export interface TTotalReferrals {
   count: number;
   percentageChange: number;
+  icon: string;
+  title: string;
+  link?: string;
 }
 
-export interface TAttendedReferrals extends TTotalReferrals {}
-export interface TUnAttendedReferrals extends TTotalReferrals {}
+export type TAttendedReferrals = TTotalReferrals;
+export type TUnAttendedReferrals = TTotalReferrals;
 export interface TAverageReferrals {
-  percentage: number;
+  count: number;
   percentageChange: number;
+  icon: string;
+  title: string;
+}
+
+export interface AppointmentDetails {
+  date: string;
+  time: string;
+  status: string;
+  appointmentNumber: string;
+}
+
+export type TReferralHistoryStatus = "Assigned" | "Unassigned";
+
+export interface TReferralHistoryDataTable {
+  referenceId: string;
+  patientName: string;
+  status: TReferralHistoryStatus;
+  disease: string;
+  referralDate: string;
+}
+
+export type TLoyaltyPointsCards = {
+  [key: string]: {
+    title: string;
+    points: number;
+  };
+};
+
+export interface TLoyaltyPointsDataTable {
+  referenceId: string;
+  patientName: string;
+  dentistName: string;
+  earnedPoints: number;
+  otherPoints: number;
+  referralDate: string;
 }

@@ -1,10 +1,11 @@
-import { TDentistDeatils, TPatientDetails, TReport } from "@/types/common";
+import { TPatientDetails, TReport } from "@/types/common";
 import NoContent from "@/app/(dashboards)/components/NoContent";
 import { Suspense } from "react";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import BackButton from "@/app/(dashboards)/components/BackButton";
 import Button from "@/app/(dashboards)/components/Button";
 import ReportGrid from "./components/ReportGrid";
+import DateFilter from "@/app/(dashboards)/components/DateFilter";
 
 const REPORTS: TReport[] = [
   {
@@ -115,6 +116,7 @@ export default async function ReportsPage(props: {
         <h1 className="font-medium text-3xl">Reports</h1>
         <div className="flex items-center gap-3">
           <SearchBar placeholder="Enter Report title" />
+          <DateFilter />
           <BackButton />
         </div>
       </div>

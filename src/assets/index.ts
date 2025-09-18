@@ -97,3 +97,18 @@ export { default as CalenderGreenIcon } from "@/assets/calender-green.svg";
 export { default as ExportIcon } from "@/assets/export.svg";
 export { default as NextIcon } from "@/assets/next-icon.svg";
 export { default as PreviousIcon } from "@/assets/previous-icon.svg";
+
+export { default as GreenGradient } from "@/assets/stats-green-gradient.svg";
+export { default as GreenLine } from "@/assets/stats-green-line.svg";
+export { default as GrayLine } from "@/assets/stats-gray-line.svg";
+export { default as GrayGradient } from "@/assets/stats-gray-gradient.svg";
+export { default as RedGradient } from "@/assets/stats-red-gradient.svg";
+export { default as RedLine } from "@/assets/stats-red-line.svg";
+
+export { default as TotalReferrals } from "@/assets/total-referrals.svg";
+export { default as AttendedReferrals } from "@/assets/attended-refferrals.svg";
+export { default as UnattendedReferrals } from "@/assets/unattended-referrals.svg";
+export { default as AverageReferrals } from "@/assets/average-referrals.svg";
+export { default as UploadPDFIcon } from "@/assets/upload-pdf-icon.svg";
+export { default as UploadVideoIcon } from "@/assets/upload-video-icon.svg";
+export { default as PointsIcon } from "@/assets/points-icon.svg";

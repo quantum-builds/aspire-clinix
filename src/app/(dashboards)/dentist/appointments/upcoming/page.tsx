@@ -3,6 +3,7 @@ import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import { TAppointmentDentist } from "@/types/common";
 import { Suspense } from "react";
 import AppointmentGrid from "./components/AppoinmentGrid";
+import DateFilter from "@/app/(dashboards)/components/DateFilter";
 
 const APPOINTMENTS: TAppointmentDentist[] = [
   {
@@ -133,8 +134,9 @@ export default async function UpcomingAppointments(props: {
       <div className=" w-full h-full flex flex-col gap-7">
         <div className="flex items-center justify-between">
           <h1 className="font-medium text-3xl">Appointments</h1>
-          <div>
+          <div className="flex gap-2">
             <SearchBar placeholder="Enter Patient Name or Appointment Number" />
+            <DateFilter />
           </div>
         </div>
         <Suspense key={query} fallback={<div>Loading.....</div>}>

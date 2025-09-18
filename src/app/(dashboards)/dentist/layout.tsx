@@ -31,12 +31,12 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
   {
     name: "Referral History",
     icon: ConsentIcon,
-    href: "/patient/referral-history",
+    href: "/dentist/referral-history",
   },
   {
     name: "Loyalty Points",
     icon: LoyaltyPointsIcon,
-    href: "/patient/loyalty-points",
+    href: "/dentist/loyalty-points",
   },
 ];
 
@@ -54,7 +54,7 @@ export default function PatientLayout({
       </div>
 
       {/* make only main scrollable */}
-      <main className="p-6 col-start-2 overflow-y-auto">{children}</main>
+      <main className="p-6 mb-6 col-start-2 overflow-y-auto">{children}</main>
     </div>
   );
 }
