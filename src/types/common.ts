@@ -136,23 +136,50 @@ export type TReferraLRequestCards = {
 export type TTotalReferrals = {
   count: number;
   percentageChange: number;
-};
+  icon: string;
+  title: string;
+  link?: string;
+}
 
 export type TAttendedReferrals = TTotalReferrals;
 export type TUnAttendedReferrals = TTotalReferrals;
-
-export type TAverageReferrals = {
-  percentage: number;
+export interface TAverageReferrals {
+  count: number;
   percentageChange: number;
-};
-
-export enum FILE_TYPE {
-  VIDEO = "video",
-  PDF = "pdf",
-  IMAGES = "images",
+  icon: string;
+  title: string;
+  link?:string
 }
 
-export enum AppointmentDateType {
-  UPCOMING = "UPCOMING",
-  PAST = "PAST",
+export interface AppointmentDetails {
+  date: string;
+  time: string;
+  status: string;
+  appointmentNumber: string;
+}
+
+export type TReferralHistoryStatus = "Assigned" | "Unassigned";
+
+export interface TReferralHistoryDataTable {
+  referenceId: string;
+  patientName: string;
+  status: TReferralHistoryStatus;
+  disease: string;
+  referralDate: string;
+}
+
+export type TLoyaltyPointsCards = {
+  [key: string]: {
+    title: string;
+    points: number;
+  };
+};
+
+export interface TLoyaltyPointsDataTable {
+  referenceId: string;
+  patientName: string;
+  dentistName: string;
+  earnedPoints: number;
+  otherPoints: number;
+  referralDate: string;
 }

@@ -1,61 +1,61 @@
 import {
+  TReferralHistoryDataTable,
   TReferraLRequestCards,
-  TReferralRequestDataTable,
 } from "@/types/common";
-import SearchBar from "@/app/(dashboards)/components/SearchBar";
-import NoContent from "@/app/(dashboards)/components/NoContent";
-import { Suspense } from "react";
-import { ReferralRequestDataTable } from "./components/ReferralRequestDataTable";
 import DateFilter from "../../components/DateFilter";
-import StatsCard from "./components/StatsCard";
+import NoContent from "../../components/NoContent";
+import SearchBar from "../../components/SearchBar";
+import { Suspense } from "react";
 import {
-  TotalReferrals,
   AttendedReferrals,
-  UnattendedReferrals,
   AverageReferrals,
+  TotalReferrals,
+  UnattendedReferrals,
 } from "@/assets";
+import StatsCard from "../referral-request/components/StatsCard";
 import Pagination from "../../components/Pagination";
+import { ReferralHistoryDataTable } from "./components/ReferralHistoryDataTable";
 
-const DATA_TABLE_ENTRIES: TReferralRequestDataTable[] = [
+const DATA_TABLE_ENTRIES: TReferralHistoryDataTable[] = [
   {
-    id: "1",
+    referenceId: "1",
     patientName: "John Doe",
-    referringDentistName: "Dr. Smith",
+    status: "Assigned",
     disease: "Cavity",
     referralDate: "2025-09-17",
   },
   {
-    id: "2",
+    referenceId: "2",
     patientName: "Jane Roe",
-    referringDentistName: "Dr. Adams",
+    status: "Assigned",
     disease: "Gum Infection",
     referralDate: "2025-09-16",
   },
   {
-    id: "3",
+    referenceId: "3",
     patientName: "Michael Brown",
-    referringDentistName: "Dr. Lee",
+    status: "Unassigned",
     disease: "Tooth Decay",
     referralDate: "2025-09-15",
   },
   {
-    id: "4",
+    referenceId: "4",
     patientName: "Emily Davis",
-    referringDentistName: "Dr. Johnson",
+    status: "Assigned",
     disease: "Wisdom Tooth",
     referralDate: "2025-09-14",
   },
   {
-    id: "5",
+    referenceId: "5",
     patientName: "Daniel Wilson",
-    referringDentistName: "Dr. Clark",
+    status: "Unassigned",
     disease: "Tooth Fracture",
     referralDate: "2025-09-13",
   },
   {
-    id: "6",
+    referenceId: "6",
     patientName: "Sophia Martinez",
-    referringDentistName: "Dr. Patel",
+    status: "Assigned",
     disease: "Root Canal",
     referralDate: "2025-09-12",
   },
@@ -91,7 +91,7 @@ const REFERRAL_CARDS: TReferraLRequestCards = {
   },
 };
 
-export default async function ReferralHistoryPage(props: {
+export default async function ReferralHistory(props: {
   searchParams?: Promise<{
     query?: string;
   }>;
@@ -101,15 +101,14 @@ export default async function ReferralHistoryPage(props: {
 
   const filteredHistory = DATA_TABLE_ENTRIES.filter(
     (history) =>
-      history.id.toLowerCase().includes(query.toLowerCase()) ||
-      history.patientName.toLowerCase().includes(query.toLowerCase()) ||
-      history.referringDentistName.toLowerCase().includes(query.toLowerCase())
+      history.referenceId.toLowerCase().includes(query.toLowerCase()) ||
+      history.patientName.toLowerCase().includes(query.toLowerCase())
   );
 
   if (filteredHistory.length === 0) {
     return (
       <NoContent
-        title="Referral Requests"
+        title="Referral History"
         placeholder="Enter Id or patient/dentist name"
       />
     );
@@ -118,7 +117,7 @@ export default async function ReferralHistoryPage(props: {
   return (
     <div className=" w-full h-full flex flex-col gap-7">
       <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Referral Requests</h1>
+        <h1 className="font-medium text-3xl">Referral History</h1>
         <div className="flex items-center gap-3">
           <SearchBar placeholder="Enter Id or patient/dentist name" />
           <DateFilter />
@@ -138,7 +137,7 @@ export default async function ReferralHistoryPage(props: {
             />
           ))}
         </div>
-        <ReferralRequestDataTable entries={DATA_TABLE_ENTRIES} />
+        <ReferralHistoryDataTable entries={DATA_TABLE_ENTRIES} />
       </Suspense>
       <Pagination page={10} />
     </div>
