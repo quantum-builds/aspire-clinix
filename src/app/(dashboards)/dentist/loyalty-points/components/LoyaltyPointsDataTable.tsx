@@ -15,35 +15,38 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
-import { TReferralRequestDataTable } from "@/types/common";
+import { TLoyaltyPointsDataTable } from "@/types/common";
 import Image from "next/image";
 import { CalenderInputIcon } from "@/assets";
 import { useRouter } from "next/navigation";
 
-interface ReferralRequestDataTableProps {
-  entries: TReferralRequestDataTable[];
+interface LoyaltyPointsDataTableProps {
+  entries: TLoyaltyPointsDataTable[];
 }
 
-export function ReferralRequestDataTable({
+export function LoyaltyPointsDataTable({
   entries,
-}: ReferralRequestDataTableProps) {
+}: LoyaltyPointsDataTableProps) {
   const router = useRouter();
 
   return (
-    <Table className="border-separate border-spacing-y-3">
+    <Table className="border-separate border-spacing-y-3 tracking-tightest">
       <TableHeader>
         <TableRow>
           <TableHead className="px-6 py-4 bg-dashboardBarBackground rounded-l-full text-xl text-dashboardTextBlack font-medium">
-            ID#
+            Reference #
           </TableHead>
           <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
             Patient Name
           </TableHead>
           <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
-            Referring Dentist
+            Dentist Name
           </TableHead>
           <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
-            Disease
+            Earned Points
+          </TableHead>
+          <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
+            Other Points
           </TableHead>
           <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
             Referral Date
@@ -57,20 +60,21 @@ export function ReferralRequestDataTable({
       <TableBody>
         {entries.map((entry) => (
           <TableRow
-            key={entry.id}
+            key={entry.referenceId}
             className="bg-dashboardBackground text-lg text-dashboardTextBlack "
-            onClick={() => router.push(`/dentist/referral-request/${entry.id}`)}
+            onClick={() =>
+              router.push(`/dentist/loyalty-points/${entry.referenceId}`)
+            }
           >
             <TableCell className="px-6 py-4 rounded-l-full">
               {/* <div className="w-4 h-4 rounded bg-dashboardBackground group-hover:bg-green transition-colors" /> */}
 
-              {entry.id}
+              {entry.referenceId}
             </TableCell>
             <TableCell className="px-6 py-4">{entry.patientName}</TableCell>
-            <TableCell className="px-6 py-4">
-              {entry.referringDentistName}
-            </TableCell>
-            <TableCell className="px-6 py-4">{entry.disease}</TableCell>
+            <TableCell className="px-6 py-4">{entry.dentistName}</TableCell>
+            <TableCell className="px-6 py-4">{entry.earnedPoints}</TableCell>
+            <TableCell className="px-6 py-4">{entry.otherPoints}</TableCell>
             <TableCell className="px-6 py-4 flex gap-1 items-center">
               <Image
                 src={CalenderInputIcon}
@@ -88,18 +92,18 @@ export function ReferralRequestDataTable({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem
-                    onClick={() => alert(`Viewing ${entry.id}`)}
+                    onClick={() => alert(`Viewing ${entry.referenceId}`)}
                   >
                     View
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => alert(`Editing ${entry.id}`)}
+                    onClick={() => alert(`Editing ${entry.referenceId}`)}
                   >
                     Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-red-600"
-                    onClick={() => alert(`Deleting ${entry.id}`)}
+                    onClick={() => alert(`Deleting ${entry.referenceId}`)}
                   >
                     Delete
                   </DropdownMenuItem>
