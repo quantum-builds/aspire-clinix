@@ -1,10 +1,11 @@
 import Button from "@/app/(dashboards)/components/Button";
 import { CalenderInputIcon, TimeIcon } from "@/assets";
-import { TUpcomingAppointmentPatient } from "@/types/common";
+import { TAppointment } from "@/types/appointment";
+import { formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
 
 interface UpcomingAppointmentCardProps {
-  appointment: TUpcomingAppointmentPatient;
+  appointment: TAppointment;
 }
 
 export default function UpcomingAppointmentCard({
@@ -22,44 +23,46 @@ export default function UpcomingAppointmentCard({
                 alt="Calendar Icon"
                 className="w-4 h-4"
               />
-              <p className="text-xl">{appointment.date}</p>
+              <p className="text-xl">{formatDate(appointment.date)}</p>
             </div>
             <div className="flex items-center gap-1">
               <Image src={TimeIcon} alt="TIme Icon" className="w-4 h-4" />
-              <p className="text-xl">{appointment.time}</p>
+              <p className="text-xl">{formatTime(appointment.date)}</p>
             </div>
           </div>
-          <p className="text-xl italic">
-            Appointment Number: {appointment.appointmentNumber}
-          </p>
+          <p className="text-xl italic">Appointment Number: {appointment.id}</p>
         </div>
       </div>
       <div className="flex flex-col gap-5">
         <p className="text-2xl font-medium text-green">Dentist Details</p>
         <div className="grid grid-cols-2 gap-y-5 gap-x-5">
           <p className=" text-xl">
-            Name: <span className="font-medium">{appointment.dentistName}</span>
+            Name:{" "}
+            <span className="font-medium">{appointment.dentist.fullName}</span>
           </p>
           <p className=" text-xl">
-            GDC no: <span className="font-medium">{appointment.gdcNumber}</span>
+            GDC no:{" "}
+            <span className="font-medium">{appointment.dentist.gdcNo}</span>
           </p>
           <p className="text-xl">
             Phone:{" "}
-            <span className="font-medium">{appointment.dentistPhone}</span>
+            <span className="font-medium">
+              {appointment.dentist.phoneNumber}
+            </span>
           </p>
           <p className=" text-xl">
-            Disease: <span className="font-medium">{appointment.disease}</span>
+            Disease: <span className="font-medium">{appointment.reason}</span>
           </p>
         </div>
       </div>
       <div className="flex justify-between">
-        <Button text="See Reports" href="/patient/appointments/reports" />
-        <div className="flex flex-col gap-1">
-          <p className="text-green text-right">
-            Appointment with {appointment.dentistName}
-          </p>
-          <p className="text-green text-right">{appointment.specialization}</p>
-        </div>
+        <Button
+          text="See Reports"
+          href={`/patient/appointments/${appointment.id}/reports`}
+        />
+        <p className="text-green text-right">
+          Appointment with {appointment.dentist.fullName}
+        </p>
       </div>
     </div>
   );

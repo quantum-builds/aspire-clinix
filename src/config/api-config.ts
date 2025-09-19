@@ -1,3 +1,4 @@
+import { AppointmentDateType } from "@/types/common";
 import { convertCamelCaseToSnakeCase } from "@/utils/typeConventionConvertor";
 import axios from "axios";
 
@@ -68,43 +69,43 @@ export const ENDPOINTS = {
     },
   },
 
-  appointment: {
-    create: "/v1/appointments",
-    get: (id: number) => `/v1/appointments/${id}`,
-    put: (id: number) => `/v1/appointments/${id}`,
-    delete: (id: number) => `/v1/appointments/${id}`,
-    reason: (deleted: boolean) => `/v1/appointment_reasons/${deleted}`,
-    list: (queryParams: ListAppointment) => {
-      const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
+  // appointment: {
+  //   create: "/v1/appointments",
+  //   get: (id: number) => `/v1/appointments/${id}`,
+  //   put: (id: number) => `/v1/appointments/${id}`,
+  //   delete: (id: number) => `/v1/appointments/${id}`,
+  //   reason: (deleted: boolean) => `/v1/appointment_reasons/${deleted}`,
+  //   list: (queryParams: ListAppointment) => {
+  //     const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
 
-      const queryString = new URLSearchParams(
-        Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
-          if (value !== undefined && value !== null) {
-            acc[key] =
-              value instanceof Date ? value.toISOString() : value.toString();
-          }
-          return acc;
-        }, {} as Record<string, string>)
-      ).toString();
+  //     const queryString = new URLSearchParams(
+  //       Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
+  //         if (value !== undefined && value !== null) {
+  //           acc[key] =
+  //             value instanceof Date ? value.toISOString() : value.toString();
+  //         }
+  //         return acc;
+  //       }, {} as Record<string, string>)
+  //     ).toString();
 
-      return `/v1/appointments?${queryString}`;
-    },
-    available: (queryParams: ListAppointment) => {
-      const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
+  //     return `/v1/appointments?${queryString}`;
+  //   },
+  //   available: (queryParams: ListAppointment) => {
+  //     const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
 
-      const queryString = new URLSearchParams(
-        Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
-          if (value !== undefined && value !== null) {
-            acc[key] =
-              value instanceof Date ? value.toISOString() : value.toString();
-          }
-          return acc;
-        }, {} as Record<string, string>)
-      ).toString();
+  //     const queryString = new URLSearchParams(
+  //       Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
+  //         if (value !== undefined && value !== null) {
+  //           acc[key] =
+  //             value instanceof Date ? value.toISOString() : value.toString();
+  //         }
+  //         return acc;
+  //       }, {} as Record<string, string>)
+  //     ).toString();
 
-      return `/v1/appointments/availability?${queryString}`;
-    },
-  },
+  //     return `/v1/appointments/availability?${queryString}`;
+  //   },
+  // },
 
   plan: {
     getAll: "/api/plans",
@@ -158,6 +159,40 @@ export const ENDPOINTS = {
   resources: {
     getAll: (page?: number, fileType?: string, search?: string) =>
       `/api/resources?page=${page}&fileType=${fileType}&search=${search}`,
+  },
+
+  appointemt: {
+    get: (
+      page?: number,
+      search?: string,
+      patientId?: string,
+      dentistId?: string,
+      on?: string,
+      before?: string,
+      after?: string,
+      dateType?: AppointmentDateType | null
+    ) =>
+      `/api/appointments?page=${page ?? 1}&search=${search ?? ""}&patientId=${
+        patientId ?? ""
+      }&dentistId=${dentistId ?? ""}&on=${on ?? ""}&before=${
+        before ?? ""
+      }&after=${after ?? ""}&dateType=${dateType ?? ""}`,
+  },
+  reports: {
+    get: (
+      search?: string,
+      patientId?: string,
+      dentistId?: string,
+      appointmentId?: string,
+      on?: string,
+      before?: string,
+      after?: string
+    ) =>
+      `/api/reports?search=${search ?? ""}&patientId=${
+        patientId ?? ""
+      }&dentistId=${dentistId ?? ""}&appointmentId=${appointmentId ?? ""}&on=${
+        on ?? ""
+      }&before=${before ?? ""}&after=${after ?? ""}`,
   },
 };
 

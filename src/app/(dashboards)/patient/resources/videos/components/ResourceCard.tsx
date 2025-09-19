@@ -1,10 +1,6 @@
 import { VideoModal } from "@/app/(dashboards)/components/VideoModal";
-import {
-  AspireDarkLogo,
-  CalenderInputIcon,
-  TimeIcon,
-} from "@/assets";
-import { formatDate, formatTime } from "@/lib/formatDateTime";
+import { AspireDarkLogo, CalenderInputIcon, TimeIcon } from "@/assets";
+import { formatDate, formatTime } from "@/utils/formatDateTime";
 import { TResource } from "@/types/resources";
 import Image from "next/image";
 

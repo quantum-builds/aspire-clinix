@@ -1,7 +1,7 @@
 import { ResoucrceType } from "@prisma/client";
 import { TPaginationNumbers } from "./common";
 
-export interface TResource {
+export type TResource = {
   id: string;
   title: string;
   fileUrl: string;
@@ -9,15 +9,15 @@ export interface TResource {
   file?: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
-export interface TResourcePagination {
+export type TResourcePagination = {
   pdf: TPaginationNumbers;
   video: TPaginationNumbers;
   page: number;
-}
+};
 
-export interface TResourceResponse {
+export type TResourceResponse = {
   resources: { pdfs?: TResource[]; videos?: TResource[] };
   pagination: TResourcePagination;
-}
+};

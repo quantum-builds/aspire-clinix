@@ -15,13 +15,11 @@ export default async function LetterResourcePage(props: {
   const page = Number(searchParams?.page) || 1;
 
   return (
-    <div>
-      <div className=" w-full h-full flex flex-col gap-7">
-        <Suspense key={title + page} fallback={<div>Loading.....</div>}>
-          <ResourceGridWrapper page={page} title={title} />
-          <Pagination page={page} />
-        </Suspense>
-      </div>
+    <div className=" w-full h-full flex flex-col gap-7">
+      <Suspense key={title + page} fallback={<div>Loading.....</div>}>
+        <ResourceGridWrapper page={page} title={title} />
+        <Pagination page={page} />
+      </Suspense>
     </div>
   );
 }
