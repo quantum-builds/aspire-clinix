@@ -139,7 +139,7 @@ export type TTotalReferrals = {
   icon: string;
   title: string;
   link?: string;
-}
+};
 
 export type TAttendedReferrals = TTotalReferrals;
 export type TUnAttendedReferrals = TTotalReferrals;
@@ -148,7 +148,7 @@ export interface TAverageReferrals {
   percentageChange: number;
   icon: string;
   title: string;
-  link?:string
+  link?: string;
 }
 
 export interface AppointmentDetails {
@@ -182,4 +182,15 @@ export interface TLoyaltyPointsDataTable {
   earnedPoints: number;
   otherPoints: number;
   referralDate: string;
+}
+
+export enum FILE_TYPE {
+  VIDEO = "video",
+  PDF = "pdf",
+  IMAGES = "images",
+}
+
+export enum AppointmentDateType {
+  UPCOMING = "UPCOMING",
+  PAST = "PAST",
 }
