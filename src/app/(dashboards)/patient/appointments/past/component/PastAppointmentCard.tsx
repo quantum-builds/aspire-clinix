@@ -1,10 +1,11 @@
 import { CalenderInputIcon, TimeIcon } from "@/assets";
-import { TPastAppointmentPatient } from "@/types/common";
 import Image from "next/image";
 import Button from "@/app/(dashboards)/components/Button";
+import { TAppointment } from "@/types/appointment";
+import { formatDate, formatTime } from "@/utils/formatDateTime";
 
 interface UpcomingAppointmentCardProps {
-  appointment: TPastAppointmentPatient;
+  appointment: TAppointment;
 }
 
 export default function PastAppointmentCard({
@@ -21,33 +22,39 @@ export default function PastAppointmentCard({
               alt="Calendar Icon"
               className="w-4 h-4"
             />
-            <p className="text-lg">{appointment.date}</p>
+            <p className="text-xl">{formatDate(appointment.date)}</p>
           </div>
           <div className="flex items-center gap-1">
             <Image src={TimeIcon} alt="TIme Icon" className="w-4 h-4" />
-            <p className="text-lg">{appointment.time}</p>
+            <p className="text-xl">{formatTime(appointment.date)}</p>
           </div>
         </div>
       </div>
       <div className="flex flex-wrap gap-y-5 justify-between">
         <p className="text-lg">
-          Name: <span className="font-medium">{appointment.dentistName}</span>
+          Name:{" "}
+          <span className="font-medium">{appointment.dentist.fullName}</span>
         </p>
         <p className="text-lg">
-          GDC no: <span className="font-medium">{appointment.gdcNumber}</span>
+          GDC no:{" "}
+          <span className="font-medium">{appointment.dentist.gdcNo}</span>
         </p>
         <p className="text-lg">
-          Phone: <span className="font-medium">{appointment.dentistPhone}</span>
+          Phone:{" "}
+          <span className="font-medium">{appointment.dentist.phoneNumber}</span>
         </p>
         <p className="text-lg">
-          Disease: <span className="font-medium">{appointment.disease}</span>
+          Disease: <span className="font-medium">{appointment.reason}</span>
         </p>
       </div>
 
       <div className="flex justify-between items-center">
-        <Button text="See Reports" href="/patient/appointments/reports" />
+        <Button
+          text="See Reports"
+          href={`/patient/appointments/${appointment.id}/reports`}
+        />
         <p className="text-lg italic text-right">
-          Appointment.no: {appointment.appointmentNumber}
+          Appointment.no: {appointment.id}
         </p>
       </div>
     </div>

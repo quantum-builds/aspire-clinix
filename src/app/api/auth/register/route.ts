@@ -28,50 +28,50 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const existingUser = await prisma.user.findUnique({
-      where: { email: email },
-    });
+    // const existingUser = await prisma.user.findUnique({
+    //   where: { email: email },
+    // });
 
-    if (existingUser) {
-      return NextResponse.json(
-        { message: "Email is already in use" },
-        { status: 400 }
-      );
-    }
+    // if (existingUser) {
+    //   return NextResponse.json(
+    //     { message: "Email is already in use" },
+    //     { status: 400 }
+    //   );
+    // }
 
-    const hashedPassword = await hashPassword(password);
+    // const hashedPassword = await hashPassword(password);
 
-    const newUser = await prisma.user.create({
-      data: {
-        email: email,
-        password: hashedPassword,
-        role: role,
-      },
-    });
+    // const newUser = await prisma.user.create({
+    //   data: {
+    //     email: email,
+    //     password: hashedPassword,
+    //     role: role,
+    //   },
+    // });
 
-    // console.log(newUser);
-    if (newUser.role === UserRoles.DENTIST) {
-      await prisma.dentist.create({
-        data: {
-          userId: newUser.id,
-          email: newUser.email,
-        },
-      });
-    } else if (newUser.role === UserRoles.PATIENT) {
-      await prisma.patient.create({
-        data: {
-          userId: newUser.id,
-          email: newUser.email,
-        },
-      });
-    } else if (newUser.role === UserRoles.ADMIN) {
-      await prisma.admin.create({
-        data: {
-          userId: newUser.id,
-          email: newUser.email,
-        },
-      });
-    }
+    // // console.log(newUser);
+    // if (newUser.role === UserRoles.DENTIST) {
+    //   await prisma.dentist.create({
+    //     data: {
+    //       userId: newUser.id,
+    //       email: newUser.email,
+    //     },
+    //   });
+    // } else if (newUser.role === UserRoles.PATIENT) {
+    //   await prisma.patient.create({
+    //     data: {
+    //       userId: newUser.id,
+    //       email: newUser.email,
+    //     },
+    //   });
+    // } else if (newUser.role === UserRoles.ADMIN) {
+    //   await prisma.admin.create({
+    //     data: {
+    //       userId: newUser.id,
+    //       email: newUser.email,
+    //     },
+    //   });
+    // }
 
     return NextResponse.json(
       { message: "User registered successfully" },

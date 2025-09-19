@@ -1,4 +1,4 @@
-import { TReport } from "@/types/common";
+import { TReport } from "@/types/reports";
 import VideoReportCard from "./VideoReportCard";
 
 interface VideoReportGridProps {

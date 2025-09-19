@@ -1,8 +1,9 @@
 import LetterReportGrid from "@/app/(dashboards)/components/LetterReportGrid";
 import VideoReportGrid from "@/app/(dashboards)/components/VideoReportGrid";
-import { TDentistDeatils, TPatientDetails, TReport } from "@/types/common";
+import { TDentistDeatils, TPatientDetails } from "@/types/common";
 import { ResoucrceType } from "@prisma/client";
 import PatientDetails from "./PatientDetails";
+import { TReport } from "@/types/reports";
 
 interface ReportGridProps {
   reports: TReport[];

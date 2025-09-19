@@ -1,7 +1,7 @@
 import { PdfDownload } from "@/app/(dashboards)/components/PDFModal";
 import { CalenderInputIcon, PDFImage, TimeIcon } from "@/assets";
-import { formatDate, formatTime } from "@/lib/formatDateTime";
 import { TResource } from "@/types/resources";
+import { formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
 
 interface ResourceCardProps {

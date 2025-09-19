@@ -1,10 +1,11 @@
 import Button from "@/app/(dashboards)/components/Button";
 import { CalenderInputIcon, TimeIcon } from "@/assets";
-import { TUpcomingAppointmentPatient } from "@/types/common";
+import { TAppointment } from "@/types/appointment";
+import { formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
 
 interface FirstUpcomingAppointmentCardProps {
-  appointment: TUpcomingAppointmentPatient;
+  appointment: TAppointment;
 }
 export default function FirstUpcomingAppointmentCard({
   appointment,
@@ -26,16 +27,14 @@ export default function FirstUpcomingAppointmentCard({
                 alt="Calendar Icon"
                 className="w-4 h-4"
               />
-              <p className="text-xl">{appointment.date}</p>
+              <p className="text-xl">{formatDate(appointment.date)}</p>
             </div>
             <div className="flex items-center gap-1">
               <Image src={TimeIcon} alt="TIme Icon" className="w-4 h-4" />
-              <p className="text-xl">{appointment.time}</p>
+              <p className="text-xl">{formatTime(appointment.date)}</p>
             </div>
           </div>
-          <p className="text-xl italic">
-            Appointment Number: {appointment.appointmentNumber}
-          </p>
+          <p className="text-xl italic">Appointment Number: {appointment.id}</p>
         </div>
       </div>
       <div className="flex flex-col gap-5">
@@ -45,15 +44,16 @@ export default function FirstUpcomingAppointmentCard({
           <div className="flex items-center gap-2  text-xl">
             <p className="flex-[25%] ">
               Name:{" "}
-              <span className="font-medium">{appointment.dentistName}</span>
+              <span className="font-medium">
+                {appointment.dentist.fullName}
+              </span>
             </p>
             <p className="flex-[25%]">
               GDC no:{" "}
-              <span className="font-medium">{appointment.gdcNumber}</span>
+              <span className="font-medium">{appointment.dentist.gdcNo}</span>
             </p>
             <p className="flex-[50%]">
-              Disease:{" "}
-              <span className="font-medium">{appointment.disease}</span>
+              Disease: <span className="font-medium">{appointment.reason}</span>
             </p>
           </div>
 
@@ -61,27 +61,31 @@ export default function FirstUpcomingAppointmentCard({
           <div className="flex items-ceter gap-2">
             <p className="flex-[25%] text-xl">
               Phone:{" "}
-              <span className="font-medium">{appointment.dentistPhone}</span>
+              <span className="font-medium">
+                {appointment.dentist.phoneNumber}
+              </span>
             </p>
             <p className="flex-[25%] text-xl">
               Email:{" "}
-              <span className="font-medium">{appointment.dentistEmail}</span>
+              <span className="font-medium">{appointment.dentist.email}</span>
             </p>
             <p className="flex-[50%] text-xl">
               Practice Address:{" "}
-              <span className="font-medium">{appointment.practiceAddress}</span>
+              <span className="font-medium">
+                {appointment.dentist.practiceAddress}
+              </span>
             </p>
           </div>
         </div>
       </div>
       <div className="flex justify-between">
-        <Button text="See Reports" href="/patient/appointments/reports" />
-        <div className="flex flex-col gap-1">
-          <p className="text-green text-right">
-            Appointment with {appointment.dentistName}
-          </p>
-          <p className="text-green text-right">{appointment.specialization}</p>
-        </div>
+        <Button
+          text="See Reports"
+          href={`/patient/appointments/${appointment.id}/reports`}
+        />
+        <p className="text-green text-right">
+          Appointment with {appointment.dentist.fullName}
+        </p>
       </div>
     </div>
   );

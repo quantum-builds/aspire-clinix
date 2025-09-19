@@ -7,37 +7,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Patient {
-  id               String             @id @default(cuid())
-  email            String             @unique
-  address          String?
-  dateOfBirth      DateTime?
-  mobileNumber     String?            @unique
-  name             String?
-  userId           String             @unique
-  Appointment      Appointment[]
-  User             User               @relation(fields: [userId], references: [id])
-  // PatientTreatment PatientTreatment[]
-  // ReferralForm     ReferralForm[]
-  Dentist          Dentist[]          @relation("PatientDentists")
-}
+// model Patient {
+//   id               String             @id @default(cuid())
+//   email            String             @unique
+//   address          String?
+//   dateOfBirth      DateTime?
+//   mobileNumber     String?            @unique
+//   name             String?
+//   userId           String             @unique
+//   Appointment      Appointment[]
+//   User             User               @relation(fields: [userId], references: [id])
+//   // PatientTreatment PatientTreatment[]
+//   // ReferralForm     ReferralForm[]
+//   Dentist          Dentist[]          @relation("PatientDentists")
+// }
 
-model Dentist {
-  id                String             @id @default(cuid())
-  email             String             @unique
-  GDCnumber         String?            @unique
-  address           String?
-  mobileNumber      String?            @unique
-  name              String?
-  specialty         String?
-  userId            String             @unique
-  yearsOfExperience Int?
-  Appointment       Appointment[]
-  User              User               @relation(fields: [userId], references: [id])
-  // PatientTreatment  PatientTreatment[]
-  // ReferralForm      ReferralForm[]
-  Patient           Patient[]          @relation("PatientDentists")
-}
+// model Dentist {
+//   id                String             @id @default(cuid())
+//   email             String             @unique
+//   GDCnumber         String?            @unique
+//   address           String?
+//   mobileNumber      String?            @unique
+//   name              String?
+//   specialty         String?
+//   userId            String             @unique
+//   yearsOfExperience Int?
+//   Appointment       Appointment[]
+//   User              User               @relation(fields: [userId], references: [id])
+//   // PatientTreatment  PatientTreatment[]
+//   // ReferralForm      ReferralForm[]
+//   Patient           Patient[]          @relation("PatientDentists")
+// }
 
 model ReferralForm {
   id                    String   @id @default(cuid())
@@ -65,81 +65,81 @@ model ReferralForm {
   @@unique([patientId, dentistId])
 }
 
-model Appointment {
-  id                String   @id @default(cuid())
-  dentistId         String
-  appointmentDate   DateTime
-  appointmentStatus String?
-  patientId         String
-  downloadReport    String?
-  service           String
-  Dentist           Dentist  @relation(fields: [dentistId], references: [id])
-  Patient           Patient  @relation(fields: [patientId], references: [id])
+// model Appointment {
+//   id                String   @id @default(cuid())
+//   dentistId         String
+//   appointmentDate   DateTime
+//   appointmentStatus String?
+//   patientId         String
+//   downloadReport    String?
+//   service           String
+//   Dentist           Dentist  @relation(fields: [dentistId], references: [id])
+//   Patient           Patient  @relation(fields: [patientId], references: [id])
 
-  @@unique([dentistId, patientId, appointmentDate])
-}
+//   @@unique([dentistId, patientId, appointmentDate])
+// }
 
 
-// TODO : relation with patient and dentist
-model PatientTreatment {
-  id              String    @id @default(cuid())
-  dentistId       String
-  patientId       String
-  treatmentId     String
-  treatmentDate   DateTime
-  treatmentStatus PatientTreatmentStatus @default(PENDING)
-  // Dentist         Dentist   @relation(fields: [dentistId], references: [id])
-  // Patient         Patient   @relation(fields: [patientId], references: [id])
-  Treatment       Treatment @relation(fields: [treatmentId], references: [id])
+// // TODO : relation with patient and dentist
+// model PatientTreatment {
+//   id              String    @id @default(cuid())
+//   dentistId       String
+//   patientId       String
+//   treatmentId     String
+//   treatmentDate   DateTime
+//   treatmentStatus PatientTreatmentStatus @default(PENDING)
+//   // Dentist         Dentist   @relation(fields: [dentistId], references: [id])
+//   // Patient         Patient   @relation(fields: [patientId], references: [id])
+//   Treatment       Treatment @relation(fields: [treatmentId], references: [id])
 
-  @@unique([patientId, treatmentId, treatmentDate])
-}
+//   @@unique([patientId, treatmentId, treatmentDate])
+// }
 
-model Treatment {
-  id               String             @id @default(cuid())
-  name             String             @unique
-  description      String
-  cost             Decimal            @db.Decimal(10, 2)
-  PatientTreatment PatientTreatment[]
-}
+// model Treatment {
+//   id               String             @id @default(cuid())
+//   name             String             @unique
+//   description      String
+//   cost             Decimal            @db.Decimal(10, 2)
+//   PatientTreatment PatientTreatment[]
+// }
 
-model User {
-  id       String                @id @default(cuid())
-  email    String                @unique
-  password String
-  role     String
-  Admin    Admin?
-  Dentist  Dentist?
-  Invoices Invoice?
-  Patient  Patient?
-  plans    UserSubscribedPlans[]
-}
+// model User {
+//   id       String                @id @default(cuid())
+//   email    String                @unique
+//   password String
+//   role     String
+//   Admin    Admin?
+//   Dentist  Dentist?
+//   Invoices Invoice?
+//   Patient  Patient?
+//   plans    UserSubscribedPlans[]
+// }
 
-model Invoice {
-  id              String        @id @default(cuid())
-  userId          String        @unique
-  month           Int
-  year            Int
-  totalAmount     Float
-  stripePaymentId String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  status          InvoiceStatus @default(PENDING)
-  User            User          @relation(fields: [userId], references: [id])
-  Payment         Payment[]
-}
+// model Invoice {
+//   id              String        @id @default(cuid())
+//   userId          String        @unique
+//   month           Int
+//   year            Int
+//   totalAmount     Float
+//   stripePaymentId String?
+//   createdAt       DateTime      @default(now())
+//   updatedAt       DateTime      @updatedAt
+//   status          InvoiceStatus @default(PENDING)
+//   User            User          @relation(fields: [userId], references: [id])
+//   Payment         Payment[]
+// }
 
-model Payment {
-  id              String        @id @default(cuid())
-  userId          String
-  invoiceId       String?
-  stripePaymentId String        @unique
-  amount          Float
-  status          PaymentStatus @default(PENDING)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  Invoice         Invoice?      @relation(fields: [invoiceId], references: [id])
-}
+// model Payment {
+//   id              String        @id @default(cuid())
+//   userId          String
+//   invoiceId       String?
+//   stripePaymentId String        @unique
+//   amount          Float
+//   status          PaymentStatus @default(PENDING)
+//   createdAt       DateTime      @default(now())
+//   updatedAt       DateTime      @updatedAt
+//   Invoice         Invoice?      @relation(fields: [invoiceId], references: [id])
+// }
 
 model Plan {
   id                 String                @id @default(uuid())
@@ -169,45 +169,131 @@ model UserSubscribedPlans {
   planId       String
   subscribedAt DateTime
   plans        Plan     @relation(fields: [planId], references: [id])
-  user         User     @relation(fields: [userId], references: [id])
+  // user         User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, planId])
 }
 
-model Admin {
-  id     String @id @default(cuid())
-  userId String @unique
-  email  String @unique
-  User   User   @relation(fields: [userId], references: [id])
-}
+// model Admin {
+//   id     String @id @default(cuid())
+//   userId String @unique
+//   email  String @unique
+//   User   User   @relation(fields: [userId], references: [id])
+// }
 
 // PATIENT MODELS
 
-  model Resource{
-    id          String   @id @default(cuid())
-    title       String
-    fileUrl     String
-    fileType    ResoucrceType
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+// model User{
+//   id String @id @default(cuid())
+//   email String @unique
+//   passsword String
+//   fullName String
+//   phoneNumber String @unique
+//   country String
+//   dateOfBirth DateTime
+//   gender  GenderType
+//   gdcNo   String?
+//   practiceAddress String?
+//   role    UserRole
+//   createdAt DateTime
+//   updatedAt DateTime
 
-    @@index([fileType])
-  }
+//   @@index([role])
+//   @@index([gdcNo])
+// }
+
+model Patient{
+  id String @id @default(cuid())
+  email String @unique
+  password String
+  fullName String
+  phoneNumber String @unique
+  country String
+  dateOfBirth DateTime
+  gender  GenderType
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  appointments  Appointment[]
+  reports   Report[]
+}
+
+model Dentist{
+  id String @id @default(cuid())
+  email String @unique
+  password String
+  fullName String
+  phoneNumber String @unique
+  country String
+  dateOfBirth DateTime
+  gender  GenderType
+  gdcNo   String  @unique
+  practiceAddress String
+  role    DentistRole
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  appointments  Appointment[]
+  reports     Report[]
+}
+
+model Admin{
+  id  String @id @default(cuid())
+  fullName  String
+  password  String
+  email     String  @unique
+  phoneNumber String  @unique
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Appointment{
+  id String @id @default(cuid())
+  date  DateTime
+  patientId   String 
+  dentistId   String 
+  reason  String
+  state   AppointmentStatus
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reports Report[]
+  patient Patient  @relation(fields: [patientId],references: [id])
+  dentist Dentist  @relation(fields: [dentistId],references: [id])
+}
 
 model Report{
   id          String   @id @default(cuid())
   dentistId   String
   patientId   String
+  appointmentId String
   title       String
   fileUrl     String
   fileType    ResoucrceType
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@index([dentistId])
-  @@index([patientId])
+  patient Patient  @relation(fields: [patientId],references: [id])
+  dentist Dentist  @relation(fields: [dentistId],references: [id])
+  appointment Appointment @relation(fields: [appointmentId],references: [id])
   @@index([fileType])
 }
+
+model Resource{
+  id          String   @id @default(cuid())
+  title       String
+  fileUrl     String
+  fileType    ResoucrceType
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([fileType])
+}
+
 
 model Product {
   id       String     @id @default(cuid())
@@ -313,7 +399,7 @@ enum PatientTreatmentStatus {
 
 // PATIENT ENUMS
 
-enum ResoucrceType{
+enum ResoucrceType {
   VIDEO
   PDF
 }
@@ -325,4 +411,32 @@ enum PaymentStatus {
   REFUNDED
   REFUND_PENDING
   REFUND_FAILED
+}
+
+// enum UserRole {
+//   PATIENT
+//   DENTIST
+//   RECIEVING_DENTIST
+//   REFERRING_DENTIST
+// }
+
+enum DentistRole {
+  DENTIST
+  RECIEVING_DENTIST
+  REFERRING_DENTIST
+}
+
+enum GenderType {
+  MALE
+  FEMALE
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  ARRIVED
+  IN_SURGERY
+  COMPLETED
+  CANCELLED
+  DID_NOT_ATTEND
 }

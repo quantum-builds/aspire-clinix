@@ -1,5 +1,4 @@
 import prisma from "@/lib/db";
-import { TPaginationNumbers } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
 import { Prisma, Report } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
@@ -9,21 +8,10 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
 
-    const page = parseInt(searchParams.get("page") || "1");
     const search = searchParams.get("search") || "";
-    const filterType = searchParams.get("fileType") || null;
     const dentistId = searchParams.get("dentistId") || null;
-    let patientId = null;
-    const token = await getToken({
-      req,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-    if (token && token.role === "patient") {
-      patientId = token.id;
-    }
-
-    const limitPerType = 5;
-    const skip = (page - 1) * limitPerType;
+    let patientId = searchParams.get("patientId") || null;
+    let appointmentId = searchParams.get("appointmentId") || null;
 
     const baseWhere: Prisma.ReportWhereInput = {
       ...(search
@@ -36,61 +24,47 @@ export async function GET(req: NextRequest) {
         : {}),
       ...(dentistId ? { dentistId } : {}),
       ...(patientId ? { patientId } : {}),
+      ...(appointmentId ? { appointmentId } : {}),
     };
 
-    let reports: { videos?: Report[]; pdfs?: Report[] } = {};
-    let pagination: { video: TPaginationNumbers; pdf: TPaginationNumbers } = {
-      video: { total: 0, totalPages: 0 },
-      pdf: { total: 0, totalPages: 0 },
-    };
+    // fetch videos
+    const videos = await prisma.report.findMany({
+      where: { ...baseWhere, fileType: "VIDEO" },
+      orderBy: { createdAt: "desc" },
+    });
 
-    if (!filterType || filterType === "VIDEO") {
-      const [videos, videoCount] = await Promise.all([
-        prisma.report.findMany({
-          where: { ...baseWhere, fileType: "VIDEO" },
-          skip,
-          take: limitPerType,
-          orderBy: { createdAt: "desc" },
-        }),
-        prisma.report.count({ where: { ...baseWhere, fileType: "VIDEO" } }),
-      ]);
+    // fetch pdfs
+    const pdfs = await prisma.report.findMany({
+      where: { ...baseWhere, fileType: "PDF" },
+      orderBy: { createdAt: "desc" },
+    });
 
-      reports.videos = videos;
-      pagination.video = {
-        total: videoCount,
-        totalPages: Math.ceil(videoCount / limitPerType),
-      };
-    }
-
-    if (!filterType || filterType === "PDF") {
-      const [pdfs, pdfCount] = await Promise.all([
-        prisma.report.findMany({
-          where: { ...baseWhere, fileType: "PDF" },
-          skip,
-          take: limitPerType,
-          orderBy: { createdAt: "desc" },
-        }),
-        prisma.report.count({ where: { ...baseWhere, fileType: "PDF" } }),
-      ]);
-
-      reports.pdfs = pdfs;
-      pagination.pdf = {
-        total: pdfCount,
-        totalPages: Math.ceil(pdfCount / limitPerType),
-      };
-    }
-
-    if (!reports.pdfs && !reports.videos) {
+    if (!videos.length && !pdfs.length) {
       return NextResponse.json(
         createResponse(false, "No reports found.", null),
         { status: 404 }
       );
     }
 
+    let dentist = null;
+    if (dentistId) {
+      dentist = await prisma.dentist.findUnique({
+        where: { id: dentistId },
+        select: {
+          id: true,
+          fullName: true,
+          gdcNo: true,
+          phoneNumber: true,
+          email: true,
+          practiceAddress: true,
+        },
+      });
+    }
+
     return NextResponse.json(
       createResponse(true, "Reports fetched successfully.", {
-        reports,
-        pagination: { page, ...pagination },
+        dentist,
+        reports: { videos, pdfs },
       }),
       { status: 200 }
     );
@@ -105,13 +79,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    if (!token || token.role !== "dentist") {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
-    }
+    // if (!token || token.role !== "dentist") {
+    //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
+    //     status: 401,
+    //   });
+    // }
 
     const report = await req.json();
 

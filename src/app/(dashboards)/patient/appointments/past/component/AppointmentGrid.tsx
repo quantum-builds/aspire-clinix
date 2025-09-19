@@ -1,12 +1,57 @@
-import { TPastAppointmentPatient } from "@/types/common";
+import { AppointmentDateType, Response } from "@/types/common";
 import PastAppointmentCard from "./PastAppointmentCard";
+import SearchBar from "@/app/(dashboards)/components/SearchBar";
+import NoContent from "@/app/(dashboards)/components/NoContent";
+import { getAppointments } from "@/services/appointments/appointmentQuery";
+import { TAppointment, TAppointmentResponse } from "@/types/appointment";
 
-interface AppointmentGridProps {
-  appointments: TPastAppointmentPatient[];
+interface AppointmentGridWrapperProps {
+  query: string;
+  page: number;
 }
-export default function AppointmentGrid({
-  appointments,
-}: AppointmentGridProps) {
+interface AppointmentGridProps {
+  appointments: TAppointment[];
+}
+
+export default async function AppointmentGridWrapper({
+  query,
+  page,
+}: AppointmentGridWrapperProps) {
+  const response: Response<TAppointmentResponse> = await getAppointments({
+    search: query,
+    dentistId: "cmfpmegmj0005l6qab0c10oil",
+    patientId: "cmfplxicq0000l6qaof724vtk",
+    dateType: AppointmentDateType.PAST,
+    page: page,
+  });
+
+  if (
+    !response.status ||
+    !response.data ||
+    !response.data.appointments ||
+    response.data.appointments.length === 0
+  ) {
+    return (
+      <NoContent title="Resources" placeholder="Enter Appointment Number" />
+    );
+  }
+
+  const appointments = response.data.appointments;
+
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <h1 className="font-medium text-3xl">Appointments</h1>
+        <div>
+          <SearchBar placeholder="Enter Appointment Number" />
+        </div>
+      </div>
+      <AppointmentGrid appointments={appointments} />
+    </>
+  );
+}
+
+export function AppointmentGrid({ appointments }: AppointmentGridProps) {
   return (
     <div className="flex flex-col gap-7 bg-dashboardBarBackground rounded-2xl p-6">
       <p className="font-medium text-2xl">Past Appointments</p>
