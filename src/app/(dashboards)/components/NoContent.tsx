@@ -2,14 +2,17 @@ import Image from "next/image";
 import { NoContentImage } from "@/assets";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import BackButton from "@/app/(dashboards)/components/BackButton";
+import Button from "./Button";
 
 interface NoContentProps {
   title: string;
   placeholder?: string;
+  showAppointmentBtn?: boolean;
 }
 export default function NoContent({
   title,
   placeholder = "Search",
+  showAppointmentBtn = false,
 }: NoContentProps) {
   return (
     <div className=" w-full h-full flex flex-col gap-7">
@@ -20,6 +23,11 @@ export default function NoContent({
           <BackButton />
         </div>
       </div>
+      {showAppointmentBtn && (
+        <div className="flex justify-end">
+          <Button text="Book an Appointment" href="/patient/appointments/new" />
+        </div>
+      )}
       <div className="bg-dashboardBarBackground py-[60px] px-6 flex flex-col items-center justify-center gap-4">
         <Image
           src={NoContentImage}

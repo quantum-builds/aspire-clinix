@@ -5,6 +5,7 @@ import { TAppointment, TAppointmentResponse } from "@/types/appointment";
 import { getAppointments } from "@/services/appointments/appointmentQuery";
 import NoContent from "@/app/(dashboards)/components/NoContent";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
+import Button from "@/app/(dashboards)/components/Button";
 
 interface AppointmentGridWrapperProps {
   query: string;
@@ -31,7 +32,11 @@ export default async function AppointmentGridWrapper({
     response.data.appointments.length === 0
   ) {
     return (
-      <NoContent title="Resources" placeholder="Enter Appointment Number" />
+      <NoContent
+        title="Appointment"
+        placeholder="Enter Appointment Number"
+        showAppointmentBtn={true}
+      />
     );
   }
 
@@ -43,6 +48,9 @@ export default async function AppointmentGridWrapper({
         <h1 className="font-medium text-3xl">Appointments</h1>
         <div>
           <SearchBar placeholder="Enter Appointment Number" />
+        </div>
+        <div className="flex justify-end">
+          <Button text="Book an Appointment" href="/patient/appointments/new" />
         </div>
       </div>
       <AppointmentGrid appointments={appointments} />
