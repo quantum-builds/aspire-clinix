@@ -15,7 +15,7 @@ export default function FirstUpcomingAppointmentCard({
         <div className="flex flex-col gap-3">
           <p className="font-medium text-2xl">Upcoming Appointments</p>
           <p className="text-xl ">
-            Session: <span className="font-medium italic">Third Session</span>
+            Status: <span className="font-medium italic">Pending</span>
           </p>
         </div>
         <div className="flex flex-col gap-3 items-end">
@@ -75,7 +75,12 @@ export default function FirstUpcomingAppointmentCard({
         </div>
       </div>
       <div className="flex justify-between">
-        <Button text="See Reports" href="/patient/appointments/reports" />
+        <div className="flex items-center gap-2">
+          <Button text="See Reports" href="/patient/appointments/reports" />
+          <button className="h-[60px] px-6 py-3 font-medium text-lg rounded-full bg-gray">
+            Cancel Appoinment
+          </button>
+        </div>
         <div className="flex flex-col gap-1">
           <p className="text-green text-right">
             Appointment with {appointment.dentistName}

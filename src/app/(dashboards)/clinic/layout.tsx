@@ -15,57 +15,55 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
   {
     name: "Appointments",
     icon: AppointmentsIcon,
-    href: "/patient/appointments",
+    href: "/clinic/appointments",
     pages: [
       {
         name: "Upcoming",
         icon: InActiveIcon,
-        href: "/patient/appointments/upcoming",
+        href: "/clinic/appointments/upcoming",
       },
-      { name: "Past", icon: InActiveIcon, href: "/patient/appointments/past" },
+      { name: "Past", icon: InActiveIcon, href: "/clinic/appointments/past" },
+      {
+        name: "Requests",
+        icon: InActiveIcon,
+        href: "/clinic/appointments/requests",
+      },
     ],
+  },
+  {
+    name: "Referral",
+    icon: ConsentIcon,
+    href: "/clinic/referrals",
   },
   {
     name: "Resources",
     icon: ResourcesIcon,
-    pages: [
-      { name: "Videos", icon: InActiveIcon, href: "/patient/resources/videos" },
-      {
-        name: "Letters",
-        icon: InActiveIcon,
-        href: "/patient/resources/letters",
-      },
-    ],
+    href: "/clinic/resources",
   },
   {
-    name: "Plans & Subscriptions",
+    name: "Plans & Packages",
     icon: PlansIcon,
     pages: [
       {
         name: "Plans",
         icon: InActiveIcon,
-        href: "/patient/plans",
+        href: "/clinic/plans",
       },
       {
         name: "Subscriptions",
         icon: InActiveIcon,
-        href: "/patient/subscriptions",
+        href: "/clinic/subscriptions",
       },
     ],
   },
   {
-    name: "Consent",
-    icon: ConsentIcon,
-    href: "/patient/consent",
-  },
-  {
     name: "Store",
     icon: StoreIcon,
-    href: "/patient/store",
+    href: "/clinic/store",
   },
 ];
 
-export default function PatientLayout({
+export default function ClinicLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -75,11 +73,10 @@ export default function PatientLayout({
       </div>
 
       <div className="col-start-2 border-b">
-        <TopBar role="Patient" profileLink="/patient/profile" />
+        <TopBar role="Clinic" profileLink="/clinic/profile" />
       </div>
 
-      {/* make only main scrollable */}
-      <main className="p-6 col-start-2 overflow-y-auto mb-2">{children}</main>
+      <main className="p-6 col-start-2 overflow-y-auto mb-6">{children}</main>
     </div>
   );
 }

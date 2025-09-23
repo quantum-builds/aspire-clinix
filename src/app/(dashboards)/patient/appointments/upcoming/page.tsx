@@ -3,6 +3,7 @@ import AppointmentGrid from "./component/AppointmentGrid";
 import { Suspense } from "react";
 import NoContent from "@/app/(dashboards)/components/NoContent";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
+import Button from "@/app/(dashboards)/components/Button";
 
 const APPOINTMENT: TUpcomingAppointmentPatient[] = [
   {
@@ -141,6 +142,9 @@ export default async function UpcomingAppointments(props: {
           <div>
             <SearchBar placeholder="Enter Dentist Name or Appointment Number" />
           </div>
+        </div>
+        <div className="flex justify-end">
+          <Button text="Book an Appointment" href="/patient/appointments/new" />
         </div>
         <Suspense key={query} fallback={<div>Loading.....</div>}>
           <AppointmentGrid appointments={filteredAppointments} />

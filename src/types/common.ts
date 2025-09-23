@@ -69,6 +69,7 @@ export interface TPlan {
   price: string;
   target: string;
   services: string[];
+  type?: string;
 }
 
 export interface TPurchasedProduct {
@@ -189,4 +190,39 @@ export enum FILE_TYPE {
   VIDEO = "video",
   PDF = "pdf",
   IMAGES = "images",
+}
+
+export interface TAppointmentClinic {
+  date: string;
+  time: string;
+  appointmentNumber: string;
+  patientName: string;
+  patientGender: string;
+  patientAge: string;
+  disease: string;
+  patientId: string;
+  dentistName: string;
+}
+
+export interface TClinicReferralDataTable {
+  referenceId: string;
+  patientName: string;
+  dentistName: string;
+  referralDentistName: string;
+  disease: string;
+  status: TReferralHistoryStatus;
+  referralDate: string;
+}
+
+export interface AppointmentRequest {
+  id: string;
+  date: string;
+  time: string;
+  patientName: string;
+  patientEmail: string;
+  patientPhone: string;
+  disease: string;
+  appointmentDate: string;
+  appointmentReason: string;
+  additionalNote: string;
 }
