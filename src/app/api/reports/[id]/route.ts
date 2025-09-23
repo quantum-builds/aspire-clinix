@@ -6,13 +6,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    if (!token || token.role !== "dentist") {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
-    }
+    // if (!token || token.role !== "dentist") {
+    //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
+    //     status: 401,
+    //   });
+    // }
 
     const reportId = req.nextUrl.pathname.split("/").pop();
 

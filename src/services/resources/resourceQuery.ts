@@ -13,7 +13,6 @@ export async function getResources(
     const response = await axiosInstance.get(
       ENDPOINTS.resources.getAll(page, fileType, search)
     );
-    console.log("111111111111 ");
     const responseData: Response<TResourceResponse> = response.data;
 
     let resources: TResource[] | undefined = undefined;
@@ -23,12 +22,10 @@ export async function getResources(
       resources = responseData.data.resources.videos;
     }
 
-    console.log("2222222222");
     if (resources === undefined) {
       throw new Error("Resources not found");
     }
 
-    console.log("333333333333333");
     const uploads = await Promise.all(
       resources.map(async (resource) => {
         if (resource.fileUrl) {
@@ -37,7 +34,6 @@ export async function getResources(
         }
       })
     );
-    console.log("44444444444444");
 
     resources.forEach((resource, index) => {
       resource.file = uploads[index];
@@ -47,7 +43,6 @@ export async function getResources(
     } else if (fileType === "VIDEO") {
       responseData.data.resources.videos = resources;
     }
-    console.log("5555555555555555555");
     return responseData;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

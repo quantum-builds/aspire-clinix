@@ -1,4 +1,4 @@
-import { TReport } from "@/types/common";
+import { TReport } from "@/types/reports";
 import LetterReportCard from "./LetterReportCard";
 import UploadLetterForm from "../dentist/appointments/reports/new/components/UploadLetterForm";
 

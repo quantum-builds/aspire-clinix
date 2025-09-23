@@ -7,19 +7,19 @@ export interface Response<T> {
   data: T;
 }
 
-export interface SidebarPage {
+export type SidebarPage = {
   name: string;
   icon: StaticImageData;
   href?: string;
   pages?: SidebarPage[];
-}
+};
 
-export interface TPaginationNumbers {
+export type TPaginationNumbers = {
   total: number;
   totalPages: number;
-}
+};
 
-export interface TDentistDeatils {
+export type TDentistDeatils = {
   id: string;
   name: string;
   gdcNo: string;
@@ -29,19 +29,18 @@ export interface TDentistDeatils {
   time: string;
   appointmentNumber: string;
   practiceAddress: string;
-}
+};
 
-export interface TReport {
+export type TReport = {
   id: string;
   title: string;
   fileUrl: string;
   fileType: ResoucrceType;
   createdAt: Date;
-}
+};
 
 export type TResource = TReport;
-
-export interface TProduct {
+export type TProduct = {
   id: string;
   title: string;
   stars: number;
@@ -49,9 +48,9 @@ export interface TProduct {
   fileUrl: string;
   price: number;
   stock: number;
-}
+};
 
-export interface TCartProduct {
+export type TCartProduct = {
   id: string;
   cartId: string;
   quantity: number;
@@ -60,9 +59,9 @@ export interface TCartProduct {
   fileName: string;
   fileUrl: string;
   title: string;
-}
+};
 
-export interface TPlan {
+export type TPlan = {
   id: string;
   name: string;
   title: string;
@@ -70,17 +69,17 @@ export interface TPlan {
   target: string;
   services: string[];
   type?: string;
-}
+};
 
-export interface TPurchasedProduct {
+export type TPurchasedProduct = {
   cartId: string;
   products: {
     productId: string;
     quantity: number;
   }[];
-}
+};
 
-export interface TUpcomingAppointmentPatient {
+export type TUpcomingAppointmentPatient = {
   date: string;
   time: string;
   appointmentNumber: string;
@@ -92,9 +91,9 @@ export interface TUpcomingAppointmentPatient {
   dentistEmail: string;
   practiceAddress: string;
   specialization: string;
-}
+};
 
-export interface TPastAppointmentPatient {
+export type TPastAppointmentPatient = {
   date: string;
   time: string;
   appointmentNumber: string;
@@ -103,9 +102,9 @@ export interface TPastAppointmentPatient {
   gdcNumber: string;
   dentistPhone: string;
   disease: string;
-}
+};
 
-export interface TAppointmentDentist {
+export type TAppointmentDentist = {
   date: string;
   time: string;
   appointmentNumber: string;
@@ -115,34 +114,34 @@ export interface TAppointmentDentist {
   patientGender: string;
   patientAge: string;
   patientPhone: string;
-}
+};
 
-export interface TPatientDetails extends TAppointmentDentist {
+export type TPatientDetails = TAppointmentDentist & {
   patientEmail: string;
-}
+};
 
-export interface TReferralRequestDataTable {
+export type TReferralRequestDataTable = {
   id: string;
   patientName: string;
   referringDentistName: string;
   disease: string;
   referralDate: string;
-}
+};
 
-export interface TReferraLRequestCards {
+export type TReferraLRequestCards = {
   totalReferrals: TTotalReferrals;
   attendedReferrals: TAttendedReferrals;
   unattendedReferrals: TUnAttendedReferrals;
   averageReferrals: TAverageReferrals;
-}
+};
 
-export interface TTotalReferrals {
+export type TTotalReferrals = {
   count: number;
   percentageChange: number;
   icon: string;
   title: string;
   link?: string;
-}
+};
 
 export type TAttendedReferrals = TTotalReferrals;
 export type TUnAttendedReferrals = TTotalReferrals;
@@ -151,6 +150,7 @@ export interface TAverageReferrals {
   percentageChange: number;
   icon: string;
   title: string;
+  link?: string;
 }
 
 export interface AppointmentDetails {
@@ -190,6 +190,11 @@ export enum FILE_TYPE {
   VIDEO = "video",
   PDF = "pdf",
   IMAGES = "images",
+}
+
+export enum AppointmentDateType {
+  UPCOMING = "UPCOMING",
+  PAST = "PAST",
 }
 
 export interface TAppointmentClinic {

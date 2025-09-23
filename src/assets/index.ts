@@ -111,5 +111,8 @@ export { default as UnattendedReferrals } from "@/assets/unattended-referrals.sv
 export { default as AverageReferrals } from "@/assets/average-referrals.svg";
 export { default as UploadPDFIcon } from "@/assets/upload-pdf-icon.svg";
 export { default as UploadVideoIcon } from "@/assets/upload-video-icon.svg";
+<<<<<<< HEAD
 export { default as UploadImageIcon } from "@/assets/upload-image-icon.svg";
+=======
+>>>>>>> 266b8b6f93b567e2a8a4a5cdf882d44067585752
 export { default as PointsIcon } from "@/assets/points-icon.svg";
