@@ -6,21 +6,43 @@ import Link from "next/link";
 interface ButtonProps {
   text: string;
   icon?: StaticImageData;
-  href: string;
-  className?: string | undefined;
+  handleOnClick?: () => void;
+  href?: string;
+  className?: string;
 }
 
-export default function Button({ text, icon, href, className }: ButtonProps) {
+export default function Button({
+  text,
+  icon,
+  href,
+  handleOnClick,
+  className,
+}: ButtonProps) {
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className={cn(
+          "h-[60px] px-6 py-3 font-medium text-lg text-dashboardBarBackground bg-green flex items-center justify-center gap-2 rounded-[100px]",
+          className
+        )}
+      >
+        {icon && <Image src={icon} alt="button icon" className="w-4 h-4" />}
+        {text}
+      </Link>
+    );
+  }
+
   return (
-    <Link
-      href={href}
+    <button
+      onClick={handleOnClick}
       className={cn(
-        "h-[60px] px-6 py-3 font-medium text-lg text-dashboardBarBackground bg-green flex items-center justify-center gap-2 rounded-[100px] ",
+        "h-[60px] px-6 py-3 font-medium text-lg text-dashboardBarBackground bg-green flex items-center justify-center gap-2 rounded-[100px]",
         className
       )}
     >
       {icon && <Image src={icon} alt="button icon" className="w-4 h-4" />}
       {text}
-    </Link>
+    </button>
   );
 }

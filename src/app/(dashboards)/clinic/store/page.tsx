@@ -4,7 +4,7 @@ import DateFilter from "../../components/DateFilter";
 import Pagination from "../../components/Pagination";
 import SearchBar from "../../components/SearchBar";
 import NoContent from "../../components/NoContent";
-import ProductGrid from "../../patient/store/components/ProductGrid";
+import ProductGrid from "../../patient/store/components/TempPoductGrid";
 
 const PRODUCTS: TProduct[] = [
   {

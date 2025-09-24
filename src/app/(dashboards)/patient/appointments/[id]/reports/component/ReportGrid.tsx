@@ -8,6 +8,7 @@ import NoContent from "@/app/(dashboards)/components/NoContent";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import { TDentist } from "@/types/dentist";
 import BackButton from "@/app/(dashboards)/components/BackButton";
+import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 
 interface ResourceGridWrapperProps {
   query: string;
@@ -39,7 +40,8 @@ ResourceGridWrapperProps) {
     (response.data.reports.pdfs?.length === 0 &&
       response.data.reports.videos?.length === 0)
   ) {
-    return <NoContent title="Reports" placeholder="Enter Report title" />;
+    // return <NoContent title="Reports" placeholder="Enter Report title" />;
+    return <NoContent1 />;
   }
 
   const dentistDetails = response.data.dentist;
@@ -48,19 +50,11 @@ ResourceGridWrapperProps) {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Reports</h1>
-        <div className="flex items-center gap-3">
-          <SearchBar placeholder="Enter Report title" />
-          <BackButton />
-        </div>
-      </div>
       <ReportGrid
         videoReports={videos ?? []}
         letterReports={pdfs ?? []}
         dentistDetails={dentistDetails}
       />
-      ;
     </>
   );
 }
@@ -70,12 +64,6 @@ export function ReportGrid({
   letterReports,
   dentistDetails,
 }: ReportGridProps) {
-  // const videoReports = reports.filter(
-  //   (report) => report.fileType !== ResoucrceType.PDF
-  // );
-  // const letterReports = reports.filter(
-  //   (report) => report.fileType !== ResoucrceType.PDF
-  // );
   return (
     <div className="flex flex-col gap-7 bg-dashboardBackground">
       <DentistDetails dentistDetails={dentistDetails} />

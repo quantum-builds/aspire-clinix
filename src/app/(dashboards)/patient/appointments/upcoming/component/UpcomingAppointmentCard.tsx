@@ -64,7 +64,7 @@ export default function UpcomingAppointmentCard({
           <Button
             text="See Reports"
             className="flex justify-center items-center"
-            href="/patient/appointments/reports"
+            href={`/patient/appointments/${appointment.id}/reports`}
           />
           <button className="h-[60px] flex items-center justify-center px-6 py-3 font-medium text-lg rounded-full bg-gray">
             Cancel

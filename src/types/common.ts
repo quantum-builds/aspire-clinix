@@ -74,6 +74,7 @@ export type TPlan = {
 export type TPurchasedProduct = {
   cartId: string;
   products: {
+    id: string;
     productId: string;
     quantity: number;
   }[];

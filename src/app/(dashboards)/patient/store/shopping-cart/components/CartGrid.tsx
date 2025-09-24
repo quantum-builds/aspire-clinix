@@ -1,51 +1,143 @@
 "use client";
 
-import { useState } from "react";
-import { TCartProduct } from "@/types/common";
 import CartCard from "./CartCard";
 import Button from "@/app/(dashboards)/components/Button";
+import { TCartProduct } from "@/types/products";
+import {
+  useBuyProducts,
+  useDeleteCartProduct,
+  useEditCartProduct,
+} from "@/services/cartProducts/cartProductMutation";
+import { useState } from "react";
+import { TPurchasedProduct } from "@/types/common";
+import { useRouter } from "next/navigation";
+import { showToast } from "@/utils/defaultToastOptions";
 
 interface CartGridProps {
-  cartProducts: TCartProduct[];
+  cartProducts?: TCartProduct[];
 }
 
 export default function CartGrid({ cartProducts }: CartGridProps) {
-  const [cart, setCart] = useState<TCartProduct[]>(cartProducts);
+  const { mutate: editCartProduct } = useEditCartProduct();
+  const { mutate: deleteCartProduct } = useDeleteCartProduct();
+  const { mutate: buyProduct } = useBuyProducts();
+  const { refresh } = useRouter();
 
-  const totalPrice = cart.reduce((acc, product) => acc + product.total, 0);
+  const [cart, setCart] = useState<TCartProduct[]>(cartProducts || []);
+
+  let totalPrice = 0;
+  if (cart && cart.length > 0) {
+    totalPrice = cart.reduce(
+      (acc, item) => acc + item.quantity * item.product.price,
+      0
+    );
+  }
 
   const handleIncrease = (id: string) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              quantity: item.quantity + 1,
-              total: (item.quantity + 1) * item.price,
-            }
-          : item
-      )
+    const product = cart.find((item) => item.id === id);
+    if (!product) return;
+
+    editCartProduct(
+      {
+        productId: product.product.id,
+        quantity: 1,
+        patientId: "cmfplxicq0000l6qaof724vtk",
+      },
+      {
+        onSuccess: (res) => {
+          // res.data is new quantity from backend
+          setCart((prev) =>
+            prev.map((item) =>
+              item.id === id ? { ...item, quantity: res.data } : item
+            )
+          );
+          refresh();
+        },
+        onError: (error) => {
+          console.error("Increase error", error.message);
+        },
+      }
     );
   };
 
   const handleDecrease = (id: string) => {
-    setCart((prev) =>
-      prev
-        .map((item) =>
-          item.id === id && item.quantity > 0
-            ? {
-                ...item,
-                quantity: item.quantity - 1,
-                total: (item.quantity - 1) * item.price,
-              }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
+    const product = cart.find((item) => item.id === id);
+    if (!product || product.quantity <= 0) return;
+
+    editCartProduct(
+      {
+        productId: product.product.id,
+        quantity: -1,
+        patientId: "cmfplxicq0000l6qaof724vtk",
+      },
+      {
+        onSuccess: (res) => {
+          setCart((prev) =>
+            prev
+              .map((item) =>
+                item.id === id ? { ...item, quantity: res.data } : item
+              )
+              .filter((item) => item.quantity > 0)
+          );
+          refresh();
+        },
+        onError: (error) => {
+          console.error("Decrease error", error.message);
+        },
+      }
     );
   };
 
   const handleRemove = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
+    const product = cart.find((item) => item.id === id);
+    if (!product) return;
+
+    deleteCartProduct(
+      {
+        productId: product.product.id,
+        patientId: "cmfplxicq0000l6qaof724vtk",
+      },
+      {
+        onSuccess: () => {
+          setCart((prev) => prev.filter((item) => item.id !== id));
+          refresh();
+        },
+        onError: (error) => {
+          console.error("Remove error", error.message);
+        },
+      }
+    );
+  };
+
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      showToast("error", "Your cart is empty!");
+      return;
+    }
+
+    const products: TPurchasedProduct = {
+      cartId: cart[0].cartId,
+      products: cart.map((cartProduct) => ({
+        id: cartProduct.product.id,
+        productId: cartProduct.product.productId,
+        quantity: cartProduct.quantity,
+      })),
+    };
+
+    buyProduct(
+      { products: products },
+      {
+        onError: (error) => {
+          // toast.error(error.message || "Checkout failed");
+          console.log("error is ", error);
+        },
+        onSuccess: (data) => {
+          // toast.success("Redirecting to checkout...");
+          // clearCart();
+          console.log("data is ", data);
+        },
+      }
+    );
   };
 
   return (
@@ -54,9 +146,9 @@ export default function CartGrid({ cartProducts }: CartGridProps) {
       <div className="flex flex-col 1xl:flex-row 1xl:gap-6 max-1xl:space-y-6">
         <div className="flex-1 flex flex-col gap-6">
           {cart.length > 0 ? (
-            cart.map((product, index) => (
+            cart.map((product) => (
               <CartCard
-                key={index}
+                key={product.id}
                 cartProduct={product}
                 onIncrease={handleIncrease}
                 onDecrease={handleDecrease}
@@ -68,7 +160,7 @@ export default function CartGrid({ cartProducts }: CartGridProps) {
           )}
         </div>
 
-        <div className="w-full flex flex-col bg-dashboardBackground justify-between rounded-2xl p-6 1xl:w-[336px]">
+        <div className="w-full flex flex-col bg-dashboardBackground justify-between rounded-2xl p-6 1xl:w-[336px] h-fit">
           <div className="flex flex-col gap-10">
             <p className="text-[28px] font-medium">Cart Totals</p>
             <div className="flex flex-col 2xl:gap-5 gap-2">
@@ -77,8 +169,12 @@ export default function CartGrid({ cartProducts }: CartGridProps) {
                   key={product.id}
                   className="flex gap-2 justify-between text-lightBlack"
                 >
-                  <span>{product.title}</span>
-                  <span>€ {product.total.toFixed(2)}</span>
+                  <span>
+                    {product.product.name} x {product.quantity}
+                  </span>
+                  <span>
+                    € {(product.quantity * product.product.price).toFixed(2)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -91,7 +187,7 @@ export default function CartGrid({ cartProducts }: CartGridProps) {
                   € {totalPrice.toFixed(2)}
                 </span>
               </div>
-              <Button text="Checkout" href={"/patient/store"} />
+              <Button text="Checkout" handleOnClick={handleCheckout} />
             </div>
           </div>
         </div>

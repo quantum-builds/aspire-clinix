@@ -7,13 +7,13 @@ import Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    if (!token || token.role !== "patient") {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
-    }
+    // if (!token || token.role !== "patient") {
+    //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
+    //     status: 401,
+    //   });
+    // }
 
     const data = await req.json();
 
@@ -29,7 +29,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
     for (const product of products.products) {
@@ -70,12 +69,12 @@ export async function POST(req: NextRequest) {
       line_items: lineItems,
       mode: "payment",
       // customer_email: email,
-      success_url: `${process.env.URL}/store?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.URL}/store?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.URL}/patient/store?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.URL}/patient/store?session_id={CHECKOUT_SESSION_ID}`,
       metadata: {
         products: JSON.stringify(products),
         payment_for: "product",
-        patient_id: token.id as string,
+        // patient_id: token.id as string,
       },
     });
 
@@ -84,6 +83,7 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
+    console.log(error);
     if (error instanceof Stripe.errors.StripeError) {
       return NextResponse.json(createResponse(false, error.message, null), {
         status: 400,

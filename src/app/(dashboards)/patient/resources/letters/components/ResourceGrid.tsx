@@ -5,6 +5,8 @@ import NoContent from "@/app/(dashboards)/components/NoContent";
 import { TResourceResponse } from "@/types/resources";
 import { getResources } from "@/services/resources/resourceQuery";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
+import Pagination from "@/app/(dashboards)/components/Pagination";
+import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 
 interface ResourceGridWrapperProps {
   page: number;
@@ -31,18 +33,19 @@ export default async function ResourceGridWrapper({
     !response.data.resources.pdfs ||
     response.data.resources.pdfs.length === 0
   ) {
-    return <NoContent title="Resources" placeholder="Enter Resource title" />;
+    // return <NoContent title="Resources" placeholder="Enter Resource title" />;
+    return (
+      <>
+        <NoContent1 />
+        <Pagination page={page} isLast={true} />
+      </>
+    );
   }
   const resources = response.data.resources.pdfs;
   return (
     <>
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Resources</h1>
-        <div>
-          <SearchBar placeholder="Enter Resource title" />
-        </div>
-      </div>
-      <ResourceGrid resources={resources} />;
+      <ResourceGrid resources={resources} />
+      <Pagination page={page} />
     </>
   );
 }
