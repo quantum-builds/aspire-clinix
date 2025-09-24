@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
 import { TanStackProvider } from "@/providers/TanStackProvider";
+import ToastProvider from "@/providers/ToastProvider";
 
 const gillSans = localFont({
   src: "../app/fonts/GillSans.otf",
@@ -27,7 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`text-[#382F26] ${opus.variable}  ${gillSans.variable}`}>
-        <TanStackProvider>{children}</TanStackProvider>
+        <TanStackProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </TanStackProvider>
       </body>
     </html>
   );

@@ -1,11 +1,20 @@
 import Link from "next/link";
 import Image from "next/image";
 import { CartBagIcon } from "@/assets";
+import { getCartProducts } from "@/services/cartProducts/cartProductQuery";
+import { Response } from "@/types/common";
+import { TCartProduct } from "@/types/products";
 
-interface ProductGridHeaderProps {
-  count: number;
-}
-export default function ProductGridHeader({ count }: ProductGridHeaderProps) {
+export default async function ProductGridHeader() {
+  const response: Response<TCartProduct[]> = await getCartProducts(
+    "cmfplxicq0000l6qaof724vtk"
+  );
+
+  let count = 0;
+  if (response.data && response.data.length > 0) {
+    count = response.data.reduce((total, item) => total + item.quantity, 0);
+  }
+
   return (
     <div className="w-full flex justify-between items-center">
       <p className="font-medium text-2xl ">All Products</p>

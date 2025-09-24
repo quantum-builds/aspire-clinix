@@ -13,6 +13,14 @@ const nextConfig = {
       },
     ];
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "aspire-media.s3.eu-west-2.amazonaws.com",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

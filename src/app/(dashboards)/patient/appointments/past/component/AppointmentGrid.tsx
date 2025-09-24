@@ -1,9 +1,9 @@
 import { AppointmentDateType, Response } from "@/types/common";
 import PastAppointmentCard from "./PastAppointmentCard";
-import SearchBar from "@/app/(dashboards)/components/SearchBar";
-import NoContent from "@/app/(dashboards)/components/NoContent";
 import { getAppointments } from "@/services/appointments/appointmentQuery";
 import { TAppointment, TAppointmentResponse } from "@/types/appointment";
+import NoContent1 from "@/app/(dashboards)/components/NoContent1";
+import Pagination from "@/app/(dashboards)/components/Pagination";
 
 interface AppointmentGridWrapperProps {
   query: string;
@@ -32,7 +32,11 @@ export default async function AppointmentGridWrapper({
     response.data.appointments.length === 0
   ) {
     return (
-      <NoContent title="Resources" placeholder="Enter Appointment Number" />
+      // <NoContent title="Resources" placeholder="Enter Appointment Number" />
+      <>
+        <NoContent1 />
+        <Pagination page={page} isLast={true} />
+      </>
     );
   }
 
@@ -40,13 +44,8 @@ export default async function AppointmentGridWrapper({
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Appointments</h1>
-        <div>
-          <SearchBar placeholder="Enter Appointment Number" />
-        </div>
-      </div>
       <AppointmentGrid appointments={appointments} />
+      <Pagination page={page} />
     </>
   );
 }
