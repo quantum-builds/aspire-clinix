@@ -123,7 +123,7 @@ export default async function ReferralHistoryPage(props: {
   );
 
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
+    <div className=" w-full min-h-full flex flex-col gap-7">
       <div className="flex items-center justify-between">
         <h1 className="font-medium text-3xl">Loyalty Points</h1>
         <div className="flex items-center gap-3">

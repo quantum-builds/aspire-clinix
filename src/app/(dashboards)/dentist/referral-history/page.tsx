@@ -52,13 +52,13 @@ const DATA_TABLE_ENTRIES: TReferralHistoryDataTable[] = [
     disease: "Tooth Fracture",
     referralDate: "2025-09-13",
   },
-  {
-    referenceId: "6",
-    patientName: "Sophia Martinez",
-    status: "Assigned",
-    disease: "Root Canal",
-    referralDate: "2025-09-12",
-  },
+  // {
+  //   referenceId: "6",
+  //   patientName: "Sophia Martinez",
+  //   status: "Assigned",
+  //   disease: "Root Canal",
+  //   referralDate: "2025-09-12",
+  // },
 ];
 
 const REFERRAL_CARDS: TReferraLRequestCards = {
@@ -115,7 +115,7 @@ export default async function ReferralHistory(props: {
   }
 
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
+    <div className="w-full min-h-full flex flex-col gap-7">
       <div className="flex items-center justify-between">
         <h1 className="font-medium text-3xl">Referral History</h1>
         <div className="flex items-center gap-3">
