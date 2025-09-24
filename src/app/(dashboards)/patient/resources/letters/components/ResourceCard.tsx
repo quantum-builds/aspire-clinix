@@ -37,7 +37,7 @@ export default function ResourceCard({ resource }: ResourceCardProps) {
       ) : (
         <div className="bg-dashboardBackground rounded-2xl w-[420px] h-[240px]"></div>
       )}
-      <p className="text-center text-green font-medium text-lg">
+      <p className="text-center text-green font-medium text-lg truncate z-10 h-6">
         {resource.title}
       </p>
     </div>

@@ -25,13 +25,11 @@ export default function ResourceCard({ resource }: ResourceCardProps) {
           <p className="text-lg">{formatTime(resource.createdAt)}</p>
         </div>
       </div>
-
       {/* <Image
         src={ResourceImage}
         alt="resource image"
         className="rounded-2xl w-[420px] h-[240px]"
       /> */}
-
       {resource.file ? (
         <VideoModal video={resource.file} thumbnail={AspireDarkLogo} />
       ) : (

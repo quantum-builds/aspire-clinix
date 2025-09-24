@@ -54,7 +54,7 @@ export function AppointmentGrid({ appointments }: AppointmentGridProps) {
   return (
     <div className="flex flex-col gap-7 bg-dashboardBarBackground rounded-2xl p-6">
       <p className="font-medium text-2xl">Past Appointments</p>
-      <div className="grid grid-cols-2 gap-x-6 gap-y-10">
+      <div className="grid xl:grid-cols-2 grid-cols-1 gap-x-6 gap-y-10">
         {appointments.map((appointment, index) => (
           <PastAppointmentCard key={index} appointment={appointment} />
         ))}

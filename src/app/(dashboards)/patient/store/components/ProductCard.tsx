@@ -53,7 +53,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           alt="store image"
           width={300}
           height={300}
-          className="rounded-2xl object-cover"
+          className="rounded-2xl object-cover w-full"
         />
         <button
           className="absolute right-3 top-5 w-11 h-11 rounded-full bg-[#F3F5F7] flex justify-center items-center "

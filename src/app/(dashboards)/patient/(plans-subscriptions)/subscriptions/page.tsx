@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { TPlan } from "@/types/common";
 import Card from "../components/Card";
 
@@ -44,23 +47,39 @@ const PLANS: TPlan[] = [
 ];
 
 export default function SubscriptionPage() {
+  const [windowWidth, setWindowWidth] = useState<number | null>(null);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    handleResize(); // set initial width
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
+    <div className="w-full h-full flex flex-col gap-7">
       <h1 className="font-medium text-3xl">Plans & Subscriptions</h1>
-      <div className="flex flex-col gap-16 px-6 py-[60px] rounded-2xl bg-dashboardBarBackground ">
+
+      <div className="flex flex-col gap-16 px-6 py-[60px] rounded-2xl bg-dashboardBarBackground">
         <p className="text-center text-green font-medium text-[32px]">
           Clear and Fair Pricing for Everyone
         </p>
-        <div className="w-full grid grid-cols-3 gap-6 ">
-          {PLANS.map((plan, index) => (
-            <Card
-              plan={plan}
-              key={index}
-              backgroundColor={index % 2 === 1 ? "#f3f5f7" : "#ffffff"}
-              borderColor={index % 2 === 1 ? "#54bd95" : "#f3f5f7"}
-              classname={index % 2 === 1 ? "" : "mt-10"}
-            />
-          ))}
+
+        <div className="w-full flex flex-wrap justify-evenly gap-6">
+          {PLANS.map((plan, index) => {
+            const isMiddle =
+              index === 1 && windowWidth !== null && windowWidth >= 1872;
+
+            return (
+              <Card
+                key={plan.id}
+                plan={plan}
+                backgroundColor={isMiddle ? "#f3f5f7" : "#ffffff"}
+                borderColor={isMiddle ? "#54bd95" : "#f3f5f7"}
+                classname={isMiddle ? "" : "mt-10"}
+              />
+            );
+          })}
         </div>
       </div>
     </div>
