@@ -17,12 +17,15 @@ export default async function UpcomingAppointments(props: {
     <div className="min-h-full flex flex-col gap-7 mb-10">
       <div className="flex items-center justify-between">
         <h1 className="font-medium text-3xl">Appointments</h1>
-        <div>
+        <div className="flex justify-end gap-4 ">
           <SearchBar placeholder="Enter Appointment Number" />
         </div>
       </div>
       <div className="flex justify-end">
-        <Button text="Book an Appointment" href="/patient/appointments/new" />
+        <Button
+          text="Request an Appointment"
+          href="/patient/appointments/new"
+        />
       </div>
       <Suspense key={query} fallback={<AppointmentGridSkeleton />}>
         <AppointmentGridWrapper query={query} />

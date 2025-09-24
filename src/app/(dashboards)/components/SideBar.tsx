@@ -57,13 +57,26 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
   }, [pathname]);
 
   const handleSectionClick = (
-    section: { name: string; href?: string },
+    section: {
+      name: string;
+      href?: string;
+      pages?: { name: string; href?: string }[];
+    },
     havePages: boolean
   ) => {
     setActiveSection(section.name);
-    if (havePages) {
-      setOpenSection((prev) => (prev === section.name ? null : section.name));
+
+    if (havePages && section.pages && section.pages.length > 0) {
+      // auto-select first page
+      const firstPage = section.pages[0];
+      setActivePage(firstPage.name);
+      setOpenSection(section.name);
+
+      if (firstPage.href) {
+        router.push(firstPage.href);
+      }
     } else {
+      // no subpages, navigate directly
       if (section.href) router.push(section.href);
       setOpenSection(null);
       setActivePage(null);

@@ -161,6 +161,33 @@ export interface AppointmentDetails {
   appointmentNumber: string;
 }
 
+export type TAppointmentRequestStatus = "Approved" | "Pending" | "Cancel";
+export interface TAppointmentRequests {
+  id: string;
+  reason: string;
+  status: TAppointmentRequestStatus;
+  requestDate: Date;
+}
+
+export type TAppointmentRequestCards = {
+  totalRequests: TTotalRequests;
+  approvedRequest: TApprovedRequests;
+  pendingRequests: TPendingRequests;
+  cancelRequests: TCancelRequests;
+};
+
+export type TTotalRequests = {
+  count: number;
+  percentageChange: number;
+  icon: string;
+  title: string;
+  link?: string;
+};
+
+export type TApprovedRequests = TTotalRequests;
+export type TPendingRequests = TTotalRequests;
+export type TCancelRequests = TTotalRequests;
+
 export type TReferralHistoryStatus = "Assigned" | "Unassigned";
 
 export interface TReferralHistoryDataTable {
