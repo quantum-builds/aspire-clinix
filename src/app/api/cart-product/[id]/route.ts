@@ -6,15 +6,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    if (!token || token.role !== "patient") {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
-    }
+    // if (!token || token.role !== "patient") {
+    //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
+    //     status: 401,
+    //   });
+    // }
 
     const productId = req.nextUrl.pathname.split("/").pop();
+    const { searchParams } = new URL(req.url);
+    const patientId = searchParams.get("patientId") || "";
 
     if (!productId || !isValidCuid(productId)) {
       return NextResponse.json(
@@ -25,6 +27,7 @@ export async function DELETE(req: NextRequest) {
 
     const product = await prisma.cartProduct.findUnique({
       where: { id: productId },
+      include: { Cart: true },
     });
 
     if (!product) {
@@ -35,6 +38,17 @@ export async function DELETE(req: NextRequest) {
           null
         ),
         { status: 404 }
+      );
+    }
+
+    if (product.Cart.patientId !== patientId) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "You are not authorized to delete this cart product.",
+          null
+        ),
+        { status: 403 }
       );
     }
 

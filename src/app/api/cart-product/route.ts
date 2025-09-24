@@ -1,19 +1,20 @@
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
-import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    if (!token || token.role !== "patient" || !token.id) {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
-    }
+    // if (!token || token.role !== "patient" || !token.id) {
+    //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
+    //     status: 401,
+    //   });
+    // }
 
-    const patientId = token.id as string;
+    // const patientId =token.id as string;
+    const { searchParams } = new URL(req.url);
+    const patientId = searchParams.get("patientId") || "";
 
     const cart = await prisma.cart.findUnique({
       where: { patientId },
@@ -26,8 +27,10 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    const carttProducts = cart?.cartProducts;
+
     return NextResponse.json(
-      createResponse(true, "Cart items fetched successfully.", cart),
+      createResponse(true, "Cart items fetched successfully.", carttProducts),
       { status: 200 }
     );
   } catch (error) {
@@ -40,18 +43,19 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  if (!token || token.role !== "patient") {
-    return NextResponse.json(createResponse(false, "Unauthorized", null), {
-      status: 401,
-    });
-  }
+  // if (!token || token.role !== "patient") {
+  //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
+  //     status: 401,
+  //   });
+  // }
 
-  const patientId = token.id as string;
-  const { productId, quantity } = await req.json();
+  // const patientId = token.id as string;
 
-  if (!productId || quantity === undefined) {
+  const { productId, quantity, patientId } = await req.json();
+
+  if (!productId || !quantity || !patientId) {
     return NextResponse.json(
       createResponse(false, "Invalid product data", null),
       { status: 400 }
@@ -78,8 +82,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    let newQuantity;
     if (existingCartProduct) {
-      const newQuantity = existingCartProduct.quantity + quantity;
+      newQuantity = existingCartProduct.quantity + quantity;
 
       if (newQuantity <= 0) {
         //  Remove product
@@ -105,6 +110,7 @@ export async function POST(req: NextRequest) {
       }
     } else {
       if (quantity > 0) {
+        newQuantity = quantity;
         await prisma.cartProduct.create({
           data: {
             cartId: cart.id,
@@ -116,7 +122,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(
-      createResponse(true, "Cart updated successfully", null),
+      createResponse(true, "Cart updated successfully", newQuantity),
       { status: 200 }
     );
   } catch (error) {

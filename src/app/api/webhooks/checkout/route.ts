@@ -94,6 +94,9 @@ const handleItemPaymentSuccess = async (
               productId: product.productId,
               quantity: product.quantity,
               patientId: patientId,
+              product: {
+                connect: { id: product.id },
+              },
             })),
           },
         },
@@ -176,6 +179,9 @@ const handleItemPaymentFailure = async (eventObject: Stripe.PaymentIntent) => {
               productId: product.productId,
               quantity: product.quantity,
               patientId: patientId,
+              product: {
+                connect: { id: product.id }, // internal product id from your Product table
+              },
             })),
           },
         },

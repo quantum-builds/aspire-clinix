@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     const search = searchParams.get("search") || "";
 
     const skip = (page - 1) * limit;
-
+    console.log("skip is ", skip);
     const where: Prisma.ProductWhereInput = search
       ? { name: { contains: search, mode: "insensitive" as Prisma.QueryMode } }
       : {};
@@ -27,6 +27,7 @@ export async function GET(req: Request) {
       prisma.product.count({ where }),
     ]);
 
+    console.log("products are ", products);
     if (!products || !total) {
       return NextResponse.json(
         createResponse(false, "No products found.", null),
@@ -57,15 +58,27 @@ export async function GET(req: Request) {
 
 export async function POST(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    if (!token || token.role !== "admin") {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
-    }
+    // if (!token || token.role !== "admin") {
+    //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
+    //     status: 401,
+    //   });
+    // }
 
     const product = await req.json();
+    const name = product.name;
+    const existingProduct = await prisma.product.findUnique({
+      where: { name: name },
+    });
+    if (existingProduct) {
+      return NextResponse.json(
+        createResponse(false, "Product already exist", null),
+        {
+          status: 400,
+        }
+      );
+    }
 
     await prisma.product.create({
       data: product,

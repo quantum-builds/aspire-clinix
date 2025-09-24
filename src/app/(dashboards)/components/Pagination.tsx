@@ -6,9 +6,13 @@ import Image from "next/image";
 
 interface PaginationProps {
   page: number;
+  isLast?: boolean;
 }
 
-export default function Pagination({ page = 1 }: PaginationProps) {
+export default function Pagination({
+  page = 1,
+  isLast = false,
+}: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -29,7 +33,7 @@ export default function Pagination({ page = 1 }: PaginationProps) {
   };
 
   const handleNext = () => {
-    setPageInQuery(page + 1);
+    if (!isLast) setPageInQuery(page + 1);
   };
 
   return (
@@ -37,7 +41,9 @@ export default function Pagination({ page = 1 }: PaginationProps) {
       <div className="flex h-14 items-center justify-between rounded-full bg-white p-2 min-w-[311px]">
         <div
           onClick={handlePrevious}
-          className="w-10 h-10 rounded-full bg-[#F3F5F7] flex justify-center items-center cursor-pointer"
+          className={`w-10 h-10 rounded-full bg-[#F3F5F7] flex justify-center items-center ${
+            page === 1 ? "cursor-not-allowed" : "cursor-pointer"
+          }`}
         >
           <Image src={PreviousIcon} alt="Previous Icon" className="w-5 h-5" />
         </div>
@@ -50,7 +56,9 @@ export default function Pagination({ page = 1 }: PaginationProps) {
         </div>
         <div
           onClick={handleNext}
-          className="w-10 h-10 rounded-full bg-[#F3F5F7] flex justify-center items-center cursor-pointer"
+          className={`w-10 h-10 rounded-full bg-[#F3F5F7] flex justify-center items-center ${
+            isLast ? "cursor-not-allowed" : "cursor-pointer"
+          }`}
         >
           <Image src={NextIcon} alt="Next Icon" className="w-5 h-5" />
         </div>

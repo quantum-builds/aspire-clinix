@@ -1,6 +1,3 @@
-import { TDentistDeatils } from "@/types/common";
-import { CalenderInputIcon, TimeIcon } from "@/assets";
-import Image from "next/image";
 import { TDentist } from "@/types/dentist";
 
 interface DentistDetailsProps {

@@ -194,6 +194,22 @@ export const ENDPOINTS = {
         on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}`,
   },
+
+  products: {
+    getAll: (search?: string, page?: number, limit?: number) =>
+      `/api/products?search=${search}&page=${page}&limit=${limit}`,
+  },
+
+  cartProduct: {
+    getAll: (patientId?: string) => `/api/cart-product?patientId=${patientId}`,
+    addToCart: "/api/cart-product",
+    deletecartProduct: (patientId: string, productId: string) =>
+      `/api/cart-product/${productId}?patientId=${patientId}`,
+  },
+
+  stripe: {
+    buyProducts: "/api/stripe/product/checkout",
+  },
 };
 
 export const axiosInstance = axios.create({

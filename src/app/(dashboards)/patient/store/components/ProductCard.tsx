@@ -5,11 +5,12 @@ import {
   FavouriteRedIcon,
   StoreImage1,
 } from "@/assets";
-import { TProduct } from "@/types/common";
+import { TProduct } from "@/types/products";
 import Image from "next/image";
 import Stars from "../../components/Star";
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEditCartProduct } from "@/services/cartProducts/cartProductMutation";
 
 interface ProductCardProps {
   product: TProduct;
@@ -17,23 +18,42 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const [isFavourite, setIsFavourite] = useState<string | null>(null);
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
+
+  const { refresh } = useRouter();
+  const { mutate: addToCart, isPending: isAddToCartPending } =
+    useEditCartProduct();
 
   function handleAddToCart() {
-    const params = new URLSearchParams(searchParams);
-    const count = Number(params.get("count")) || 0;
-    params.set("count", String(count + 1));
-    replace(`${pathname}?${params.toString()}`);
+    addToCart(
+      {
+        productId: product.id,
+        quantity: 1,
+        patientId: "cmfplxicq0000l6qaof724vtk",
+      },
+      {
+        onSuccess: (data) => {
+          console.log("data is ", data);
+          // const params = new URLSearchParams(searchParams);
+          // params.set("count", String(data.data));
+          // replace(`${pathname}?${params.toString()}`);
+          refresh();
+        },
+        onError: (error) => {
+          console.log("error is ", error.message);
+        },
+      }
+    );
   }
+
   return (
     <div className="flex flex-col gap-3 rounded-2xl p-6 bg-dashboardBackground">
       <div className="relative">
         <Image
-          src={StoreImage1}
+          src={product.file ? product.file : StoreImage1}
           alt="store image"
-          className="w-full h-[300px] rounded-2xl object-cover"
+          width={300}
+          height={300}
+          className="rounded-2xl object-cover"
         />
         <button
           className="absolute right-3 top-5 w-11 h-11 rounded-full bg-[#F3F5F7] flex justify-center items-center "
@@ -70,12 +90,12 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
       <div className="w-full flex justify-between items-center">
         <p className="text-lightBlack w-[60%] line-clamp-1 text-sm">
-          {product.title}
+          {product.name}
         </p>
-        <Stars rating={product.stars} />
+        <Stars rating={product.ratings} />
       </div>
       <p className="text-xl font-medium capitalize line-clamp-1">
-        Aspire {product.title}
+        Aspire {product.name}
       </p>
       <div className="w-full flex justify-between items-center">
         <p className="text-2xl font-semibold  text-green">€ {product.price}</p>
