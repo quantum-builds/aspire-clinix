@@ -177,6 +177,9 @@ export const ENDPOINTS = {
       }&dentistId=${dentistId ?? ""}&on=${on ?? ""}&before=${
         before ?? ""
       }&after=${after ?? ""}&dateType=${dateType ?? ""}`,
+    post: "/api/appointments",
+    patch: (id: string, patientId: string) =>
+      `/api/appointments/[${id}]?patientId=${patientId}`,
   },
   reports: {
     get: (
@@ -204,11 +207,29 @@ export const ENDPOINTS = {
     getAll: (patientId?: string) => `/api/cart-product?patientId=${patientId}`,
     addToCart: "/api/cart-product",
     deletecartProduct: (patientId: string, productId: string) =>
-      `/api/cart-product/${productId}?patientId=${patientId}`,
+    `/api/cart-product/${productId}?patientId=${patientId}`,
   },
 
   stripe: {
     buyProducts: "/api/stripe/product/checkout",
+  },
+
+  appointemtRequest: {
+    get: (
+      page?: number,
+      search?: string,
+      patientId?: string,
+      on?: string,
+      before?: string,
+      after?: string
+    ) =>
+      `/api/appointment-requests?page=${page ?? 1}&search=${
+        search ?? ""
+      }&patientId=${patientId ?? ""}&on=${on ?? ""}&before=${
+        before ?? ""
+      }&after=${after ?? ""}`,
+
+    post: "/api/appointment-requests",
   },
 };
 

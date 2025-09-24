@@ -22,7 +22,6 @@ export default async function AppointmentGridWrapper({
     dateType: AppointmentDateType.UPCOMING,
   });
 
-  console.log("reposne is ", response);
   if (
     !response.status ||
     !response.data ||

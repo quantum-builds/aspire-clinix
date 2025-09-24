@@ -94,7 +94,7 @@ export default function CartGrid({ cartProducts }: CartGridProps) {
 
     deleteCartProduct(
       {
-        productId: product.product.id,
+        productId: product.id,
         patientId: "cmfplxicq0000l6qaof724vtk",
       },
       {

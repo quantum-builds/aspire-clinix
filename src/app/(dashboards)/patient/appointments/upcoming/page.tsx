@@ -24,7 +24,7 @@ export default async function UpcomingAppointments(props: {
       <div className="flex justify-end">
         <Button
           text="Request an Appointment"
-          href="/patient/appointments/new"
+          href="/patient/appointments/requests/new"
         />
       </div>
       <Suspense key={query} fallback={<AppointmentGridSkeleton />}>

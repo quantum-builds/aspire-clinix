@@ -15,13 +15,111 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
-import { TAppointmentRequests } from "@/types/common";
+import { Response, TAppointmentRequestCards } from "@/types/common";
 import Image from "next/image";
 import { CalenderInputIcon } from "@/assets";
-import { formatDate } from "@/utils/formatDateTime";
+import { formatDate, formatTime } from "@/utils/formatDateTime";
+import {
+  TAppointmentRequest,
+  TAppointmentRequestResponse,
+} from "@/types/appointment-request";
+import { getAppointmentRequests } from "@/services/appointmentRequests/appointmentRequestQuery";
+import NoContent1 from "@/app/(dashboards)/components/NoContent1";
+import Pagination from "@/app/(dashboards)/components/Pagination";
+import {
+  AttendedReferrals,
+  AverageReferrals,
+  CancelRequestIcon,
+  TotalReferrals,
+} from "@/assets";
+import StatsCard from "@/app/(dashboards)/dentist/referral-request/components/StatsCard";
+import { AppointmentRequestStatus } from "@prisma/client";
+
+const REQUESTS_CARDS: TAppointmentRequestCards = {
+  totalRequests: {
+    icon: TotalReferrals,
+    title: "Total Requests",
+    count: 120,
+    percentageChange: 100,
+    link: "View all requests",
+  },
+  approvedRequest: {
+    icon: AverageReferrals,
+    title: "Approved Requests",
+    count: 90,
+    percentageChange: 75,
+    link: "View approved",
+  },
+  pendingRequests: {
+    icon: AttendedReferrals,
+    title: "Pending Requests",
+    count: 30,
+    link: "View pending",
+    percentageChange: -25,
+  },
+  cancelRequests: {
+    icon: CancelRequestIcon,
+    title: "Cancel Requests",
+    count: 15,
+    percentageChange: 12.5,
+    link: "View cancel",
+  },
+};
+
+interface RequestDataTableWrapperProps {
+  query: string;
+  page: number;
+}
 
 interface RequestsDataTable {
-  entries: TAppointmentRequests[];
+  entries: TAppointmentRequest[];
+}
+
+export default async function RequestDataTableWrapper({
+  query,
+  page,
+}: RequestDataTableWrapperProps) {
+  const response: Response<TAppointmentRequestResponse> =
+    await getAppointmentRequests({
+      search: query,
+      patientId: "cmfplxicq0000l6qaof724vtk",
+      page: page,
+    });
+
+  if (
+    !response.status ||
+    !response.data ||
+    !response.data.appointmentRequests ||
+    response.data.appointmentRequests.length === 0
+  ) {
+    return (
+      // <NoContent title="Resources" placeholder="Enter Appointment Number" />
+      <>
+        <NoContent1 />
+        <Pagination page={page} isLast={true} />
+      </>
+    );
+  }
+  const appointmentRequests = response.data.appointmentRequests;
+  console.log("appointment requests are ", appointmentRequests);
+  return (
+    <>
+      <div className="grid grid-cols-4 gap-6">
+        {Object.entries(REQUESTS_CARDS).map(([key, card]) => (
+          <StatsCard
+            key={key}
+            icon={card.icon}
+            title={card.title}
+            count={card.count}
+            link={card.link}
+            percentageChange={card.percentageChange}
+          />
+        ))}
+      </div>
+      <RequestsDataTable entries={appointmentRequests} />
+      <Pagination page={page} />
+    </>
+  );
 }
 
 export function RequestsDataTable({ entries }: RequestsDataTable) {
@@ -34,6 +132,9 @@ export function RequestsDataTable({ entries }: RequestsDataTable) {
           </TableHead>
           <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
             Reason
+          </TableHead>{" "}
+          <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
+            Date Created
           </TableHead>
           <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
             Status
@@ -59,13 +160,22 @@ export function RequestsDataTable({ entries }: RequestsDataTable) {
               {entry.id}
             </TableCell>
             <TableCell className="px-6 py-4">{entry.reason}</TableCell>
+            <TableCell className="px-6 py-4 flex gap-1 items-center">
+              <Image
+                src={CalenderInputIcon}
+                alt="calender input icon"
+                className="w-5 h-5"
+              />
+              <span>{formatDate(entry.createdAt)}</span>
+              <span>{formatTime(entry.createdAt)}</span>
+            </TableCell>
             <TableCell className="px-6 py-4">
               <div className="flex gap-2 items-center">
                 <div
                   className={`size-3 rounded-[4px] ${
-                    entry.status === "Approved"
+                    entry.status === AppointmentRequestStatus.APPROVED
                       ? "bg-green"
-                      : entry.status === "Pending"
+                      : entry.status === AppointmentRequestStatus.PENDING
                       ? "bg-[#fcd833]"
                       : "bg-[#FF0000]"
                   }`}
@@ -79,8 +189,9 @@ export function RequestsDataTable({ entries }: RequestsDataTable) {
                 alt="calender input icon"
                 className="w-5 h-5"
               />
-              {formatDate(entry.requestDate)}
+              <span>{formatDate(entry.requestedDate)}</span>
             </TableCell>
+
             <TableCell className="px-6 py-4 rounded-r-full">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

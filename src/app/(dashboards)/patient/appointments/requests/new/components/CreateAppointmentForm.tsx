@@ -16,6 +16,8 @@ import {
 import Image from "next/image";
 import { CalenderInputIcon, UploadPDFIcon } from "@/assets";
 import { cn } from "@/lib/utils";
+import { useCreateAppointmentRequests } from "@/services/appointmentRequests/appointmentRequestMutation";
+import { useUploadFile } from "@/services/s3/s3Mutatin";
 
 const appointmentSchema = z.object({
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
@@ -40,11 +42,14 @@ type FormData = z.infer<typeof appointmentSchema>;
 export default function AppointmentForm() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { mutate: createAppointmentRequest } = useCreateAppointmentRequests();
+  const { mutateAsync: uploadFile } = useUploadFile();
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<FormData>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
@@ -55,8 +60,38 @@ export default function AppointmentForm() {
     },
   });
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     console.log("Appointment Form Submitted:", data);
+
+    let fileUrl = "uploads/aspire-clinic/images/placeholder.svg";
+    if (data.medicalHistory) {
+      const imageUploaded = await uploadFile({
+        selectedFile: data.medicalHistory,
+      });
+
+      fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+    }
+
+    createAppointmentRequest(
+      {
+        appointmentRequest: {
+          patientId: "cmfplxicq0000l6qaof724vtk",
+          requestedDate: data.appointmentDate,
+          reason: data.appointmentReason,
+          note: data.note,
+          fileUrl: fileUrl,
+        },
+      },
+      {
+        onSuccess: (data: string) => {
+          console.log("data from request is ", data);
+          reset();
+        },
+        onError: (error) => {
+          console.log("error from request is ", error);
+        },
+      }
+    );
   };
 
   const handleUploadClick = () => fileInputRef.current?.click();

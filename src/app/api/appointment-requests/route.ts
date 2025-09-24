@@ -1,7 +1,6 @@
 import prisma from "@/lib/db";
-import { AppointmentDateType } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
-import { AppointmentStatus, Prisma } from "@prisma/client";
+import { AppointmentRequestStatus, Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -11,28 +10,21 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1", 10);
     const search = searchParams.get("search") || "";
     const patientId = searchParams.get("patientId") || "";
-    const dentistId = searchParams.get("dentistId") || "";
     const on = searchParams.get("on") || "";
     const before = searchParams.get("before") || "";
     const after = searchParams.get("after") || "";
-    const dateType = searchParams.get("dateType") as AppointmentDateType | null;
-    const status =
-      (searchParams.get("status") as AppointmentStatus | null) ??
-      AppointmentStatus.PENDING;
 
-    const limit = 10;
+    const limit = 5;
     const skip = (page - 1) * limit;
 
-    let baseWhere: Prisma.AppointmentWhereInput = {
+    let baseWhere: Prisma.AppointmentRequestsWhereInput = {
       ...(search && { id: { contains: search, mode: "insensitive" } }),
       ...(patientId && { patientId }),
-      ...(dentistId && { dentistId }),
-      state: status, // always set, defaults to PENDING
     };
 
     // Date filters (on, before, after) have same precedence
     if (on || before || after) {
-      baseWhere.date = {
+      baseWhere.createdAt = {
         ...(on && {
           gte: new Date(on),
           lt: new Date(new Date(on).setDate(new Date(on).getDate() + 1)),
@@ -40,36 +32,28 @@ export async function GET(req: NextRequest) {
         ...(before && { lte: new Date(before) }),
         ...(after && { gte: new Date(after) }),
       };
-    } else if (dateType === AppointmentDateType.PAST) {
-      baseWhere.date = { lt: new Date() };
-    } else if (dateType === AppointmentDateType.UPCOMING) {
-      baseWhere.date = { gte: new Date() };
     }
 
-    const [appointments, totalCount] = await Promise.all([
-      prisma.appointment.findMany({
+    const [appointmentRequests, totalCount] = await Promise.all([
+      prisma.appointmentRequests.findMany({
         where: baseWhere,
         skip,
         take: limit,
-        orderBy: { date: "desc" },
-        include: {
-          patient: true,
-          dentist: true,
-        },
+        orderBy: { createdAt: "desc" },
       }),
-      prisma.appointment.count({ where: baseWhere }),
+      prisma.appointmentRequests.count({ where: baseWhere }),
     ]);
 
-    if (!appointments.length) {
+    if (!appointmentRequests.length) {
       return NextResponse.json(
-        createResponse(false, "No appointments found.", null),
+        createResponse(false, "No appointment request found.", null),
         { status: 404 }
       );
     }
 
     return NextResponse.json(
-      createResponse(true, "Appointments fetched successfully.", {
-        appointments,
+      createResponse(true, "Appointments request fetched successfully.", {
+        appointmentRequests: appointmentRequests,
         pagination: {
           page,
           total: totalCount,
@@ -79,7 +63,7 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error fetching appointments", error);
+    console.error("Error fetching appointment requests", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,
@@ -89,17 +73,21 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const appointment = await req.json();
-    const newAppointment = await prisma.appointment.create({
-      data: { ...appointment },
+    const appointmentRequest = await req.json();
+    const newAppointment = await prisma.appointmentRequests.create({
+      data: { ...appointmentRequest, status: AppointmentRequestStatus.PENDING },
     });
 
     return NextResponse.json(
-      createResponse(true, "Appointment created successfully", newAppointment),
+      createResponse(
+        true,
+        "Appointment Request created successfully",
+        newAppointment
+      ),
       { status: 201 }
     );
   } catch (error) {
-    console.log("Error in creating appointment ", error);
+    console.log("Error in creating appointment request", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

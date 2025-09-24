@@ -1,8 +1,13 @@
+"use client";
+
 import Button from "@/app/(dashboards)/components/Button";
 import { CalenderInputIcon, TimeIcon } from "@/assets";
 import { TAppointment } from "@/types/appointment";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
+import { AppointmentStatus } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import { usePatchAppointment } from "@/services/appointments/appointmentMutation";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -11,6 +16,25 @@ interface UpcomingAppointmentCardProps {
 export default function UpcomingAppointmentCard({
   appointment,
 }: UpcomingAppointmentCardProps) {
+  const { mutate: cancelAppointment } = usePatchAppointment();
+  const { refresh } = useRouter();
+
+  const handleCancelAppointment = () => {
+    cancelAppointment(
+      {
+        appointment: { state: AppointmentStatus.CANCELLED },
+        id: appointment.id,
+        patientId: appointment.patientId, // will be getting in backend when token is implemented
+      },
+      {
+        onSuccess: (data) => {
+          console.log("updated appointment ", data);
+          refresh();
+        },
+      }
+    );
+  };
+
   return (
     <div className="flex flex-col gap-8 p-6 rounded-2xl bg-dashboardBarBackground">
       <div className="space-y-2">
@@ -66,7 +90,10 @@ export default function UpcomingAppointmentCard({
             className="flex justify-center items-center"
             href={`/patient/appointments/${appointment.id}/reports`}
           />
-          <button className="h-[60px] flex items-center justify-center px-6 py-3 font-medium text-lg rounded-full bg-gray">
+          <button
+            className="h-[60px] flex items-center justify-center px-6 py-3 font-medium text-lg rounded-full bg-gray"
+            onClick={handleCancelAppointment}
+          >
             Cancel
             <span className="max-1xl:block hidden">&nbsp; Appointment</span>
           </button>
