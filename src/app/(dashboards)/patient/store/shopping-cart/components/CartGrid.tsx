@@ -51,8 +51,8 @@ export default function CartGrid({ cartProducts }: CartGridProps) {
   return (
     <div className="flex flex-col gap-10 bg-dashboardBarBackground rounded-2xl p-6">
       <p className="font-medium text-2xl">Shopping Cart</p>
-      <div className="grid grid-cols-4 gap-6">
-        <div className="col-span-3 flex flex-col gap-6">
+      <div className="flex flex-col 1xl:flex-row 1xl:gap-6 max-1xl:space-y-6">
+        <div className="flex-1 flex flex-col gap-6">
           {cart.length > 0 ? (
             cart.map((product, index) => (
               <CartCard
@@ -68,10 +68,10 @@ export default function CartGrid({ cartProducts }: CartGridProps) {
           )}
         </div>
 
-        <div className="flex flex-col bg-dashboardBackground justify-between rounded-2xl p-6">
+        <div className="w-full flex flex-col bg-dashboardBackground justify-between rounded-2xl p-6 1xl:w-[336px]">
           <div className="flex flex-col gap-10">
             <p className="text-[28px] font-medium">Cart Totals</p>
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col 2xl:gap-5 gap-2">
               {cart.map((product) => (
                 <div
                   key={product.id}
@@ -83,7 +83,7 @@ export default function CartGrid({ cartProducts }: CartGridProps) {
               ))}
             </div>
           </div>
-          <div>
+          <div className="max-2xl:mt-10">
             <div className="flex flex-col gap-5">
               <div className="flex justify-between items-center">
                 <span className="font-medium text-2xl">Total</span>

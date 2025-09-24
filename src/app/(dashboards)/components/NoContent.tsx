@@ -23,7 +23,7 @@ export default function NoContent({
           <BackButton />
         </div>
       </div>
-      {showAppointmentBtn && (
+      {!showAppointmentBtn && (
         <div className="flex justify-end">
           <Button text="Book an Appointment" href="/patient/appointments/new" />
         </div>

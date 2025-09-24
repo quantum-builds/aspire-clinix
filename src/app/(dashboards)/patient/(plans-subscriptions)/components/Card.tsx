@@ -18,7 +18,7 @@ export default function Card({
   return (
     <div
       className={cn(
-        "flex flex-col gap-10 px-6 py-10 border rounded-2xl shadow-md h-fit",
+        "flex flex-col gap-10 px-6 py-10 border rounded-2xl shadow-xl h-fit w-[472px]",
         classname
       )}
       style={{

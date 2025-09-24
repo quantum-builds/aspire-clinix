@@ -87,6 +87,7 @@ const config: Config = {
       screens: {
         "2xl": "1600px",
         "2xl50": "1700px",
+        "1xl": "1400px",
       },
     },
   },

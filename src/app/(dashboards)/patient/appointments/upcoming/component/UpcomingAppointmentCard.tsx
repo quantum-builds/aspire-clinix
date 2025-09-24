@@ -13,25 +13,29 @@ export default function UpcomingAppointmentCard({
 }: UpcomingAppointmentCardProps) {
   return (
     <div className="flex flex-col gap-8 p-6 rounded-2xl bg-dashboardBarBackground">
-      <div className="flex justify-between">
-        <p className="font-medium text-2xl">Next Appointment</p>
-        <div className="flex flex-col gap-3  items-end">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <Image
-                src={CalenderInputIcon}
-                alt="Calendar Icon"
-                className="w-4 h-4"
-              />
-              <p className="text-xl">{formatDate(appointment.date)}</p>
-            </div>
-            <div className="flex items-center gap-1">
-              <Image src={TimeIcon} alt="TIme Icon" className="w-4 h-4" />
-              <p className="text-xl">{formatTime(appointment.date)}</p>
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <p className="font-medium text-2xl ">Next Appointment</p>
+          <div className="flex flex-col gap-3  items-end">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <Image
+                  src={CalenderInputIcon}
+                  alt="Calendar Icon"
+                  className="w-4 h-4"
+                />
+                <p className="text-xl">{formatDate(appointment.date)}</p>
+              </div>
+              <div className="flex items-center gap-1">
+                <Image src={TimeIcon} alt="TIme Icon" className="w-4 h-4" />
+                <p className="text-xl">{formatTime(appointment.date)}</p>
+              </div>
             </div>
           </div>
-          <p className="text-xl italic">Appointment Number: {appointment.id}</p>
         </div>
+        <p className="text-xl italic text-end">
+          Appointment # {appointment.id}
+        </p>
       </div>
       <div className="flex flex-col gap-5">
         <p className="text-2xl font-medium text-green">Dentist Details</p>
@@ -55,18 +59,17 @@ export default function UpcomingAppointmentCard({
           </p>
         </div>
       </div>
-      <div className="flex justify-between">
-        <div className="flex items-center gap-2">
-          <Button text="See Reports" href="/patient/appointments/reports" />
-          <button className="h-[60px] px-6 py-3 font-medium text-lg rounded-full bg-gray">
+      <div className="flex justify-between w-full">
+        <div className="flex items-center gap-2 w-full">
+          <Button
+            text="See Reports"
+            className="flex justify-center items-center"
+            href="/patient/appointments/reports"
+          />
+          <button className="h-[60px] flex items-center justify-center px-6 py-3 font-medium text-lg rounded-full bg-gray">
             Cancel
+            <span className="max-1xl:block hidden">&nbsp; Appointment</span>
           </button>
-        </div>
-        <div className="flex flex-col gap-1">
-          <p className="text-green text-right">
-            Appointment with Dr. Will Smith
-          </p>
-          <p className="text-green text-right">Prosthodontist</p>
         </div>
       </div>
     </div>
