@@ -8,6 +8,7 @@ export default async function ShoppingCartPage() {
   const response: Response<TCartProduct[]> = await getCartProducts(
     "cmfplxicq0000l6qaof724vtk"
   );
+  console.log(response.data);
   return (
     <div className=" w-full h-full flex flex-col gap-7">
       <div className="flex items-center justify-between">

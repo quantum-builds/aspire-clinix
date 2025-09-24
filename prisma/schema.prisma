@@ -218,6 +218,7 @@ model Patient {
   cart         Cart?        @relation
   appointments Appointment[]
   reports      Report[]
+  appointmentRequest  AppointmentRequests[]
 }
 
 model Dentist{
@@ -251,13 +252,27 @@ model Admin{
   updatedAt   DateTime @updatedAt
 }
 
+model AppointmentRequests{
+  id String @id @default(cuid())
+  patientId   String 
+  requestedDate DateTime
+  reason  String
+  status  AppointmentRequestStatus @default(PENDING)
+  note  String?
+  fileUrl  String?
+
+  createdAt  DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  patient Patient  @relation(fields: [patientId],references: [id])
+}
+
 model Appointment{
   id String @id @default(cuid())
   date  DateTime
   patientId   String 
   dentistId   String 
   reason  String
-  state   AppointmentStatus
+  state   AppointmentStatus @default(PENDING)
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -444,4 +459,10 @@ enum AppointmentStatus {
   COMPLETED
   CANCELLED
   DID_NOT_ATTEND
+}
+
+enum AppointmentRequestStatus {
+  APPROVED
+  PENDING
+  CANCEL
 }

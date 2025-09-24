@@ -1,4 +1,4 @@
-import { PatientTreatmentStatus } from "@prisma/client";
+import { AppointmentStatus } from "@prisma/client";
 import { TPatient } from "./patient";
 import { TDentist } from "./dentist";
 
@@ -6,7 +6,7 @@ export type TAppointmentCreate = {
   patientId: string;
   dentistId: string;
   reason: string;
-  state: PatientTreatmentStatus;
+  state: AppointmentStatus;
   date: Date;
 };
 

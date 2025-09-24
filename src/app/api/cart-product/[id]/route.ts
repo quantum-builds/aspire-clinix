@@ -25,6 +25,7 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
+    console.log("product id is ", productId);
     const product = await prisma.cartProduct.findUnique({
       where: { id: productId },
       include: { Cart: true },
