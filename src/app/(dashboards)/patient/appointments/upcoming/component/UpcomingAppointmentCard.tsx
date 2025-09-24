@@ -57,7 +57,10 @@ export default function UpcomingAppointmentCard({
       </div>
       <div className="flex justify-between">
         <div className="flex items-center gap-2">
-          <Button text="See Reports" href="/patient/appointments/reports" />
+          <Button
+            text="See Reports"
+            href={`/patient/appointments/${appointment.id}/reports`}
+          />
           <button className="h-[60px] px-6 py-3 font-medium text-lg rounded-full bg-gray">
             Cancel
           </button>
