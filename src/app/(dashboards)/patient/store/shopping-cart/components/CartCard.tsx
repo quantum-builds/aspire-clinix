@@ -36,12 +36,13 @@ export default function CartCard({
       />
 
       <div className="flex-1 flex gap-6 max-2xl:flex-col">
-        <div className="flex-1"></div>
-        <div className="flex flex-col  2xl:gap-4 items-start">
-          <p className="text-xl text-lightBlack">Product</p>
-          <p className="text-2xl font-medium capitalize line-clamp-1">
-            {product.name}
-          </p>
+        <div className="flex-1">
+          <div className="flex flex-col  2xl:gap-4 items-start">
+            <p className="text-xl text-lightBlack">Product</p>
+            <p className="text-2xl font-medium capitalize line-clamp-1">
+              {product.name}
+            </p>
+          </div>
         </div>
         {/* 
       <div className="flex flex-col gap-4 items-start">
@@ -104,7 +105,6 @@ export default function CartCard({
             </p>
           </div>
         </div>
-        //
       </div>
     </div>
   );
