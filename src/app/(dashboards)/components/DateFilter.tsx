@@ -66,12 +66,12 @@ export default function DateFilter() {
   return (
     <Popover>
       <PopoverTrigger>
-        <button className="bg-white h-15 w-36 p-2 pl-5 flex justify-between items-center gap-4 rounded-full cursor-pointer">
+        <div className="bg-white h-15 w-36 p-2 pl-5 flex justify-between items-center gap-4 rounded-full cursor-pointer">
           <p>Filters</p>
           <div className="w-11 h-11 rounded-full bg-[#F3F5F7] flex justify-center items-center">
             <Image src={CalenderIcon} alt="Calendar Icon" className="w-5 h-5" />
           </div>
-        </button>
+        </div>
       </PopoverTrigger>
 
       <PopoverContent side="bottom" sideOffset={10} align="end">

@@ -23,6 +23,11 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
         href: "/patient/appointments/upcoming",
       },
       { name: "Past", icon: InActiveIcon, href: "/patient/appointments/past" },
+      {
+        name: "Requests",
+        icon: InActiveIcon,
+        href: "/patient/appointments/requests",
+      },
     ],
   },
   {
