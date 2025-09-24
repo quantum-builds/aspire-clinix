@@ -56,13 +56,18 @@ export default function UpcomingAppointmentCard({
         </div>
       </div>
       <div className="flex justify-between">
-        <Button
-          text="See Reports"
-          href={`/patient/appointments/${appointment.id}/reports`}
-        />
-        <p className="text-green text-right">
-          Appointment with {appointment.dentist.fullName}
-        </p>
+        <div className="flex items-center gap-2">
+          <Button text="See Reports" href="/patient/appointments/reports" />
+          <button className="h-[60px] px-6 py-3 font-medium text-lg rounded-full bg-gray">
+            Cancel
+          </button>
+        </div>
+        <div className="flex flex-col gap-1">
+          <p className="text-green text-right">
+            Appointment with Dr. Will Smith
+          </p>
+          <p className="text-green text-right">Prosthodontist</p>
+        </div>
       </div>
     </div>
   );

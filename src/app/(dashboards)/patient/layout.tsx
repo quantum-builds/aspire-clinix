@@ -69,7 +69,7 @@ export default function PatientLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="font-inter text-dashboardTextBlack bg-dashboardBackground h-screen grid grid-cols-[344px_1fr] grid-rows-[90px_1fr] overflow-hidden">
+    <div className="font-inter text-dashboardTextBlack bg-dashboardBackground h-screen grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden">
       <div className="row-span-2 border-r">
         <Sidebar sideBarContnent={SIDEBAR_CONTENT} />
       </div>
@@ -79,7 +79,9 @@ export default function PatientLayout({
       </div>
 
       {/* make only main scrollable */}
-      <main className="p-6 col-start-2 overflow-y-auto">{children}</main>
+      <main className="xl:p-5 p-4 col-start-2 overflow-y-auto mb-2">
+        {children}
+      </main>
     </div>
   );
 }

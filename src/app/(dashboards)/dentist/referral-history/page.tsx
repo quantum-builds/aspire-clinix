@@ -132,7 +132,7 @@ export default async function ReferralHistory(props: {
               icon={card.icon}
               title={card.title}
               count={card.count}
-              link={card?.link}
+              link={card.link}
               percentageChange={card.percentageChange}
             />
           ))}

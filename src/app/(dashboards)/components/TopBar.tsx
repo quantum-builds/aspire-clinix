@@ -25,12 +25,12 @@ import Link from "next/link";
 
 interface TopBarProps {
   role: string;
-  profileLink:string
+  profileLink: string;
 }
 
 export default function TopBar({ role, profileLink }: TopBarProps) {
   return (
-    <div className="fixed top-0 left-[344px] w-[calc(100%-344px)] h-[90px] bg-dashboardBarBackground border-b border-gray-200 flex items-center justify-end gap-8 px-6">
+    <div className="fixed top-0 left-[320px] w-[calc(100%-320px)] h-[90px] bg-dashboardBarBackground border-b border-gray-200 flex items-center justify-end gap-8 px-6">
       <Popover>
         <PopoverTrigger>
           <Image

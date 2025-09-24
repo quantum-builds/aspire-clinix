@@ -8,7 +8,7 @@ import {
 import { TProduct } from "@/types/common";
 import Image from "next/image";
 import Stars from "../../components/Star";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface ProductCardProps {
@@ -33,7 +33,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <Image
           src={StoreImage1}
           alt="store image"
-          className="w-[300px] h-[300px] rounded-2xl"
+          className="w-full h-[300px] rounded-2xl object-cover"
         />
         <button
           className="absolute right-3 top-5 w-11 h-11 rounded-full bg-[#F3F5F7] flex justify-center items-center "
@@ -49,6 +49,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <button
           className="absolute right-3 top-20 w-11 h-11 rounded-full bg-[#F3F5F7] flex justify-center items-center"
           onClick={() => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             isFavourite ? setIsFavourite(null) : setIsFavourite(product.id);
           }}
         >
@@ -68,14 +69,16 @@ export default function ProductCard({ product }: ProductCardProps) {
         </button>
       </div>
       <div className="w-full flex justify-between items-center">
-        <p className="text-lightBlack">{product.title}</p>
+        <p className="text-lightBlack w-[60%] line-clamp-1 text-sm">
+          {product.title}
+        </p>
         <Stars rating={product.stars} />
       </div>
-      <p className="text-xl font-medium capitalize">Aspire {product.title}</p>
+      <p className="text-xl font-medium capitalize line-clamp-1">
+        Aspire {product.title}
+      </p>
       <div className="w-full flex justify-between items-center">
-        <p className="text-[28px] font-semibold text-green">
-          € {product.price}
-        </p>
+        <p className="text-2xl font-semibold  text-green">€ {product.price}</p>
         <p className="text-lightBlack">Only {product.stock} left in-stock</p>
       </div>
     </div>

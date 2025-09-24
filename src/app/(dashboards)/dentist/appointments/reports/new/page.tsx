@@ -2,24 +2,13 @@ import BackButton from "@/app/(dashboards)/components/BackButton";
 import { Suspense } from "react";
 import ReportGrid from "../components/ReportGrid";
 import NoContent from "@/app/(dashboards)/components/NoContent";
-import { TPatientDetails } from "@/types/common";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import DateFilter from "@/app/(dashboards)/components/DateFilter";
+import { TPatientDetails } from "@/types/common";
 import { ResoucrceType } from "@prisma/client";
 import { TReport } from "@/types/reports";
 
 const REPORTS: TReport[] = [
-  {
-    id: "1",
-    dentistId: "d1",
-    patientId: "p1",
-    appointmentId: "a1",
-    title: "Dental Hygiene Report",
-    fileUrl: "https://aws.example.com/reports/hygiene.pdf",
-    fileType: "PDF" as ResoucrceType,
-    createdAt: new Date("2025-01-10"),
-    updatedAt: new Date("2025-01-11"),
-  },
   {
     id: "2",
     dentistId: "d2",

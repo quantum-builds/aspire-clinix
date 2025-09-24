@@ -117,9 +117,9 @@ export default async function ConsentPage(props: {
   }
 
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
+    <div className=" w-full h-full flex flex-col xl:gap-7 gap-5">
       <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Aspire Store</h1>
+        <h1 className="font-medium text-3xl ">Aspire Store</h1>
         <div>
           <SearchBar placeholder="Enter Product Name" />
         </div>

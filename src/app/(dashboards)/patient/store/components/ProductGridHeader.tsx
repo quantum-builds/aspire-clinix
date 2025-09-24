@@ -8,7 +8,7 @@ interface ProductGridHeaderProps {
 export default function ProductGridHeader({ count }: ProductGridHeaderProps) {
   return (
     <div className="w-full flex justify-between items-center">
-      <p className="font-medium text-2xl">All Products</p>
+      <p className="font-medium text-2xl ">All Products</p>
       <div className="flex items-center gap-4">
         <p className="text-lg ">View Cart</p>
         <div className="flex gap-3 items-center bg-dashboardBackground rounded-full p-2 pl-5 ">
