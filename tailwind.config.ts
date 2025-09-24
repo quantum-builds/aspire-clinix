@@ -84,6 +84,10 @@ const config: Config = {
       letterSpacing: {
         tightest: "-0.04em",
       },
+      screens: {
+        "2xl": "1600px",
+        "2xl50": "1700px",
+      },
     },
   },
   plugins: [scrollbar, scrollbarHide, require("tailwindcss-animate")],

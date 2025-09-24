@@ -10,7 +10,7 @@ interface ResourceCardProps {
 
 export default function ResourceCard({ resource }: ResourceCardProps) {
   return (
-    <div className="flex flex-col gap-5 p-6 rounded-2xl bg-dashboardBackground">
+    <div className="flex flex-col gap-5 p-6 rounded-2xl bg-dashboardBackground max-w-[472px] w-full">
       <div className="flex gap-3 items-center justify-end">
         <div className="flex gap-1 items-center">
           <Image
@@ -37,7 +37,7 @@ export default function ResourceCard({ resource }: ResourceCardProps) {
       ) : (
         <div className="bg-dashboardBackground rounded-2xl w-[420px] h-[240px]"></div>
       )}
-      <p className="text-center text-green font-medium text-lg">
+      <p className="text-center text-green font-medium text-lg truncate z-10 h-10">
         {resource.title}
       </p>
     </div>

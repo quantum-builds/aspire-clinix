@@ -4,7 +4,7 @@ import DateFilter from "@/app/(dashboards)/components/DateFilter";
 import { AppointmentRequest } from "@/types/common";
 import AppointmentRequestCard from "./components/AppointmentRequestCard";
 
-export const APPOINTMENTS: AppointmentRequest[] = [
+const APPOINTMENTS: AppointmentRequest[] = [
   {
     id: "1",
     date: "July 07, 2025",
