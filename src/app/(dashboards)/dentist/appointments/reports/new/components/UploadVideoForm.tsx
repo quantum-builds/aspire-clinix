@@ -84,7 +84,7 @@ export default function UploadVideoForm() {
             />
             <div
               onClick={handleUploadClick}
-              className="w-[402px] h-[240px] flex flex-col items-center justify-center gap-2 rounded-2xl bg-white cursor-pointer"
+              className="max-w-[402px] h-[240px] w-full flex flex-col items-center justify-center gap-2 rounded-2xl bg-white cursor-pointer"
             >
               <Image src={UploadVideoIcon} alt="upload-video" />
               {field.value && (

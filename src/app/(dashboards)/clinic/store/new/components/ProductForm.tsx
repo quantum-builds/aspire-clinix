@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const productFormSchema = z.object({
   productTitle: z.string().min(1, "Product title is required"),
@@ -45,21 +45,26 @@ const categories = ["Electronics", "Clothing", "Books", "Furniture"];
 
 export default function AddProductForm() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isDirty, setIsDirty] = useState(false);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const defaultValues = {
+    productTitle: "",
+    serialNumber: "",
+    category: "",
+    price: "",
+    productImage: undefined,
+  };
 
   const {
     control,
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
   } = useForm<FormData>({
     resolver: zodResolver(productFormSchema),
-    defaultValues: {
-      productTitle: "",
-      serialNumber: "",
-      category: "",
-      price: "",
-      productImage: undefined,
-    },
+    defaultValues: defaultValues,
   });
 
   const onSubmit = (data: FormData) => {
@@ -78,6 +83,15 @@ export default function AddProductForm() {
     onChange(file);
     setValue("productImage", file!);
   };
+
+  const values = watch();
+  useEffect(() => {
+    const hasChanges = Object.keys(values).some(
+      (key) =>
+        values[key as keyof FormData] !== defaultValues[key as keyof FormData]
+    );
+    setIsDirty(hasChanges);
+  }, [values, defaultValues]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -188,7 +202,7 @@ export default function AddProductForm() {
         </div>
 
         {/* Upload Image */}
-        <div className="space-y-2 grid grid-cols-3">
+        <div className="space-y-2">
           <div className="flex flex-col">
             <Label className="text-2xl font-medium mb-10">Upload Image</Label>
 
@@ -196,7 +210,7 @@ export default function AddProductForm() {
               name="productImage"
               control={control}
               render={({ field }) => (
-                <div className="flex flex-col gap-5 p-6 rounded-2xl bg-dashboardBackground">
+                <div className="flex flex-col gap-5 p-6 rounded-2xl bg-dashboardBackground w-full max-w-[472px]">
                   {/* Date + Time Row */}
                   <div className="flex gap-3 items-center justify-end">
                     <div className="flex gap-1 items-center">
@@ -214,7 +228,7 @@ export default function AddProductForm() {
                   {/* Upload Box */}
                   <div
                     onClick={handleUploadClick}
-                    className="rounded-2xl w-[420px] h-[240px] flex flex-col items-center justify-center gap-2 bg-white cursor-pointer"
+                    className="rounded-2xl w-full max-w-[420px] h-[240px] flex flex-col items-center justify-center gap-2 bg-white cursor-pointer"
                   >
                     <input
                       type="file"
@@ -249,20 +263,22 @@ export default function AddProductForm() {
       </div>
 
       {/* Buttons OUTSIDE */}
-      <div className="w-full flex justify-end items-center gap-3">
-        <Button
-          type="button"
-          className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
-        >
-          Add Product
-        </Button>
-      </div>
+      {isDirty && (
+        <div className="w-full flex justify-end items-center gap-3">
+          <Button
+            type="button"
+            className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
+          >
+            Add Product
+          </Button>
+        </div>
+      )}
     </form>
   );
 }

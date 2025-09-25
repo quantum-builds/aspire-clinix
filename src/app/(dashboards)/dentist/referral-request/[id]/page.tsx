@@ -12,6 +12,7 @@ type PageProps = {
 
 export default async function ReferralDetailsPage({ params }: PageProps) {
   const referralId = params.id;
+  console.log(referralId);
 
   const patientDetails = {
     name: "Harry Kane",

@@ -26,35 +26,35 @@ export default function PatientRDentistDetails({
         Patient & Assigned Dentist Details
       </p>
       <div className="grid grid-cols-2 gap-6">
-        <div className="bg-gray p-6 space-y-5 rounded-2xl">
+        <div className="bg-gray p-6 space-y-5  rounded-2xl">
           <div className="flex justify-between items-center">
-            <p className="text-green font-medium text-2xl">Patient</p>
+            <p className="text-green font-medium text-2xl ">Patient</p>
           </div>
-          <div className="flex items-center text-lg">
+          <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
             <p className="flex-1">Name: {patientDetials.name}</p>
             <p className="flex-1">Gender: {patientDetials.gender}</p>
           </div>
-          <div className="flex items-center text-lg">
+          <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
             <p className="flex-1">Phone: {patientDetials.phone}</p>
             <p className="flex-1">Email: {patientDetials.email}</p>
           </div>
-          <div className="flex justify-between items-center text-lg">
+          <div className="flex justify-between items-center text-lg ">
             <p>Disease: {patientDetials.disease}</p>
           </div>
         </div>
-        <div className="bg-gray p-6 space-y-5 rounded-2xl">
+        <div className="bg-gray p-6 space-y-5  rounded-2xl">
           <div className="flex justify-between items-center">
-            <p className="text-green font-medium text-2xl">Assigned Dentist</p>
+            <p className="text-green font-medium text-2xl ">Assigned Dentist</p>
           </div>
-          <div className="flex items-center text-lg">
+          <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
             <p className="flex-1">Name: {dentistDetails.name}</p>
             <p className="flex-1">GDC no.: {dentistDetails.gdcNo}</p>
           </div>
-          <div className="flex items-center text-lg">
+          <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
             <p className="flex-1">Phone: {dentistDetails.phone}</p>
             <p className="flex-1">Email: {dentistDetails.email}</p>
           </div>
-          <div className="flex justify-between items-center text-lg">
+          <div className="flex justify-between items-center text-lg ">
             <p>Practice Address: {dentistDetails.address}</p>
           </div>
         </div>

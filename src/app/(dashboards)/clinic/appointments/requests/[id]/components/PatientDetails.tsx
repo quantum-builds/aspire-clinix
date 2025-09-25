@@ -23,7 +23,7 @@ export default function PatientDetails({
         </div>
       </div>
 
-      <div className="grid grid-cols-5">
+      <div className="flex items-center xl:gap-[100px] max-lg50:gap-0 max-lg50:justify-between gap-10">
         <p className="text-lg">
           Name:{" "}
           <span className="text-lg font-medium">{appointment.patientName}</span>
@@ -40,13 +40,9 @@ export default function PatientDetails({
             {appointment.patientEmail}
           </span>
         </p>
-        <p className="text-lg">
-          Disease:{" "}
-          <span className="text-lg font-medium">{appointment.disease}</span>
-        </p>
       </div>
 
-      <div className="grid grid-cols-5">
+      <div className="flex item-center xl:gap-[100px] gap-10 max-lg50:gap-0 max-lg50:justify-between">
         <div className="space-y-3">
           <p className="font-medium text-xl text-green">Appointment Date</p>
           <div className="flex gap-2 items-center">

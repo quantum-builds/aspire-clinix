@@ -46,7 +46,7 @@ export default function StatsCard({
   const { text, line, gradient } = getPercentageStyles();
 
   return (
-    <div className="max-w-[360px] py-5 px-6 space-y-5 rounded-2xl bg-white">
+    <div className="max-w-[348px] w-full py-5 px-6 space-y-5 rounded-2xl bg-white">
       <div className="flex justify-between items-start">
         <div className="bg-gray size-12 rounded-xl flex items-center justify-center">
           <Image src={icon} alt={title} />

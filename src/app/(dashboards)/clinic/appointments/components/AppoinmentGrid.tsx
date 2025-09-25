@@ -22,7 +22,7 @@ export default function AppointmentGrid({
           </p>
         )}
       </div>
-      <div className={`grid grid-cols-2 gap-6`}>
+      <div className={`grid xl:grid-cols-2 gap-6`}>
         {appointments.map((appointment, index) => (
           <AppointmentCard key={index} appointment={appointment} type={type} />
         ))}
