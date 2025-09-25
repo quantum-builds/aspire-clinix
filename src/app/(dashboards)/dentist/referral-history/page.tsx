@@ -125,7 +125,7 @@ export default async function ReferralHistory(props: {
       </div>
 
       <Suspense key={query} fallback={<div>Loading.....</div>}>
-        <div className="grid grid-cols-4 gap-6">
+        <div className="flex flex-wrap gap-6">
           {Object.entries(REFERRAL_CARDS).map(([key, card]) => (
             <StatsCard
               key={key}

@@ -16,7 +16,7 @@ export default function LetterReportGrid({
       <p className="font-medium text-2xl">
         {isNewUploadPage ? "Upload Letter" : "Letter Reports"}
       </p>
-      <div className="grid grid-cols-4 gap-x-6 gap-y-10">
+      <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 gap-x-6 gap-y-10">
         {reports.map((report, index) => (
           <LetterReportCard key={index} report={report} />
         ))}

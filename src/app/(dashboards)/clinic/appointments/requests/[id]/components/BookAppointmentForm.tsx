@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,25 +54,38 @@ const branches = [
 
 export default function BookAppointmentForm() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+
+  const defaultValues = {
+    dentist: "",
+    branch: "",
+    dentistName: "",
+    gdcNo: "",
+    phone: "",
+    email: "",
+    appointmentDate: new Date(),
+    startTime: "",
+    endTime: "",
+  };
 
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(assignDentistSchema),
-    defaultValues: {
-      dentist: "",
-      branch: "",
-      dentistName: "",
-      gdcNo: "",
-      phone: "",
-      email: "",
-      appointmentDate: new Date(),
-      startTime: "",
-      endTime: "",
-    },
+    defaultValues: defaultValues,
   });
+
+  const values = watch();
+  useEffect(() => {
+    const hasChanges = Object.keys(values).some(
+      (key) =>
+        values[key as keyof FormData] !== defaultValues[key as keyof FormData]
+    );
+    setIsDirty(hasChanges);
+  }, [values, defaultValues]);
 
   const onSubmit = (data: FormData) => {
     console.log("Assign Dentist Form:", data);
@@ -360,20 +374,22 @@ export default function BookAppointmentForm() {
         </div>
       </div>
 
-      <div className="w-full flex justify-end items-center gap-3">
-        <Button
-          type="submit"
-          className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
-        >
-          Book Appointment
-        </Button>
-      </div>
+      {isDirty && (
+        <div className="w-full flex justify-end items-center gap-3">
+          <Button
+            type="submit"
+            className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
+          >
+            Book Appointment
+          </Button>
+        </div>
+      )}
     </form>
   );
 }

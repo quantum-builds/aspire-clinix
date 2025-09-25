@@ -88,6 +88,8 @@ const config: Config = {
         "2xl": "1600px",
         "2xl50": "1700px",
         "1xl": "1400px",
+        "1xl50": "1500px",
+        lg50: "1100px",
       },
     },
   },

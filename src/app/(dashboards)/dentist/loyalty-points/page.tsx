@@ -142,7 +142,7 @@ export default async function ReferralHistoryPage(props: {
       </div>
 
       <Suspense key={query} fallback={<div>Loading.....</div>}>
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid xl:grid-cols-4 grid-cols-2 gap-6">
           {cardsWithPercentages.map((card) => (
             <StatsCard
               key={card.title}

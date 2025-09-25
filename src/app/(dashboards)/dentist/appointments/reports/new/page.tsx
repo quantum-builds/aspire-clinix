@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import ReportGrid from "../components/ReportGrid";
 import NoContent from "@/app/(dashboards)/components/NoContent";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
-import DateFilter from "@/app/(dashboards)/components/DateFilter";
 import { TPatientDetails } from "@/types/common";
 import { ResoucrceType } from "@prisma/client";
 import { TReport } from "@/types/reports";
@@ -145,7 +144,6 @@ export default async function NewReport(props: {
         <h1 className="font-medium text-3xl">Reports</h1>
         <div className="flex items-center gap-3">
           <SearchBar placeholder="Enter Report title" />
-          <DateFilter />
           <BackButton />
         </div>
       </div>

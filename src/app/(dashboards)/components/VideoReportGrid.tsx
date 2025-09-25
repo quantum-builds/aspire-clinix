@@ -16,7 +16,7 @@ export default function VideoReportGrid({
       <p className="font-medium text-2xl">
         {isNewUploadPage ? "Upload Video" : "Video Reports"}
       </p>
-      <div className="grid grid-cols-3 gap-x-6 gap-y-10">
+      <div className="grid 1xl:grid-cols-3 lg:grid-cols-2 gap-x-6 gap-y-10">
         {reports.map((report, index) => (
           <VideoReportCard key={index} report={report} />
         ))}

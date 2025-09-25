@@ -16,7 +16,7 @@ export default function UpcomingAppointmentCard({
     <div className="flex flex-col gap-8 p-6 rounded-2xl bg-dashboardBackground">
       <div>
         <div className="flex justify-between">
-          <p className="font-medium text-2xl text-green">Patient Details</p>
+          <p className="font-medium text-xl text-green">Patient Details</p>
           <div className="flex flex-col gap-3  items-end">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
@@ -25,39 +25,39 @@ export default function UpcomingAppointmentCard({
                   alt="Calendar Icon"
                   className="w-4 h-4"
                 />
-                <p className="text-xl">{appointment.date}</p>
+                <p className="text-lg">{appointment.date}</p>
               </div>
               {type === "upcoming" && (
                 <div className="flex items-center gap-1">
                   <Image src={TimeIcon} alt="TIme Icon" className="w-4 h-4" />
-                  <p className="text-xl">{appointment.time}</p>
+                  <p className="text-lg">{appointment.time}</p>
                 </div>
               )}
             </div>
           </div>
         </div>
         {type === "upcoming" && (
-          <div className="text-xl italic flex w-full justify-end">
-            Appointment Number: {appointment.appointmentNumber}
+          <div className="text-lg italic flex w-full justify-end">
+            Appointment # {appointment.appointmentNumber}
           </div>
         )}
       </div>
       <div className={`flex ${type === "past" && "justify-between"}`}>
         <div className="space-y-3 flex-1">
-          <p className="text-xl">
+          <p className="text-lg">
             Name: <span className="font-medium">{appointment.patientName}</span>
           </p>
-          <p className="text-xl">
+          <p className="text-lg">
             Age:
             <span className="font-medium">{appointment.patientAge}</span>
           </p>
         </div>
-        <div className={`space-y-3 flex-1 ${type === "past" && "text-right"}`}>
-          <p className="text-xl">
+        <div className={`space-y-3 flex-1 ${"text-right"}`}>
+          <p className="text-lg">
             Gender:{" "}
             <span className="font-medium">{appointment.patientGender}</span>
           </p>
-          <p className="text-xl">
+          <p className="text-lg">
             Disease: <span className="font-medium">{appointment.disease}</span>
           </p>
         </div>
@@ -70,8 +70,7 @@ export default function UpcomingAppointmentCard({
           />
         </div>
         <div className="text-right">
-          <p className="text-green font-medium text-xl">
-            {type === "upcoming" && "Appointment with "}
+          <p className="text-green font-medium italic">
             {appointment.dentistName}
           </p>
         </div>

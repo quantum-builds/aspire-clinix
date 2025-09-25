@@ -4,6 +4,8 @@ import DateFilter from "../../components/DateFilter";
 import Pagination from "../../components/Pagination";
 import SearchBar from "../../components/SearchBar";
 import VideoReportCard from "../../components/VideoReportCard";
+import { VideoResourceGridSkeleton } from "../../patient/resources/videos/components/skeletons/ResourceGrid";
+import { Suspense } from "react";
 
 const REPORTS: TReport[] = [
   {
@@ -120,10 +122,14 @@ const REPORTS: TReport[] = [
 export default async function Resources(props: {
   searchParams?: Promise<{
     query?: string;
+    page?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
+
+  const title = searchParams?.query || "";
+  const page = Number(searchParams?.page) || 1;
 
   console.log(query);
 
@@ -142,14 +148,16 @@ export default async function Resources(props: {
           <p className="font-medium text-2xl">Resource Videos</p>
           <Button text="Add New Resource" href="/clinic/resources/new" />
         </div>
-        <div className="grid grid-cols-3 gap-x-6 gap-y-10">
-          {REPORTS.map((report, index) => (
-            <VideoReportCard key={index} report={report} />
-          ))}
-        </div>
+        <Suspense key={title + page} fallback={<VideoResourceGridSkeleton />}>
+          <div className="grid max-xl:grid-cols-2 max-2xl50:grid-cols-3 grid-cols-4 gap-x-6 gap-y-10">
+            {REPORTS.map((report, index) => (
+              <VideoReportCard key={index} report={report} />
+            ))}
+          </div>
+        </Suspense>
       </div>
 
-      <Pagination page={10} />
+      <Pagination page={page} />
     </div>
   );
 }

@@ -15,7 +15,7 @@ export default function AppointmentGrid({
       <p className="text-dashboardTextBlack text-2xl font-medium">
         Appointment
       </p>
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid 1xl:grid-cols-2 gap-6">
         {appointments.map((appointment) => (
           <div
             className="border border-green rounded-2xl p-6 space-y-8"
@@ -41,8 +41,8 @@ export default function AppointmentGrid({
                 <p className="italic text-green font-medium text-xl">
                   Status: {appointment.status}
                 </p>
-                <p className="italic font-mediium text-xl text-dashboardTextBlack">
-                  Appointment Number: {appointment.appointmentNumber}
+                <p className="italic font-mediium text-xl text-dashboardTextBlack w-[50%] text-right truncate">
+                  Appointment # {appointment.appointmentNumber}
                 </p>
               </div>
             </div>

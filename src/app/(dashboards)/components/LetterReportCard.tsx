@@ -40,9 +40,9 @@ export default function LetterReportCard({ report }: LetterReportCardProps) {
       {report.file ? (
         <PdfDownload pdf={report.file} thumbnail={PDFImage} />
       ) : (
-        <div className="bg-dashboardBackground rounded-2xl w-[420px] h-[240px]"></div>
+        <div className="bg-dashboardBackground rounded-2xl max-w-[420px] h-[240px]"></div>
       )}
-      <p className="text-center text-green font-medium text-lg">
+      <p className="text-center text-green font-medium text-lg h-6 line-clamp-1">
         {report.title}
       </p>
     </div>

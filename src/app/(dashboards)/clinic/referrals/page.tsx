@@ -127,7 +127,7 @@ export default async function ReferralHistory(props: {
   }
 
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
+    <div className="w-full min-h-full flex flex-col gap-7">
       <div className="flex items-center justify-between">
         <h1 className="font-medium text-3xl">Referrals</h1>
         <div className="flex items-center gap-3">
@@ -137,7 +137,7 @@ export default async function ReferralHistory(props: {
       </div>
 
       <Suspense key={query} fallback={<div>Loading.....</div>}>
-        <div className="grid grid-cols-4 gap-6">
+        <div className="flex flex-wrap gap-6">
           {Object.entries(REFERRAL_CARDS).map(([key, card]) => (
             <StatsCard
               key={key}
@@ -149,7 +149,9 @@ export default async function ReferralHistory(props: {
             />
           ))}
         </div>
-        <ClinicReferralDataTable entries={DATA_TABLE_ENTRIES} />
+        <div className="min-w-full overflow-x-auto">
+          <ClinicReferralDataTable entries={DATA_TABLE_ENTRIES} />
+        </div>
       </Suspense>
       <Pagination page={10} />
     </div>

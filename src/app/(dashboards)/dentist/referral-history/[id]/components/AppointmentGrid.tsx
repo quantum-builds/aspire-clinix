@@ -17,7 +17,7 @@ export default function AppointmentGrid({
       <p className="text-dashboardTextBlack text-2xl font-medium">
         {appointmentType === "past" ? "Past" : "Upcoming"} Appointments
       </p>
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid 1xl:grid-cols-2 gap-6">
         {appointments.map((appointment) => (
           <div
             className={`${
@@ -45,8 +45,8 @@ export default function AppointmentGrid({
                 <p className="italic text-green font-medium text-xl">
                   Status: {appointment.status}
                 </p>
-                <p className="italic font-mediium text-xl text-dashboardTextBlack">
-                  Appointment Number: {appointment.appointmentNumber}
+                <p className="italic font-mediium text-xl text-dashboardTextBlack truncate max-w-[50%]">
+                  Appointment # {appointment.appointmentNumber}
                 </p>
               </div>
             </div>

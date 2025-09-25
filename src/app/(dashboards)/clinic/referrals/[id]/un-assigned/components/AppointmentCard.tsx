@@ -11,7 +11,7 @@ export default function AssignedAppointmentCard({
   return (
     <div className="bg-white rounded-2xl p-6 space-y-10">
       <p className="font-medium text-2xl">Appointment</p>
-      <div className="grid grid-cols-2">
+      <div className="w-full">
         <div
           className="border border-green rounded-2xl p-6 space-y-8"
           key={appointment.appointmentNumber}
@@ -37,7 +37,7 @@ export default function AssignedAppointmentCard({
                 Status: {appointment.status}
               </p>
               <p className="italic font-mediium text-xl text-dashboardTextBlack">
-                Appointment Number: {appointment.appointmentNumber}
+                Appointment # {appointment.appointmentNumber}
               </p>
             </div>
           </div>

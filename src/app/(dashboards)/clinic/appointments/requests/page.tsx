@@ -65,7 +65,7 @@ export default async function RequestAppointments(props: {
         </div>
         <div className="bg-white p-6 rounded-2xl space-y-10">
           <div className="text-2xl font-medium">Appointment Requests</div>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid 1xl50:grid-cols-2 gap-6">
             {filteredAppointments.map((appointment) => (
               <AppointmentRequestCard
                 key={appointment.id}

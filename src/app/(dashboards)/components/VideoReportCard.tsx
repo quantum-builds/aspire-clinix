@@ -44,9 +44,9 @@ export default function VideoReportCard({ report }: VideoReportCardProps) {
       {report.file ? (
         <VideoModal video={report.file} thumbnail={AspireDarkLogo} />
       ) : (
-        <div className="bg-dashboardBackground rounded-2xl w-[420px] h-[240px]"></div>
+        <div className="bg-dashboardBackground rounded-2xl max-w-[420px] w-full h-[240px]"></div>
       )}
-      <p className="text-center text-green font-medium text-lg">
+      <p className="text-center text-green font-medium text-lg h-6 line-clamp-1">
         {report.title}
       </p>
     </div>
