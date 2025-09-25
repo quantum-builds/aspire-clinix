@@ -1,12 +1,41 @@
-import { CalenderInputIcon, TimeIcon, UploadPDFIcon } from "@/assets";
-import { AppointmentRequest } from "@/types/common";
+"use client";
+import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
+import { PdfDownload } from "@/app/(dashboards)/components/PDFModal";
+import { CalenderInputIcon, PDFImage, TimeIcon, UploadPDFIcon } from "@/assets";
+import { useDeleteAppointmentRequests } from "@/services/appointmentRequests/appointmentRequestMutation";
+import { TAppointmentRequest } from "@/types/appointment-request";
+import { formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function AppointmentRequestCard({
-  appointment,
+  appointmentRequest,
 }: {
-  appointment: AppointmentRequest;
+  appointmentRequest: TAppointmentRequest;
 }) {
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const { mutate: deleteAppointmentRequest } = useDeleteAppointmentRequests();
+  const { refresh } = useRouter();
+
+  const handleDeleteAppointmentRequest = () => {
+    deleteAppointmentRequest(
+      {
+        id: appointmentRequest.id,
+        patientId: appointmentRequest.patientId,
+      },
+      {
+        onSuccess: () => {
+          refresh();
+          setIsCancelModalOpen(false);
+        },
+        onError: () => {
+          setIsCancelModalOpen(false);
+        },
+      }
+    );
+  };
+
   return (
     <div className="rounded-2xl p-6 space-y-10 bg-gray">
       <div className="flex items-center justify-between">
@@ -14,11 +43,15 @@ export default function AppointmentRequestCard({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Image src={CalenderInputIcon} alt="Calender Icon" />
-            <p className="text-xl">{appointment.date}</p>
+            <p className="text-xl">
+              {formatDate(appointmentRequest.createdAt)}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Image src={TimeIcon} alt="Time Icon" />
-            <p className="text-xl">{appointment.time}</p>
+            <p className="text-xl">
+              {formatTime(appointmentRequest.createdAt)}
+            </p>
           </div>
         </div>
       </div>
@@ -28,13 +61,13 @@ export default function AppointmentRequestCard({
           <p className="text-lg">
             Name:{" "}
             <span className="text-lg font-medium">
-              {appointment.patientName}
+              {appointmentRequest.patient?.fullName}
             </span>
           </p>
           <p className="text-lg">
             Phone:{" "}
             <span className="text-lg font-medium">
-              {appointment.patientPhone}
+              {appointmentRequest.patient?.phoneNumber}
             </span>
           </p>
         </div>
@@ -42,12 +75,8 @@ export default function AppointmentRequestCard({
           <p className="text-lg">
             Email:{" "}
             <span className="text-lg font-medium">
-              {appointment.patientEmail}
+              {appointmentRequest.patient?.email}
             </span>
-          </p>
-          <p className="text-lg">
-            Disease:{" "}
-            <span className="text-lg font-medium">{appointment.disease}</span>
           </p>
         </div>
       </div>
@@ -58,7 +87,7 @@ export default function AppointmentRequestCard({
           <div className="flex gap-2 items-center">
             <Image src={CalenderInputIcon} alt="Calender Icon" />
             <p className="text-lg tracking-tightest">
-              {appointment.appointmentDate}
+              {formatDate(appointmentRequest.requestedDate)}
             </p>
           </div>
         </div>
@@ -66,27 +95,43 @@ export default function AppointmentRequestCard({
           <p className="font-medium text-xl text-green">Appointment Reason</p>
 
           <p className="text-lg tracking-tightest">
-            {appointment.appointmentReason}
+            {appointmentRequest.reason}
           </p>
         </div>
       </div>
 
       <div className="space-y-3">
         <p className="text-xl font-medium text-green">Note:</p>
-        <p className="tracking-tightest text-xl">
-          {appointment?.additionalNote}
-        </p>
+        <p className="tracking-tightest text-xl">{appointmentRequest?.note}</p>
       </div>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-5">
-          <Image src={UploadPDFIcon} alt="PDF Icon" />
+          {/* <Image src={UploadPDFIcon} alt="PDF Icon" /> */}
+          {appointmentRequest.file ? (
+            <PdfDownload pdf={appointmentRequest.file} thumbnail={PDFImage} />
+          ) : (
+            <div className="bg-dashboardBackground rounded-2xl max-w-[420px] h-[240px]"></div>
+          )}
           <p className="underline text-green">See Document</p>
         </div>
-        <button className="h-[60px] px-6 py-3 font-medium text-lg rounded-full bg-gray">
+        <button
+          className="h-[60px] px-6 py-3 font-medium text-lg rounded-full bg-dashboardBarBackground"
+          onClick={() => setIsCancelModalOpen(true)}
+        >
           Cancel Appoinment
         </button>
       </div>
+
+      <ConfirmationModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        onConfirm={handleDeleteAppointmentRequest}
+        title="Cancel Request"
+        description="Are you sure you want to cancel this reqyes? This action cannot be undone."
+        cancelText="No, Keep the Request"
+        confirmText="Yes, Cancel the Request"
+      />
     </div>
   );
 }
