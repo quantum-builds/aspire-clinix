@@ -13,7 +13,7 @@ export const usePatchAppointment = () => {
       id: string;
       patientId: string;
     }) => {
-      const response = await axiosInstance.put(
+      const response = await axiosInstance.patch(
         ENDPOINTS.appointemt.patch(id, patientId),
         appointment
       );
@@ -31,7 +31,7 @@ export const useCreateAppointment = () => {
       id: string;
       patientId: string;
     }) => {
-      const response = await axiosInstance.put(
+      const response = await axiosInstance.post(
         ENDPOINTS.appointemt.post,
         appointment
       );

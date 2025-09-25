@@ -18,6 +18,7 @@ import { CalenderInputIcon, UploadPDFIcon } from "@/assets";
 import { cn } from "@/lib/utils";
 import { useCreateAppointmentRequests } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
+import { useRouter } from "next/navigation";
 
 const appointmentSchema = z.object({
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
@@ -44,7 +45,7 @@ export default function AppointmentForm() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { mutate: createAppointmentRequest } = useCreateAppointmentRequests();
   const { mutateAsync: uploadFile } = useUploadFile();
-
+  const { refresh } = useRouter();
   const {
     control,
     handleSubmit,
@@ -63,7 +64,7 @@ export default function AppointmentForm() {
   const onSubmit = async (data: FormData) => {
     console.log("Appointment Form Submitted:", data);
 
-    let fileUrl = "uploads/aspire-clinic/images/placeholder.svg";
+    let fileUrl = "uploads/aspire-clinic/images/placeholder.png";
     if (data.medicalHistory) {
       const imageUploaded = await uploadFile({
         selectedFile: data.medicalHistory,
@@ -86,6 +87,7 @@ export default function AppointmentForm() {
         onSuccess: (data: string) => {
           console.log("data from request is ", data);
           reset();
+          refresh();
         },
         onError: (error) => {
           console.log("error from request is ", error);
@@ -248,7 +250,7 @@ export default function AppointmentForm() {
           type="submit"
           className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
         >
-          Book Appointment
+          Request an Appointment
         </Button>
       </div>
     </form>
