@@ -3,7 +3,7 @@ import { TAppointmentResponse } from "@/types/appointment";
 import { AppointmentDateType, Response } from "@/types/common";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import Pagination from "@/app/(dashboards)/components/Pagination";
-import AppointmentGrid from "../../components/AppoinmentGrid";
+import AppointmentGrid from "./AppointmentGrid";
 
 interface AppointmentGridWrapperProps {
   query: string;
@@ -16,11 +16,9 @@ export default async function AppointmentGridWrapper({
 }: AppointmentGridWrapperProps) {
   const response: Response<TAppointmentResponse> = await getAppointments({
     search: query,
-    dateType: AppointmentDateType.UPCOMING,
-    page: page,
+    dateType: AppointmentDateType.PAST,
   });
 
-  console.log("Response is ", response);
   if (
     !response.status ||
     !response.data ||
@@ -40,10 +38,7 @@ export default async function AppointmentGridWrapper({
 
   return (
     <>
-      <AppointmentGrid
-        appointments={appointments}
-        type={AppointmentDateType.UPCOMING}
-      />
+      <AppointmentGrid appointments={appointments} />
       <Pagination page={page} />
     </>
   );

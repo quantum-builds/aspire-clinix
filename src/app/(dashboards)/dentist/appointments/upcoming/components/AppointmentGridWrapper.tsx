@@ -3,7 +3,7 @@ import { TAppointmentResponse } from "@/types/appointment";
 import { AppointmentDateType, Response } from "@/types/common";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import Pagination from "@/app/(dashboards)/components/Pagination";
-import AppointmentGrid from "../../components/AppoinmentGrid";
+import AppointmentGrid from "./AppoinmentGrid";
 
 interface AppointmentGridWrapperProps {
   query: string;
@@ -20,7 +20,6 @@ export default async function AppointmentGridWrapper({
     page: page,
   });
 
-  console.log("Response is ", response);
   if (
     !response.status ||
     !response.data ||
@@ -28,7 +27,6 @@ export default async function AppointmentGridWrapper({
     response.data.appointments.length === 0
   ) {
     return (
-      // <NoContent title="Resources" placeholder="Enter Appointment Number" />
       <>
         <NoContent1 />
         <Pagination page={page} isLast={true} />
@@ -40,10 +38,7 @@ export default async function AppointmentGridWrapper({
 
   return (
     <>
-      <AppointmentGrid
-        appointments={appointments}
-        type={AppointmentDateType.UPCOMING}
-      />
+      <AppointmentGrid appointments={appointments} />
       <Pagination page={page} />
     </>
   );

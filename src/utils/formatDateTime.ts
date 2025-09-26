@@ -17,3 +17,10 @@ export function calculateAge(dateOfBirth: string | Date) {
 
   return age;
 }
+
+export const formatTimeForInput = (date: string | Date) => {
+  const d = new Date(date);
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`; // "HH:mm"
+};

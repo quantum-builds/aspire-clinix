@@ -241,7 +241,7 @@ model Dentist{
 
   appointments  Appointment[]
   reports     Report[]
-  practices   Practice[]
+  practices   DentistOnPractice[]
 }
 
 model Admin{
@@ -269,8 +269,18 @@ model Practice{
   addressLine2  String
   logoUrl   String
 
-  dentists  Dentist[]
+  dentists  DentistOnPractice[]
   appointments  Appointment[]
+}
+
+
+model DentistOnPractice {
+  practice   Practice     @relation(fields: [practiceId], references: [id],onDelete: Cascade)
+  practiceId String 
+  dentist    Dentist  @relation(fields: [dentistId], references: [id],onDelete: Cascade)
+  dentistId  String 
+
+  @@id([practiceId, dentistId])
 }
 
 model AppointmentRequests{
@@ -284,13 +294,15 @@ model AppointmentRequests{
 
   createdAt  DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  patient Patient  @relation(fields: [patientId],references: [id])
+  patient Patient  @relation(fields: [patientId],references: [id],onDelete: Cascade)
 }
 
 model Appointment{
   id String @id @default(cuid())
-  praticeId String?
+  practiceId String
   date  DateTime
+  startTime   DateTime          
+  finishTime     DateTime 
   patientId   String 
   dentistId   String 
   reason  String
@@ -300,9 +312,9 @@ model Appointment{
   updatedAt   DateTime @updatedAt
 
   reports Report[]
-  practice  Practice?  @relation(fields: [praticeId],references: [id])
-  patient Patient  @relation(fields: [patientId],references: [id])
-  dentist Dentist  @relation(fields: [dentistId],references: [id])
+  practice  Practice  @relation(fields: [practiceId],references: [id],onDelete: Cascade)
+  patient Patient  @relation(fields: [patientId],references: [id],onDelete: Cascade)
+  dentist Dentist  @relation(fields: [dentistId],references: [id],onDelete: Cascade)
 }
 
 model Report{
@@ -316,9 +328,9 @@ model Report{
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  patient Patient  @relation(fields: [patientId],references: [id])
-  dentist Dentist  @relation(fields: [dentistId],references: [id])
-  appointment Appointment @relation(fields: [appointmentId],references: [id])
+  patient Patient  @relation(fields: [patientId],references: [id],onDelete: Cascade)
+  dentist Dentist  @relation(fields: [dentistId],references: [id],onDelete: Cascade)
+  appointment Appointment @relation(fields: [appointmentId],references: [id],onDelete: Cascade)
   @@index([fileType])
 }
 
@@ -352,7 +364,7 @@ model Product {
 
 model Cart {
   id           String       @id @default(cuid())
-  patient      Patient      @relation(fields: [patientId], references: [id])
+  patient      Patient      @relation(fields: [patientId], references: [id],onDelete: Cascade)
   patientId    String       @unique
 
   cartProducts CartProduct[]
@@ -364,7 +376,7 @@ model CartProduct{
   productId String
   quantity  Int
   Cart      Cart     @relation(fields: [cartId], references: [id],onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id],onDelete: Cascade)
 
   @@unique([cartId, productId])
 }
@@ -377,7 +389,7 @@ model PurchasedProduct{
   productPaymentId String 
   purchaseDate DateTime @default(now())
   quantity    Int
-  product     Product  @relation(fields: [itemId], references: [id])
+  product     Product  @relation(fields: [itemId], references: [id],onDelete: Cascade)
   payment     ProductPayment @relation(fields: [productPaymentId], references: [id])
 
   @@unique([productPaymentId,productId])

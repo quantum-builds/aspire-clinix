@@ -1,8 +1,6 @@
 import { axiosInstance, ENDPOINTS } from "@/config/api-config";
 import { TPatient, TPatientCreate } from "@/types/patient";
 import { useMutation } from "@tanstack/react-query";
-import { getAMedia } from "../s3/s3Query";
-import { number } from "zod";
 
 export const usePatchPatient = () => {
   return useMutation({

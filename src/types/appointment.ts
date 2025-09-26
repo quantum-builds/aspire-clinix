@@ -5,9 +5,12 @@ import { TDentist } from "./dentist";
 export type TAppointmentCreate = {
   patientId: string;
   dentistId: string;
+  practiceId: string;
   reason: string;
   state: AppointmentStatus;
   date: Date;
+  startTime: Date;
+  finishTime: Date;
 };
 
 export type TAppointment = TAppointmentCreate & {

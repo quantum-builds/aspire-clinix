@@ -1,52 +1,22 @@
 import BackButton from "@/app/(dashboards)/components/BackButton";
-import NoContent from "@/app/(dashboards)/components/NoContent";
-import PatientDetails from "../components/PatientDetails";
-import BookAppointmentForm from "../components/BookAppointmentForm";
-import { AppointmentRequest } from "@/types/common";
 import { Suspense } from "react";
 import AppointmentRequestFormWrapper from "../components/AppointmentRequestFormWrapper";
-
-// const APPOINTMENTS: AppointmentRequest[] = [
-//   {
-//     id: "1",
-//     date: "July 07, 2025",
-//     time: "12:30 PM",
-//     patientName: "Maryam Iqbal",
-//     patientEmail: "harrykane@gmail.com",
-//     patientPhone: "+971 1121 2234",
-//     disease: "Dental Cleaning",
-//     appointmentDate: "July 26, 2025",
-//     appointmentReason: "I have a gum-bleeding problem",
-//     additionalNote:
-//       "I've noticed my gums bleed often, especially during brushing and flossing. It's been happening frequently and concerns me.",
-//   },
-//   {
-//     id: "2",
-//     date: "July 07, 2025",
-//     time: "12:30 PM",
-//     patientName: "Maryam Iqbal",
-//     patientEmail: "harrykane@gmail.com",
-//     patientPhone: "+971 1121 2234",
-//     disease: "Dental Cleaning",
-//     appointmentDate: "July 26, 2025",
-//     appointmentReason: "I have a gum-bleeding problem",
-//     additionalNote:
-//       "I've noticed my gums bleed often, especially during brushing and flossing. It's been happening frequently and concerns me.",
-//   },
-// ];
+import { Response } from "@/types/common";
+import { TPractice } from "@/types/practice";
+import { getPractices } from "@/services/practice/practiceQuery";
 
 export default async function AppointmentRequestFormPage(props: {
   params: { id: string };
+  searchParams?: Promise<{
+    practiceId?: string;
+  }>;
 }) {
   const { id } = props.params;
+  const searchParams = await props.searchParams;
+  const practiceId = searchParams?.practiceId || "";
 
-  // const appointment = APPOINTMENTS.find(
-  //   (appointment) => appointment.id === appointmentId
-  // );
-
-  // if (!appointment) {
-  //   return <NoContent title="No Appointment Found" />;
-  // }
+  const response: Response<TPractice[]> = await getPractices();
+  const practices = response.data;
 
   return (
     <div className=" w-full h-full flex flex-col gap-7">
@@ -55,7 +25,11 @@ export default async function AppointmentRequestFormPage(props: {
         <BackButton />
       </div>
       <Suspense key={id} fallback={<div>Loading....</div>}>
-        <AppointmentRequestFormWrapper id={id} />
+        <AppointmentRequestFormWrapper
+          id={id}
+          practiceId={practiceId}
+          practices={practices}
+        />
       </Suspense>
     </div>
   );

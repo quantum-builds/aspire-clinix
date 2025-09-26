@@ -1,8 +1,9 @@
 import { TAppointmentDentist } from "@/types/common";
 import PastAppointmentCard from "./PastAppointmentCard";
+import { TAppointment } from "@/types/appointment";
 
 interface AppointmentGridProps {
-  appointments: TAppointmentDentist[];
+  appointments: TAppointment[];
 }
 export default function AppointmentGrid({
   appointments,
