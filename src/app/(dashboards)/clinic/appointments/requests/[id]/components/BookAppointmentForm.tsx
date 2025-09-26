@@ -117,16 +117,22 @@ export default function BookAppointmentForm({
       { appointment: newAppointment },
       {
         onSuccess: () => {
-          const appointmentRequest: Partial<TAppointmentRequest> = {
+          const partialAppointmentRequest: Partial<TAppointmentRequest> = {
             status: AppointmentRequestStatus.APPROVED,
           };
-          updateAppointmentRequest({
-            id: appointmentRequest.id ?? "",
-            appointmentRequest: appointmentRequest,
-          });
-
-          reset();
-          refresh();
+          updateAppointmentRequest(
+            {
+              id: appointmentRequest.id,
+              appointmentRequest: partialAppointmentRequest,
+            },
+            {
+              onSuccess: (data) => {
+                console.log("data on success,", data);
+                reset();
+                refresh();
+              },
+            }
+          );
         },
       }
     );

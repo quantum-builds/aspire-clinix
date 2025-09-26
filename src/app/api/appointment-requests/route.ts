@@ -13,8 +13,7 @@ export async function GET(req: NextRequest) {
     const on = searchParams.get("on") || "";
     const before = searchParams.get("before") || "";
     const after = searchParams.get("after") || "";
-    const status =
-      searchParams.get("status") || AppointmentRequestStatus.PENDING;
+    const status = searchParams.get("status") || "";
 
     const limit = 5;
     const skip = (page - 1) * limit;
