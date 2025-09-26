@@ -1,8 +1,7 @@
 import { Suspense } from "react";
 import AppointmentGridWrapper from "./component/AppointmentGrid";
 import { AppointmentGridSkeleton } from "./component/skeletons/AppointmentGrid";
-import SearchBar from "@/app/(dashboards)/components/SearchBar";
-import Pagination from "@/app/(dashboards)/components/Pagination";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
 export default async function PastAppointments(props: {
   searchParams?: Promise<{
@@ -15,13 +14,12 @@ export default async function PastAppointments(props: {
   const page = Number(searchParams?.page) || 1;
 
   return (
-    <div className="min-h-full flex flex-col gap-7 mb-10">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Appointments</h1>
-        <div>
-          <SearchBar placeholder="Enter Appointment Number" />
-        </div>
-      </div>
+    <div className="min-h-full flex flex-col gap-5 mb-10">
+      <PageTopBar
+        pageHeading="Appointments"
+        showSearch={true}
+        showFilters={true}
+      />
       <Suspense key={query + page} fallback={<AppointmentGridSkeleton />}>
         <AppointmentGridWrapper query={query} page={page} />
       </Suspense>

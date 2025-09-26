@@ -115,3 +115,6 @@ export { default as UploadImageIcon } from "@/assets/upload-image-icon.svg";
 export { default as PointsIcon } from "@/assets/points-icon.svg";
 
 export { default as CancelRequestIcon } from "@/assets/cancel-request.svg";
+
+export { default as CalenderInputIconV2 } from "@/assets/Calender-input-icon.svg";
+export { default as TimeIconV2 } from "@/assets/time-icon-v2.svg";

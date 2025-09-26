@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 
 import AppointmentGridWrapper from "./component/AppointmentGrid";
-import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import { AppointmentGridSkeleton } from "./component/skeletons/AppointmentGridSkeelton";
-import Button from "@/app/(dashboards)/components/Button";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
 export default async function UpcomingAppointments(props: {
   searchParams?: Promise<{
@@ -14,19 +14,18 @@ export default async function UpcomingAppointments(props: {
   const query = searchParams?.query || "";
 
   return (
-    <div className="min-h-full flex flex-col gap-7 mb-10">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Appointments</h1>
-        <div className="flex justify-end gap-4 ">
-          <SearchBar placeholder="Enter Appointment Number" />
-        </div>
-      </div>
-      <div className="flex justify-end">
-        <Button
-          text="Request an Appointment"
-          href="/patient/appointments/requests/new"
-        />
-      </div>
+    <div className="min-h-full flex flex-col gap-5 mb-10">
+      <PageTopBar
+        pageHeading="Appointments"
+        showSearch={true}
+        showFilters={true}
+        extraBtns={
+          <CustomButton
+            text="Request an appointment"
+            href="/patient/appointments/requests/new"
+          />
+        }
+      />
       <Suspense key={query} fallback={<AppointmentGridSkeleton />}>
         <AppointmentGridWrapper query={query} />
       </Suspense>
