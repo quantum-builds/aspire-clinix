@@ -8,6 +8,8 @@ import { formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
 import { AppointmentStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
+import { useState } from "react";
 
 interface FirstUpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -15,6 +17,7 @@ interface FirstUpcomingAppointmentCardProps {
 export default function FirstUpcomingAppointmentCard({
   appointment,
 }: FirstUpcomingAppointmentCardProps) {
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { mutate: cancelAppointment } = usePatchAppointment();
   const { refresh } = useRouter();
 
@@ -29,6 +32,7 @@ export default function FirstUpcomingAppointmentCard({
         onSuccess: (data) => {
           console.log("updated appointment ", data);
           refresh();
+          setIsCancelModalOpen(false);
         },
       }
     );
@@ -114,7 +118,7 @@ export default function FirstUpcomingAppointmentCard({
           />
           <button
             className="h-[60px] px-6 py-3 font-medium text-lg rounded-full bg-gray"
-            onClick={handleCancelAppointment}
+            onClick={() => setIsCancelModalOpen(true)}
           >
             Cancel Appoinment
           </button>
@@ -126,6 +130,16 @@ export default function FirstUpcomingAppointmentCard({
           <p className="text-green text-right">Prosthodontist</p>
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        onConfirm={handleCancelAppointment}
+        title="Cancel Appointment"
+        description="Are you sure you want to cancel this appointment? This action cannot be undone."
+        cancelText="No, Keep Appointment"
+        confirmText="Yes, Cancel Appointment"
+      />
     </div>
   );
 }

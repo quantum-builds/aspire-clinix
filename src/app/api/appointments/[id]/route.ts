@@ -18,7 +18,7 @@ export async function PATCH(req: NextRequest) {
     const partialAppointment = await req.json();
     const { searchParams } = new URL(req.url);
     const patientId = searchParams.get("patientId") || "";
-
+    
     if (!appointmentId || !isValidCuid(appointmentId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Appointment.", null),

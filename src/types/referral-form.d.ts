@@ -1,6 +1,6 @@
 export interface CreateReferralForm {
   name: string;
-  DOB: Date;
+  DOB: String;
   address: string;
   mobileNumber: string;
   email: string;
@@ -9,9 +9,10 @@ export interface CreateReferralForm {
   referralAddress: string;
   referralMobileNumber: string;
   referralEmail: string;
-  referralDetails: string[];
-  treatMeantAppointment: string;
-  medicalHistory?: string;
+  referralDetails?: string[];
+  treatMeantAppointment?: string;
+  // medicalHistory?: string;
+  // medicalHistoryPdf?: string;
   treatmentDetails?: string;
 }
 

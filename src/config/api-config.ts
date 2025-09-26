@@ -12,41 +12,44 @@ export const ENDPOINTS = {
   },
 
   patient: {
-    create: `/v1/patients`,
-    get: (id: string) => `/v1/patients/${id}`,
-    put: (id: string) => `/v1/patients/${id}`,
-    delete: (id: string) => `/v1/patients/${id}`,
-    list: (queryParams: ListPatient) => {
-      const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
+    // create: `/v1/patients`,
+    // get: (id: string) => `/v1/patients/${id}`,
+    // put: (id: string) => `/v1/patients/${id}`,
+    // delete: (id: string) => `/v1/patients/${id}`,
+    // list: (queryParams: ListPatient) => {
+    //   const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
 
-      const queryString = new URLSearchParams(
-        Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
-          if (value !== undefined && value !== null) {
-            acc[key] =
-              value instanceof Date ? value.toISOString() : value.toString();
-          }
-          return acc;
-        }, {} as Record<string, string>)
-      ).toString();
+    //   const queryString = new URLSearchParams(
+    //     Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
+    //       if (value !== undefined && value !== null) {
+    //         acc[key] =
+    //           value instanceof Date ? value.toISOString() : value.toString();
+    //       }
+    //       return acc;
+    //     }, {} as Record<string, string>)
+    //   ).toString();
 
-      return `/v1/patients?${queryString}`;
-    },
-    getStats: (id: string) => `v1/patients/${id}/stats`,
-    listStats: (queryParams: ListPatientStats) => {
-      const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
+    //   return `/v1/patients?${queryString}`;
+    // },
+    // getStats: (id: string) => `v1/patients/${id}/stats`,
+    // listStats: (queryParams: ListPatientStats) => {
+    //   const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
 
-      const queryString = new URLSearchParams(
-        Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
-          if (value !== undefined && value !== null) {
-            acc[key] =
-              value instanceof Date ? value.toISOString() : value.toString();
-          }
-          return acc;
-        }, {} as Record<string, string>)
-      ).toString();
+    //   const queryString = new URLSearchParams(
+    //     Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
+    //       if (value !== undefined && value !== null) {
+    //         acc[key] =
+    //           value instanceof Date ? value.toISOString() : value.toString();
+    //       }
+    //       return acc;
+    //     }, {} as Record<string, string>)
+    //   ).toString();
 
-      return `/v1/patient_stats?${queryString}`;
-    },
+    //   return `/v1/patient_stats?${queryString}`;
+    // },
+
+    getPatient: (id: string) => `/api/patient/${id}`,
+    editPatient: (id: string) => `/api/patient/${id}`,
   },
 
   dentist: {
@@ -132,6 +135,10 @@ export const ENDPOINTS = {
     delete: (id: string) => `/api/referrals/${id}`,
   },
 
+  email: {
+    sendEmail: "/api/send-email",
+  },
+
   treatment: {
     create: `/api/treatments`,
     get: (id: string) => `/api/treatments/${id}`,
@@ -179,7 +186,7 @@ export const ENDPOINTS = {
       }&after=${after ?? ""}&dateType=${dateType ?? ""}`,
     post: "/api/appointments",
     patch: (id: string, patientId: string) =>
-      `/api/appointments/[${id}]?patientId=${patientId}`,
+      `/api/appointments/${id}?patientId=${patientId}`,
   },
   reports: {
     get: (
@@ -207,7 +214,7 @@ export const ENDPOINTS = {
     getAll: (patientId?: string) => `/api/cart-product?patientId=${patientId}`,
     addToCart: "/api/cart-product",
     deletecartProduct: (patientId: string, productId: string) =>
-    `/api/cart-product/${productId}?patientId=${patientId}`,
+      `/api/cart-product/${productId}?patientId=${patientId}`,
   },
 
   stripe: {
@@ -229,7 +236,10 @@ export const ENDPOINTS = {
         before ?? ""
       }&after=${after ?? ""}`,
 
+    getById: (id: string) => `/api/appointment-requests/${id}`,
     post: "/api/appointment-requests",
+    delete: (id: string, patientId: string) =>
+      `/api/appointment-requests/${id}?patientId=${patientId}`,
   },
 };
 

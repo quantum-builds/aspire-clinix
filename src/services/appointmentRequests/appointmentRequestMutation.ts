@@ -17,3 +17,20 @@ export const useCreateAppointmentRequests = () => {
     },
   });
 };
+
+export const useDeleteAppointmentRequests = () => {
+  return useMutation({
+    mutationFn: async ({
+      id,
+      patientId,
+    }: {
+      id: string;
+      patientId: string;
+    }) => {
+      const response = await axiosInstance.delete(
+        ENDPOINTS.appointemtRequest.delete(id, patientId)
+      );
+      return response.data.data;
+    },
+  });
+};
