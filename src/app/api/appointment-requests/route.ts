@@ -40,6 +40,7 @@ export async function GET(req: NextRequest) {
         skip,
         take: limit,
         orderBy: { createdAt: "desc" },
+        include: { patient: true },
       }),
       prisma.appointmentRequests.count({ where: baseWhere }),
     ]);

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
-import RequestDataTableWrapper from "./components/RequestDataTable";
+import RequestDataTableWrapper from "./components/RequestDataTableWrapper";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
+import { RequestDataTableSkeleton } from "./components/skeleton/RequestDataTableSkeleton";
 
 export default async function ReferralHistory(props: {
   searchParams?: Promise<{
@@ -20,7 +21,7 @@ export default async function ReferralHistory(props: {
         showFilters={true}
       />
 
-      <Suspense key={query + page} fallback={<div>Loading.....</div>}>
+      <Suspense key={query + page} fallback={<RequestDataTableSkeleton />}>
         <RequestDataTableWrapper query={query} page={page} />
       </Suspense>
     </div>

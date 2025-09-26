@@ -1,11 +1,13 @@
 import Button from "@/app/(dashboards)/components/Button";
 import { CalenderInputIcon, TimeIcon } from "@/assets";
-import { TAppointmentClinic } from "@/types/common";
+import { TAppointment } from "@/types/appointment";
+import { AppointmentDateType } from "@/types/common";
+import { calculateAge, formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
 
 interface UpcomingAppointmentCardProps {
-  appointment: TAppointmentClinic;
-  type: "past" | "upcoming";
+  appointment: TAppointment;
+  type: AppointmentDateType;
 }
 
 export default function UpcomingAppointmentCard({
@@ -25,40 +27,49 @@ export default function UpcomingAppointmentCard({
                   alt="Calendar Icon"
                   className="w-4 h-4"
                 />
-                <p className="text-lg">{appointment.date}</p>
+                <p className="text-lg">{formatDate(appointment.date)}</p>
               </div>
-              {type === "upcoming" && (
+              {type === AppointmentDateType.UPCOMING && (
                 <div className="flex items-center gap-1">
                   <Image src={TimeIcon} alt="TIme Icon" className="w-4 h-4" />
-                  <p className="text-lg">{appointment.time}</p>
+                  <p className="text-lg">{formatTime(appointment.date)}</p>
                 </div>
               )}
             </div>
           </div>
         </div>
-        {type === "upcoming" && (
+        {type === AppointmentDateType.UPCOMING && (
           <div className="text-lg italic flex w-full justify-end">
-            Appointment # {appointment.appointmentNumber}
+            Appointment # {appointment.id}
           </div>
         )}
       </div>
-      <div className={`flex ${type === "past" && "justify-between"}`}>
+      <div
+        className={`flex ${
+          type === AppointmentDateType.PAST && "justify-between"
+        }`}
+      >
         <div className="space-y-3 flex-1">
           <p className="text-lg">
-            Name: <span className="font-medium">{appointment.patientName}</span>
+            Name:{" "}
+            <span className="font-medium">{appointment.patient.fullName}</span>
           </p>
           <p className="text-lg">
             Age:
-            <span className="font-medium">{appointment.patientAge}</span>
+            <span className="font-medium">
+              {calculateAge(appointment.patient.dateOfBirth)}
+            </span>
           </p>
         </div>
         <div className={`space-y-3 flex-1 ${"text-right"}`}>
           <p className="text-lg">
             Gender:{" "}
-            <span className="font-medium">{appointment.patientGender}</span>
+            <span className="font-medium">
+              {appointment.patient.gender.toLowerCase()}
+            </span>
           </p>
           <p className="text-lg">
-            Disease: <span className="font-medium">{appointment.disease}</span>
+            Disease: <span className="font-medium">{appointment.reason}</span>
           </p>
         </div>
       </div>
@@ -66,12 +77,12 @@ export default function UpcomingAppointmentCard({
         <div>
           <Button
             text="See Reports"
-            href={`/clinic/appointments/reports/${appointment.appointmentNumber}`}
+            href={`/clinic/appointments/${appointment.id}/reports`}
           />
         </div>
         <div className="text-right">
           <p className="text-green font-medium italic">
-            {appointment.dentistName}
+            {appointment.dentist.fullName}
           </p>
         </div>
       </div>

@@ -8,6 +8,8 @@ import { AppointmentStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { usePatchAppointment } from "@/services/appointments/appointmentMutation";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import { useState } from "react";
+import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -16,6 +18,7 @@ interface UpcomingAppointmentCardProps {
 export default function UpcomingAppointmentCard({
   appointment,
 }: UpcomingAppointmentCardProps) {
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { mutate: cancelAppointment } = usePatchAppointment();
   const { refresh } = useRouter();
 
@@ -30,6 +33,10 @@ export default function UpcomingAppointmentCard({
         onSuccess: (data) => {
           console.log("updated appointment ", data);
           refresh();
+          setIsCancelModalOpen(false);
+        },
+        onError: () => {
+          setIsCancelModalOpen(false);
         },
       }
     );
@@ -68,13 +75,23 @@ export default function UpcomingAppointmentCard({
             text="See Reports"
             href={`/patient/appointments/${appointment.id}/reports`}
           />
+
           <CustomButton
             className="bg-dashboardBarBackground text-dashboardTextBlack"
-            handleOnClick={handleCancelAppointment}
+            handleOnClick={() => setIsCancelModalOpen(true)}
             text="Cancel Appointment"
           />
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        onConfirm={handleCancelAppointment}
+        title="Cancel Appointment"
+        description="Are you sure you want to cancel this appointment? This action cannot be undone."
+        cancelText="No, Keep Appointment"
+        confirmText="Yes, Cancel Appointment"
+      />
     </div>
   );
 }

@@ -22,6 +22,11 @@ import { CalenderInputIcon, TextInputIcon } from "@/assets";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { TPatient, TPatientCreate } from "@/types/patient";
+import { formatDate } from "@/utils/formatDateTime";
+import { usePatchPatient } from "@/services/patient/patientMutation";
+import { GenderType } from "@prisma/client";
+import { useUploadFile } from "@/services/s3/s3Mutatin";
 
 // Zod schema for form validation
 const profileFormSchema = z.object({
@@ -49,68 +54,77 @@ const profileFormSchema = z.object({
     }, "You must be between 13 and 120 years old"),
   gender: z.string().min(1, "Please select a gender"),
   country: z.string().min(1, "Please select a country"),
-  profileImage: z
-    .instanceof(File)
-    .refine(
-      (file) => file.size <= 5 * 1024 * 1024,
-      "Image must be less than 5MB"
-    )
-    .refine(
-      (file) =>
-        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-          file.type
-        ),
-      "Only JPEG, PNG, and WebP images are allowed"
-    ),
+  // profileImage can be File (for uploads) or string (server URL)
+  profileImage: z.union([
+    z
+      .instanceof(File)
+      .refine(
+        (file) => file.size <= 5 * 1024 * 1024,
+        "Image must be less than 5MB"
+      )
+      .refine(
+        (file) =>
+          ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+            file.type
+          ),
+        "Only JPEG, PNG, and WebP images are allowed"
+      ),
+    z.string().url().or(z.literal("")), // string URL or empty
+  ]),
 });
 
 type FormData = z.infer<typeof profileFormSchema>;
 
-const countries = [
-  { value: "us", label: "United States" },
-  { value: "ca", label: "Canada" },
-  { value: "uk", label: "United Kingdom" },
-  { value: "au", label: "Australia" },
-  { value: "de", label: "Germany" },
-  { value: "fr", label: "France" },
-  { value: "jp", label: "Japan" },
-  { value: "in", label: "India" },
-  { value: "br", label: "Brazil" },
-  { value: "mx", label: "Mexico" },
-];
-
 const genders = [
-  { value: "male", label: "Male" },
-  { value: "female", label: "Female" },
-  { value: "other", label: "Other" },
-  { value: "prefer-not-to-say", label: "Prefer not to say" },
+  { value: "MALE", label: "Male" },
+  { value: "FEMALE", label: "Female" },
 ];
 
-// Default values constant
-// const defaultValues = {
-//   fullName: "Jane Smith",
-//   email: "jane.smith@gmail.com",
-//   phoneNumber: "+44 7700 900123",
-//   dateOfBirth: new Date("1995-06-15"),
-//   gender: "female",
-//   country: "uk",
-//   profileImage: undefined,
-// };
+const countries = [
+  { value: "United States", label: "United States" },
+  { value: "Canada", label: "Canada" },
+  { value: "United Kingdom", label: "United Kingdom" },
+  { value: "Australia", label: "Australia" },
+  { value: "Germany", label: "Germany" },
+  { value: "France", label: "France" },
+  { value: "Japan", label: "Japan" },
+  { value: "India", label: "India" },
+  { value: "Brazil", label: "Brazil" },
+  { value: "Mexico", label: "Mexico" },
+  { value: "Pakistan", label: "Pakistan" },
+];
 
-const defaultValues = {
-  fullName: "",
-  email: "",
-  phoneNumber: "",
-  dateOfBirth: new Date(),
-  gender: "",
-  country: "",
-  profileImage: undefined,
-};
+interface ProfileFormProps {
+  patient: TPatient;
+}
 
-export default function ProfileForm() {
-  const [image, setImage] = useState<string | null>(null);
+export default function ProfileForm({ patient }: ProfileFormProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const { mutate: editPatientInfo } = usePatchPatient();
+  const { mutateAsync: uploadFile } = useUploadFile();
+
+  // Default values constant
+  const defaultValues = {
+    fullName: patient?.fullName || "",
+    email: patient?.email || "",
+    phoneNumber: patient?.phoneNumber || "",
+    dateOfBirth:
+      patient?.dateOfBirth || "" ? new Date(patient.dateOfBirth) : new Date(), // make sure it’s always a Date
+    gender: patient?.gender || undefined,
+    country: patient?.country || undefined,
+    profileImage: patient?.file || undefined,
+  };
+
+  // const defaultValues = {
+  //   fullName: "",
+  //   email: "",
+  //   phoneNumber: "",
+  //   dateOfBirth: new Date(),
+  //   gender: "",
+  //   country: "",
+  //   profileImage: undefined,
+  // };
 
   const {
     handleSubmit,
@@ -143,11 +157,51 @@ export default function ProfileForm() {
     setHasChanges(isChanged);
   }, [watchedValues]);
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     console.log("Form submitted:", data);
     // Handle form submission here
-    // Reset hasChanges after successful submission
-    setHasChanges(false);
+
+    let fileUrl = "uploads/aspire-clinic/images/placeholder.png";
+    if (data.profileImage instanceof File) {
+      const imageUploaded = await uploadFile({
+        selectedFile: data.profileImage,
+      });
+
+      fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+    }
+
+    const payload: Partial<TPatientCreate> = {
+      fullName: data.fullName,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      dateOfBirth: data.dateOfBirth,
+      gender: data.gender as GenderType,
+      country: data.country,
+      fileUrl: fileUrl,
+    };
+
+    editPatientInfo(
+      {
+        partialPatient: payload,
+        id: patient.id,
+      },
+      {
+        onSuccess: (data) => {
+          // console.log("dataaa is ", data);
+          // console.log("sucess");
+          // reset({
+          //   fullName: data.fullName || "",
+          //   email: data.email || "",
+          //   phoneNumber: data.phoneNumber || "",
+          //   dateOfBirth: data.dateOfBirth || new Date(),
+          //   gender: data.gender || undefined,
+          //   country: data.country || undefined,
+          //   profileImage: data.file,
+          // });
+          setHasChanges(false);
+        },
+      }
+    );
   };
 
   const handleCancel = () => {
@@ -155,10 +209,42 @@ export default function ProfileForm() {
     setHasChanges(false);
   };
 
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     // Validate the image file using Zod
+  //     try {
+  //       const imageSchema = z
+  //         .instanceof(File)
+  //         .refine(
+  //           (file) => file.size <= 5 * 1024 * 1024,
+  //           "Image must be less than 5MB"
+  //         )
+  //         .refine(
+  //           (file) =>
+  //             ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+  //               file.type
+  //             ),
+  //           "Only JPEG, PNG, and WebP images are allowed"
+  //         );
+
+  //       imageSchema.parse(file);
+
+  //       const imageUrl = URL.createObjectURL(file);
+  //       setImage(imageUrl);
+  //       // setValue("profileImage", file);
+  //     } catch (error) {
+  //       setImage(null);
+  //       console.error("Image validation failed:", error);
+  //     }
+  //   } else {
+  //     setImage(null);
+  //   }
+  // };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate the image file using Zod
       try {
         const imageSchema = z
           .instanceof(File)
@@ -176,15 +262,23 @@ export default function ProfileForm() {
 
         imageSchema.parse(file);
 
-        const imageUrl = URL.createObjectURL(file);
-        setImage(imageUrl);
-        // setValue("profileImage", file);
+        // update the form field directly
+        setValue("profileImage", file, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
       } catch (error) {
-        setImage(null);
         console.error("Image validation failed:", error);
+        setValue("profileImage", "", {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
       }
     } else {
-      setImage(null);
+      setValue("profileImage", "", {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
     }
   };
 
@@ -195,24 +289,36 @@ export default function ProfileForm() {
     }
   };
 
+  // console.log("profile image is ", watchedValues.profileImage);
   return (
     <form className="flex flex-col gap-7" onSubmit={handleSubmit(onSubmit)}>
       <div className="bg-dashboardBarBackground rounded-2xl p-6 flex flex-col gap-8">
         <p className="font-medium text-2xl text-green">Your Details</p>
         <div className="flex items-center gap-4">
-          <div className="bg-gray rounded-2xl h-[120px] w-[120px] overflow-hidden flex items-center justify-center">
-            {image ? (
+          {watchedValues.profileImage ? (
+            typeof watchedValues.profileImage === "string" ? (
               <Image
-                src={image}
+                src={watchedValues.profileImage}
                 alt="Profile Preview"
                 width={120}
                 height={120}
-                className="h-full w-full object-cover"
+                priority
+                className=" w-[120px] h-[120px] object-cover"
               />
             ) : (
-              <span className="text-sm text-gray-500">No Image</span>
-            )}
-          </div>
+              <Image
+                src={URL.createObjectURL(watchedValues.profileImage)}
+                alt="Profile Preview"
+                width={120}
+                height={120}
+                priority
+                className=" w-[120px] h-[120px] object-cover"
+              />
+            )
+          ) : (
+            <span className="text-sm text-gray-500">No Image</span>
+          )}
+
           <div className="flex flex-col gap-3">
             <Label className="font-medium text-lg">Profile Picture</Label>
             <Input
@@ -332,7 +438,7 @@ export default function ProfileForm() {
                 >
                   {watchedValues.dateOfBirth ? (
                     <span className="mr-auto">
-                      {watchedValues.dateOfBirth.toLocaleDateString()}
+                      {formatDate(watchedValues.dateOfBirth)}{" "}
                     </span>
                   ) : (
                     <span className="mr-auto">Select date</span>

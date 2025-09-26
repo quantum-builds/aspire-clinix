@@ -73,7 +73,7 @@ export default function ClinicLayout({
       </div>
 
       <div className="col-start-2 border-b">
-        <TopBar role="Clinic" profileLink="/clinic/profile" />
+        <TopBar name="Massab" role="Clinic" profileLink="/clinic/profile" />
       </div>
 
       <main className="p-6 col-start-2 overflow-y-auto mb-6">{children}</main>

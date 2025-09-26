@@ -1,44 +1,111 @@
+// import sendgrid from "@/config/sendgrid-config";
+// import { createResponse } from "@/utils/createResponse";
+// import { NextRequest, NextResponse } from "next/server";
+
+// export async function POST(req: NextRequest) {
+//   const { subject, html } = await req.json();
+
+//   if (!subject || !html) {
+//     return NextResponse.json(
+//       createResponse(false, "subject and text are required", null),
+//       {
+//         status: 400,
+//       }
+//     );
+//   }
+
+//   if (!process.env.EMAIL_FROM) {
+//     return NextResponse.json(
+//       createResponse(
+//         false,
+//         "EMAIL_FROM environment variable is not set. Please configure it in your environment file.",
+//         null
+//       ),
+//       { status: 500 }
+//     );
+//   }
+
+//   try {
+//     await sendgrid.send({
+//       from: process.env.EMAIL_FROM,
+//       to: process.env.EMAIL_TO,
+//       subject,
+//       html,
+//       text: undefined,
+//     });
+
+//     return NextResponse.json(
+//       createResponse(true, "Email sent successfully!", null),
+//       { status: 200 }
+//     );
+//   } catch (error) {
+//     console.log("Error in sending email ", error);
+//     const errorMessage = error instanceof Error ? error.message : String(error);
+//     return NextResponse.json(createResponse(false, errorMessage, null), {
+//       status: 500,
+//     });
+//   }
+// }
+
 import sendgrid from "@/config/sendgrid-config";
+import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { to, subject, text } = await req.json();
+  const { subject, html, attachment } = await req.json();
 
-  if (!to || !subject || !text) {
+  if (!subject || !html) {
     return NextResponse.json(
-      { message: "to, subject and text are required" },
-      { status: 400 }
+      createResponse(false, "subject and html are required", null),
+      {
+        status: 400,
+      }
     );
   }
 
   if (!process.env.EMAIL_FROM) {
     return NextResponse.json(
-      {
-        error:
-          "EMAIL_FROM environment variable is not set. Please configure it in your environment file.",
-      },
+      createResponse(
+        false,
+        "EMAIL_FROM environment variable is not set. Please configure it in your environment file.",
+        null
+      ),
       { status: 500 }
     );
   }
 
   try {
-    console.log("api key is ", process.env.SENDGRID_API_KEY);
-    await sendgrid.send({
+    const emailData: any = {
       from: process.env.EMAIL_FROM,
-      to,
+      to: process.env.EMAIL_TO,
       subject,
-      text,
-    });
+      html,
+      text: undefined,
+    };
+
+    // Add attachment if provided
+    if (attachment && attachment.content) {
+      emailData.attachments = [
+        {
+          content: attachment.content,
+          filename: attachment.filename,
+          type: attachment.type,
+          disposition: attachment.disposition,
+        },
+      ];
+    }
+
+    await sendgrid.send(emailData);
 
     return NextResponse.json(
-      { message: "Email sent successfully!" },
+      createResponse(true, "Email sent successfully!", null),
       { status: 200 }
     );
   } catch (error) {
-    console.log("Error in sending email ", error);
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 }
-    );
+    console.log("Error in sending email:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(createResponse(false, errorMessage, null), {
+      status: 500,
+    });
   }
 }

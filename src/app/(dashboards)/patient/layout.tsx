@@ -1,4 +1,4 @@
-import { SidebarPage } from "@/types/common";
+import { Response, SidebarPage } from "@/types/common";
 
 import {
   AppointmentsIcon,
@@ -10,6 +10,8 @@ import {
 } from "@/assets";
 import Sidebar from "../components/SideBar";
 import TopBar from "../components/TopBar";
+import { getPatient } from "@/services/patient/patientQuery";
+import { TPatient } from "@/types/patient";
 
 const SIDEBAR_CONTENT: SidebarPage[] = [
   {
@@ -70,9 +72,12 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
   },
 ];
 
-export default function PatientLayout({
+export default async function PatientLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const response: Response<TPatient> = await getPatient(
+    "cmfplxicq0000l6qaof724vtk"
+  );
   return (
     <div
       className={`font-inter text-dashboardTextBlack bg-dashboardBackground h-screen grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden `}
@@ -82,7 +87,12 @@ export default function PatientLayout({
       </div>
 
       <div className="col-start-2 border-b">
-        <TopBar role="Patient" profileLink="/patient/profile" />
+        <TopBar
+          name={response.data?.fullName || ""}
+          profilePic={response.data?.file || undefined}
+          role="Patient"
+          profileLink="/patient/profile"
+        />
       </div>
 
       {/* make only main scrollable */}

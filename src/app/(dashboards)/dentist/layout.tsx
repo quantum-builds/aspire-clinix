@@ -50,7 +50,7 @@ export default function PatientLayout({
       </div>
 
       <div className="col-start-2 border-b">
-        <TopBar role="Dentist" profileLink="/dentist/profile" />
+        <TopBar name="massab" role="Dentist" profileLink="/dentist/profile" />
       </div>
 
       {/* make only main scrollable */}

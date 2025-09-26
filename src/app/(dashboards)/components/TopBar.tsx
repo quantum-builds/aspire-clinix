@@ -24,11 +24,18 @@ import Notifications from "./Notifications";
 import Link from "next/link";
 
 interface TopBarProps {
+  name: string;
+  profilePic?: string | undefined;
   role: string;
   profileLink: string;
 }
 
-export default function TopBar({ role, profileLink }: TopBarProps) {
+export default function TopBar({
+  name,
+  profilePic,
+  role,
+  profileLink,
+}: TopBarProps) {
   return (
     <div className="fixed top-0 left-[320px] w-[calc(100%-320px)] h-[90px] bg-dashboardBarBackground border-b border-gray-200 flex items-center justify-end gap-8 px-6">
       <Popover>
@@ -62,12 +69,14 @@ export default function TopBar({ role, profileLink }: TopBarProps) {
 
       <div className="flex gap-3 items-center">
         <Image
-          src={HarryKaneImage}
+          src={profilePic || HarryKaneImage}
           alt="User Image"
+          width={40}
+          height={40}
           className="w-11 h-11 rounded-2xl"
         />
         <div className="flex flex-col gap-[1px]">
-          <p className="font-semibold text-lg">Harry Kane</p>
+          <p className="font-semibold text-lg">{name}</p>
           <p className="text-lightBlack">{role}</p>
         </div>
       </div>
