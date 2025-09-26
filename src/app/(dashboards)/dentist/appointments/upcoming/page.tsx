@@ -4,6 +4,7 @@ import { TAppointmentDentist } from "@/types/common";
 import { Suspense } from "react";
 import AppointmentGrid from "./components/AppoinmentGrid";
 import DateFilter from "@/app/(dashboards)/components/DateFilter";
+import AppointmentGridWrapper from "./components/AppointmentGridWrapper";
 
 const APPOINTMENTS: TAppointmentDentist[] = [
   {
@@ -110,25 +111,31 @@ const APPOINTMENTS: TAppointmentDentist[] = [
 export default async function UpcomingAppointments(props: {
   searchParams?: Promise<{
     query?: string;
+    page?: string;
   }>;
 }) {
+  // const searchParams = await props.searchParams;
+  // const query = searchParams?.query || "";
+
+  // const filteredAppointments = APPOINTMENTS.filter(
+  //   (appointment) =>
+  //     appointment.patientName.toLowerCase().includes(query.toLowerCase()) ||
+  //     appointment.appointmentNumber.toLowerCase().includes(query)
+  // );
+
+  // if (filteredAppointments.length === 0) {
+  //   return (
+  //     <NoContent
+  //       title="Appointments"
+  //       placeholder="Enter Patient Name or Appointment Number"
+  //     />
+  //   );
+  // }
+
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
+  const page = Number(searchParams?.page) || 1;
 
-  const filteredAppointments = APPOINTMENTS.filter(
-    (appointment) =>
-      appointment.patientName.toLowerCase().includes(query.toLowerCase()) ||
-      appointment.appointmentNumber.toLowerCase().includes(query)
-  );
-
-  if (filteredAppointments.length === 0) {
-    return (
-      <NoContent
-        title="Appointments"
-        placeholder="Enter Patient Name or Appointment Number"
-      />
-    );
-  }
   return (
     <div>
       <div className=" w-full h-full flex flex-col gap-7">
@@ -139,8 +146,8 @@ export default async function UpcomingAppointments(props: {
             <DateFilter />
           </div>
         </div>
-        <Suspense key={query} fallback={<div>Loading.....</div>}>
-          <AppointmentGrid appointments={filteredAppointments} />
+        <Suspense key={query + page} fallback={<div>Loading.....</div>}>
+          <AppointmentGridWrapper query={query} page={page} />{" "}
         </Suspense>
       </div>
     </div>

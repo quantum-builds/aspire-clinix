@@ -168,6 +168,11 @@ export const ENDPOINTS = {
       `/api/resources?page=${page}&fileType=${fileType}&search=${search}`,
   },
 
+  practices: {
+    getAll: `/api/practices`,
+    getById: (id: string) => `/api/practices/${id}`,
+  },
+
   appointemt: {
     get: (
       page?: number,
@@ -188,6 +193,15 @@ export const ENDPOINTS = {
     patch: (id: string, patientId: string) =>
       `/api/appointments/${id}?patientId=${patientId}`,
   },
+
+  dentistToPractice: {
+    get: (dentistId?: string, practiceId?: string) =>
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
+        practiceId ?? ""
+      }`,
+    create: "/api/dentist-practice",
+  },
+
   reports: {
     get: (
       search?: string,
@@ -240,6 +254,7 @@ export const ENDPOINTS = {
     post: "/api/appointment-requests",
     delete: (id: string, patientId: string) =>
       `/api/appointment-requests/${id}?patientId=${patientId}`,
+    patch: (id: string) => `/api/appointment-requests/${id}`,
   },
 };
 

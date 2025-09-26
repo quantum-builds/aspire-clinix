@@ -1,6 +1,6 @@
 import { TReport } from "@/types/reports";
 import VideoReportCard from "./VideoReportCard";
-import UploadVideoForm from "../dentist/appointments/reports/new/components/UploadVideoForm";
+import UploadVideoForm from "../dentist/appointments/[id]/reports/new/components/UploadVideoForm";
 
 interface VideoReportGridProps {
   reports: TReport[];

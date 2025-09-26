@@ -22,48 +22,68 @@ import {
 } from "@/components/ui/popover";
 import Image from "next/image";
 import { CalenderInputIcon, TextInputIcon, TimeIcon } from "@/assets";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { TPractice } from "@/types/practice";
+import { TDentist } from "@/types/dentist";
+import { useCreateAppointment } from "@/services/appointments/appointmentMutation";
+import { TAppointmentCreate } from "@/types/appointment";
+import { TPatient } from "@/types/patient";
+import {
+  TAppointmentRequest,
+  TAppointmentRequestCreate,
+} from "@/types/appointment-request";
+import { AppointmentRequestStatus, AppointmentStatus } from "@prisma/client";
+import { formatTimeForInput } from "@/utils/formatDateTime";
+import { usePatchAppointmentRequest } from "@/services/appointmentRequests/appointmentRequestMutation";
 
 const assignDentistSchema = z.object({
   dentistName: z.string().min(2, "Enter dentist name"),
   dentistEmail: z.string().email("Please enter a valid email address"),
   gdcNo: z.string().min(1, "Enter GDC number"),
-  branch: z.string().min(1, "Please select a branch"),
+  practicAddress: z.string().min(1, "Please select a practice"),
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
-  startTime: z.string().min(1, "Enter start time"),
-  finishTime: z.string().min(1, "Enter end time"),
+  startTime: z.date({ required_error: "Start time is required" }),
+  finishTime: z.date({ required_error: "Finish time is required" }),
 });
 
 type FormData = z.infer<typeof assignDentistSchema>;
 
-const dentists = [
-  { value: "dentist1", label: "Dr. John Doe" },
-  { value: "dentist2", label: "Dr. Jane Smith" },
-];
+interface BookAppointmentFormProps {
+  practices: TPractice[];
+  dentists: TDentist[];
+  appointmentRequest: TAppointmentRequest;
+}
 
-const branches = [
-  { value: "branch1", label: "Downtown Clinic" },
-  { value: "branch2", label: "Uptown Clinic" },
-];
-
-export default function BookAppointmentForm() {
+export default function BookAppointmentForm({
+  practices,
+  dentists,
+  appointmentRequest,
+}: BookAppointmentFormProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const { mutate: createAppointment } = useCreateAppointment();
+  const { mutate: updateAppointmentRequest } = usePatchAppointmentRequest();
   const [isDirty, setIsDirty] = useState(false);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace, refresh } = useRouter();
 
   const defaultValues = {
     dentistName: "",
     dentistEmail: "",
     gdcNo: "",
-    branch: "",
+    practicAddress: "",
     appointmentDate: new Date(),
-    startTime: "",
-    finishTime: "",
+    startTime: new Date(),
+    finishTime: new Date(),
   };
 
   const {
     control,
     handleSubmit,
     watch,
+    setValue,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(assignDentistSchema),
@@ -80,7 +100,54 @@ export default function BookAppointmentForm() {
   }, [values, defaultValues]);
 
   const onSubmit = (data: FormData) => {
-    console.log("Assign Dentist Form:", data);
+    const selectedDentist = dentists.find(
+      (d) => d.fullName === data.dentistName
+    );
+    const newAppointment: TAppointmentCreate = {
+      patientId: appointmentRequest?.patient?.id ?? "",
+      dentistId: selectedDentist?.id ?? "",
+      practiceId: data.practicAddress,
+      reason: appointmentRequest.reason,
+      state: AppointmentStatus.PENDING,
+      date: data.appointmentDate,
+      startTime: data.startTime,
+      finishTime: data.finishTime,
+    };
+    createAppointment(
+      { appointment: newAppointment },
+      {
+        onSuccess: () => {
+          const appointmentRequest: Partial<TAppointmentRequest> = {
+            status: AppointmentRequestStatus.APPROVED,
+          };
+          updateAppointmentRequest({
+            id: appointmentRequest.id ?? "",
+            appointmentRequest: appointmentRequest,
+          });
+
+          reset();
+          refresh();
+        },
+      }
+    );
+  };
+
+  const handlePracticeChange = (practiceId: string) => {
+    const params = new URLSearchParams(searchParams?.toString());
+    params.set("practiceId", practiceId);
+    replace(`${pathname}?${params.toString()}`);
+    setValue("practicAddress", practiceId);
+  };
+
+  // when dentist is selected, autofill email and gdc
+  const handleDentistChange = (dentistName: string) => {
+    setValue("dentistName", dentistName);
+
+    const selectedDentist = dentists.find((d) => d.fullName === dentistName);
+    if (selectedDentist) {
+      setValue("dentistEmail", selectedDentist.email);
+      setValue("gdcNo", selectedDentist.gdcNo);
+    }
   };
 
   return (
@@ -99,17 +166,19 @@ export default function BookAppointmentForm() {
               name="dentistName"
               control={control}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select onValueChange={handleDentistChange} value={field.value}>
                   <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
                     <SelectValue placeholder="Select Dentist Name" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {dentists.map((d) => (
-                      <SelectItem key={d.value} value={d.value}>
-                        {d.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                  {dentists && dentists.length > 0 && (
+                    <SelectContent>
+                      {dentists.map((d) => (
+                        <SelectItem key={d.id} value={d.fullName}>
+                          {d.fullName} - {d.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  )}
                 </Select>
               )}
             />
@@ -120,6 +189,7 @@ export default function BookAppointmentForm() {
             )}
           </div>
 
+          {/* {Email} */}
           <div className="space-y-2">
             <Label className="text-lg font-medium">Email</Label>
             <Controller
@@ -131,6 +201,7 @@ export default function BookAppointmentForm() {
                     {...field}
                     placeholder="Enter email address"
                     className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                    readOnly
                   />
                   <Image
                     src={TextInputIcon}
@@ -150,33 +221,6 @@ export default function BookAppointmentForm() {
 
         {/* Dentist Name & GDC */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* <div className="space-y-2">
-            <Label className="text-lg font-medium">Dentist Name</Label>
-            <Controller
-              name="dentistName"
-              control={control}
-              render={({ field }) => (
-                <div className="relative">
-                  <Input
-                    {...field}
-                    placeholder="Enter dentist name"
-                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-                  />
-                  <Image
-                    src={TextInputIcon}
-                    alt="text-input"
-                    className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
-                  />
-                </div>
-              )}
-            />
-            {errors.dentistName && (
-              <p className="text-sm text-red-500">
-                {errors.dentistName.message}
-              </p>
-            )}
-          </div> */}
-
           <div className="space-y-2">
             <Label className="text-lg font-medium">GDC No.</Label>
             <Controller
@@ -188,6 +232,7 @@ export default function BookAppointmentForm() {
                     {...field}
                     placeholder="Enter GDC number"
                     className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                    readOnly
                   />
                   <Image
                     src={TextInputIcon}
@@ -206,26 +251,28 @@ export default function BookAppointmentForm() {
           <div className="space-y-2">
             <Label className="text-lg font-medium">Branch</Label>
             <Controller
-              name="branch"
+              name="practicAddress"
               control={control}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={handlePracticeChange}
+                  value={field.value}
+                >
                   <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
                     <SelectValue placeholder="Select Branch" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {branches.map((b) => (
-                      <SelectItem key={b.value} value={b.value}>
-                        {b.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                  {practices && practices.length > 0 && (
+                    <SelectContent>
+                      {practices.map((b) => (
+                        <SelectItem key={b.id} value={b.id}>
+                          {b.addressLine1}, {b.addressLine2}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  )}
                 </Select>
               )}
             />
-            {errors.branch && (
-              <p className="text-sm text-red-500">{errors.branch.message}</p>
-            )}
           </div>
         </div>
 
@@ -267,9 +314,7 @@ export default function BookAppointmentForm() {
                       mode="single"
                       selected={field.value}
                       onSelect={(date) => date && field.onChange(date)}
-                      disabled={(date) =>
-                        date < new Date("1900-01-01") || date > new Date()
-                      }
+                      disabled={(date) => date < new Date()}
                       captionLayout="dropdown"
                       showOutsideDays={false}
                     />
@@ -296,6 +341,16 @@ export default function BookAppointmentForm() {
                     <Input
                       {...field}
                       type="time"
+                      value={field.value ? formatTimeForInput(field.value) : ""}
+                      onChange={(e) => {
+                        const [hours, minutes] = e.target.value
+                          .split(":")
+                          .map(Number);
+                        const newDate = new Date();
+                        newDate.setHours(hours);
+                        newDate.setMinutes(minutes);
+                        field.onChange(newDate);
+                      }}
                       placeholder="Enter start time"
                       className="bg-gray px-6 py-3 h-[52px] rounded-2xl pr-12 appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
                     />
@@ -324,6 +379,17 @@ export default function BookAppointmentForm() {
                     <Input
                       {...field}
                       type="time"
+                      value={field.value ? formatTimeForInput(field.value) : ""}
+                      onChange={(e) => {
+                        const [hours, minutes] = e.target.value
+                          .split(":")
+                          .map(Number);
+                        const newDate = new Date();
+                        newDate.setHours(hours);
+                        newDate.setMinutes(minutes);
+                        field.onChange(newDate);
+                      }}
+                      placeholder="Enter finish time"
                       className="bg-gray px-6 py-3 h-[52px] rounded-2xl pr-12 appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
                     />
                   )}

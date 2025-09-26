@@ -28,8 +28,6 @@ export const useCreateAppointment = () => {
       appointment,
     }: {
       appointment: TAppointmentCreate;
-      id: string;
-      patientId: string;
     }) => {
       const response = await axiosInstance.post(
         ENDPOINTS.appointemt.post,
