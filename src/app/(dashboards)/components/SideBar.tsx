@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { ActiveIcon, AspireDarkLogo, BackToWebsiteIcon } from "@/assets";
 import Image from "next/image";
-import Button from "@/app/(dashboards)/components/Button";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { SidebarPage } from "@/types/common";
+import CustomButton from "./custom-components/CustomButton";
 
 interface SideBarProps {
   sideBarContnent: SidebarPage[];
@@ -124,9 +124,7 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
                         isActiveSection ? "invert brightness-0" : ""
                       }`}
                     />
-                    <span className="text-lg font-semibold">
-                      {section.name}
-                    </span>
+                    <span className="text-[17px]">{section.name}</span>
                   </div>
                 </button>
 
@@ -171,7 +169,7 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
           })}
         </nav>
       </div>
-      <Button text="Back to Website" icon={BackToWebsiteIcon} href="/" />
+      <CustomButton text="Back to Website" icon={BackToWebsiteIcon} href="/" />
     </div>
   );
 }

@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -101,12 +103,13 @@ html {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
     --dasboard-bar-background: #ffffff;
-    --dashboard-background: #f3f5f7;
+    --dashboard-background: #ede9e4;
     --dashboard-text-black: #505050;
-    --green: #54bd95;
+    --green: #b7a58d;
+    --green-hover: #a19078;
     --light-black: #7e7e7e;
     --gray: #f3f5f7;
-    --light-gray: #D0D0D0;
+    --light-gray: #d0d0d0;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -134,12 +137,12 @@ html {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --dasboard-bar-background: #ffffff;
-    --dashboard-background: #f3f5f7;
+    --dashboard-background: ##ede9e4;
     --dashboard-text-black: #505050;
     --green: #54bd95;
     --light-black: #7e7e7e;
     --gray: #f3f5f7;
-    --light-gray: #D0D0D0;
+    --light-gray: #d0d0d0;
   }
 }
 

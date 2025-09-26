@@ -29,6 +29,7 @@ const config: Config = {
         dashboardBackground: "var(--dashboard-background)",
         dashboardTextBlack: "var(--dashboard-text-black)",
         green: "var(--green)",
+        greenHover: "var(--green-hover)",
         lightBlack: "var(--light-black)",
         gray: "var(--gray)",
         lightGray: "var(--light-gray)",
@@ -72,7 +73,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        inter: ["InterVariable", "sans-serif"],
+        inter: ["Inter", "sans-serif"],
         opus: ["var(--font-opus)"],
         gillSans: ["var(--font-gill-sans)"],
       },

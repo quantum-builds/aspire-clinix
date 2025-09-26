@@ -79,7 +79,9 @@ export default async function PatientLayout({
     "cmfplxicq0000l6qaof724vtk"
   );
   return (
-    <div className="font-inter text-dashboardTextBlack bg-dashboardBackground h-screen grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden">
+    <div
+      className={`font-inter text-dashboardTextBlack bg-dashboardBackground h-screen grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden `}
+    >
       <div className="row-span-2 border-r">
         <Sidebar sideBarContnent={SIDEBAR_CONTENT} />
       </div>

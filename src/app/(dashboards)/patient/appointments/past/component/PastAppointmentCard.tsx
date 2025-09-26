@@ -1,8 +1,8 @@
-import { CalenderInputIcon } from "@/assets";
+import { CalenderInputIconV2 } from "@/assets";
 import Image from "next/image";
-import Button from "@/app/(dashboards)/components/Button";
 import { TAppointment } from "@/types/appointment";
 import { formatDate } from "@/utils/formatDateTime";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -12,22 +12,22 @@ export default function PastAppointmentCard({
   appointment,
 }: UpcomingAppointmentCardProps) {
   return (
-    <div className="flex flex-col gap-8 p-6 rounded-2xl bg-dashboardBackground">
+    <div className="flex flex-col gap-3 p-6 rounded-2xl bg-dashboardBackground">
       <div className="flex justify-between gap-3 items-center">
-        <p className="text-green font-medium text-xl">Dentist Details</p>
+        <p className="text-green font-semibold text-xl">Dentist Details</p>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
             <Image
-              src={CalenderInputIcon}
+              src={CalenderInputIconV2}
               alt="Calendar Icon"
               className="w-4 h-4"
             />
-            <p className="text-xl">{formatDate(appointment.date)}</p>
+            <p className="text-lg">{formatDate(appointment.date)}</p>
           </div>
         </div>
       </div>
 
-      <div className="space-y-5">
+      <div className="">
         <div className="flex items-center justify-between">
           <p className="text-lg">
             Name:{" "}
@@ -45,20 +45,17 @@ export default function PastAppointmentCard({
             <span className="font-medium">{appointment.patient.gender}</span>
           </p>
           <p className="text-lg">
-            Disease:{" "}
+            Reason:{" "}
             <span className="font-medium truncate">{appointment.reason}</span>
           </p>
         </div>
       </div>
 
-      <div className="flex justify-between items-center">
-        <Button
+      <div className="flex justify-between items-center mt-4">
+        <CustomButton
           text="See Reports"
           href={`/patient/appointments/${appointment.id}/reports`}
         />
-        <p className="text-lg text-green font-medium text-right">
-          {appointment.dentist.fullName}
-        </p>
       </div>
     </div>
   );

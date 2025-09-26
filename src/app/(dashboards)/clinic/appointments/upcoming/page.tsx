@@ -1,7 +1,6 @@
-import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import { Suspense } from "react";
-import DateFilter from "@/app/(dashboards)/components/DateFilter";
 import AppointmentGridWrapper from "./components/AppointmentGridWrapper";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
 export default async function UpcomingAppointments(props: {
   searchParams?: Promise<{
@@ -14,19 +13,15 @@ export default async function UpcomingAppointments(props: {
   const page = Number(searchParams?.page) || 1;
 
   return (
-    <div>
-      <div className=" w-full h-full flex flex-col gap-7">
-        <div className="flex items-center justify-between">
-          <h1 className="font-medium text-3xl">Appointments</h1>
-          <div className="flex gap-2">
-            <SearchBar placeholder="Enter Patient Name or Appointment Number" />
-            <DateFilter />
-          </div>
-        </div>
-        <Suspense key={query + page} fallback={<div>Loading.....</div>}>
-          <AppointmentGridWrapper query={query} page={page} />
-        </Suspense>
-      </div>
+    <div className="min-h-full flex flex-col gap-5 mb-10">
+      <PageTopBar
+        pageHeading="Appointments"
+        showSearch={true}
+        showFilters={true}
+      />
+      <Suspense key={query + page} fallback={<div>Loading.....</div>}>
+        <AppointmentGridWrapper query={query} page={page} />
+      </Suspense>
     </div>
   );
 }

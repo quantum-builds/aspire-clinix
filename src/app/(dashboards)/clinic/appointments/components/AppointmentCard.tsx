@@ -1,7 +1,7 @@
 import Button from "@/app/(dashboards)/components/Button";
 import { CalenderInputIcon, TimeIcon } from "@/assets";
 import { TAppointment } from "@/types/appointment";
-import { AppointmentDateType, TAppointmentClinic } from "@/types/common";
+import { AppointmentDateType } from "@/types/common";
 import { calculateAge, formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
 

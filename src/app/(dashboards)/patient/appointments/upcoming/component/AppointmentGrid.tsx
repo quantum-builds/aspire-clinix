@@ -47,10 +47,15 @@ export function AppointmentGrid({ appointments }: AppointmentGridProps) {
     <div className="flex flex-col gap-7">
       <FirstUpcomingAppointmentCard appointment={appointments[0]} />
       {appointments.length > 1 && (
-        <div className="grid 1xl:grid-cols-2 gap-x-6 gap-y-10 p-6 border border-green rounded-2xl">
-          {appointments.slice(1).map((appointment, index) => (
-            <UpcomingAppointmentCard appointment={appointment} key={index} />
-          ))}
+        <div className="py-5 px-8 rounded-2xl bg-dashboardBarBackground space-y-5">
+          <p className="font-medium text-[22px]">
+            Next Appointment{appointments.length > 2 && "s"}
+          </p>
+          <div className="grid 1xl:grid-cols-2 gap-x-6 gap-y-10">
+            {appointments.slice(1).map((appointment, index) => (
+              <UpcomingAppointmentCard appointment={appointment} key={index} />
+            ))}
+          </div>
         </div>
       )}
     </div>

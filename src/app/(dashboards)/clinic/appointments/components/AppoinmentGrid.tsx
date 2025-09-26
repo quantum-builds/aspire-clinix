@@ -1,7 +1,6 @@
-import { AppointmentDateType, TAppointmentClinic } from "@/types/common";
+import { AppointmentDateType } from "@/types/common";
 import AppointmentCard from "./AppointmentCard";
 import { TAppointment } from "@/types/appointment";
-
 interface AppointmentGridProps {
   appointments: TAppointment[];
   type: AppointmentDateType;
