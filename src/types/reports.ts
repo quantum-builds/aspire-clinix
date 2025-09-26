@@ -1,5 +1,6 @@
 import { ResoucrceType } from "@prisma/client";
 import { TDentist } from "./dentist";
+import { TPatient } from "./patient";
 
 export type TReport = {
   id: string;
@@ -12,9 +13,11 @@ export type TReport = {
   file?: string;
   createdAt: Date;
   updatedAt: Date;
+  patient?: TPatient;
+  dentist?: TDentist;
 };
 
 export type TReportResponse = {
-  dentist:TDentist
+  dentist?: TDentist;
   reports: { pdfs?: TReport[]; videos?: TReport[] };
 };

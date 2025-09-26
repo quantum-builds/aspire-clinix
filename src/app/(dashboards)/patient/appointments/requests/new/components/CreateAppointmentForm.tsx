@@ -64,7 +64,7 @@ export default function AppointmentForm() {
   const onSubmit = async (data: FormData) => {
     console.log("Appointment Form Submitted:", data);
 
-    let fileUrl = "uploads/aspire-clinic/images/placeholder.png";
+    let fileUrl = undefined;
     if (data.medicalHistory) {
       const imageUploaded = await uploadFile({
         selectedFile: data.medicalHistory,

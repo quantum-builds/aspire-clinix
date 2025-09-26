@@ -19,7 +19,7 @@ interface ResourceGridWrapperProps {
 interface ReportGridProps {
   videoReports: TReport[];
   letterReports: TReport[];
-  dentistDetails: TDentist;
+  dentistDetails?: TDentist;
 }
 
 export default async function ReportGridWrapper({

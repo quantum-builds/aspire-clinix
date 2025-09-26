@@ -9,7 +9,6 @@ export async function getPatient(id: string) {
     const response = await axiosInstance.get(ENDPOINTS.patient.getPatient(id));
     const responseData: Response<TPatient> = response.data;
     const patient: TPatient = responseData.data;
-    // console.log("response is ", patient);
 
     console.log(patient.fileUrl);
     const upload = patient.fileUrl

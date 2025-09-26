@@ -1,9 +1,10 @@
-import { TAppointmentClinic } from "@/types/common";
+import { AppointmentDateType, TAppointmentClinic } from "@/types/common";
 import AppointmentCard from "./AppointmentCard";
+import { TAppointment } from "@/types/appointment";
 
 interface AppointmentGridProps {
-  appointments: TAppointmentClinic[];
-  type: "past" | "upcoming";
+  appointments: TAppointment[];
+  type: AppointmentDateType;
 }
 export default function AppointmentGrid({
   appointments,
@@ -13,9 +14,10 @@ export default function AppointmentGrid({
     <div className="flex flex-col gap-10 bg-dashboardBarBackground rounded-2xl p-6">
       <div className="flex items-center justify-between">
         <p className="text-2xl font-medium">
-          {type === "upcoming" ? "Upcoming" : "Past"} Appointments
+          {type === AppointmentDateType.UPCOMING ? "Upcoming" : "Past"}{" "}
+          Appointments
         </p>
-        {type === "upcoming" && (
+        {type === AppointmentDateType.UPCOMING && (
           <p className="text-xl text-green italic">
             {appointments.length} new appointment
             {appointments.length > 1 && "s"}

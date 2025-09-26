@@ -1,141 +1,18 @@
-import NoContent from "@/app/(dashboards)/components/NoContent";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
-import { TAppointmentClinic } from "@/types/common";
 import { Suspense } from "react";
-import AppointmentGrid from "../components/AppoinmentGrid";
 import DateFilter from "@/app/(dashboards)/components/DateFilter";
-
-const APPOINTMENTS: TAppointmentClinic[] = [
-  //   {
-  //     date: "July 07, 2025",
-  //     time: "09:00",
-  //     appointmentNumber: "APT001",
-  //     disease: "Toothache",
-  //     patientId: "P001",
-  //     patientName: "Ali Khan",
-  //     patientGender: "Male",
-  //     patientAge: "28",
-  //     dentistName: "Dr. Sammy will",
-  //
-  //   },
-  //   {
-  //     date: "July 07, 2025",
-  //     time: "09:30",
-  //     appointmentNumber: "APT002",
-  //     disease: "Cavity",
-  //     patientId: "P002",
-  //     patientName: "Sara Ahmed",
-  //     patientGender: "Female",
-  //     patientAge: "34",
-  //     dentistName: "Dr. Sammy will",
-  //
-  //   },
-  //   {
-  //     date: "July 07, 2025",
-  //     time: "10:00",
-  //     appointmentNumber: "APT003",
-  //     disease: "Gum Bleeding",
-  //     patientId: "P003",
-  //     patientName: "Usman Ali",
-  //     patientGender: "Male",
-  //     patientAge: "42",
-  //     dentistName: "Dr. Sammy will",
-  //
-  //   },
-  //   {
-  //     date: "July 07, 2025",
-  //     time: "10:30",
-  //     appointmentNumber: "APT004",
-  //     disease: "Wisdom Tooth Extraction",
-  //     patientId: "P004",
-  //     patientName: "Fatima Noor",
-  //     patientGender: "Female",
-  //     patientAge: "25",
-  //     dentistName: "Dr. Sammy will",
-  //
-  //   },
-  //   {
-  //     date: "July 07, 2025",
-  //     time: "11:00",
-  //     appointmentNumber: "APT005",
-  //     disease: "Braces Adjustment",
-  //     patientId: "P005",
-  //     patientName: "Hassan Raza",
-  //     patientGender: "Male",
-  //     patientAge: "19",
-  //     dentistName: "Dr. Sammy will",
-  //
-  //   },
-  //   {
-  //     date: "July 07, 2025",
-  //     time: "11:30",
-  //     appointmentNumber: "APT006",
-  //     disease: "Root Canal",
-  //     patientId: "P006",
-  //     patientName: "Ayesha Siddiqui",
-  //     patientGender: "Female",
-  //     patientAge: "30",
-  //     dentistName: "Dr. Sammy will",
-  //
-  //   },
-  //   {
-  //     date: "July 07, 2025",
-  //     time: "12:00",
-  //     appointmentNumber: "APT007",
-  //     disease: "Tooth Filling",
-  //     patientId: "P007",
-  //     patientName: "Bilal Hussain",
-  //     patientGender: "Male",
-  //     patientAge: "36",
-  //     dentistName: "Dr. Sammy will",
-  //
-  //   },
-  {
-    date: "July 07, 2025",
-    time: "12:30",
-    appointmentNumber: "APT008",
-    disease: "Dental Cleaning",
-    patientId: "P008",
-    patientName: "Maryam Iqbal",
-    patientGender: "Female",
-    patientAge: "27",
-    dentistName: "Dr. Sammy will",
-  },
-  {
-    date: "July 07, 2025",
-    time: "13:00",
-    appointmentNumber: "APT009",
-    disease: "Broken Tooth",
-    patientId: "P009",
-    patientName: "Ahmed Faraz",
-    patientGender: "Male",
-    patientAge: "40",
-    dentistName: "Dr. Sammy will",
-  },
-];
+import AppointmentGridWrapper from "./components/AppointmentGridWrapper";
 
 export default async function UpcomingAppointments(props: {
   searchParams?: Promise<{
     query?: string;
+    page?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
+  const page = Number(searchParams?.page) || 1;
 
-  const filteredAppointments = APPOINTMENTS.filter(
-    (appointment) =>
-      appointment.patientName.toLowerCase().includes(query.toLowerCase()) ||
-      appointment.appointmentNumber.toLowerCase().includes(query)
-  );
-
-  if (filteredAppointments.length === 0) {
-    return (
-      <NoContent
-        title="Appointments"
-        placeholder="Enter Patient Name or Appointment Number"
-      />
-    );
-  }
   return (
     <div>
       <div className=" w-full h-full flex flex-col gap-7">
@@ -146,11 +23,8 @@ export default async function UpcomingAppointments(props: {
             <DateFilter />
           </div>
         </div>
-        <Suspense key={query} fallback={<div>Loading.....</div>}>
-          <AppointmentGrid
-            appointments={filteredAppointments}
-            type="upcoming"
-          />
+        <Suspense key={query + page} fallback={<div>Loading.....</div>}>
+          <AppointmentGridWrapper query={query} page={page} />
         </Suspense>
       </div>
     </div>

@@ -135,6 +135,10 @@ export const ENDPOINTS = {
     delete: (id: string) => `/api/referrals/${id}`,
   },
 
+  email: {
+    sendEmail: "/api/send-email",
+  },
+
   treatment: {
     create: `/api/treatments`,
     get: (id: string) => `/api/treatments/${id}`,

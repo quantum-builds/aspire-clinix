@@ -41,7 +41,8 @@ datasource db {
 
 model ReferralForm {
   id                    String   @id @default(cuid())
-  medicalHistory        String?
+  // medicalHistory     String?
+  // medicalHistoryPdf  String?
   createdAt             DateTime @default(now())
   referralDetails       String[]
   treatmentDetails      String?
@@ -57,12 +58,12 @@ model ReferralForm {
   referralMobileNumber  String
   referralName          String
   treatMeantAppointment String
-  dentistId             String
-  patientId             String
+  // dentistId             String
+  // patientId             String
   // Dentist               Dentist  @relation(fields: [dentistId], references: [id])
   // Patient               Patient  @relation(fields: [patientId], references: [id])
 
-  @@unique([patientId, dentistId])
+  // @@unique([patientId, dentistId])
 }
 
 // model Appointment {
@@ -240,6 +241,7 @@ model Dentist{
 
   appointments  Appointment[]
   reports     Report[]
+  practices   Practice[]
 }
 
 model Admin{
@@ -251,6 +253,24 @@ model Admin{
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Practice{
+  id  String @id @default(cuid())
+  email   String  @unique
+  name  String  @unique
+  phoneNumber String @unique  
+  postcode  String
+  timeZone  String
+  town  String
+  nhs   Boolean @default(false)
+  openingHours  Json
+  addressLine1  String 
+  addressLine2  String
+  logoUrl   String
+
+  dentists  Dentist[]
+  appointments  Appointment[]
 }
 
 model AppointmentRequests{
@@ -269,6 +289,7 @@ model AppointmentRequests{
 
 model Appointment{
   id String @id @default(cuid())
+  praticeId String?
   date  DateTime
   patientId   String 
   dentistId   String 
@@ -279,6 +300,7 @@ model Appointment{
   updatedAt   DateTime @updatedAt
 
   reports Report[]
+  practice  Practice?  @relation(fields: [praticeId],references: [id])
   patient Patient  @relation(fields: [patientId],references: [id])
   dentist Dentist  @relation(fields: [dentistId],references: [id])
 }

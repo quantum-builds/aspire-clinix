@@ -65,7 +65,7 @@ export async function getAppointmentRequests({
   }
 }
 
-export async function getAppointmentRequest( id: string ) {
+export async function getAppointmentRequest(id: string) {
   try {
     const response = await axiosInstance.get(
       ENDPOINTS.appointemtRequest.getById(id)

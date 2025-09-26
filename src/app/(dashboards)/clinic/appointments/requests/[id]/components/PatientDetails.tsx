@@ -1,11 +1,12 @@
 import { CalenderInputIcon, TimeIcon } from "@/assets";
-import { AppointmentRequest } from "@/types/common";
+import { TAppointmentRequest } from "@/types/appointment-request";
+import { calculateAge, formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
 
 export default function PatientDetails({
-  appointment,
+  appointmentRequest,
 }: {
-  appointment: AppointmentRequest;
+  appointmentRequest: TAppointmentRequest;
 }) {
   return (
     <div className="bg-white p-6 rounded-2xl space-y-10">
@@ -14,41 +15,61 @@ export default function PatientDetails({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Image src={CalenderInputIcon} alt="Calender Icon" />
-            <p className="text-xl">{appointment.date}</p>
+            <p className="text-xl">
+              {formatDate(appointmentRequest.createdAt)}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Image src={TimeIcon} alt="Time Icon" />
-            <p className="text-xl">{appointment.time}</p>
+            <p className="text-xl">
+              {formatTime(appointmentRequest.createdAt)}
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center xl:gap-[100px] max-lg50:gap-0 max-lg50:justify-between gap-10">
+      <div className="grid grid-cols-3  xl:gap-x-[100px] max-lg50:gap-x-0 max-lg50:justify-between gap-x-10 gap-y-5">
         <p className="text-lg">
           Name:{" "}
-          <span className="text-lg font-medium">{appointment.patientName}</span>
+          <span className="text-lg font-medium">
+            {appointmentRequest.patient?.fullName}
+          </span>
         </p>
         <p className="text-lg">
           Phone:{" "}
           <span className="text-lg font-medium">
-            {appointment.patientPhone}
+            {appointmentRequest.patient?.phoneNumber}
+          </span>
+        </p>
+        <p className="text-lg">
+          Gender:{" "}
+          <span className="text-lg font-medium">
+            {appointmentRequest.patient?.gender.toLowerCase()}
           </span>
         </p>
         <p className="text-lg">
           Email:{" "}
           <span className="text-lg font-medium">
-            {appointment.patientEmail}
+            {appointmentRequest.patient?.email}
+          </span>
+        </p>
+        <p className="text-lg">
+          Age:{" "}
+          <span className="text-lg font-medium">
+            {calculateAge(
+              appointmentRequest.patient?.dateOfBirth || new Date()
+            )}
           </span>
         </p>
       </div>
 
       <div className="flex item-center xl:gap-[100px] gap-10 max-lg50:gap-0 max-lg50:justify-between">
         <div className="space-y-3">
-          <p className="font-medium text-xl text-green">Appointment Date</p>
+          <p className="font-medium text-xl text-green">Requested Date</p>
           <div className="flex gap-2 items-center">
             <Image src={CalenderInputIcon} alt="Calender Icon" />
             <p className="text-lg tracking-tightest">
-              {appointment.appointmentDate}
+              {formatDate(appointmentRequest.requestedDate)}
             </p>
           </div>
         </div>
@@ -56,17 +77,19 @@ export default function PatientDetails({
           <p className="font-medium text-xl text-green">Appointment Reason</p>
 
           <p className="text-lg tracking-tightest">
-            {appointment.appointmentReason}
+            {appointmentRequest.reason}
           </p>
         </div>
       </div>
 
-      <div className="space-y-3">
-        <p className="text-xl font-medium text-green">Note:</p>
-        <p className="tracking-tightest text-xl">
-          {appointment?.additionalNote}
-        </p>
-      </div>
+      {appointmentRequest.note && (
+        <div className="space-y-3">
+          <p className="text-xl font-medium text-green">Note:</p>
+          <p className="tracking-tightest text-xl">
+            {appointmentRequest?.note}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
