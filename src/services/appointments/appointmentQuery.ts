@@ -12,6 +12,7 @@ export async function getAppointments({
   before,
   after,
   dateType,
+  status,
 }: {
   page?: number;
   search?: string;
@@ -21,6 +22,7 @@ export async function getAppointments({
   before?: string;
   after?: string;
   dateType?: AppointmentDateType | null;
+  status?: string;
 }) {
   try {
     const response = await axiosInstance.get(
@@ -32,7 +34,8 @@ export async function getAppointments({
         on,
         before,
         after,
-        dateType
+        dateType,
+        status
       )
     );
 

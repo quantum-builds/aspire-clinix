@@ -19,69 +19,65 @@ import Image from "next/image";
 import { CalenderInputIcon } from "@/assets";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
 import { TAppointmentRequest } from "@/types/appointment-request";
-
 import { AppointmentRequestStatus } from "@prisma/client";
-import { useState } from "react";
-import { useDeleteAppointmentRequests } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { useRouter } from "next/navigation";
-import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 
 interface RequestsDataTable {
   entries: TAppointmentRequest[];
 }
 
 export function RequestsDataTable({ entries }: RequestsDataTable) {
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const { mutate: deleteAppointmentRequest } = useDeleteAppointmentRequests();
-  const [selectedRequest, setSelectedRequest] = useState<{
-    id: string;
-    patientId: string;
-  } | null>(null);
-  const { refresh, push } = useRouter();
+  // const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  // const { mutate: deleteAppointmentRequest } = useDeleteAppointmentRequests();
+  // const [selectedRequest, setSelectedRequest] = useState<{
+  //   id: string;
+  //   patientId: string;
+  // } | null>(null);
+  const { push } = useRouter();
 
-  const handleDeleteAppointmentRequest = (id: string, patientId: string) => {
-    deleteAppointmentRequest(
-      {
-        id: id,
-        patientId: patientId,
-      },
-      {
-        onSuccess: () => {
-          refresh();
-          setSelectedRequest(null);
-          setIsCancelModalOpen(false);
-        },
-        onError: () => {
-          // Also clear state on error
-          setSelectedRequest(null);
-          setIsCancelModalOpen(false);
-        },
-      }
-    );
-  };
+  // const handleDeleteAppointmentRequest = (id: string, patientId: string) => {
+  //   deleteAppointmentRequest(
+  //     {
+  //       id: id,
+  //       patientId: patientId,
+  //     },
+  //     {
+  //       onSuccess: () => {
+  //         refresh();
+  //         setSelectedRequest(null);
+  //         setIsCancelModalOpen(false);
+  //       },
+  //       onError: () => {
+  //         // Also clear state on error
+  //         setSelectedRequest(null);
+  //         setIsCancelModalOpen(false);
+  //       },
+  //     }
+  //   );
+  // };
 
-  const handleModalClose = () => {
-    console.log("in modal close");
-    setSelectedRequest(null);
-    setIsCancelModalOpen(false);
-  };
+  // const handleModalClose = () => {
+  //   console.log("in modal close");
+  //   setSelectedRequest(null);
+  //   setIsCancelModalOpen(false);
+  // };
 
-  const handleDeleteClick = (id: string, patientId: string) => {
-    setSelectedRequest({
-      id,
-      patientId,
-    });
-    setIsCancelModalOpen(true);
-  };
+  // const handleDeleteClick = (id: string, patientId: string) => {
+  //   setSelectedRequest({
+  //     id,
+  //     patientId,
+  //   });
+  //   setIsCancelModalOpen(true);
+  // };
 
-  const handleConfirmDelete = () => {
-    if (selectedRequest) {
-      handleDeleteAppointmentRequest(
-        selectedRequest.id,
-        selectedRequest.patientId
-      );
-    }
-  };
+  // const handleConfirmDelete = () => {
+  //   if (selectedRequest) {
+  //     handleDeleteAppointmentRequest(
+  //       selectedRequest.id,
+  //       selectedRequest.patientId
+  //     );
+  //   }
+  // };
 
   return (
     <>
@@ -165,7 +161,7 @@ export function RequestsDataTable({ entries }: RequestsDataTable) {
                     >
                       View
                     </DropdownMenuItem>
-                    <DropdownMenuItem
+                    {/* <DropdownMenuItem
                       className="text-red-600"
                       onClick={(e) => {
                         e.preventDefault();
@@ -174,7 +170,7 @@ export function RequestsDataTable({ entries }: RequestsDataTable) {
                       }}
                     >
                       Delete
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -184,7 +180,7 @@ export function RequestsDataTable({ entries }: RequestsDataTable) {
       </Table>
 
       {/* Modal completely outside the table */}
-      <ConfirmationModal
+      {/* <ConfirmationModal
         isOpen={isCancelModalOpen}
         onClose={handleModalClose}
         onConfirm={handleConfirmDelete}
@@ -192,7 +188,7 @@ export function RequestsDataTable({ entries }: RequestsDataTable) {
         description="Are you sure you want to delete this request? This action cannot be undone."
         cancelText="No, Keep the Request"
         confirmText="Yes, Delete the Request"
-      />
+      /> */}
     </>
   );
 }

@@ -8,15 +8,27 @@ import AppointmentGrid from "../../components/AppoinmentGrid";
 interface AppointmentGridWrapperProps {
   query: string;
   page: number;
+  status: string;
+  on: string;
+  before: string;
+  after: string;
 }
 
 export default async function AppointmentGridWrapper({
   query,
   page,
+  status,
+  on,
+  after,
+  before,
 }: AppointmentGridWrapperProps) {
   const response: Response<TAppointmentResponse> = await getAppointments({
     search: query,
     dateType: AppointmentDateType.PAST,
+    status,
+    on,
+    before,
+    after,
   });
 
   if (

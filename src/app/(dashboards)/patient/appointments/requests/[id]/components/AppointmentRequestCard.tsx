@@ -15,8 +15,9 @@ export default function AppointmentRequestCard({
   appointmentRequest: TAppointmentRequest;
 }) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const { mutate: deleteAppointmentRequest } = useDeleteAppointmentRequests();
-  const { refresh } = useRouter();
+  const { mutate: deleteAppointmentRequest, isPending } =
+    useDeleteAppointmentRequests();
+  const { refresh, back } = useRouter();
 
   const handleDeleteAppointmentRequest = () => {
     deleteAppointmentRequest(
@@ -27,6 +28,7 @@ export default function AppointmentRequestCard({
       {
         onSuccess: () => {
           refresh();
+          back();
           setIsCancelModalOpen(false);
         },
         onError: () => {
@@ -37,7 +39,7 @@ export default function AppointmentRequestCard({
   };
 
   return (
-    <div className="rounded-2xl p-6 space-y-10 bg-gray">
+    <div className="rounded-2xl p-6 space-y-10 bg-dashboardBackground">
       <div className="flex items-center justify-between">
         <p className="text-green font-medium text-[22px]">Patient Details</p>
         <div className="flex items-center gap-3">
@@ -100,31 +102,36 @@ export default function AppointmentRequestCard({
         </div>
       </div>
 
-      <div className="space-y-3">
-        <p className="text-xl font-medium text-green">Note:</p>
-        <p className="tracking-tightest text-xl">{appointmentRequest?.note}</p>
-      </div>
+      {appointmentRequest.note && (
+        <div className="space-y-3">
+          <p className="text-xl font-medium text-green">Note:</p>
+          <p className="tracking-tightest text-xl">
+            {appointmentRequest?.note}
+          </p>
+        </div>
+      )}
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-5">
           {/* <Image src={UploadPDFIcon} alt="PDF Icon" /> */}
-          {appointmentRequest.file ? (
-            <PdfDownload pdf={appointmentRequest.file} thumbnail={PDFImage} />
-          ) : (
-            <div className="bg-dashboardBackground rounded-2xl max-w-[420px] h-[240px]"></div>
+          {appointmentRequest.file && (
+            <>
+              <PdfDownload pdf={appointmentRequest.file} thumbnail={PDFImage} />
+              <p className="underline text-green">See Document</p>
+            </>
           )}
-          <p className="underline text-green">See Document</p>
         </div>
         <button
           className="h-[60px] px-6 py-3 font-medium text-lg rounded-full bg-dashboardBarBackground"
           onClick={() => setIsCancelModalOpen(true)}
         >
-          Cancel Appoinment
+          Delete Appoinment Request
         </button>
       </div>
 
       <ConfirmationModal
         isOpen={isCancelModalOpen}
+        isPending={isPending}
         onClose={() => setIsCancelModalOpen(false)}
         onConfirm={handleDeleteAppointmentRequest}
         title="Cancel Request"

@@ -1,17 +1,60 @@
+"use client";
+
 import Button from "@/app/(dashboards)/components/Button";
+import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { CalenderInputIcon, TimeIcon, UploadPDFIcon } from "@/assets";
+import { usePatchAppointmentRequest } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { TAppointmentRequest } from "@/types/appointment-request";
 import { calculateAge, formatDate, formatTime } from "@/utils/formatDateTime";
+import { AppointmentRequestStatus } from "@prisma/client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function AppointmentRequestCard({
   appointmentRequest,
 }: {
   appointmentRequest: TAppointmentRequest;
 }) {
-  console.log(appointmentRequest);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const { mutate: updateAppointmentRequest, isPending } =
+    usePatchAppointmentRequest();
+  const { refresh } = useRouter();
+
+  const handleCancelAppointment = () => {
+    // cancelAppointment(
+    //   {
+    //     appointment: { state: AppointmentStatus.CANCELLED },
+    //     id: appointment.id,
+    //     patientId: appointment.patientId, // will be getting in backend when token is implemented
+    //   },
+    //   {
+    //     onSuccess: (data) => {
+    //       console.log("updated appointment ", data);
+    //       refresh();
+    //       setIsCancelModalOpen(false);
+    //     },
+    //   }
+    // );
+    const partialAppointmentRequest: Partial<TAppointmentRequest> = {
+      status: AppointmentRequestStatus.CANCEL,
+    };
+    updateAppointmentRequest(
+      {
+        id: appointmentRequest.id,
+        appointmentRequest: partialAppointmentRequest,
+      },
+      {
+        onSuccess: (data) => {
+          refresh();
+        },
+      }
+    );
+  };
+
   return (
-    <div className="rounded-2xl p-6 space-y-10 bg-gray">
+    <div className="rounded-2xl p-6 space-y-10 bg-dashboardBackground">
       <div className="flex items-center justify-between">
         <p className="text-green font-medium text-[22px]">Patient Details</p>
         <div className="flex items-center gap-3">
@@ -104,13 +147,33 @@ export default function AppointmentRequestCard({
             <p className="underline text-green">See Document</p>
           </div>
         )}
-        <div className="flex justify-end w-full">
-          <Button
-            text="Book an Appointment"
-            href={`/clinic/appointments/requests/${appointmentRequest.id}/book`}
-          />
+        <div className="flex justify-end w-full gap-5">
+          {appointmentRequest.status === AppointmentRequestStatus.PENDING && (
+            <CustomButton
+              className="bg-dashboardBarBackground text-dashboardTextBlack"
+              handleOnClick={() => setIsCancelModalOpen(true)}
+              text="Cancel Request"
+            />
+          )}
+          {appointmentRequest.status !== AppointmentRequestStatus.APPROVED && (
+            <Button
+              text="Book an Appointment"
+              href={`/clinic/appointments/requests/${appointmentRequest.id}/book`}
+            />
+          )}
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        isPending={isPending}
+        onConfirm={handleCancelAppointment}
+        title="Cancel Appointemnt Rquest"
+        description="Are you sure you want to cancel this request? This action cannot be undone."
+        cancelText="No, Keep Request"
+        confirmText="Yes, Cancel Request"
+      />
     </div>
   );
 }

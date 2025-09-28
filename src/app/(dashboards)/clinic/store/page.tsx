@@ -121,7 +121,9 @@ export default async function Store(props: {
         <h1 className="font-medium text-3xl">Aspire Store</h1>
         <div className="flex items-center gap-3">
           <SearchBar placeholder="Enter Id or patient/dentist name" />
-          <DateFilter />
+          <DateFilter
+            statusOptions={[{ value: "FAVOURITE" }, { value: "NOT_FAVOURITE" }]}
+          />
         </div>
       </div>
 

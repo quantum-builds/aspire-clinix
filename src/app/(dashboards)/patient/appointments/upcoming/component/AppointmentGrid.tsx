@@ -7,6 +7,10 @@ import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 
 interface AppointmentGridWrapperProps {
   query: string;
+  status: string;
+  on: string;
+  before: string;
+  after: string;
 }
 interface AppointmentGridProps {
   appointments: TAppointment[];
@@ -14,12 +18,17 @@ interface AppointmentGridProps {
 
 export default async function AppointmentGridWrapper({
   query,
+  status,
+  on,
+  before,
+  after,
 }: AppointmentGridWrapperProps) {
   const response: Response<TAppointmentResponse> = await getAppointments({
     search: query,
     // dentistId: "cmfpmegmj0005l6qab0c10oil",
     patientId: "cmfplxicq0000l6qaof724vtk",
     dateType: AppointmentDateType.UPCOMING,
+    status,on,before,after
   });
 
   if (

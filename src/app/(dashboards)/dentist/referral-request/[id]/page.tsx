@@ -46,7 +46,7 @@ export default async function ReferralDetailsPage({ params }: PageProps) {
         <h1 className="font-medium text-3xl">Referral Requests</h1>
         <div className="flex items-center gap-3">
           <SearchBar placeholder="Enter Id or patient/dentist name" />
-          <DateFilter />
+          <DateFilter statusOptions={null} />
         </div>
       </div>
       <PatientReferralDetails
