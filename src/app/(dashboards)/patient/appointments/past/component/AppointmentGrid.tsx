@@ -8,6 +8,10 @@ import Pagination from "@/app/(dashboards)/components/Pagination";
 interface AppointmentGridWrapperProps {
   query: string;
   page: number;
+  status: string;
+  on: string;
+  before: string;
+  after: string;
 }
 interface AppointmentGridProps {
   appointments: TAppointment[];
@@ -16,13 +20,21 @@ interface AppointmentGridProps {
 export default async function AppointmentGridWrapper({
   query,
   page,
+  status,
+  on,
+  before,
+  after,
 }: AppointmentGridWrapperProps) {
   const response: Response<TAppointmentResponse> = await getAppointments({
     search: query,
     // dentistId: "cmfpmegmj0005l6qab0c10oil",
     patientId: "cmfplxicq0000l6qaof724vtk",
     dateType: AppointmentDateType.PAST,
-    page: page,
+    page,
+    status,
+    on,
+    before,
+    after,
   });
 
   if (

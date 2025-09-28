@@ -18,7 +18,8 @@ export default function FirstUpcomingAppointmentCard({
   appointment,
 }: FirstUpcomingAppointmentCardProps) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const { mutate: cancelAppointment } = usePatchAppointment();
+  const { mutate: cancelAppointment, isPending: isCancelAppointment } =
+    usePatchAppointment();
   const { refresh } = useRouter();
 
   const handleCancelAppointment = () => {
@@ -54,16 +55,22 @@ export default function FirstUpcomingAppointmentCard({
             </div>
             <div className="flex items-center gap-1">
               <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />
-              <p className="text-lg">{formatTime(appointment.date)}</p>
+              <p className="text-lg">
+                {formatTime(appointment.startTime)} -{" "}
+                {formatTime(appointment.finishTime)}
+              </p>
             </div>
           </div>
         </div>
         <div className="flex  gap-3 items-center justify-between">
           <p className="text-lg">
-            Status: <span className="font-medium italic">Pending</span>
+            Status:{" "}
+            <span className="font-medium italic">{appointment.state}</span>
           </p>
 
-          <p className="text-lg italic">Appointment # APT-1010</p>
+          <p className="text-lg italic">
+            Appointment # APT-{appointment.id.slice(0, 10)}
+          </p>
         </div>
       </div>
       <div className="flex flex-col gap-1">
@@ -121,6 +128,7 @@ export default function FirstUpcomingAppointmentCard({
       <ConfirmationModal
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
+        isPending={isCancelAppointment}
         onConfirm={handleCancelAppointment}
         title="Cancel Appointment"
         description="Are you sure you want to cancel this appointment? This action cannot be undone."

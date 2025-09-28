@@ -9,6 +9,7 @@ import {
   GrayGradient,
 } from "@/assets";
 import Image from "next/image";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
 interface StatsCardProps {
   percentageChange: number;
@@ -16,6 +17,7 @@ interface StatsCardProps {
   title: string;
   count: number;
   link?: string;
+  statusParam?: string;
 }
 
 export default function StatsCard({
@@ -24,7 +26,12 @@ export default function StatsCard({
   icon,
   link,
   count,
+  statusParam,
 }: StatsCardProps) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
   const getPercentageStyles = () => {
     if (percentageChange > 0) {
       return {
@@ -45,6 +52,16 @@ export default function StatsCard({
 
   const { text, line, gradient } = getPercentageStyles();
 
+  function handleClick() {
+    const params = new URLSearchParams(searchParams);
+    if (statusParam) {
+      params.set("status", statusParam);
+    } else {
+      params.delete("status");
+    }
+    replace(`${pathname}?${params.toString()}`);
+  }
+
   return (
     <div className="max-w-[348px] w-full py-5 px-6 space-y-5 rounded-2xl bg-white">
       <div className="flex justify-between items-start">
@@ -58,7 +75,9 @@ export default function StatsCard({
         <p className="text-dashboardTextBlack text-xl font-medium">{count}</p>
       </div>
       <div className="flex justify-between items-center">
-        <p className="underline text-[#a3a3a3]">{link}</p>
+        <button className="underline text-[#a3a3a3]" onClick={handleClick}>
+          {link}
+        </button>
         <div className="relative">
           <Image src={line} alt="line icon" className="absolute -top-[2px]" />
           <Image src={gradient} alt="Gradient icon" />

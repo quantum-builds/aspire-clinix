@@ -132,7 +132,19 @@ export default async function ReferralHistory(props: {
         <h1 className="font-medium text-3xl">Referrals</h1>
         <div className="flex items-center gap-3">
           <SearchBar placeholder="Enter Id or patient/dentist name" />
-          <DateFilter />
+          <DateFilter
+            statusOptions={[
+              {
+                value: "CONFIRMED",
+              },
+              {
+                value: "PENDING",
+              },
+              {
+                value: "CANCELLED",
+              },
+            ]}
+          />
         </div>
       </div>
 

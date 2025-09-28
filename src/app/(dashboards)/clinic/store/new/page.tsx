@@ -1,6 +1,5 @@
 "use client";
 
-import DateFilter from "@/app/(dashboards)/components/DateFilter";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import AddProductForm from "./components/ProductForm";
 import { Suspense } from "react";
@@ -13,7 +12,6 @@ export default function AddResourcePage() {
         <Suspense>
           <div className="flex items-center gap-3">
             <SearchBar placeholder="Enter Id or patient/dentist name" />
-            <DateFilter />
           </div>
         </Suspense>
       </div>

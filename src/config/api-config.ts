@@ -182,13 +182,14 @@ export const ENDPOINTS = {
       on?: string,
       before?: string,
       after?: string,
-      dateType?: AppointmentDateType | null
+      dateType?: AppointmentDateType | null,
+      status?: string
     ) =>
       `/api/appointments?page=${page ?? 1}&search=${search ?? ""}&patientId=${
         patientId ?? ""
       }&dentistId=${dentistId ?? ""}&on=${on ?? ""}&before=${
         before ?? ""
-      }&after=${after ?? ""}&dateType=${dateType ?? ""}`,
+      }&after=${after ?? ""}&dateType=${dateType ?? ""}&status=${status ?? ""}`,
     post: "/api/appointments",
     patch: (id: string, patientId: string) =>
       `/api/appointments/${id}?patientId=${patientId}`,
@@ -242,13 +243,14 @@ export const ENDPOINTS = {
       patientId?: string,
       on?: string,
       before?: string,
-      after?: string
+      after?: string,
+      status?: string
     ) =>
       `/api/appointment-requests?page=${page ?? 1}&search=${
         search ?? ""
       }&patientId=${patientId ?? ""}&on=${on ?? ""}&before=${
         before ?? ""
-      }&after=${after ?? ""}`,
+      }&after=${after ?? ""}&status=${status ?? ""}`,
 
     getById: (id: string) => `/api/appointment-requests/${id}`,
     post: "/api/appointment-requests",

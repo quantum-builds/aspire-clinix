@@ -182,6 +182,7 @@ export type TTotalRequests = {
   icon: string;
   title: string;
   link?: string;
+  statusParam?: string;
 };
 
 export type TApprovedRequests = TTotalRequests;
@@ -258,4 +259,8 @@ export interface AppointmentRequest {
   appointmentDate: string;
   appointmentReason: string;
   additionalNote: string;
+}
+
+export interface TStatusOption {
+  value: string;
 }

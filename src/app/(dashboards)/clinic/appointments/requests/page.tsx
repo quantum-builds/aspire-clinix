@@ -2,11 +2,14 @@ import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import DateFilter from "@/app/(dashboards)/components/DateFilter";
 import AppointmentRequestGrid from "./components/AppointmentRequestGrid";
 import { Suspense } from "react";
+import { AppointmentRequestStatus } from "@prisma/client";
+import AppointmentRequestGridSkeleton from "./components/skeleton/AppointmentRequestGrid";
 
 export default async function RequestAppointments(props: {
   searchParams?: Promise<{
     query?: string;
     page?: string;
+    status?: string;
   }>;
 }) {
   // const searchParams = await props.searchParams;
@@ -27,6 +30,7 @@ export default async function RequestAppointments(props: {
 
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
+  const status = searchParams?.status || "";
   const page = Number(searchParams?.page) || 1;
 
   return (
@@ -36,7 +40,19 @@ export default async function RequestAppointments(props: {
           <h1 className="font-medium text-3xl">Appontment Requests</h1>
           <div className="flex gap-2">
             <SearchBar placeholder="Enter Appointment Number" />
-            <DateFilter />
+            <DateFilter
+              statusOptions={[
+                {
+                  value: AppointmentRequestStatus.APPROVED,
+                },
+                {
+                  value: AppointmentRequestStatus.PENDING,
+                },
+                {
+                  value: AppointmentRequestStatus.CANCEL,
+                },
+              ]}
+            />
           </div>
         </div>
         {/* <div className="bg-white p-6 rounded-2xl space-y-10">
@@ -50,8 +66,11 @@ export default async function RequestAppointments(props: {
             ))}
           </div>
         </div> */}
-        <Suspense key={page + query} fallback={<div>loading...</div>}>
-          <AppointmentRequestGrid query={query} page={page} />
+        <Suspense
+          key={page + query + status}
+          fallback={<AppointmentRequestGridSkeleton />}
+        >
+          <AppointmentRequestGrid query={query} page={page} status={status} />
         </Suspense>
       </div>
     </div>

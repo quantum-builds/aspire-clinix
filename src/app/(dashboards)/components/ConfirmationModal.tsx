@@ -8,11 +8,13 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import Spinner from "./custom-components/Spinner";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  isPending?: boolean;
   title: string;
   description: string;
   cancelText: string;
@@ -25,6 +27,7 @@ export default function ConfirmationModal({
   onConfirm,
   title,
   description,
+  isPending = false,
   cancelText,
   confirmText,
 }: ConfirmationModalProps) {
@@ -41,11 +44,23 @@ export default function ConfirmationModal({
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} className="">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className=""
+            disabled={isPending}
+          >
             {cancelText}
           </Button>
-          <Button onClick={onConfirm} className="bg-green hover:bg-green">
-            {confirmText}
+          <Button
+            onClick={onConfirm}
+            className="bg-green hover:bg-green"
+            disabled={isPending}
+          >
+            <div className="flex items-center gap-2">
+              {isPending && <Spinner />}
+              {confirmText}
+            </div>
           </Button>
         </DialogFooter>
       </DialogContent>

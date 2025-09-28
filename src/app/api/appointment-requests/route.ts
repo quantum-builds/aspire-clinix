@@ -13,14 +13,25 @@ export async function GET(req: NextRequest) {
     const on = searchParams.get("on") || "";
     const before = searchParams.get("before") || "";
     const after = searchParams.get("after") || "";
-    const status = searchParams.get("status") || "";
-
+    const statusParam = searchParams.get("status") || "";
     const limit = 5;
     const skip = (page - 1) * limit;
+    console.log("status param is ", statusParam);
+
+    // Narrow the type to your enum
+    const status =
+      statusParam &&
+      Object.values(AppointmentRequestStatus).includes(
+        statusParam as AppointmentRequestStatus
+      )
+        ? (statusParam as AppointmentRequestStatus)
+        : undefined;
+    console.log("status is ", status);
 
     let baseWhere: Prisma.AppointmentRequestsWhereInput = {
       ...(search && { id: { contains: search, mode: "insensitive" } }),
       ...(patientId && { patientId }),
+      ...(status && { status }),
     };
 
     // Date filters (on, before, after) have same precedence
@@ -53,9 +64,10 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    console.log("request are ", appointmentRequests);
     return NextResponse.json(
       createResponse(true, "Appointments request fetched successfully.", {
-        appointmentRequests: appointmentRequests,
+        appointmentRequests,
         pagination: {
           page,
           total: totalCount,

@@ -8,16 +8,19 @@ import AppointmentRequestCard from "./AppointmentRequestCard";
 interface AppointmentRequestGridProps {
   query: string;
   page: number;
+  status: string;
 }
 
 export default async function AppointmentRequestGrid({
   query,
   page,
+  status,
 }: AppointmentRequestGridProps) {
   const response: Response<TAppointmentRequestResponse> =
     await getAppointmentRequests({
       search: query,
       page: page,
+      status: status,
     });
 
   if (

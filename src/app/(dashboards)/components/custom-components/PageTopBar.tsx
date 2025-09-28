@@ -3,6 +3,7 @@ import SearchBar from "./SearchBar";
 import PageHeading from "./PageHeading";
 import DateFilter from "../DateFilter";
 import ExportButton from "../ExportButton";
+import { TStatusOption } from "@/types/common";
 
 interface PageTopBarProps {
   pageHeading: string;
@@ -10,6 +11,7 @@ interface PageTopBarProps {
   showFilters: boolean;
   showExport?: boolean;
   extraBtns?: ReactNode;
+  statusOptions: TStatusOption[] | null;
 }
 
 export default function PageTopBar({
@@ -18,13 +20,14 @@ export default function PageTopBar({
   showFilters,
   showExport = false,
   extraBtns,
+  statusOptions,
 }: PageTopBarProps) {
   return (
     <div className="flex items-center justify-between">
       <PageHeading text={pageHeading} />
       <div className="flex justify-end gap-3">
         {showSearch && <SearchBar placeholder="Enter Appointment Number" />}
-        {showFilters && <DateFilter />}
+        {showFilters && <DateFilter statusOptions={statusOptions} />}
         {showExport && <ExportButton />}
         {extraBtns}
       </div>

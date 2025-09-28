@@ -12,7 +12,6 @@ export default function AddResourcePage() {
         <Suspense>
           <div className="flex items-center gap-3">
             <SearchBar placeholder="Enter Id or patient/dentist name" />
-            <DateFilter />
           </div>
         </Suspense>
       </div>

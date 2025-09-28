@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { useCreateAppointmentRequests } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { useRouter } from "next/navigation";
+import Spinner from "@/app/(dashboards)/components/custom-components/Spinner";
 
 const appointmentSchema = z.object({
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
@@ -43,9 +44,10 @@ type FormData = z.infer<typeof appointmentSchema>;
 export default function AppointmentForm() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { mutate: createAppointmentRequest } = useCreateAppointmentRequests();
+  const { mutate: createAppointmentRequest, isPending } =
+    useCreateAppointmentRequests();
   const { mutateAsync: uploadFile } = useUploadFile();
-  const { refresh } = useRouter();
+  const { refresh, back } = useRouter();
   const {
     control,
     handleSubmit,
@@ -88,6 +90,8 @@ export default function AppointmentForm() {
           console.log("data from request is ", data);
           reset();
           refresh();
+          back();
+          // router.replace("/patient/appointments/requests");
         },
         onError: (error) => {
           console.log("error from request is ", error);
@@ -250,7 +254,14 @@ export default function AppointmentForm() {
           type="submit"
           className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
         >
-          Request an Appointment
+          {isPending ? (
+            <div className="flex items-center gap-2">
+              <Spinner />
+              <span>Making Request</span>
+            </div>
+          ) : (
+            " Request an Appointment"
+          )}
         </Button>
       </div>
     </form>

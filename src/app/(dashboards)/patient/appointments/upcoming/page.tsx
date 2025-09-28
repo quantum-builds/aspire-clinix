@@ -2,16 +2,24 @@ import { Suspense } from "react";
 
 import AppointmentGridWrapper from "./component/AppointmentGrid";
 import { AppointmentGridSkeleton } from "./component/skeletons/AppointmentGridSkeelton";
-import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
+import { AppointmentStatus } from "@prisma/client";
 
 export default async function UpcomingAppointments(props: {
   searchParams?: Promise<{
     query?: string;
+    status?: string;
+    on?: string;
+    before?: string;
+    after?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
+  const status = searchParams?.status || "";
+  const on = searchParams?.on || "";
+  const before = searchParams?.before || "";
+  const after = searchParams?.after || "";
 
   return (
     <div className="min-h-full flex flex-col gap-5 mb-10">
@@ -19,15 +27,29 @@ export default async function UpcomingAppointments(props: {
         pageHeading="Appointments"
         showSearch={true}
         showFilters={true}
-        extraBtns={
-          <CustomButton
-            text="Request an appointment"
-            href="/patient/appointments/requests/new"
-          />
-        }
+        statusOptions={[
+          {
+            value: AppointmentStatus.CONFIRMED,
+          },
+          {
+            value: AppointmentStatus.PENDING,
+          },
+          {
+            value: AppointmentStatus.CANCELLED,
+          },
+        ]}
       />
-      <Suspense key={query} fallback={<AppointmentGridSkeleton />}>
-        <AppointmentGridWrapper query={query} />
+      <Suspense
+        key={query + status + on + before + after}
+        fallback={<AppointmentGridSkeleton />}
+      >
+        <AppointmentGridWrapper
+          query={query}
+          status={status}
+          on={on}
+          before={before}
+          after={after}
+        />
       </Suspense>
     </div>
   );

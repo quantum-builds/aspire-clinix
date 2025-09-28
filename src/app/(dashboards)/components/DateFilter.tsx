@@ -16,22 +16,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import { CalenderInputIconV2, CalenderIcon, DropDownIcon } from "@/assets";
+import { TStatusOption } from "@/types/common";
+import { capitalize } from "@/utils/formatWords";
 
-export default function DateFilter() {
+interface DateFilterProps {
+  statusOptions: TStatusOption[] | null;
+}
+
+export default function DateFilter({ statusOptions }: DateFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [onDate, setOnDate] = useState<Date | null>(null);
   const [afterDate, setAfterDate] = useState<Date | null>(null);
   const [beforeDate, setBeforeDate] = useState<Date | null>(null);
-  const [status, setStatus] = useState<string | null>(null);
-
-  // Status options
-  const statusOptions = [
-    { value: "completed", label: "Completed" },
-    { value: "pending", label: "Pending" },
-    { value: "failed", label: "Failed" },
-  ];
+  const [status, setStatus] = useState<string | null>("");
 
   useEffect(() => {
     const on = searchParams.get("on");
@@ -54,9 +53,9 @@ export default function DateFilter() {
   };
 
   const getStatusLabel = (value: string | null) => {
-    if (!value) return "";
+    if (!value || !statusOptions) return "";
     const option = statusOptions.find((opt) => opt.value === value);
-    return option ? option.label : value;
+    return option ? capitalize(option.value) : value;
   };
 
   const updateQuery = (key: string, value: string | null) => {
@@ -104,49 +103,51 @@ export default function DateFilter() {
 
             <div className="space-y-4">
               {/* Status Dropdown */}
-              <div className="w-full space-y-[2px]">
-                <p className="text-green font-medium">Status</p>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="w-full relative">
-                    <input
-                      type="text"
-                      placeholder="Select Status"
-                      readOnly
-                      value={getStatusLabel(status)}
-                      className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-pointer"
-                    />
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
-                      <Image
-                        src={DropDownIcon}
-                        alt="Dropdown Icon"
-                        className="w-3 h-3"
+              {statusOptions && (
+                <div className="w-full space-y-[2px]">
+                  <p className="text-green font-medium">Status</p>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="w-full relative">
+                      <input
+                        type="text"
+                        placeholder="Select Status"
+                        readOnly
+                        value={getStatusLabel(status)}
+                        className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-pointer"
                       />
-                    </div>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    className="w-full border border-green rounded-lg bg-white min-w-[var(--radix-dropdown-menu-trigger-width)]"
-                  >
-                    {statusOptions.map((option) => (
-                      <DropdownMenuItem
-                        key={option.value}
-                        className={`px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors ${
-                          status === option.value ? "bg-green-50" : ""
-                        }`}
-                        onClick={() => updateQuery("status", option.value)}
-                      >
-                        {option.label}
-                      </DropdownMenuItem>
-                    ))}
-                    <DropdownMenuItem
-                      className="p-3 cursor-pointer hover:bg-gray-50 transition-colors border-t border-gray-200"
-                      onClick={() => updateQuery("status", null)}
+                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
+                        <Image
+                          src={DropDownIcon}
+                          alt="Dropdown Icon"
+                          className="w-3 h-3"
+                        />
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-full border border-green rounded-lg bg-white min-w-[var(--radix-dropdown-menu-trigger-width)]"
                     >
-                      Clear Selection
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                      {statusOptions.map((option) => (
+                        <DropdownMenuItem
+                          key={option.value}
+                          className={`px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors ${
+                            status === option.value ? "bg-green-50" : ""
+                          }`}
+                          onClick={() => updateQuery("status", option.value)}
+                        >
+                          {capitalize(option.value)}
+                        </DropdownMenuItem>
+                      ))}
+                      <DropdownMenuItem
+                        className="p-3 cursor-pointer hover:bg-gray-50 transition-colors border-t border-gray-200"
+                        onClick={() => updateQuery("status", null)}
+                      >
+                        Clear Selection
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
 
               {/* On a date */}
               <div className="w-full space-y-[2px]">

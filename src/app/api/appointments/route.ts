@@ -16,12 +16,18 @@ export async function GET(req: NextRequest) {
     const before = searchParams.get("before") || "";
     const after = searchParams.get("after") || "";
     const dateType = searchParams.get("dateType") as AppointmentDateType | null;
-    const status =
-      (searchParams.get("status") as AppointmentStatus | null) ??
-      AppointmentStatus.PENDING;
+    const statusParam = searchParams.get("status") || "";
 
     const limit = 10;
     const skip = (page - 1) * limit;
+
+    const status =
+      statusParam &&
+      Object.values(AppointmentStatus).includes(
+        statusParam as AppointmentStatus
+      )
+        ? (statusParam as AppointmentStatus)
+        : undefined;
 
     let baseWhere: Prisma.AppointmentWhereInput = {
       ...(search && { id: { contains: search, mode: "insensitive" } }),
