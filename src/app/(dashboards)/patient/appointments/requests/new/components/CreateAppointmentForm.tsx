@@ -14,12 +14,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Image from "next/image";
-import { CalenderInputIcon, UploadPDFIcon } from "@/assets";
+import { CalenderInputIconV2, UploadPDFIcon } from "@/assets";
 import { cn } from "@/lib/utils";
 import { useCreateAppointmentRequests } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { useRouter } from "next/navigation";
 import Spinner from "@/app/(dashboards)/components/custom-components/Spinner";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 
 const appointmentSchema = z.object({
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
@@ -101,14 +102,16 @@ export default function AppointmentForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="bg-white rounded-2xl p-6 space-y-10">
+      <div className="bg-white rounded-2xl p-6 space-y-6">
         <div>
-          <p className="text-2xl font-medium text-green">Appointment Form</p>
+          <p className="text-[22px] font-semibold text-green">
+            Appointment Form
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label className="text-lg font-medium">Appointment Date</Label>
+            <Label className="text-[17px]">Appointment Date</Label>
             <Controller
               name="appointmentDate"
               control={control}
@@ -131,7 +134,7 @@ export default function AppointmentForm() {
                         <span className="mr-auto">Select date</span>
                       )}
                       <Image
-                        src={CalenderInputIcon}
+                        src={CalenderInputIconV2}
                         alt="calender-input"
                         className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
                       />
@@ -157,7 +160,7 @@ export default function AppointmentForm() {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-lg font-medium">Appointment Reason</Label>
+            <Label className="text-[17px]">Appointment Reason</Label>
             <Controller
               name="appointmentReason"
               control={control}
@@ -178,7 +181,7 @@ export default function AppointmentForm() {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-lg font-medium">Note</Label>
+          <Label className="text-[17px]">Note</Label>
           <Controller
             name="note"
             control={control}
@@ -191,75 +194,75 @@ export default function AppointmentForm() {
             )}
           />
         </div>
-
-        <div>
-          <p className="text-2xl font-medium text-green">Medical History</p>
-        </div>
-
         <div className="space-y-2">
-          <Controller
-            name="medicalHistory"
-            control={control}
-            render={({ field }) => (
-              <div className="flex items-center gap-5">
-                <div onClick={handleUploadClick} className="cursor-pointer">
-                  <input
-                    id="fileUpload"
-                    type="file"
-                    accept="application/pdf"
-                    ref={fileInputRef}
-                    className="hidden"
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.files ? e.target.files[0] : undefined
-                      )
-                    }
-                  />
-                  <Image src={UploadPDFIcon} alt="upload-pdf" />
+          <div>
+            <p className="text-[22px] font-semibold text-green">
+              Medical History
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Controller
+              name="medicalHistory"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-2">
+                  {/* Upload button row */}
+                  <div className="flex items-center gap-5">
+                    <div onClick={handleUploadClick} className="cursor-pointer">
+                      <input
+                        id="fileUpload"
+                        type="file"
+                        accept="application/pdf"
+                        ref={fileInputRef}
+                        className="hidden"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files.length > 0) {
+                            field.onChange(e.target.files[0]);
+                          }
+                        }}
+                      />
+                      <Image src={UploadPDFIcon} alt="upload-pdf" />
+                    </div>
+
+                    <Label
+                      htmlFor="fileUpload"
+                      className="cursor-pointer text-green underline"
+                    >
+                      Upload a Document
+                    </Label>
+                  </div>
+
+                  {/* File name below */}
                   {field.value && (
-                    <p className="text-sm text-gray-600 text-center px-2 truncate w-[90%]">
+                    <p className="text-sm text-gray-600 truncate max-w-[300px]">
                       {(field.value as File).name}
                     </p>
                   )}
                 </div>
-
-                <Label
-                  htmlFor="fileUpload"
-                  className="cursor-pointer text-green underline"
-                >
-                  Upload a Document
-                </Label>
-              </div>
+              )}
+            />
+            {errors.medicalHistory && (
+              <p className="text-sm text-red-500">
+                {errors.medicalHistory.message as string}
+              </p>
             )}
-          />
-          {errors.medicalHistory && (
-            <p className="text-sm text-red-500">
-              {errors.medicalHistory.message as string}
-            </p>
-          )}
+          </div>
         </div>
       </div>
 
       <div className="w-full flex justify-end items-center gap-3">
-        <Button
-          type="button"
+        <CustomButton
+          text="Cancel"
           className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
+        />
+
+        <CustomButton
+          text={isPending ? "Making Request" : "Request an Appointment"}
+          disabled={isPending}
+          loading={isPending}
           className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
-        >
-          {isPending ? (
-            <div className="flex items-center gap-2">
-              <Spinner />
-              <span>Making Request</span>
-            </div>
-          ) : (
-            " Request an Appointment"
-          )}
-        </Button>
+        />
       </div>
     </form>
   );
