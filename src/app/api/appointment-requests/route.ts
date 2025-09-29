@@ -16,7 +16,6 @@ export async function GET(req: NextRequest) {
     const statusParam = searchParams.get("status") || "";
     const limit = 5;
     const skip = (page - 1) * limit;
-    console.log("status param is ", statusParam);
 
     // Narrow the type to your enum
     const status =
@@ -64,7 +63,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    console.log("request are ", appointmentRequests);
     return NextResponse.json(
       createResponse(true, "Appointments request fetched successfully.", {
         appointmentRequests,
