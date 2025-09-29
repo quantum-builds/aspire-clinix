@@ -17,8 +17,9 @@ export async function PATCH(req: NextRequest) {
     const appointmentId = req.nextUrl.pathname.split("/").pop();
     const partialAppointment = await req.json();
     const { searchParams } = new URL(req.url);
-    const patientId = searchParams.get("patientId") || "";
-    
+    const patientId = searchParams.get("patientId") || undefined;
+    const dentistId = searchParams.get("dentistId") || undefined;
+
     if (!appointmentId || !isValidCuid(appointmentId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Appointment.", null),
@@ -37,7 +38,35 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    if (appointment.patientId !== patientId) {
+    console.log("patient id is ", patientId);
+    console.log("appointment patient id is ", appointment.patientId);
+
+    console.log("dentist id is ", dentistId);
+    console.log("appointment dentist id is ", appointment.dentistId);
+    if (
+      patientId &&
+      patientId.trim().length > 0 &&
+      appointment.patientId !== patientId
+    ) {
+      console.log("hey there in patient");
+    }
+
+    if (
+      dentistId &&
+      dentistId.trim().length > 0 &&
+      appointment.dentistId !== dentistId
+    ) {
+      console.log("hey there in detist");
+    }
+
+    if (
+      (patientId &&
+        patientId.trim().length > 0 &&
+        appointment.patientId !== patientId) ||
+      (dentistId &&
+        dentistId.trim().length > 0 &&
+        appointment.dentistId !== dentistId)
+    ) {
       return NextResponse.json(
         createResponse(
           false,

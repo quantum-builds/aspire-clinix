@@ -1,0 +1,163 @@
+import { TReport } from "@/types/reports";
+import Pagination from "../../../components/Pagination";
+import VideoReportCard from "../../../components/VideoReportCard";
+import { VideoResourceGridSkeleton } from "../../../patient/(protected)/resources/videos/components/skeletons/ResourceGrid";
+import { Suspense } from "react";
+import PageTopBar from "../../../components/custom-components/PageTopBar";
+import CustomButton from "../../../components/custom-components/CustomButton";
+
+const REPORTS: TReport[] = [
+  {
+    id: "1000000000000000000000001",
+    dentistId: "d1",
+    patientId: "p1",
+    appointmentId: "a1",
+    title: "Dental Hygiene Report",
+    fileUrl: "https://aws.example.com/reports/hygiene.pdf",
+    fileType: "PDF",
+    createdAt: new Date("2025-01-10"),
+    updatedAt: new Date("2025-01-10"),
+  },
+  {
+    id: "1000000000000000000000002",
+    dentistId: "d1",
+    patientId: "p1",
+    appointmentId: "a2",
+    title: "Root Canal Procedure Video",
+    fileUrl: "https://aws.example.com/reports/root-canal.mp4",
+    fileType: "VIDEO",
+    createdAt: new Date("2025-01-12"),
+    updatedAt: new Date("2025-01-12"),
+  },
+  {
+    id: "1000000000000000000000003",
+    dentistId: "d2",
+    patientId: "p2",
+    appointmentId: "a3",
+    title: "Orthodontics Progress Report",
+    fileUrl: "https://aws.example.com/reports/ortho-progress.pdf",
+    fileType: "PDF",
+    createdAt: new Date("2025-01-15"),
+    updatedAt: new Date("2025-01-15"),
+  },
+  {
+    id: "1000000000000000000000004",
+    dentistId: "d2",
+    patientId: "p2",
+    appointmentId: "a4",
+    title: "Teeth Whitening Session",
+    fileUrl: "https://aws.example.com/reports/whitening.mp4",
+    fileType: "VIDEO",
+    createdAt: new Date("2025-01-20"),
+    updatedAt: new Date("2025-01-20"),
+  },
+  {
+    id: "1000000000000000000000005",
+    dentistId: "d3",
+    patientId: "p3",
+    appointmentId: "a5",
+    title: "Annual Dental Checkup",
+    fileUrl: "https://aws.example.com/reports/checkup.pdf",
+    fileType: "PDF",
+    createdAt: new Date("2025-01-25"),
+    updatedAt: new Date("2025-01-25"),
+  },
+  {
+    id: "1000000000000000000000006",
+    dentistId: "d3",
+    patientId: "p3",
+    appointmentId: "a6",
+    title: "Wisdom Tooth Extraction Video",
+    fileUrl: "https://aws.example.com/reports/extraction.mp4",
+    fileType: "VIDEO",
+    createdAt: new Date("2025-01-28"),
+    updatedAt: new Date("2025-01-28"),
+  },
+  {
+    id: "1000000000000000000000007",
+    dentistId: "d4",
+    patientId: "p4",
+    appointmentId: "a7",
+    title: "Implant Procedure Report",
+    fileUrl: "https://aws.example.com/reports/implant.pdf",
+    fileType: "PDF",
+    createdAt: new Date("2025-02-01"),
+    updatedAt: new Date("2025-02-01"),
+  },
+  {
+    id: "1000000000000000000000008",
+    dentistId: "d4",
+    patientId: "p4",
+    appointmentId: "a8",
+    title: "Cavity Filling Demonstration",
+    fileUrl: "https://aws.example.com/reports/filling.mp4",
+    fileType: "VIDEO",
+    createdAt: new Date("2025-02-05"),
+    updatedAt: new Date("2025-02-05"),
+  },
+  {
+    id: "1000000000000000000000009",
+    dentistId: "d5",
+    patientId: "p5",
+    appointmentId: "a9",
+    title: "Pediatric Dentistry Notes",
+    fileUrl: "https://aws.example.com/reports/pediatric.pdf",
+    fileType: "PDF",
+    createdAt: new Date("2025-02-07"),
+    updatedAt: new Date("2025-02-07"),
+  },
+  {
+    id: "1000000000000000000000010",
+    dentistId: "d5",
+    patientId: "p5",
+    appointmentId: "a10",
+    title: "Post Surgery Care Instructions",
+    fileUrl: "https://aws.example.com/reports/care-instructions.mp4",
+    fileType: "VIDEO",
+    createdAt: new Date("2025-02-10"),
+    updatedAt: new Date("2025-02-10"),
+  },
+];
+export default async function Resources(props: {
+  searchParams?: Promise<{
+    query?: string;
+    page?: string;
+  }>;
+}) {
+  const searchParams = await props.searchParams;
+  const query = searchParams?.query || "";
+
+  const title = searchParams?.query || "";
+  const page = Number(searchParams?.page) || 1;
+
+  console.log(query);
+
+  return (
+    <div className="min-h-full flex flex-col gap-5">
+      <PageTopBar
+        showFilters={true}
+        showSearch={true}
+        statusOptions={[]}
+        pageHeading="Resources"
+      />
+
+      <div className="px-6 py-5 space-y-5 rounded-2xl bg-white">
+        <div className="flex items-center justify-between">
+          <p className="font-semibold text-[22px] text-green">
+            Resource Videos
+          </p>
+          <CustomButton text="Add New Resource" href="/clinic/resources/new" />
+        </div>
+        <Suspense key={title + page} fallback={<VideoResourceGridSkeleton />}>
+          <div className="grid max-xl:grid-cols-2 max-2xl50:grid-cols-3 grid-cols-4 gap-x-5 gap-y-5">
+            {REPORTS.map((report, index) => (
+              <VideoReportCard key={index} report={report} />
+            ))}
+          </div>
+        </Suspense>
+      </div>
+
+      <Pagination page={page} />
+    </div>
+  );
+}

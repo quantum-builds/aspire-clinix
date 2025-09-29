@@ -235,6 +235,7 @@ model Dentist{
   gdcNo   String  @unique
   practiceAddress String
   role    DentistRole
+  fileUrl      String?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -250,6 +251,7 @@ model Admin{
   password  String
   email     String  @unique
   phoneNumber String  @unique
+  fileUrl      String?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -484,6 +486,7 @@ enum DentistRole {
 enum GenderType {
   MALE
   FEMALE
+  OTHER
 }
 
 enum AppointmentStatus {
@@ -500,4 +503,10 @@ enum AppointmentRequestStatus {
   APPROVED
   PENDING
   CANCEL
+}
+
+enum UserRoles {
+  ADMIN
+  PATIENT
+  DENTIST
 }
