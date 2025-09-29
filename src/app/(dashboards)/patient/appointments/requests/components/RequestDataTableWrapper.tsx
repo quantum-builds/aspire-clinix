@@ -6,7 +6,7 @@ import { Response } from "@/types/common";
 
 import { RequestsDataTable } from "./RequestDataTable";
 
-export const revalidate = 0;
+// export const revalidate = 0;
 
 interface RequestDataTableWrapperProps {
   query: string;

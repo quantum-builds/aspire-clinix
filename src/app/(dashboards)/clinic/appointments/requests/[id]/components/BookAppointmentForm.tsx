@@ -134,9 +134,11 @@ export default function BookAppointmentForm({
             {
               onSuccess: (data) => {
                 console.log("data on success,", data);
-                router.refresh();
-                router.back();
-                // router.replace("/clinic/appointments/requests");
+                // router.refresh();
+                // router.back();
+                router.replace(
+                  `/clinic/appointments/requests?ts=${Date.now()}`
+                );
               },
             }
           );
@@ -173,7 +175,7 @@ export default function BookAppointmentForm({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Dentist */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label className="text-lg font-medium">Dentist</Label>
             <Controller
               name="dentistName"
@@ -194,6 +196,52 @@ export default function BookAppointmentForm({
                   )}
                 </Select>
               )}
+            />
+            {errors.dentistName && (
+              <p className="text-sm text-red-500">
+                {errors.dentistName.message}
+              </p>
+            )}
+          </div> */}
+
+          {/* Dentist */}
+          <div className="space-y-2">
+            <Label className="text-lg font-medium">Dentist</Label>
+            <Controller
+              name="dentistName"
+              control={control}
+              render={({ field }) => {
+                const selectedPracticeId = watch("practicAddress");
+
+                return (
+                  <Select
+                    onValueChange={handleDentistChange}
+                    value={field.value}
+                    disabled={!selectedPracticeId} // disable until branch selected
+                  >
+                    <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
+                      <SelectValue
+                        placeholder={
+                          !selectedPracticeId
+                            ? "Select a branch first"
+                            : dentists.length > 0
+                            ? "Select Dentist Name"
+                            : "No dentists available in this branch"
+                        }
+                      />
+                    </SelectTrigger>
+                    {selectedPracticeId && dentists.length > 0 && (
+                      <SelectContent>
+                        {dentists.map((d) => (
+                          <SelectItem key={d.id} value={d.fullName}>
+                            {d.fullName} - {d.email}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    )}
+                  </Select>
+                );
+              }}
             />
             {errors.dentistName && (
               <p className="text-sm text-red-500">

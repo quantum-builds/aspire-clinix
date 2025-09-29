@@ -17,7 +17,7 @@ export default function AppointmentRequestCard({
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { mutate: deleteAppointmentRequest, isPending } =
     useDeleteAppointmentRequests();
-  const { refresh, back } = useRouter();
+  const { replace } = useRouter();
 
   const handleDeleteAppointmentRequest = () => {
     deleteAppointmentRequest(
@@ -27,8 +27,7 @@ export default function AppointmentRequestCard({
       },
       {
         onSuccess: () => {
-          refresh();
-          back();
+          replace(`/patient/appointments/requests?ts=${Date.now()}`);
           setIsCancelModalOpen(false);
         },
         onError: () => {

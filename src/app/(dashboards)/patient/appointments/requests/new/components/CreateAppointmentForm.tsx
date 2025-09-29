@@ -47,7 +47,7 @@ export default function AppointmentForm() {
   const { mutate: createAppointmentRequest, isPending } =
     useCreateAppointmentRequests();
   const { mutateAsync: uploadFile } = useUploadFile();
-  const { refresh, back } = useRouter();
+  const { refresh, back, replace } = useRouter();
   const {
     control,
     handleSubmit,
@@ -87,15 +87,12 @@ export default function AppointmentForm() {
       },
       {
         onSuccess: (data: string) => {
-          console.log("data from request is ", data);
           reset();
-          refresh();
-          back();
-          // router.replace("/patient/appointments/requests");
+          // refresh();
+          // back();
+          replace(`/patient/appointments/requests?ts=${Date.now()}`);
         },
-        onError: (error) => {
-          console.log("error from request is ", error);
-        },
+        onError: (error) => {},
       }
     );
   };

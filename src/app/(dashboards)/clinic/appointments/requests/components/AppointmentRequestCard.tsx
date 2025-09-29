@@ -48,6 +48,7 @@ export default function AppointmentRequestCard({
       {
         onSuccess: (data) => {
           refresh();
+          setIsCancelModalOpen(false);
         },
       }
     );
@@ -155,7 +156,7 @@ export default function AppointmentRequestCard({
               text="Cancel Request"
             />
           )}
-          {appointmentRequest.status !== AppointmentRequestStatus.APPROVED && (
+          {appointmentRequest.status === AppointmentRequestStatus.PENDING && (
             <Button
               text="Book an Appointment"
               href={`/clinic/appointments/requests/${appointmentRequest.id}/book`}

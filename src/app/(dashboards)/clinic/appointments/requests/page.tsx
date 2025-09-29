@@ -9,6 +9,7 @@ export default async function RequestAppointments(props: {
     query?: string;
     page?: string;
     status?: string;
+    ts?: string;
   }>;
 }) {
   // const searchParams = await props.searchParams;
@@ -30,6 +31,7 @@ export default async function RequestAppointments(props: {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
   const status = searchParams?.status || "";
+  const ts = new Date(searchParams?.ts || "");
   const page = Number(searchParams?.page) || 1;
 
   return (
@@ -63,7 +65,7 @@ export default async function RequestAppointments(props: {
           </div>
         </div> */}
         <Suspense
-          key={page + query + status}
+          key={page + query + status + ts}
           fallback={<AppointmentRequestGridSkeleton />}
         >
           <AppointmentRequestGrid query={query} page={page} status={status} />

@@ -6,6 +6,7 @@ import BackButton from "@/app/(dashboards)/components/BackButton";
 import Button from "@/app/(dashboards)/components/Button";
 import ReportGrid from "./components/ReportGrid";
 import { TReport } from "@/types/reports";
+import ReportGridWrapperSkeleton from "@/app/(dashboards)/clinic/appointments/[id]/reports/components/skeletons/ReportGridWrapper";
 
 const REPORTS: TReport[] = [
   {
@@ -162,11 +163,11 @@ export default async function ReportsPage(props: {
       <div className="flex justify-end">
         <Button
           text="Create New Report"
-          href={"/dentist/appointments/reports/new"}
+          href={`/dentist/appointments/reports/new`}
           className="w-fit"
         />
       </div>
-      <Suspense key={title} fallback={<div>Loading.....</div>}>
+      <Suspense key={title} fallback={<ReportGridWrapperSkeleton />}>
         <ReportGrid
           reports={filteredReports}
           patientDetails={PATEINT_DETAILS}
