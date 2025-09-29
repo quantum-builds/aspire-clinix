@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import SearchBar from "./SearchBar";
 import PageHeading from "./PageHeading";
 import DateFilter from "../DateFilter";
@@ -25,12 +25,14 @@ export default function PageTopBar({
   return (
     <div className="flex items-center justify-between">
       <PageHeading text={pageHeading} />
-      <div className="flex justify-end gap-3">
-        {showSearch && <SearchBar placeholder="Enter Appointment Number" />}
-        {showFilters && <DateFilter statusOptions={statusOptions} />}
-        {showExport && <ExportButton />}
-        {extraBtns}
-      </div>
+      <Suspense>
+        <div className="flex justify-end gap-3">
+          {showSearch && <SearchBar placeholder="Enter Appointment Number" />}
+          {showFilters && <DateFilter statusOptions={statusOptions} />}
+          {showExport && <ExportButton />}
+          {extraBtns}
+        </div>
+      </Suspense>
     </div>
   );
 }

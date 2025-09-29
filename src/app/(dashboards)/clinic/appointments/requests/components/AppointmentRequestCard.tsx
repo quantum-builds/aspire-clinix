@@ -3,7 +3,7 @@
 import Button from "@/app/(dashboards)/components/Button";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
-import { CalenderInputIcon, TimeIcon, UploadPDFIcon } from "@/assets";
+import { CalenderInputIconV2, TimeIconV2, UploadPDFIcon } from "@/assets";
 import { usePatchAppointmentRequest } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { TAppointmentRequest } from "@/types/appointment-request";
 import { calculateAge, formatDate, formatTime } from "@/utils/formatDateTime";
@@ -60,14 +60,14 @@ export default function AppointmentRequestCard({
         <p className="text-green font-medium text-[22px]">Patient Details</p>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <Image src={CalenderInputIcon} alt="Calender Icon" />
+            <Image src={CalenderInputIconV2} alt="Calender Icon" />
             <p className="text-xl">
               {" "}
               {formatDate(appointmentRequest.createdAt)}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Image src={TimeIcon} alt="Time Icon" />
+            <Image src={TimeIconV2} alt="Time Icon" />
             <p className="text-xl">
               {formatTime(appointmentRequest.createdAt)}
             </p>
@@ -118,7 +118,7 @@ export default function AppointmentRequestCard({
         <div className="flex-1 space-y-3">
           <p className="font-medium text-xl text-green">Appointment Date</p>
           <div className="flex gap-2 items-center">
-            <Image src={CalenderInputIcon} alt="Calender Icon" />
+            <Image src={CalenderInputIconV2} alt="Calender Icon" />
             <p className="text-lg tracking-tightest">
               {formatDate(appointmentRequest.requestedDate)}
             </p>

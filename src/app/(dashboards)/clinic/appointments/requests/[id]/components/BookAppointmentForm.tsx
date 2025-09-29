@@ -204,6 +204,34 @@ export default function BookAppointmentForm({
             )}
           </div> */}
 
+          {/* Branch */}
+          <div className="space-y-2">
+            <Label className="text-lg font-medium">Branch</Label>
+            <Controller
+              name="practicAddress"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  onValueChange={handlePracticeChange}
+                  value={field.value}
+                >
+                  <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
+                    <SelectValue placeholder="Select Branch" />
+                  </SelectTrigger>
+                  {practices && practices.length > 0 && (
+                    <SelectContent>
+                      {practices.map((b) => (
+                        <SelectItem key={b.id} value={b.id}>
+                          {b.addressLine1}, {b.addressLine2}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  )}
+                </Select>
+              )}
+            />
+          </div>
+
           {/* Dentist */}
           <div className="space-y-2">
             <Label className="text-lg font-medium">Dentist</Label>
@@ -249,6 +277,35 @@ export default function BookAppointmentForm({
               </p>
             )}
           </div>
+        </div>
+
+        {/*GDC & branch */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label className="text-lg font-medium">GDC No.</Label>
+            <Controller
+              name="gdcNo"
+              control={control}
+              render={({ field }) => (
+                <div className="relative">
+                  <Input
+                    {...field}
+                    placeholder="Enter GDC number"
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                    readOnly
+                  />
+                  <Image
+                    src={TextInputIcon}
+                    alt="text-input"
+                    className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
+                  />
+                </div>
+              )}
+            />
+            {errors.gdcNo && (
+              <p className="text-sm text-red-500">{errors.gdcNo.message}</p>
+            )}
+          </div>
 
           {/* {Email} */}
           <div className="space-y-2">
@@ -277,63 +334,6 @@ export default function BookAppointmentForm({
                 {errors.dentistEmail.message}
               </p>
             )}
-          </div>
-        </div>
-
-        {/* Dentist Name & GDC */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label className="text-lg font-medium">GDC No.</Label>
-            <Controller
-              name="gdcNo"
-              control={control}
-              render={({ field }) => (
-                <div className="relative">
-                  <Input
-                    {...field}
-                    placeholder="Enter GDC number"
-                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-                    readOnly
-                  />
-                  <Image
-                    src={TextInputIcon}
-                    alt="text-input"
-                    className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
-                  />
-                </div>
-              )}
-            />
-            {errors.gdcNo && (
-              <p className="text-sm text-red-500">{errors.gdcNo.message}</p>
-            )}
-          </div>
-
-          {/* Branch */}
-          <div className="space-y-2">
-            <Label className="text-lg font-medium">Branch</Label>
-            <Controller
-              name="practicAddress"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  onValueChange={handlePracticeChange}
-                  value={field.value}
-                >
-                  <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
-                    <SelectValue placeholder="Select Branch" />
-                  </SelectTrigger>
-                  {practices && practices.length > 0 && (
-                    <SelectContent>
-                      {practices.map((b) => (
-                        <SelectItem key={b.id} value={b.id}>
-                          {b.addressLine1}, {b.addressLine2}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  )}
-                </Select>
-              )}
-            />
           </div>
         </div>
 

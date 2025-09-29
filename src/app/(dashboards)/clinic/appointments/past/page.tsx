@@ -1,9 +1,8 @@
-import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import { Suspense } from "react";
-import DateFilter from "@/app/(dashboards)/components/DateFilter";
 import AppointmentGridWrapper from "./components/AppointmentGridWrapper";
 import { AppointmentStatus } from "@prisma/client";
 import AppointmentGridSkeleton from "../components/skeletons/AppointmentGrid";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
 export default async function PastAppointments(props: {
   searchParams?: Promise<{
@@ -25,32 +24,29 @@ export default async function PastAppointments(props: {
 
   return (
     <div>
-      <div className=" w-full h-full flex flex-col gap-7">
-        <div className="flex items-center justify-between">
-          <h1 className="font-medium text-3xl">Appointments</h1>
-          <div className="flex gap-2">
-            <SearchBar placeholder="Enter Patient Name or Appointment Number" />
-            <DateFilter
-              statusOptions={[
-                {
-                  value: AppointmentStatus.COMPLETED,
-                },
-                {
-                  value: AppointmentStatus.CANCELLED,
-                },
-                {
-                  value: AppointmentStatus.DID_NOT_ATTEND,
-                },
-                {
-                  value: AppointmentStatus.ARRIVED,
-                },
-                {
-                  value: AppointmentStatus.IN_SURGERY,
-                },
-              ]}
-            />
-          </div>
-        </div>
+      <div className="min-h-full flex flex-col gap-5 mb-10">
+        <PageTopBar
+          pageHeading="Appointments"
+          showSearch={true}
+          showFilters={true}
+          statusOptions={[
+            {
+              value: AppointmentStatus.COMPLETED,
+            },
+            {
+              value: AppointmentStatus.CANCELLED,
+            },
+            {
+              value: AppointmentStatus.DID_NOT_ATTEND,
+            },
+            {
+              value: AppointmentStatus.ARRIVED,
+            },
+            {
+              value: AppointmentStatus.IN_SURGERY,
+            },
+          ]}
+        />
         <Suspense
           key={query + page + status + on + before + after}
           fallback={<AppointmentGridSkeleton type="PAST" />}

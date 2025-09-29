@@ -1,9 +1,4 @@
-import {
-  AspireDarkLogo,
-  CalenderInputIcon,
-  ReportImage,
-  TimeIcon,
-} from "@/assets";
+import { AspireDarkLogo, CalenderInputIconV2, TimeIconV2 } from "@/assets";
 import { TReport } from "@/types/reports";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
@@ -19,14 +14,14 @@ export default function VideoReportCard({ report }: VideoReportCardProps) {
       <div className="flex gap-3 items-center justify-end">
         <div className="flex gap-1 items-center">
           <Image
-            src={CalenderInputIcon}
+            src={CalenderInputIconV2}
             alt="calender-icon"
             className="w-5 h-5"
           />
           <p className="text-lg">{formatDate(report.createdAt)}</p>
         </div>
         <div className="flex gap-1 items-center">
-          <Image src={TimeIcon} alt="time-icon" className="w-5 h-5" />
+          <Image src={TimeIconV2} alt="time-icon" className="w-5 h-5" />
           <p className="text-lg">
             {/* {report.createdAt.toLocaleTimeString([], {
               hour: "2-digit",

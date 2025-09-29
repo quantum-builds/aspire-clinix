@@ -1,10 +1,9 @@
 import { TProduct } from "@/types/common";
-import Button from "../../components/Button";
-import DateFilter from "../../components/DateFilter";
 import Pagination from "../../components/Pagination";
-import SearchBar from "../../components/SearchBar";
 import NoContent from "../../components/NoContent";
 import ProductGrid from "../../patient/store/components/TempPoductGrid";
+import PageTopBar from "../../components/custom-components/PageTopBar";
+import CustomButton from "../../components/custom-components/CustomButton";
 
 const PRODUCTS: TProduct[] = [
   {
@@ -116,21 +115,18 @@ export default async function Store(props: {
   }
 
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Aspire Store</h1>
-        <div className="flex items-center gap-3">
-          <SearchBar placeholder="Enter Id or patient/dentist name" />
-          <DateFilter
-            statusOptions={[{ value: "FAVOURITE" }, { value: "NOT_FAVOURITE" }]}
-          />
-        </div>
-      </div>
+    <div className="min-h-full flex flex-col gap-5 mb-10">
+      <PageTopBar
+        pageHeading="Aspire Store"
+        showFilters={true}
+        showSearch={true}
+        statusOptions={[]}
+      />
 
-      <div className="p-6 space-y-10 rounded-2xl bg-white">
+      <div className="p-6 space-y-6 rounded-2xl bg-white">
         <div className="flex items-center justify-between">
-          <p className="font-medium text-2xl">All Products</p>
-          <Button text="Add New Product" href="/clinic/store/new" />
+          <p className="font-medium text-[22px]">All Products</p>
+          <CustomButton text="Add New Product" href="/clinic/store/new" />
         </div>
 
         <ProductGrid products={filteredProducts} />
