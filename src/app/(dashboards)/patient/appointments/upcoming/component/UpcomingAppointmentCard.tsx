@@ -23,6 +23,8 @@ export default function UpcomingAppointmentCard({
     usePatchAppointment();
   const { refresh } = useRouter();
 
+  console.log("status is ", appointment.state);
+
   const handleCancelAppointment = () => {
     cancelAppointment(
       {
@@ -82,6 +84,7 @@ export default function UpcomingAppointmentCard({
             text="See Reports"
             href={`/patient/appointments/${appointment.id}/reports`}
           />
+
           {appointment.state !== AppointmentStatus.CANCELLED && (
             <CustomButton
               className="bg-dashboardBarBackground text-dashboardTextBlack"
