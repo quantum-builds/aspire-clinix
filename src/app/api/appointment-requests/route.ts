@@ -25,7 +25,6 @@ export async function GET(req: NextRequest) {
       )
         ? (statusParam as AppointmentRequestStatus)
         : undefined;
-    console.log("status is ", status);
 
     let baseWhere: Prisma.AppointmentRequestsWhereInput = {
       ...(search && { id: { contains: search, mode: "insensitive" } }),
