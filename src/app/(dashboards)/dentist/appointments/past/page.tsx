@@ -31,7 +31,7 @@ export default async function PastAppointments(props: {
           showFilters={true}
           statusOptions={[
             {
-              value: AppointmentStatus.COMPLETED,
+              value: AppointmentStatus.CONFIRMED,
             },
             {
               value: AppointmentStatus.CANCELLED,
