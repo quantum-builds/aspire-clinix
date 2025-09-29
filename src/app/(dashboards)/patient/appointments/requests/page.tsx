@@ -52,11 +52,13 @@ export default async function ReferralHistory(props: {
     query?: string;
     page?: string;
     status?: string;
+    ts?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
   const status = searchParams?.status || "";
+  const ts = new Date(searchParams?.ts || "");
   const page = Number(searchParams?.page) || 1;
 
   return (
@@ -97,7 +99,7 @@ export default async function ReferralHistory(props: {
         ))}
       </div>
       <Suspense
-        key={query + page + status}
+        key={query + page + status + ts}
         fallback={<RequestDataTableSkeleton />}
       >
         <RequestDataTableWrapper query={query} page={page} status={status} />
@@ -105,4 +107,3 @@ export default async function ReferralHistory(props: {
     </div>
   );
 }
-
