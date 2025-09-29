@@ -32,7 +32,6 @@ export default async function AppointmentGridWrapper({
     after,
   });
 
-  console.log("Response is ", response);
   if (
     !response.status ||
     !response.data ||
