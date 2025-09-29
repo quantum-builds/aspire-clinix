@@ -1,9 +1,8 @@
-import SearchBar from "@/app/(dashboards)/components/SearchBar";
-import DateFilter from "@/app/(dashboards)/components/DateFilter";
 import AppointmentRequestGrid from "./components/AppointmentRequestGrid";
 import { Suspense } from "react";
 import { AppointmentRequestStatus } from "@prisma/client";
 import AppointmentRequestGridSkeleton from "./components/skeleton/AppointmentRequestGrid";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
 export default async function RequestAppointments(props: {
   searchParams?: Promise<{
@@ -37,26 +36,23 @@ export default async function RequestAppointments(props: {
 
   return (
     <div>
-      <div className=" w-full h-full flex flex-col gap-7">
-        <div className="flex items-center justify-between">
-          <h1 className="font-medium text-3xl">Appontment Requests</h1>
-          <div className="flex gap-2">
-            <SearchBar placeholder="Enter Appointment Number" />
-            <DateFilter
-              statusOptions={[
-                {
-                  value: AppointmentRequestStatus.APPROVED,
-                },
-                {
-                  value: AppointmentRequestStatus.PENDING,
-                },
-                {
-                  value: AppointmentRequestStatus.CANCEL,
-                },
-              ]}
-            />
-          </div>
-        </div>
+      <div className="min-h-full flex flex-col gap-5 mb-10">
+        <PageTopBar
+          pageHeading="Appointments Requests"
+          showSearch={true}
+          showFilters={true}
+          statusOptions={[
+            {
+              value: AppointmentRequestStatus.APPROVED,
+            },
+            {
+              value: AppointmentRequestStatus.PENDING,
+            },
+            {
+              value: AppointmentRequestStatus.CANCEL,
+            },
+          ]}
+        />
         {/* <div className="bg-white p-6 rounded-2xl space-y-10">
           <div className="text-2xl font-medium">Appointment Requests</div>
           <div className="grid 1xl50:grid-cols-2 gap-6">

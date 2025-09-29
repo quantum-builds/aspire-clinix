@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { NoContentImage } from "@/assets";
+import { NoContentIcon } from "@/assets";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import BackButton from "@/app/(dashboards)/components/BackButton";
 import Button from "./Button";
@@ -30,7 +30,7 @@ export default function NoContent({
       )}
       <div className="bg-dashboardBarBackground py-[60px] px-6 flex flex-col items-center justify-center gap-4">
         <Image
-          src={NoContentImage}
+          src={NoContentIcon}
           alt="no content"
           className="w-[200px] h-[200px]"
         />

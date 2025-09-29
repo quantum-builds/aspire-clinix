@@ -1,12 +1,11 @@
 "use client";
-import { CalenderInputIcon, UploadImageIcon } from "@/assets";
+import { CalenderInputIconV2, UploadImageIconV2 } from "@/assets";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -15,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useRef, useState } from "react";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 
 const productFormSchema = z.object({
   productTitle: z.string().min(1, "Product title is required"),
@@ -80,10 +80,12 @@ export default function AddProductForm() {
     onChange: (file: File | undefined) => void
   ) => {
     const file = e.target.files?.[0];
-    onChange(file);
-    setValue("productImage", file!);
-  };
 
+    if (file) {
+      onChange(file);
+      setValue("productImage", file, { shouldDirty: true });
+    }
+  };
   const values = watch();
   useEffect(() => {
     const hasChanges = Object.keys(values).some(
@@ -96,9 +98,9 @@ export default function AddProductForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* White Card */}
-      <div className="bg-white rounded-2xl p-6 space-y-10">
+      <div className="bg-dashboardBarBackground rounded-2xl p-6 space-y-5">
         <div>
-          <p className="text-2xl font-medium">Add Product</p>
+          <p className="text-[22px] font-semibold text-green">Add Product</p>
         </div>
 
         <div className="space-y-5">
@@ -106,7 +108,7 @@ export default function AddProductForm() {
           <div className="grid grid-cols-2 gap-6">
             {/* Product Title */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Product Title</Label>
+              <Label className="text-[17px]">Product Title</Label>
               <Controller
                 name="productTitle"
                 control={control}
@@ -127,7 +129,7 @@ export default function AddProductForm() {
 
             {/* Serial Number */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Serial Number</Label>
+              <Label className="text-[17px]">Serial Number</Label>
               <Controller
                 name="serialNumber"
                 control={control}
@@ -151,7 +153,7 @@ export default function AddProductForm() {
           <div className="grid grid-cols-2 gap-6">
             {/* Category Dropdown */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Category</Label>
+              <Label className="text-[17px]">Category</Label>
               <Controller
                 name="category"
                 control={control}
@@ -182,7 +184,7 @@ export default function AddProductForm() {
 
             {/* Product Price */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Product Price ($)</Label>
+              <Label className="text-[17px]">Product Price ($)</Label>
               <Controller
                 name="price"
                 control={control}
@@ -203,8 +205,10 @@ export default function AddProductForm() {
 
         {/* Upload Image */}
         <div className="space-y-2">
-          <div className="flex flex-col">
-            <Label className="text-2xl font-medium mb-10">Upload Image</Label>
+          <div className="flex flex-col space-y-2">
+            <Label className="text-[22px] font-semibold text-green">
+              Upload Image
+            </Label>
 
             <Controller
               name="productImage"
@@ -215,7 +219,7 @@ export default function AddProductForm() {
                   <div className="flex gap-3 items-center justify-end">
                     <div className="flex gap-1 items-center">
                       <Image
-                        src={CalenderInputIcon}
+                        src={CalenderInputIconV2}
                         alt="calender-icon"
                         className="w-5 h-5"
                       />
@@ -237,7 +241,7 @@ export default function AddProductForm() {
                       className="hidden"
                       onChange={(e) => handleFileChange(e, field.onChange)}
                     />
-                    <Image src={UploadImageIcon} alt="upload-image" />
+                    <Image src={UploadImageIconV2} alt="upload-image" />
                     {field.value && (
                       <p className="text-sm text-gray-600 text-center px-2 truncate w-[90%]">
                         {(field.value as File).name}
@@ -265,18 +269,12 @@ export default function AddProductForm() {
       {/* Buttons OUTSIDE */}
       {isDirty && (
         <div className="w-full flex justify-end items-center gap-3">
-          <Button
-            type="button"
+          <CustomButton
+            text="Cancel"
             className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
-          >
-            Add Product
-          </Button>
+          />
+
+          <CustomButton text="Add Product" />
         </div>
       )}
     </form>

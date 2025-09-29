@@ -5,6 +5,7 @@ import {
   ConsentIcon,
   InActiveIcon,
   PlansIcon,
+  PracticeIcon,
   ResourcesIcon,
   StoreIcon,
 } from "@/assets";
@@ -60,6 +61,11 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
     name: "Store",
     icon: StoreIcon,
     href: "/clinic/store",
+  },
+  {
+    name: "Practice",
+    icon: PracticeIcon,
+    href: "/clinic/practice",
   },
 ];
 

@@ -118,3 +118,7 @@ export { default as CancelRequestIcon } from "@/assets/cancel-request.svg";
 
 export { default as CalenderInputIconV2 } from "@/assets/Calender-input-icon.svg";
 export { default as TimeIconV2 } from "@/assets/time-icon-v2.svg";
+export { default as NoContentIcon } from "@/assets/no-content-icon.svg";
+export { default as PracticeIcon } from "@/assets/practice-icon.svg";
+export { default as UploadImageIconV2 } from "@/assets/upload-image-icon-v2.svg";
+export { default as UploadVideoIconV2 } from "@/assets/upload-video-icon-v2.svg";

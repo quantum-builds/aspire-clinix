@@ -1,13 +1,13 @@
 "use client";
-import { CalenderInputIcon, TimeIcon, UploadVideoIcon } from "@/assets";
+import { CalenderInputIconV2, TimeIconV2, UploadVideoIconV2 } from "@/assets";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 
 // ---------------- Schema ----------------
 const resourceFormSchema = z.object({
@@ -84,16 +84,16 @@ export default function AddResourceForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* White Card */}
-      <div className="bg-white rounded-2xl p-6 space-y-10">
+      <div className="bg-white rounded-2xl px-8 py-8 space-y-5">
         <div>
-          <p className="text-2xl font-medium">Add Resource</p>
+          <p className="text-[22px] text-green font-semibold">Add Resource</p>
         </div>
 
         <div className="space-y-5">
           <div className="grid grid-cols-2 gap-6">
             {/* Resource Title */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Resource Title</Label>
+              <Label className="text-[17px]">Resource Title</Label>
               <Controller
                 name="resourceTitle"
                 control={control}
@@ -114,7 +114,7 @@ export default function AddResourceForm() {
 
             {/* Uploaded Date */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Uploaded Date</Label>
+              <Label className="text-[17px]">Uploaded Date</Label>
               <div className="relative">
                 <Controller
                   name="uploadedDate"
@@ -128,7 +128,7 @@ export default function AddResourceForm() {
                   )}
                 />
                 <Image
-                  src={CalenderInputIcon}
+                  src={CalenderInputIconV2}
                   alt="calendar-icon"
                   className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none"
                 />
@@ -143,7 +143,7 @@ export default function AddResourceForm() {
 
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Uploaded Time</Label>
+              <Label className="text-[17px]">Uploaded Time</Label>
               <div className="relative">
                 <Controller
                   name="uploadedTime"
@@ -157,7 +157,7 @@ export default function AddResourceForm() {
                   )}
                 />
                 <Image
-                  src={TimeIcon}
+                  src={TimeIconV2}
                   alt="time-icon"
                   className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none"
                 />
@@ -171,9 +171,11 @@ export default function AddResourceForm() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex flex-col">
-            <Label className="text-2xl font-medium mb-10">Upload Video</Label>
+        <div className="">
+          <div className="flex flex-col gap-3">
+            <Label className="text-[22px]  font-semibold text-green">
+              Upload Video
+            </Label>
 
             <Controller
               name="videoFile"
@@ -184,7 +186,7 @@ export default function AddResourceForm() {
                   <div className="flex gap-3 items-center justify-end">
                     <div className="flex gap-1 items-center">
                       <Image
-                        src={CalenderInputIcon}
+                        src={CalenderInputIconV2}
                         alt="calender-icon"
                         className="w-5 h-5"
                       />
@@ -194,7 +196,7 @@ export default function AddResourceForm() {
                     </div>
                     <div className="flex gap-1 items-center">
                       <Image
-                        src={TimeIcon}
+                        src={TimeIconV2}
                         alt="time-icon"
                         className="w-5 h-5"
                       />
@@ -219,7 +221,7 @@ export default function AddResourceForm() {
                       className="hidden"
                       onChange={(e) => handleFileChange(e, field.onChange)}
                     />
-                    <Image src={UploadVideoIcon} alt="upload-video" />
+                    <Image src={UploadVideoIconV2} alt="upload-video" />
                     {field.value && (
                       <p className="text-sm text-gray-600 text-center px-2 truncate w-[90%]">
                         {(field.value as File).name}
@@ -247,18 +249,15 @@ export default function AddResourceForm() {
       {/* Buttons OUTSIDE */}
       {isDirty && (
         <div className="w-full flex justify-end items-center gap-3">
-          <Button
-            type="button"
+          <CustomButton
+            text="Cancel"
             className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
+          />
+
+          <CustomButton
+            text="Add Resource"
             className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
-          >
-            Add Resource
-          </Button>
+          />
         </div>
       )}
     </form>

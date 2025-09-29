@@ -15,39 +15,35 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
-import Image from "next/image";
-import { CalenderInputIconV2 } from "@/assets";
-import { formatDate, formatTime } from "@/utils/formatDateTime";
-import { TAppointmentRequest } from "@/types/appointment-request";
-import { AppointmentRequestStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { TPractice } from "@/types/practice";
 
 interface RequestsDataTable {
-  entries: TAppointmentRequest[];
+  entries: TPractice[];
 }
 
-export function RequestsDataTable({ entries }: RequestsDataTable) {
+export function PracticeDataTable({ entries }: RequestsDataTable) {
   const { push } = useRouter();
 
   return (
-    <div className="w-full overflow-x-auto bg-dashboardBarBackground rounded-2xl px-4 pb-4 pt-4">
+    <div className="w-full overflow-x-auto bg-dashboardBarBackground rounded-2xl px-4 pb-4 pt-4 tracking-tightest">
       <Table className="border-separate border-spacing-y-3 min-w-max">
         <TableHeader>
           <TableRow className="bg-dashboardBackground">
             <TableHead className="px-6 py-4 rounded-l-full text-xl text-dashboardTextBlack font-medium">
-              Request #
+              Practice ID
             </TableHead>
             <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
-              Reason
+              Name
             </TableHead>
             <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
-              Date Created
+              Email
             </TableHead>
             <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
-              Status
+              Phone
             </TableHead>
             <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
-              Request Date
+              NHS
             </TableHead>
             <TableHead className="px-6 py-4  rounded-r-full text-xl text-dashboardTextBlack font-medium">
               Actions
@@ -58,43 +54,28 @@ export function RequestsDataTable({ entries }: RequestsDataTable) {
         <TableBody>
           {entries.map((entry, index) => (
             <TableRow
+              onClick={() => push(`/clinic/practice/${entry.id}`)}
               key={entry.id}
               className="text-lg hover:bg-gray text-dashboardTextBlack"
             >
               <TableCell className="px-6 py-4 rounded-l-full">
-                APR # 100{index}
+                PR # 100{index}
               </TableCell>
-              <TableCell className="px-6 py-4">{entry.reason}</TableCell>
+              <TableCell className="px-6 py-4">{entry.name}</TableCell>
+              <TableCell className="px-6 py-4">{entry.email}</TableCell>
+              <TableCell className="px-6 py-4">{entry.phoneNumber}</TableCell>
               <TableCell className="px-6 py-4 flex gap-1 items-center">
-                <Image
-                  src={CalenderInputIconV2}
-                  alt="calender input icon"
-                  className="w-5 h-5"
-                />
-                <span>{formatDate(entry.createdAt)}</span>
-                <span>{formatTime(entry.createdAt)}</span>
-              </TableCell>
-              <TableCell className="px-6 py-4">
-                <div className="flex gap-2 items-center">
-                  <div
-                    className={`size-3 rounded-[4px] ${
-                      entry.status === AppointmentRequestStatus.APPROVED
-                        ? "bg-green"
-                        : entry.status === AppointmentRequestStatus.PENDING
-                        ? "bg-[#fcd833]"
-                        : "bg-[#FF0000]"
-                    }`}
-                  />
-                  {entry.status}
-                </div>
-              </TableCell>
-              <TableCell className="px-6 py-4 flex gap-1 items-center">
-                <Image
-                  src={CalenderInputIconV2}
-                  alt="calender input icon"
-                  className="w-5 h-5"
-                />
-                <span>{formatDate(entry.requestedDate)}</span>
+                {entry.nhs ? (
+                  <div className="flex gap-2 items-center">
+                    <p className="size-3 rounded-sm bg-green" />
+                    <p>True</p>
+                  </div>
+                ) : (
+                  <div className="flex gap-2 items-center">
+                    <p className="size-3 rounded-sm bg-red-600" />
+                    <p>False</p>
+                  </div>
+                )}
               </TableCell>
               <TableCell className="px-6 py-4 rounded-r-full">
                 <DropdownMenu>
@@ -105,9 +86,7 @@ export function RequestsDataTable({ entries }: RequestsDataTable) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
-                      onClick={() =>
-                        push(`/patient/appointments/requests/${entry.id}`)
-                      }
+                      onClick={() => push(`/clinic/practice/${entry.id}`)}
                     >
                       View
                     </DropdownMenuItem>

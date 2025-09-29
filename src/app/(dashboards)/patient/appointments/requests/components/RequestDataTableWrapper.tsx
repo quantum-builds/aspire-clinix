@@ -2,7 +2,7 @@ import { getAppointmentRequests } from "@/services/appointmentRequests/appointme
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import Pagination from "@/app/(dashboards)/components/Pagination";
 import { TAppointmentRequestResponse } from "@/types/appointment-request";
-import { Response, TAppointmentRequestCards } from "@/types/common";
+import { Response } from "@/types/common";
 
 import { RequestsDataTable } from "./RequestDataTable";
 

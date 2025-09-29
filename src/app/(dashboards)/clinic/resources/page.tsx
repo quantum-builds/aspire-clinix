@@ -1,11 +1,10 @@
 import { TReport } from "@/types/reports";
-import Button from "../../components/Button";
-import DateFilter from "../../components/DateFilter";
 import Pagination from "../../components/Pagination";
-import SearchBar from "../../components/SearchBar";
 import VideoReportCard from "../../components/VideoReportCard";
 import { VideoResourceGridSkeleton } from "../../patient/resources/videos/components/skeletons/ResourceGrid";
 import { Suspense } from "react";
+import PageTopBar from "../../components/custom-components/PageTopBar";
+import CustomButton from "../../components/custom-components/CustomButton";
 
 const REPORTS: TReport[] = [
   {
@@ -134,22 +133,23 @@ export default async function Resources(props: {
   console.log(query);
 
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Resources</h1>
-        <div className="flex items-center gap-3">
-          <SearchBar placeholder="Enter Id or patient/dentist name" />
-          <DateFilter statusOptions={null} />
-        </div>
-      </div>
+    <div className="min-h-full flex flex-col gap-5">
+      <PageTopBar
+        showFilters={true}
+        showSearch={true}
+        statusOptions={[]}
+        pageHeading="Resources"
+      />
 
-      <div className="p-6 space-y-10 rounded-2xl bg-white">
+      <div className="px-6 py-5 space-y-5 rounded-2xl bg-white">
         <div className="flex items-center justify-between">
-          <p className="font-medium text-2xl">Resource Videos</p>
-          <Button text="Add New Resource" href="/clinic/resources/new" />
+          <p className="font-semibold text-[22px] text-green">
+            Resource Videos
+          </p>
+          <CustomButton text="Add New Resource" href="/clinic/resources/new" />
         </div>
         <Suspense key={title + page} fallback={<VideoResourceGridSkeleton />}>
-          <div className="grid max-xl:grid-cols-2 max-2xl50:grid-cols-3 grid-cols-4 gap-x-6 gap-y-10">
+          <div className="grid max-xl:grid-cols-2 max-2xl50:grid-cols-3 grid-cols-4 gap-x-5 gap-y-5">
             {REPORTS.map((report, index) => (
               <VideoReportCard key={index} report={report} />
             ))}
