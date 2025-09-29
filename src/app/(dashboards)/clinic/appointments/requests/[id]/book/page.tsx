@@ -4,6 +4,7 @@ import AppointmentRequestFormWrapper from "../components/AppointmentRequestFormW
 import { Response } from "@/types/common";
 import { TPractice } from "@/types/practice";
 import { getPractices } from "@/services/practice/practiceQuery";
+import BookAppointmentFormSkeleton from "../components/skeletons/BookAppointmentForm";
 
 export default async function AppointmentRequestFormPage(props: {
   params: { id: string };
@@ -24,7 +25,7 @@ export default async function AppointmentRequestFormPage(props: {
         <h1 className="font-medium text-3xl">Appointments</h1>
         <BackButton />
       </div>
-      <Suspense key={id} fallback={<div>Loading....</div>}>
+      <Suspense key={id} fallback={<BookAppointmentFormSkeleton />}>
         <AppointmentRequestFormWrapper
           id={id}
           practiceId={practiceId}

@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import PatientRDentistDetails from "./components/PatientDentistDetails";
 import ReportGridWrapper from "./components/ReportGridWrapper";
 import BackButton from "@/app/(dashboards)/components/BackButton";
+import ReportGridWrapperSkeleton from "./components/skeletons/ReportGridWrapper";
 
 export default async function ReferralDetailsPage(props: {
   params: { id: string };
@@ -168,7 +169,7 @@ export default async function ReferralDetailsPage(props: {
           <BackButton />
         </div>
       </div>
-      <Suspense key={id + title} fallback={<div>Loading...</div>}>
+      <Suspense key={id + title} fallback={<ReportGridWrapperSkeleton />}>
         <ReportGridWrapper id={id} title={title} />
       </Suspense>
     </div>
