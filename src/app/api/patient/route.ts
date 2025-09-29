@@ -27,17 +27,27 @@ export async function POST(req: NextRequest) {
   try {
     const patient = await req.json();
 
-    const existingDentist = await prisma.dentist.findUnique({
-      where: { email: patient.email },
+    const existingDentist = await prisma.dentist.findFirst({
+      where: {
+        OR: [{ email: patient.email }, { phoneNumber: patient.phoneNumber }],
+      },
     });
 
-    const existingPatient = await prisma.patient.findUnique({
-      where: { email: patient.email },
+    const existingPatient = await prisma.patient.findFirst({
+      where: {
+        OR: [{ email: patient.email }, { phoneNumber: patient.phoneNumber }],
+      },
     });
 
-    if (existingDentist || existingPatient) {
+    const existingAdmin = await prisma.admin.findFirst({
+      where: {
+        OR: [{ email: patient.email }, { phoneNumber: patient.phoneNumber }],
+      },
+    });
+
+    if (existingDentist || existingPatient || existingAdmin) {
       return NextResponse.json(
-        createResponse(false, "User already exists", null),
+        createResponse(false, "User data already exists", null),
         { status: 400 }
       );
     }

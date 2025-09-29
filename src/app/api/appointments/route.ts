@@ -2,10 +2,15 @@ import prisma from "@/lib/db";
 import { AppointmentDateType } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
 import { AppointmentStatus, Prisma } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
+    const token = await getToken({
+      req,
+    });
+
     const { searchParams } = new URL(req.url);
 
     const page = parseInt(searchParams.get("page") || "1", 10);

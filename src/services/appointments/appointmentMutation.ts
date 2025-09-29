@@ -8,13 +8,15 @@ export const usePatchAppointment = () => {
       appointment,
       id,
       patientId,
+      dentistId,
     }: {
       appointment: Partial<TAppointmentCreate>;
       id: string;
-      patientId: string;
+      patientId?: string;
+      dentistId?: string;
     }) => {
       const response = await axiosInstance.patch(
-        ENDPOINTS.appointemt.patch(id, patientId),
+        ENDPOINTS.appointemt.patch(id, patientId, dentistId),
         appointment
       );
       return response.data.data;

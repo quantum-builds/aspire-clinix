@@ -264,3 +264,9 @@ export interface AppointmentRequest {
 export interface TStatusOption {
   value: string;
 }
+
+export enum UserRoles {
+  ADMIN = "ADMIN",
+  PATIENT = "PATIENT",
+  DENTIST = "DENTIST",
+}

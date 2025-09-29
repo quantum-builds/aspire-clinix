@@ -13,6 +13,7 @@ interface CustomButtonProps {
   disabled?: boolean;
   loading?: boolean;
   style?: "primary" | "secondary";
+  type?: "button" | "submit" | "reset";
 }
 
 export default function CustomButton({
@@ -24,6 +25,7 @@ export default function CustomButton({
   disabled,
   loading,
   style = "primary",
+  type = "button",
 }: CustomButtonProps) {
   const btnStyles =
     style === "primary"
@@ -48,19 +50,20 @@ export default function CustomButton({
 
   return (
     <button
+      type={type}
       disabled={disabled || loading}
       onClick={handleOnClick}
       className={cn(
-        "px-6 py-3 text-dashboardBarBackground bg-green flex items-center justify-center gap-2 rounded-[100px] disabled:cursor-not-allowed disabled:opacity-75 transition-all",
+        "px-6 py-3 flex items-center justify-center gap-2 rounded-[100px] disabled:cursor-not-allowed disabled:opacity-75 transition-all",
         btnStyles,
         className
       )}
     >
       {!loading ? (
-        <div>
+        <>
           {icon && <Image src={icon} alt="button icon" className="w-4 h-4" />}
           <p className="text-[17px]">{text}</p>
-        </div>
+        </>
       ) : (
         <Spinner />
       )}

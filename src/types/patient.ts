@@ -8,7 +8,7 @@ export type TPatientCreate = {
   country: string;
   dateOfBirth: Date;
   gender: GenderType;
-  fileUrl: string;
+  fileUrl?: string;
 };
 
 export type TPatient = Omit<TPatientCreate, "password"> & {
