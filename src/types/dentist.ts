@@ -5,9 +5,9 @@ export type TDentistCreate = {
   password: string;
   fullName: string;
   phoneNumber: string;
-  country: string;
-  dateOfBirth: Date;
-  gender: GenderType;
+  country?: string;
+  dateOfBirth?: Date;
+  gender?: GenderType;
   gdcNo: string;
   practiceAddress: string;
   role: DentistRole;

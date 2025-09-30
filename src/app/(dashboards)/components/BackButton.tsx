@@ -1,14 +1,21 @@
 "use client";
 import { BackButtonIcon } from "@/assets";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-export default function BackButton() {
+interface BackButtonProps {
+  className?: string;
+}
+export default function BackButton({ className }: BackButtonProps) {
   const router = useRouter();
 
   return (
     <button
-      className="bg-dashboardBarBackground px-6 py-3 rounded-full flex items-center justify-center gap-1"
+      className={cn(
+        "bg-dashboardBarBackground px-6 py-3 rounded-full flex items-center justify-center gap-1",
+        className
+      )}
       onClick={() => router.back()}
     >
       <Image src={BackButtonIcon} alt="back button icon" className="w-4 h-4" />

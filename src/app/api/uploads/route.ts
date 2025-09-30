@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
             Bucket: process.env.AWS_BUCKET_NAME!,
             Key: fileName,
           });
-          const url = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+          const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
           return { url, fileName };
         })
       );
@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
               Bucket: process.env.AWS_BUCKET_NAME!,
               Key: file.Key!,
             }),
-            { expiresIn: 60 * 5 }
+            { expiresIn: 3600 }
           );
 
           let type = "other";

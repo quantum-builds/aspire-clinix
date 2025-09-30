@@ -1,0 +1,9 @@
+-- AlterTable
+ALTER TABLE "Dentist" ALTER COLUMN "country" DROP NOT NULL,
+ALTER COLUMN "dateOfBirth" DROP NOT NULL,
+ALTER COLUMN "gender" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "Patient" ALTER COLUMN "country" DROP NOT NULL,
+ALTER COLUMN "dateOfBirth" DROP NOT NULL,
+ALTER COLUMN "gender" DROP NOT NULL;
