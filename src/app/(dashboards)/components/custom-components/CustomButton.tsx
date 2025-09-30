@@ -12,7 +12,7 @@ interface CustomButtonProps {
   className?: string;
   disabled?: boolean;
   loading?: boolean;
-  style?: "primary" | "secondary";
+  style?: "primary" | "secondary" | "white";
   type?: "button" | "submit" | "reset";
 }
 
@@ -30,7 +30,9 @@ export default function CustomButton({
   const btnStyles =
     style === "primary"
       ? "bg-green text-dashboardBarBackground hover:bg-greenHover"
-      : "bg-gray text-dashboardTextBlack";
+      : style === "secondary"
+      ? "bg-gray text-dashboardTextBlack"
+      : "bg-dashboardBarBackground";
 
   if (href) {
     return (

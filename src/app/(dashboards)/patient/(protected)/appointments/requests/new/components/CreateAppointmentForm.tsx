@@ -269,7 +269,6 @@ export default function AppointmentForm() {
           text={isPending ? "Making Request" : "Request an Appointment"}
           disabled={isPending}
           loading={isPending}
-          className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
         />
       </div>
     </form>

@@ -21,6 +21,11 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
         href: "/dentist/appointments/upcoming",
       },
       { name: "Past", icon: InActiveIcon, href: "/dentist/appointments/past" },
+      {
+        name: "Requests",
+        icon: InActiveIcon,
+        href: "/dentist/appointments/requests",
+      },
     ],
   },
   {
@@ -44,7 +49,7 @@ export default function PatientLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="font-inter text-dashboardTextBlack bg-dashboardBackground h-screen grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden">
+    <div className="font-inter text-dashboardTextBlack bg-dashboardBackground h-full grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden">
       <div className="row-span-2 border-r">
         <Sidebar sideBarContnent={SIDEBAR_CONTENT} />
       </div>

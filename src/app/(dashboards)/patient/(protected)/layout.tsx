@@ -80,7 +80,7 @@ export default async function PatientLayout({
   );
   return (
     <div
-      className={`font-inter text-dashboardTextBlack bg-dashboardBackground h-screen grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden `}
+      className={`font-inter text-dashboardTextBlack bg-dashboardBackground min-h-full grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden `}
     >
       <div className="row-span-2 border-r">
         <Sidebar sideBarContnent={SIDEBAR_CONTENT} />
