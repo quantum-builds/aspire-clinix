@@ -48,7 +48,7 @@ export default function PatientDetailsModal({
               <p className="flex-1">
                 Age:{" "}
                 <span className="font-medium text-lg">
-                  {calculateAge(appointment.patient.dateOfBirth)} years
+                  {calculateAge(appointment.patient.dateOfBirth!)} years
                 </span>
               </p>
             </div>
