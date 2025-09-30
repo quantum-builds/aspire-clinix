@@ -84,7 +84,7 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
   };
 
   return (
-    <div className="w-[320px] h-screen bg-dashboardBarBackground border-r border-gray-200 py-4 pb-12 px-8 flex flex-col justify-between font-medium fixed">
+    <div className="w-[320px] h-full bg-dashboardBarBackground border-r border-gray-200 py-4 pb-12 px-8 flex flex-col justify-between font-medium fixed">
       <div className="flex flex-col gap-6">
         <div className="w-full flex items-center justify-center">
           <Image
