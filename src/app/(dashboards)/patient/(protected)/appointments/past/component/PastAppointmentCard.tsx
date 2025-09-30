@@ -1,8 +1,12 @@
+"use client";
+
 import { CalenderInputIconV2, TimeIconV2 } from "@/assets";
 import Image from "next/image";
 import { TAppointment } from "@/types/appointment";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import { useState } from "react";
+import AppointmentDetailsModal from "../../components/AppointmentDetailsModal";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -11,11 +15,12 @@ interface UpcomingAppointmentCardProps {
 export default function PastAppointmentCard({
   appointment,
 }: UpcomingAppointmentCardProps) {
+  const [openDetailsModal, setOpenDetailsModal] = useState(false);
+
   return (
-    <div className="flex flex-col gap-3 p-6 rounded-2xl bg-dashboardBackground">
-      <div className="flex justify-between gap-3 items-center">
-        <p className="text-green font-semibold text-xl">Dentist Details</p>
-        <div className="flex items-center gap-2">
+    <>
+      <div className="flex flex-col gap-2 p-5 rounded-2xl bg-gray">
+        <div className="flex justify-between gap-2 items-center">
           <div className="flex items-center gap-1">
             <Image
               src={CalenderInputIconV2}
@@ -33,38 +38,36 @@ export default function PastAppointmentCard({
             </p>
           </div>
         </div>
-      </div>
 
-      <div className="">
         <div className="flex items-center justify-between">
-          <p className="text-lg">
-            Name:{" "}
-            <span className="font-medium truncate">
-              {appointment.dentist.fullName}{" "}
-            </span>
+          <p className="text-xl font-medium w-2/3 truncate">
+            Appointment # {appointment.id.slice(0, 10)}
           </p>
-          <p className="text-lg">
-            Age: <span className="font-medium">{20} years</span>
+          <AppointmentDetailsModal
+            appointment={appointment}
+            trigger={
+              <p
+                className="text-green text-lg font-semibold cursor-pointer"
+                onClick={() => setOpenDetailsModal(true)}
+              >
+                See Details
+              </p>
+            }
+            open={openDetailsModal}
+            onClose={() => setOpenDetailsModal(false)}
+          />
+        </div>
+
+        <div className="flex justify-between items-center mt-7">
+          <CustomButton
+            text="See Reports"
+            href={`/patient/appointments/${appointment.id}/reports`}
+          />
+          <p className="text-[17px] text-green font-semibold">
+            Appointment with {appointment.dentist.fullName}
           </p>
         </div>
-        <div className="flex items-center justify-between">
-          <p className="text-lg">
-            Gender:{" "}
-            <span className="font-medium">{appointment.patient.gender}</span>
-          </p>
-          <p className="text-lg">
-            Reason:{" "}
-            <span className="font-medium truncate">{appointment.reason}</span>
-          </p>
-        </div>
       </div>
-
-      <div className="flex justify-between items-center mt-4">
-        <CustomButton
-          text="See Reports"
-          href={`/patient/appointments/${appointment.id}/reports`}
-        />
-      </div>
-    </div>
+    </>
   );
 }

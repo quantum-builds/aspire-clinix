@@ -15,7 +15,7 @@ export default async function ReportsPage(props: {
   const title = searchParams?.query || "";
 
   return (
-    <div className="min-h-full flex flex-col gap-5 mb-10">
+    <div className="flex flex-col gap-5 min-h-[103vh]">
       <PageTopBar
         pageHeading="Reports"
         statusOptions={[]}

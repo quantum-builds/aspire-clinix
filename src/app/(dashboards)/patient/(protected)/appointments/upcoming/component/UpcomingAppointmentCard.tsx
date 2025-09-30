@@ -10,6 +10,7 @@ import { usePatchAppointment } from "@/services/appointments/appointmentMutation
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { useState } from "react";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
+import AppointmentDetailsModal from "../../components/AppointmentDetailsModal";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -19,6 +20,8 @@ export default function UpcomingAppointmentCard({
   appointment,
 }: UpcomingAppointmentCardProps) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [openDetailsModal, setOpenDetailsModal] = useState(false);
+
   const { mutate: cancelAppointment, isPending: isCancelAppointment } =
     usePatchAppointment();
   const { refresh } = useRouter();
@@ -44,37 +47,44 @@ export default function UpcomingAppointmentCard({
   };
 
   return (
-    <div className="flex flex-col gap-1 p-6 rounded-2xl bg-gray">
+    <div className="flex flex-col gap-1 p-5 rounded-2xl bg-gray">
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <Image
-                src={CalenderInputIconV2}
-                alt="Calendar Icon"
-                className="w-4 h-4"
-              />
-              <p className="text-lg">{formatDate(appointment.date)}</p>
-            </div>
-            <div className="flex items-center gap-1">
-              <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />
-              <p className="text-lg">
-                {" "}
-                {formatTime(appointment.startTime)} -{" "}
-                {formatTime(appointment.finishTime)}
-              </p>
-            </div>
+          <div className="flex items-center gap-1">
+            <Image
+              src={CalenderInputIconV2}
+              alt="Calendar Icon"
+              className="w-4 h-4"
+            />
+            <p className="text-lg">{formatDate(appointment.date)}</p>
           </div>
-          <p className="text-lg italic">
-            Appointment # APT-{appointment.id.slice(0, 10)}
-          </p>
+          <div className="flex items-center gap-1">
+            <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />
+            <p className="text-lg">
+              {" "}
+              {formatTime(appointment.startTime)} -{" "}
+              {formatTime(appointment.finishTime)}
+            </p>
+          </div>
         </div>
       </div>
       <div className="flex items-center justify-between">
         <p className="text-xl font-medium w-2/3 truncate">
-          Appointment With Dr. {appointment.dentist.fullName}
+          Appointment # {appointment.id.slice(0, 10)}
         </p>
-        <p className="text-green text-lg">See Details</p>
+        <AppointmentDetailsModal
+          appointment={appointment}
+          trigger={
+            <p
+              className="text-green text-lg font-semibold cursor-pointer"
+              onClick={() => setOpenDetailsModal(true)}
+            >
+              See Details
+            </p>
+          }
+          open={openDetailsModal}
+          onClose={() => setOpenDetailsModal(false)}
+        />
       </div>
       <div className="flex justify-between w-full">
         <div className="flex items-center gap-2 w-full mt-7">
@@ -85,7 +95,7 @@ export default function UpcomingAppointmentCard({
 
           {appointment.state !== AppointmentStatus.CANCELLED && (
             <CustomButton
-              className="bg-dashboardBarBackground text-dashboardTextBlack"
+              style="white"
               handleOnClick={() => setIsCancelModalOpen(true)}
               text="Cancel Appointment"
             />

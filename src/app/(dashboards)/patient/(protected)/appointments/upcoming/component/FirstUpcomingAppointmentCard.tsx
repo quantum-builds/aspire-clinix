@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import { useState } from "react";
+import StatusBage from "@/app/(dashboards)/components/StatusBadge";
 
 interface FirstUpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -63,9 +64,8 @@ export default function FirstUpcomingAppointmentCard({
           </div>
         </div>
         <div className="flex  gap-3 items-center justify-between">
-          <p className="text-lg">
-            Status:{" "}
-            <span className="font-medium italic">{appointment.state}</span>
+          <p className="text-lg flex gap-1 items-center">
+            Status: <StatusBage status={appointment.state} />
           </p>
 
           <p className="text-lg italic">

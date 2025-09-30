@@ -4,7 +4,7 @@ import PatientLoginForm from "./components/LoginForm";
 
 export default function LoginPage() {
   return (
-    <main className="min-h-full ">
+    <main className="min-h-screen">
       <div className="w-full flex items-center justify-center">
         <Image src={AspireDarkLogo} alt="Aspire Logo" width={129} height={60} />
       </div>

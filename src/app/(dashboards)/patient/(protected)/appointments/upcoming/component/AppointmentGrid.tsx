@@ -28,7 +28,10 @@ export default async function AppointmentGridWrapper({
     // dentistId: "cmfpmegmj0005l6qab0c10oil",
     patientId: "cmfplxicq0000l6qaof724vtk",
     dateType: AppointmentDateType.UPCOMING,
-    status,on,before,after
+    status,
+    on,
+    before,
+    after,
   });
 
   if (
@@ -56,11 +59,11 @@ export function AppointmentGrid({ appointments }: AppointmentGridProps) {
     <div className="flex flex-col gap-7">
       <FirstUpcomingAppointmentCard appointment={appointments[0]} />
       {appointments.length > 1 && (
-        <div className="py-5 px-8 rounded-2xl bg-dashboardBarBackground space-y-5">
+        <div className="py-5 px-8 rounded-2xl bg-dashboardBarBackground space-y-4">
           <p className="font-medium text-[22px]">
             Next Appointment{appointments.length > 2 && "s"}
           </p>
-          <div className="grid 1xl:grid-cols-2 gap-x-6 gap-y-10">
+          <div className="grid 1xl:grid-cols-2 gap-x-4 gap-y-4">
             {appointments.slice(1).map((appointment, index) => (
               <UpcomingAppointmentCard appointment={appointment} key={index} />
             ))}

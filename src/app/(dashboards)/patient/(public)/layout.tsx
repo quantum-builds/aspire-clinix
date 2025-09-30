@@ -3,7 +3,7 @@ export default async function PatientLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div
-      className={`font-inter text-dashboardTextBlack bg-dashboardBackground h-full p-10  `}
+      className={`font-inter text-dashboardTextBlack bg-dashboardBackground min-h-full p-10`}
     >
       {children}
     </div>
