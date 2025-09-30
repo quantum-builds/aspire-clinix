@@ -11,10 +11,12 @@ export type TDentistCreate = {
   gdcNo: string;
   practiceAddress: string;
   role: DentistRole;
+  fileUrl?: string;
 };
 
 export type TDentist = Omit<TDentistCreate, "password"> & {
   id: string;
   createdAt: Date;
   updatedAt: Date;
+  file?: string;
 };

@@ -17,10 +17,24 @@ export const usePatchPatient = () => {
       );
 
       const patient: TPatient = response.data.data;
+      return patient;
+    },
+  });
+};
 
-      // const upload = patient.fileUrl ? await getAMedia(patient.fileUrl) : null;
+export const useCreatePatient = () => {
+  return useMutation({
+    mutationFn: async ({
+      patientCreate,
+    }: {
+      patientCreate: TPatientCreate;
+    }) => {
+      const response = await axiosInstance.post(
+        ENDPOINTS.patient.createPatient,
+        patientCreate
+      );
 
-      // patient.file = upload;
+      const patient: TPatient = response.data.data;
       return patient;
     },
   });

@@ -48,28 +48,34 @@ export const ENDPOINTS = {
     //   return `/v1/patient_stats?${queryString}`;
     // },
 
+    createPatient: "/api/patient",
     getPatient: (id: string) => `/api/patient/${id}`,
     editPatient: (id: string) => `/api/patient/${id}`,
   },
 
   dentist: {
-    get: (id: string) => `/v1/practitioners/${id}`,
-    put: (id: string) => `/v1/practitioners/${id}`,
-    list: (queryParams: ListDentist) => {
-      const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
+    // get: (id: string) => `/v1/practitioners/${id}`,
+    // put: (id: string) => `/v1/practitioners/${id}`,
+    // list: (queryParams: ListDentist) => {
+    //   const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
 
-      const queryString = new URLSearchParams(
-        Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
-          if (value !== undefined && value !== null) {
-            acc[key] =
-              value instanceof Date ? value.toISOString() : value.toString();
-          }
-          return acc;
-        }, {} as Record<string, string>)
-      ).toString();
+    //   const queryString = new URLSearchParams(
+    //     Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
+    //       if (value !== undefined && value !== null) {
+    //         acc[key] =
+    //           value instanceof Date ? value.toISOString() : value.toString();
+    //       }
+    //       return acc;
+    //     }, {} as Record<string, string>)
+    //   ).toString();
 
-      return `/v1/practitioners?${queryString}`;
-    },
+    //   return `/v1/practitioners?${queryString}`;
+    // },
+    createDentist: "/api/dentist",
+  },
+
+  admin: {
+    createAdmin: "/api/admin",
   },
 
   // appointment: {
@@ -191,8 +197,10 @@ export const ENDPOINTS = {
         before ?? ""
       }&after=${after ?? ""}&dateType=${dateType ?? ""}&status=${status ?? ""}`,
     post: "/api/appointments",
-    patch: (id: string, patientId: string) =>
-      `/api/appointments/${id}?patientId=${patientId}`,
+    patch: (id: string, patientId?: string, dentistId?: string) =>
+      `/api/appointments/${id}?patientId=${patientId ?? ""}&dentistId=${
+        dentistId ?? ""
+      }`,
   },
 
   dentistToPractice: {
@@ -265,6 +273,7 @@ export const axiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 export const axiosDentallyInstance = axios.create({

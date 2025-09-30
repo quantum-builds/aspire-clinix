@@ -1,3 +1,4 @@
+"use client";
 import {
   CalenderIcon,
   DropDownIcon,
@@ -22,6 +23,9 @@ import {
 } from "@/components/ui/popover";
 import Notifications from "./Notifications";
 import Link from "next/link";
+import { useState } from "react";
+import ConfirmationModal from "./ConfirmationModal";
+import { signOutMutation } from "@/services/signOutMutation";
 
 interface TopBarProps {
   name: string;
@@ -36,6 +40,8 @@ export default function TopBar({
   role,
   profileLink,
 }: TopBarProps) {
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const { mutate: signOut, isPending } = signOutMutation();
   return (
     <div className="fixed top-0 left-[320px] w-[calc(100%-320px)] h-[90px] bg-dashboardBarBackground border-b border-gray-200 flex items-center justify-end gap-8 px-6">
       <Popover>
@@ -104,7 +110,11 @@ export default function TopBar({
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setIsCancelModalOpen(true);
+            }}
+          >
             <div className="flex gap-2 cursor-pointer">
               <Image src={LogoutIcon} alt="Calendar Icon" className="w-4 h-4" />
               LogOut
@@ -112,6 +122,20 @@ export default function TopBar({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <ConfirmationModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        isPending={isPending}
+        onConfirm={() => {
+          signOut();
+          setIsCancelModalOpen(false);
+        }}
+        title="Logout Confrimation"
+        description="Are you sure you want to logout"
+        cancelText="No"
+        confirmText="Yes"
+      />
     </div>
   );
 }

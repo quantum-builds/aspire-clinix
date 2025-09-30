@@ -1,6 +1,6 @@
 import { TReport } from "@/types/reports";
 import LetterReportCard from "./LetterReportCard";
-import UploadLetterForm from "../dentist/appointments/[id]/reports/new/components/UploadLetterForm";
+import UploadLetterForm from "../dentist/(protected)/appointments/[id]/reports/new/components/UploadLetterForm";
 
 interface LetterReportGridProps {
   reports: TReport[];

@@ -1,7 +1,9 @@
-import { axiosInstance, ENDPOINTS } from "@/config/api-config";
+import { ENDPOINTS } from "@/config/api-config";
+import { createServerAxios } from "@/lib/server-axios";
 import { TAppointmentResponse } from "@/types/appointment";
 import { AppointmentDateType, Response } from "@/types/common";
 import axios from "axios";
+import { cookies } from "next/headers";
 
 export async function getAppointments({
   page,
@@ -25,7 +27,8 @@ export async function getAppointments({
   status?: string;
 }) {
   try {
-    const response = await axiosInstance.get(
+    const serverAxios = await createServerAxios();
+    const response = await serverAxios.get(
       ENDPOINTS.appointemt.get(
         page,
         search,

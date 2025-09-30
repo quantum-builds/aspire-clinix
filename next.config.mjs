@@ -11,6 +11,21 @@ const nextConfig = {
         destination: "/",
         permanent: true,
       },
+      {
+        source: "/clinic",
+        destination: "/clinic/appointments/upcoming",
+        permanent: false,
+      },
+      {
+        source: "/patient",
+        destination: "/patient/appointments/upcoming",
+        permanent: false,
+      },
+      {
+        source: "/dentist",
+        destination: "/dentist/appointments/upcoming",
+        permanent: false,
+      },
     ];
   },
   images: {
