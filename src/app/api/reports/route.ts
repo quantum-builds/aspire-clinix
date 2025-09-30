@@ -1,7 +1,6 @@
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
-import { Prisma, Report } from "@prisma/client";
-import { getToken } from "next-auth/jwt";
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {

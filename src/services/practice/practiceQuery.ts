@@ -1,14 +1,24 @@
 import { axiosInstance, ENDPOINTS } from "@/config/api-config";
-import { TPractice } from "@/types/practice";
+import { TPractice, TPracticeResponse } from "@/types/practice";
 import { Response } from "@/types/common";
 import { getAMedia } from "../s3/s3Query";
 import axios from "axios";
 
-export async function getPractices() {
+export async function getPractices({
+  page,
+  search,
+  status,
+}: {
+  page?: number;
+  search?: string;
+  status?: string;
+}) {
   try {
-    const response = await axiosInstance.get(ENDPOINTS.practices.getAll);
-    const responseData: Response<TPractice[]> = response.data;
-    const practices: TPractice[] = responseData.data;
+    const response = await axiosInstance.get(
+      ENDPOINTS.practices.getAll(page, search, status)
+    );
+    const responseData: Response<TPracticeResponse> = response.data;
+    const practices: TPractice[] = responseData.data.practices;
 
     const uploads = await Promise.all(
       practices.map(async (practice) => {
@@ -23,7 +33,7 @@ export async function getPractices() {
       practice.logo = uploads[index];
     });
 
-    responseData.data = practices;
+    responseData.data.practices = practices;
     return responseData;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

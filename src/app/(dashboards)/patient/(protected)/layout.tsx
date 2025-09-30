@@ -1,4 +1,4 @@
-import { Response, SidebarPage } from "@/types/common";
+import { SidebarPage } from "@/types/common";
 
 import {
   AppointmentsIcon,
@@ -8,10 +8,11 @@ import {
   ResourcesIcon,
   StoreIcon,
 } from "@/assets";
-import { getPatient } from "@/services/patient/patientQuery";
-import { TPatient } from "@/types/patient";
 import Sidebar from "../../components/SideBar";
 import TopBar from "../../components/TopBar";
+import { getServerSession } from "next-auth";
+import { toTitleCase } from "@/utils/formatWords";
+import { authOptions } from "@/lib/auth";
 
 const SIDEBAR_CONTENT: SidebarPage[] = [
   {
@@ -75,9 +76,9 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
 export default async function PatientLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const response: Response<TPatient> = await getPatient(
-    "cmfplxicq0000l6qaof724vtk"
-  );
+  const session = await getServerSession(authOptions);
+  const role = session?.user.role;
+  const name = session?.user.name;
   return (
     <div
       className={`font-inter text-dashboardTextBlack bg-dashboardBackground min-h-full grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden `}
@@ -88,9 +89,8 @@ export default async function PatientLayout({
 
       <div className="col-start-2 border-b">
         <TopBar
-          name={response.data?.fullName || ""}
-          profilePic={response.data?.file || undefined}
-          role="Patient"
+          name={name || ""}
+          role={toTitleCase(role || "")}
           profileLink="/patient/profile"
         />
       </div>

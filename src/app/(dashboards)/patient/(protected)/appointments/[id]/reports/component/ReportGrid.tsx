@@ -26,8 +26,8 @@ export default async function ReportGridWrapper({
 ResourceGridWrapperProps) {
   const response: Response<TReportResponse> = await getReports({
     search: query,
-    dentistId: "cmfpmegmj0005l6qab0c10oil",
-    patientId: "cmfplxicq0000l6qaof724vtk",
+    // dentistId: "cmfpmegmj0005l6qab0c10oil",
+    // patientId: "cmfplxicq0000l6qaof724vtk",
     appointmentId: appointmentId,
   });
 

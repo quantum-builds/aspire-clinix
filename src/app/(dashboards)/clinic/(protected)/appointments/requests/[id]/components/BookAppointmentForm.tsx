@@ -28,15 +28,10 @@ import { TPractice } from "@/types/practice";
 import { TDentist } from "@/types/dentist";
 import { useCreateAppointment } from "@/services/appointments/appointmentMutation";
 import { TAppointmentCreate } from "@/types/appointment";
-import { TPatient } from "@/types/patient";
-import {
-  TAppointmentRequest,
-  TAppointmentRequestCreate,
-} from "@/types/appointment-request";
+import { TAppointmentRequest } from "@/types/appointment-request";
 import { AppointmentRequestStatus, AppointmentStatus } from "@prisma/client";
 import { formatTimeForInput } from "@/utils/formatDateTime";
 import { usePatchAppointmentRequest } from "@/services/appointmentRequests/appointmentRequestMutation";
-import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import Spinner from "@/app/(dashboards)/components/custom-components/Spinner";
 
 const assignDentistSchema = z.object({

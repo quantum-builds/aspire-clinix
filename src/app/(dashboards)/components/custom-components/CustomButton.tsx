@@ -31,7 +31,7 @@ export default function CustomButton({
     style === "primary"
       ? "bg-green text-dashboardBarBackground hover:bg-greenHover"
       : style === "secondary"
-      ? "bg-gray text-dashboardTextBlack"
+      ? "bg-gray text-dashboardTextBlack hover:bg-lightGray"
       : "bg-dashboardBarBackground";
 
   if (href) {

@@ -1,24 +1,22 @@
-import { getPractices } from "@/services/practice/practiceQuery";
 import CustomButton from "../../../components/custom-components/CustomButton";
 import PageTopBar from "../../../components/custom-components/PageTopBar";
-import Pagination from "../../../components/Pagination";
-import { TPractice } from "@/types/practice";
-import { Response } from "@/types/common";
-import { PracticeDataTable } from "./components/PracticeDataTable";
+import { Suspense } from "react";
+import PracticeDataTableWrapper from "./components/PracticeDataTableWrapper";
+import { PracticeDataTableSkeleton } from "./components/skeletons/PracticeDataTable";
 
 export default async function PracticePage(props: {
   searchParams?: Promise<{
     query?: string;
     status?: string;
     page?: string;
+    ts?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
   const page = Number(searchParams?.page) || 1;
-
-  const response: Response<TPractice[]> = await getPractices();
-  const practices = response.data;
+  const ts = new Date(searchParams?.ts || "");
+  const status = searchParams?.status || "";
 
   return (
     <div>
@@ -32,9 +30,12 @@ export default async function PracticePage(props: {
             <CustomButton text="Add New Practice" href="/clinic/practice/new" />
           }
         />
-
-        <PracticeDataTable entries={practices} />
-        <Pagination page={1} />
+        <Suspense
+          key={query + page + ts + status}
+          fallback={<PracticeDataTableSkeleton />}
+        >
+          <PracticeDataTableWrapper query={query} status={status} page={page} />
+        </Suspense>
       </div>
     </div>
   );

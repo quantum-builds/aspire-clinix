@@ -110,7 +110,7 @@ export default function DentistRegisterForm() {
         onSuccess: () => {
           showToast("success", "Dentist Registered Successfully");
           reset();
-          router.replace(`/patient/login`);
+          router.replace(`/dentist/login`);
         },
         onError: (error) => {
           showToast("error", "Something went wrong");

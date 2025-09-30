@@ -3,13 +3,10 @@ import { createServerAxios } from "@/lib/server-axios";
 import { TAppointmentResponse } from "@/types/appointment";
 import { AppointmentDateType, Response } from "@/types/common";
 import axios from "axios";
-import { cookies } from "next/headers";
 
 export async function getAppointments({
   page,
   search,
-  patientId,
-  dentistId,
   on,
   before,
   after,
@@ -18,8 +15,6 @@ export async function getAppointments({
 }: {
   page?: number;
   search?: string;
-  patientId?: string;
-  dentistId?: string;
   on?: string;
   before?: string;
   after?: string;
@@ -32,8 +27,6 @@ export async function getAppointments({
       ENDPOINTS.appointemt.get(
         page,
         search,
-        patientId,
-        dentistId,
         on,
         before,
         after,

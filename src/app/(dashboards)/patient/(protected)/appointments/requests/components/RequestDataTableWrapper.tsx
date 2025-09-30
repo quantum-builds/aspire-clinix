@@ -22,7 +22,6 @@ export default async function RequestDataTableWrapper({
   const response: Response<TAppointmentRequestResponse> =
     await getAppointmentRequests({
       search: query,
-      patientId: "cmfplxicq0000l6qaof724vtk",
       page: page,
       status: status,
     });
