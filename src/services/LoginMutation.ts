@@ -7,19 +7,16 @@ export const loginMutation = () => {
     mutationFn: async ({
       email,
       password,
-      phoneNumber,
       role,
     }: {
       email: string;
       password: string;
-      phoneNumber: string;
       role: UserRoles;
     }) => {
       const result = await signIn("credentials", {
         redirect: false,
         email,
         password,
-        phoneNumber,
         role,
       });
 

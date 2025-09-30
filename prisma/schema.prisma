@@ -209,9 +209,9 @@ model Patient {
   password     String
   fullName     String
   phoneNumber  String       @unique
-  country      String
-  dateOfBirth  DateTime
-  gender       GenderType
+  country      String?
+  dateOfBirth  DateTime?
+  gender       GenderType?
   fileUrl      String?
 
   createdAt    DateTime     @default(now())
@@ -229,9 +229,9 @@ model Dentist{
   password String
   fullName String
   phoneNumber String @unique
-  country String
-  dateOfBirth DateTime
-  gender  GenderType
+  country String?
+  dateOfBirth DateTime?
+  gender  GenderType?
   gdcNo   String  @unique
   practiceAddress String
   role    DentistRole

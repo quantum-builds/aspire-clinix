@@ -115,18 +115,22 @@ export default function UpcomingAppointmentCard({
               {appointment.patient.phoneNumber}
             </span>
           </p>
-          <p className="flex-[30%] text-lg">
-            Age:
-            <span className="font-medium">
-              {calculateAge(appointment.patient.dateOfBirth)}
-            </span>
-          </p>
-          <p className="flex-[20%] text-right text-lg">
-            Gender:
-            <span className="font-medium">
-              {appointment.patient.gender.toLowerCase()}
-            </span>
-          </p>
+          {appointment.patient.dateOfBirth && (
+            <p className="flex-[30%] text-lg">
+              Age:
+              <span className="font-medium">
+                {calculateAge(appointment.patient.dateOfBirth)}
+              </span>
+            </p>
+          )}
+          {appointment.patient.gender && (
+            <p className="flex-[20%] text-right text-lg">
+              Gender:
+              <span className="font-medium">
+                {appointment.patient.gender.toLowerCase()}
+              </span>
+            </p>
+          )}
         </div>
       </div>
       <div className="flex justify-between items-center">

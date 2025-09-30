@@ -3,7 +3,7 @@ export default async function DentistLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div
-      className={`font-inter text-dashboardTextBlack bg-dashboardBackground min-h-screen p-10  `}
+      className={`font-inter text-dashboardTextBlack bg-dashboardBackground min-h-screen px-20 py-9`}
     >
       {children}
     </div>

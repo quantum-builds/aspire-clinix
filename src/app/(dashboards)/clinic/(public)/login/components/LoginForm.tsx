@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { TextInputIcon } from "@/assets";
+import { EyeCloseIcon, EyeOpenIcon, TextIconV2, TextInputIcon } from "@/assets";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { z } from "zod";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import { loginMutation } from "@/services/LoginMutation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useRouter } from "next/navigation";
 import { UserRoles } from "@/types/common";
+import { useState } from "react";
 
 export const adminSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -20,10 +21,6 @@ export const adminSchema = z.object({
     .string()
     .min(8, "Password must be at least 8 characters")
     .max(100),
-  phoneNumber: z
-    .string()
-    .min(10, "Phone number must be at least 10 digits")
-    .regex(/^\+?[\d\s\-\(\)]+$/, "Please enter a valid phone number"),
 });
 
 type FormData = z.infer<typeof adminSchema>;
@@ -31,6 +28,7 @@ type FormData = z.infer<typeof adminSchema>;
 export default function AdminLoginForm() {
   const { mutate: adminLogin, isPending: adminLoginLoader } = loginMutation();
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -42,7 +40,6 @@ export default function AdminLoginForm() {
     defaultValues: {
       email: "",
       password: "",
-      phoneNumber: "",
     },
   });
 
@@ -51,7 +48,6 @@ export default function AdminLoginForm() {
       {
         email: data.email,
         password: data.password,
-        phoneNumber: data.phoneNumber,
         role: UserRoles.ADMIN,
       },
       {
@@ -70,7 +66,7 @@ export default function AdminLoginForm() {
 
   return (
     <form
-      className="flex flex-col gap-7  max-w-lg items-center "
+      className="flex flex-col gap-10  max-w-lg items-center "
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="flex flex-col gap-8 items-center w-full ">
@@ -90,7 +86,7 @@ export default function AdminLoginForm() {
                 className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
               />
               <Image
-                src={TextInputIcon}
+                src={TextIconV2}
                 alt="icon"
                 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
@@ -108,75 +104,49 @@ export default function AdminLoginForm() {
             <div className="relative">
               <Input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter a strong password"
                 {...register("password")}
                 className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
               />
-              <Image
-                src={TextInputIcon}
-                alt="icon"
-                className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
-              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-4 top-1/2 -translate-y-1/2"
+              >
+                <Image
+                  src={showPassword ? EyeCloseIcon : EyeOpenIcon}
+                  alt={showPassword ? "Hide password" : "Show password"}
+                  className="h-4 w-4"
+                />
+              </button>
             </div>
             {errors.password && (
               <p className="text-sm text-red-500">{errors.password.message}</p>
-            )}
-          </div>
-
-          {/* Phone */}
-          <div className="space-y-2">
-            <Label htmlFor="phoneNumber" className="text-lg font-medium">
-              Phone Number<span className="text-red-500">*</span>
-            </Label>
-            <div className="relative">
-              <Input
-                id="phoneNumber"
-                type="tel"
-                placeholder="Enter your phone number"
-                {...register("phoneNumber")}
-                className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-              />
-              <Image
-                src={TextInputIcon}
-                alt="icon"
-                className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
-              />
-            </div>
-            {errors.phoneNumber && (
-              <p className="text-sm text-red-500">
-                {errors.phoneNumber.message}
-              </p>
             )}
           </div>
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="w-full flex justify-end items-center gap-3">
-        <CustomButton
-          style="secondary"
-          text="Cancel"
-          type="reset"
-          handleOnClick={() => reset()}
-        />
+      <div className="w-full flex flex-col justify-center items-center gap-3 ">
         <CustomButton
           style="primary"
           text={adminLoginLoader ? "Logging In..." : "Login"}
           type="submit"
           loading={adminLoginLoader}
+          className="py-4 w-full"
         />
+        <p className="text-sm text-muted-foreground mt-4">
+          Don’t have an account?{" "}
+          <Link
+            href="/clinic/register"
+            className="font-medium text-green hover:text-greenHover transition-colors"
+          >
+            Create one
+          </Link>
+        </p>
       </div>
-
-      <p className="text-sm text-muted-foreground mt-4">
-        Don’t have an account?{" "}
-        <Link
-          href="/patient/register"
-          className="font-medium text-green hover:text-greenHover transition-colors"
-        >
-          Create one
-        </Link>
-      </p>
     </form>
   );
 }

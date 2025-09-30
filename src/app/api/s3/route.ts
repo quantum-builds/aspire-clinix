@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
       ContentType: fileType,
     };
     const command = new PutObjectCommand(params);
-    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
     return NextResponse.json({ success: true, url: signedUrl });
   } catch (error) {
     console.error("Error generating upload URL:", error);

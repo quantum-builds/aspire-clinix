@@ -11,18 +11,17 @@ const authOptions: AuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        phoneNumber: { label: "Phone Number", type: "phoneNumber" },
         role: { label: "Role", type: "role" },
       },
       async authorize(credentials) {
-        if (!credentials?.email && !credentials?.phoneNumber) {
-          throw new Error("Email or phone number is required");
+        if (!credentials?.email) {
+          throw new Error("Email  is required");
         }
         if (!credentials?.password || !credentials?.role) {
           throw new Error("Password and role are required");
         }
 
-        const { email, phoneNumber, password, role } = credentials;
+        const { email, password, role } = credentials;
         console.log("creds are ", credentials);
         let user = null;
 
@@ -38,7 +37,7 @@ const authOptions: AuthOptions = {
           }
 
           const isValidPassword = await verifyPassword(password, user.password);
-          if (!isValidPassword || user.phoneNumber !== phoneNumber) {
+          if (!isValidPassword) {
             throw new Error("INvalid Data");
           }
 
@@ -59,7 +58,7 @@ const authOptions: AuthOptions = {
           }
 
           const isValidPassword = await verifyPassword(password, user.password);
-          if (!isValidPassword || user.phoneNumber !== phoneNumber) {
+          if (!isValidPassword) {
             throw new Error("INvalid Data");
           }
 
@@ -80,7 +79,7 @@ const authOptions: AuthOptions = {
           }
 
           const isValidPassword = await verifyPassword(password, user.password);
-          if (!isValidPassword || user.phoneNumber !== phoneNumber) {
+          if (!isValidPassword) {
             throw new Error("INvalid Data");
           }
 

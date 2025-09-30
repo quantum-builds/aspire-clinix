@@ -5,9 +5,9 @@ export type TPatientCreate = {
   password: string;
   fullName: string;
   phoneNumber: string;
-  country: string;
-  dateOfBirth: Date;
-  gender: GenderType;
+  country?: string;
+  dateOfBirth?: Date;
+  gender?: GenderType;
   fileUrl?: string;
 };
 

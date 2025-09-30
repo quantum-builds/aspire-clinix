@@ -110,7 +110,9 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
     email: patient?.email || "",
     phoneNumber: patient?.phoneNumber || "",
     dateOfBirth:
-      patient?.dateOfBirth || "" ? new Date(patient.dateOfBirth) : new Date(), // make sure it’s always a Date
+      patient?.dateOfBirth || ""
+        ? new Date(patient.dateOfBirth || "")
+        : new Date(), // make sure it’s always a Date
     gender: patient?.gender || undefined,
     country: patient?.country || undefined,
     profileImage: patient?.file || undefined,
