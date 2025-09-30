@@ -2,8 +2,8 @@ import { TAppointment } from "./appointment";
 import { TDentist } from "./dentist";
 
 export interface OpeningHour {
-  open: string;
-  close: string;
+  open: Date;
+  close: Date;
 }
 
 export interface OpeningHours {
@@ -16,21 +16,34 @@ export interface OpeningHours {
   Sunday?: OpeningHour;
 }
 
-export interface TPractice {
-  id: string;
+export type TPracticeCreate = {
   email: string;
   name: string;
-  phoneNumber: string;
-  postcode: string;
-  timeZone: string;
-  town: string;
   nhs: boolean;
   openingHours: OpeningHours;
   addressLine1: string;
   addressLine2: string;
-  logoUrl: string;
-  logo?: string;
+  phoneNumber: string;
+  postcode: string;
+  timeZone: string;
+  town: string;
+  logoUrl?: string;
+};
 
+export type TPractice = TPracticeCreate & {
+  id: string;
+  logo?: string;
   dentists?: TDentist[];
   appointments?: TAppointment[];
-}
+};
+
+export type TPracticePagination = {
+  total: number;
+  totalPages: number;
+  page: number;
+};
+
+export type TPracticeResponse = {
+  practices: TPractice[];
+  pagination: TPracticePagination;
+};

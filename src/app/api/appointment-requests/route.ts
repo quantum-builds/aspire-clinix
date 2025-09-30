@@ -11,8 +11,6 @@ export async function GET(req: NextRequest) {
       req,
     });
 
-    console.log("token is ", token);
-
     if (
       token &&
       token.role !== TokenRoles.PATIENT &&
@@ -109,7 +107,6 @@ export async function POST(req: NextRequest) {
     const token = await getToken({
       req,
     });
-    // console.log("token is", token);
     if (token && token.role !== TokenRoles.PATIENT) {
       return NextResponse.json(createResponse(false, "Unauthrized.", null), {
         status: 403,

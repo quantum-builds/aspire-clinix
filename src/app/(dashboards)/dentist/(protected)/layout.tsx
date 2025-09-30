@@ -9,8 +9,8 @@ import { SidebarPage } from "@/types/common";
 import Sidebar from "../../components/SideBar";
 import TopBar from "../../components/TopBar";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { toTitleCase } from "@/utils/formatWords";
+import { authOptions } from "@/lib/auth";
 
 const SIDEBAR_CONTENT: SidebarPage[] = [
   {
@@ -60,6 +60,11 @@ const RECIEVING_SIDEBAR_CONTENT: SidebarPage[] = [
         href: "/dentist/appointments/upcoming",
       },
       { name: "Past", icon: InActiveIcon, href: "/dentist/appointments/past" },
+      {
+        name: "Requests",
+        icon: InActiveIcon,
+        href: "/dentist/appointments/requests",
+      },
     ],
   },
   {
@@ -104,11 +109,8 @@ export default async function DentistLayout({
   //   }
   // }
 
-  // console.log("dentist token is ", token);
-
   const session = await getServerSession(authOptions);
 
-  console.log("Session is ", session);
   const role = session?.user.role;
   const name = session?.user.name;
 
@@ -130,8 +132,8 @@ export default async function DentistLayout({
       {/* Topbar */}
       <div className="col-start-2 border-b">
         <TopBar
-          name={name || "Dentist"}
-          role={toTitleCase(role || "DENTIST")}
+          name={name || ""}
+          role={toTitleCase(role || "")}
           profileLink="/dentist/profile"
         />
       </div>

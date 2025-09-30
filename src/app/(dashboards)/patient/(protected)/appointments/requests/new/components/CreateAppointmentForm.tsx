@@ -21,6 +21,7 @@ import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { useRouter } from "next/navigation";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import PdfModal from "@/app/(dashboards)/components/ViewPdfModal";
+import { before } from "node:test";
 
 const appointmentSchema = z.object({
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
@@ -149,6 +150,7 @@ export default function AppointmentForm() {
                       onSelect={(date) => date && field.onChange(date)}
                       captionLayout="dropdown"
                       showOutsideDays={false}
+                      disabled={{ before: new Date() }}
                     />
                   </PopoverContent>
                 </Popover>

@@ -1,5 +1,6 @@
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -22,9 +23,32 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const practices = await prisma.practice.findMany({});
+    const { searchParams } = new URL(req.url);
+
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const search = searchParams.get("search") || "";
+    const statusParam = searchParams.get("status") || "";
+
+    // const status = statusParam === "True";
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    let baseWhere: Prisma.PracticeWhereInput = {
+      ...(search && { id: { contains: search, mode: "insensitive" } }),
+      ...(statusParam !== "" ? { nhs: statusParam === "True" } : {}),
+    };
+
+    const [practices, totalCount] = await Promise.all([
+      prisma.practice.findMany({
+        where: baseWhere,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.practice.count({ where: baseWhere }),
+    ]);
 
     if (!practices || practices.length < 1) {
       return NextResponse.json(
@@ -35,7 +59,14 @@ export async function GET() {
       );
     }
     return NextResponse.json(
-      createResponse(true, "Practices fetched successfully", practices),
+      createResponse(true, "Practices fetched successfully", {
+        practices,
+        pagination: {
+          page,
+          total: totalCount,
+          totalPages: Math.ceil(totalCount / limit),
+        },
+      }),
       {
         status: 200,
       }

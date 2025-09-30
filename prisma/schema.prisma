@@ -269,10 +269,13 @@ model Practice{
   openingHours  Json
   addressLine1  String 
   addressLine2  String
-  logoUrl   String
+  logoUrl   String?
 
   dentists  DentistOnPractice[]
   appointments  Appointment[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 

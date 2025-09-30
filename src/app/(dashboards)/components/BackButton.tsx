@@ -6,8 +6,14 @@ import { useRouter } from "next/navigation";
 
 interface BackButtonProps {
   className?: string;
+  backToWebsite?: boolean;
+  text?: string;
 }
-export default function BackButton({ className }: BackButtonProps) {
+export default function BackButton({
+  className,
+  backToWebsite = false,
+  text,
+}: BackButtonProps) {
   const router = useRouter();
 
   return (
@@ -16,10 +22,10 @@ export default function BackButton({ className }: BackButtonProps) {
         "bg-dashboardBarBackground px-6 py-3 rounded-full flex items-center justify-center gap-1",
         className
       )}
-      onClick={() => router.back()}
+      onClick={() => (backToWebsite ? router.replace("/") : router.back())}
     >
       <Image src={BackButtonIcon} alt="back button icon" className="w-4 h-4" />
-      Back
+      {text ? text : "Back"}
     </button>
   );
 }

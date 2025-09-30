@@ -12,8 +12,6 @@ export async function GET(req: NextRequest) {
       req,
     });
 
-    console.log("token is ", token);
-
     if (token && token.role === TokenRoles.REFERRING_DENTIST) {
       return NextResponse.json(createResponse(false, "Unauthrized.", null), {
         status: 403,

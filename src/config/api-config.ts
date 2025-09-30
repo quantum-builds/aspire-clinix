@@ -175,8 +175,12 @@ export const ENDPOINTS = {
   },
 
   practices: {
-    getAll: `/api/practices`,
+    getAll: (page?: number, search?: string, status?: string) =>
+      `/api/practices?page=${page ?? 1}&search=${search ?? ""}&status=${
+        status ?? ""
+      }`,
     getById: (id: string) => `/api/practices/${id}`,
+    createPractice: "/api/practices",
   },
 
   appointemt: {

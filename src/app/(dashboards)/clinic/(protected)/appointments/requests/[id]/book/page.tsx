@@ -2,7 +2,7 @@ import BackButton from "@/app/(dashboards)/components/BackButton";
 import { Suspense } from "react";
 import AppointmentRequestFormWrapper from "../components/AppointmentRequestFormWrapper";
 import { Response } from "@/types/common";
-import { TPractice } from "@/types/practice";
+import { TPractice, TPracticeResponse } from "@/types/practice";
 import { getPractices } from "@/services/practice/practiceQuery";
 import BookAppointmentFormSkeleton from "../components/skeletons/BookAppointmentForm";
 
@@ -16,8 +16,8 @@ export default async function AppointmentRequestFormPage(props: {
   const searchParams = await props.searchParams;
   const practiceId = searchParams?.practiceId || "";
 
-  const response: Response<TPractice[]> = await getPractices();
-  const practices = response.data;
+  const response: Response<TPracticeResponse> = await getPractices({});
+  const practices = response.data.practices ?? [];
 
   return (
     <div className=" w-full h-full flex flex-col gap-7">

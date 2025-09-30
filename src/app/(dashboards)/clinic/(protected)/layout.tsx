@@ -11,6 +11,9 @@ import {
 } from "@/assets";
 import Sidebar from "../../components/SideBar";
 import TopBar from "../../components/TopBar";
+import { getServerSession } from "next-auth";
+import { toTitleCase } from "@/utils/formatWords";
+import { authOptions } from "@/lib/auth";
 
 const SIDEBAR_CONTENT: SidebarPage[] = [
   {
@@ -69,9 +72,14 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
   },
 ];
 
-export default function ClinicLayout({
+export default async function ClinicLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const session = await getServerSession(authOptions);
+
+  const role = session?.user.role;
+  const name = session?.user.name;
+
   return (
     <div className="font-inter text-dashboardTextBlack bg-dashboardBackground h-full grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden">
       <div className="row-span-2 border-r">
@@ -79,7 +87,11 @@ export default function ClinicLayout({
       </div>
 
       <div className="col-start-2 border-b">
-        <TopBar name="Massab" role="Clinic" profileLink="/clinic/profile" />
+        <TopBar
+          name={name || ""}
+          role={toTitleCase(role || "")}
+          profileLink="/clinic/profile"
+        />
       </div>
 
       <main className="p-6 col-start-2 overflow-y-auto mb-6">{children}</main>
