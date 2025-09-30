@@ -42,6 +42,9 @@ export default function TopBar({
 }: TopBarProps) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { mutate: signOut, isPending } = signOutMutation();
+
+  console.log(profileLink, profilePic);
+
   return (
     <div className="fixed top-0 left-[320px] w-[calc(100%-320px)] h-[90px] bg-dashboardBarBackground border-b border-gray-200 flex items-center justify-end gap-8 px-6">
       <Popover>

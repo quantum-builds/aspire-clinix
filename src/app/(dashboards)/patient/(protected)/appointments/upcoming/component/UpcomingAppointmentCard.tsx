@@ -44,7 +44,7 @@ export default function UpcomingAppointmentCard({
   };
 
   return (
-    <div className="flex flex-col gap-3 p-6 rounded-2xl bg-gray">
+    <div className="flex flex-col gap-1 p-6 rounded-2xl bg-gray">
       <div className="space-y-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
@@ -77,7 +77,7 @@ export default function UpcomingAppointmentCard({
         <p className="text-green text-lg">See Details</p>
       </div>
       <div className="flex justify-between w-full">
-        <div className="flex items-center gap-2 w-full mt-5">
+        <div className="flex items-center gap-2 w-full mt-7">
           <CustomButton
             text="See Reports"
             href={`/patient/appointments/${appointment.id}/reports`}

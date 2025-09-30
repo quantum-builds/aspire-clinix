@@ -1,7 +1,7 @@
-import { CalenderInputIconV2 } from "@/assets";
+import { CalenderInputIconV2, TimeIconV2 } from "@/assets";
 import Image from "next/image";
 import { TAppointment } from "@/types/appointment";
-import { formatDate } from "@/utils/formatDateTime";
+import { formatDate, formatTime } from "@/utils/formatDateTime";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 
 interface UpcomingAppointmentCardProps {
@@ -23,6 +23,14 @@ export default function PastAppointmentCard({
               className="w-4 h-4"
             />
             <p className="text-lg">{formatDate(appointment.date)}</p>
+          </div>
+          <div className="flex items-center gap-1">
+            <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />
+            <p className="text-lg">
+              {" "}
+              {formatTime(appointment.startTime)} -{" "}
+              {formatTime(appointment.finishTime)}
+            </p>
           </div>
         </div>
       </div>

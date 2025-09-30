@@ -1,13 +1,17 @@
 import BackButton from "@/app/(dashboards)/components/BackButton";
 import AppointmentForm from "./components/CreateAppointmentForm";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
 export default async function BookAppointmentPage() {
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Appointment Request</h1>
-        <BackButton />
-      </div>
+    <div className=" w-full min-h-full flex flex-col gap-5">
+      <PageTopBar
+        pageHeading="Appointment Request"
+        showFilters={false}
+        showSearch={false}
+        extraBtns={<BackButton />}
+        statusOptions={[]}
+      />
       <AppointmentForm />
     </div>
   );

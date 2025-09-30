@@ -2,7 +2,7 @@
 import Button from "@/app/(dashboards)/components/Button";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
-import { CalenderInputIcon, TimeIcon } from "@/assets";
+import { CalenderInputIconV2, TimeIconV2 } from "@/assets";
 import { usePatchAppointment } from "@/services/appointments/appointmentMutation";
 import { TAppointment } from "@/types/appointment";
 import { calculateAge, formatDate, formatTime } from "@/utils/formatDateTime";
@@ -10,7 +10,6 @@ import { AppointmentStatus } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { checkDomainOfScale } from "recharts/types/util/ChartUtils";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -86,14 +85,14 @@ export default function UpcomingAppointmentCard({
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1">
               <Image
-                src={CalenderInputIcon}
+                src={CalenderInputIconV2}
                 alt="Calendar Icon"
                 className="w-4 h-4"
               />
               <p className="text-lg">{formatDate(appointment.date)}</p>
             </div>
             <div className="flex items-center gap-1">
-              <Image src={TimeIcon} alt="TIme Icon" className="w-4 h-4" />
+              <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />
               <p className="text-lg">{formatTime(appointment.date)}</p>
             </div>
           </div>
