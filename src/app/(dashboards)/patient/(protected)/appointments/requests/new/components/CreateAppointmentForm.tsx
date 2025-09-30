@@ -45,9 +45,10 @@ type FormData = z.infer<typeof appointmentSchema>;
 export default function AppointmentForm() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { mutate: createAppointmentRequest, isPending } =
+  const { mutate: createAppointmentRequest, isPending: createRequestLoader } =
     useCreateAppointmentRequests();
-  const { mutateAsync: uploadFile } = useUploadFile();
+  const { mutateAsync: uploadFile, isPending: uploadFileLoader } =
+    useUploadFile();
   const { replace } = useRouter();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -83,7 +84,6 @@ export default function AppointmentForm() {
     createAppointmentRequest(
       {
         appointmentRequest: {
-          patientId: "cmfplxicq0000l6qaof724vtk",
           requestedDate: data.appointmentDate,
           reason: data.appointmentReason,
           note: data.note,
@@ -266,9 +266,14 @@ export default function AppointmentForm() {
         />
 
         <CustomButton
-          text={isPending ? "Making Request" : "Request an Appointment"}
-          disabled={isPending}
-          loading={isPending}
+          text={
+            createRequestLoader || uploadFileLoader
+              ? "Making Request"
+              : "Request an Appointment"
+          }
+          // disabled={isPending}
+          type="submit"
+          loading={createRequestLoader || uploadFileLoader}
         />
       </div>
     </form>

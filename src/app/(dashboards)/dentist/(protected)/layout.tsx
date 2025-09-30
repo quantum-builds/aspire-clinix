@@ -71,19 +71,6 @@ const RECIEVING_SIDEBAR_CONTENT: SidebarPage[] = [
 
 const REFERRING_SIDEBAR_CONTENT: SidebarPage[] = [
   {
-    name: "Appointments",
-    icon: AppointmentsIcon,
-    href: "/dentist/appointments",
-    pages: [
-      {
-        name: "Upcoming",
-        icon: InActiveIcon,
-        href: "/dentist/appointments/upcoming",
-      },
-      { name: "Past", icon: InActiveIcon, href: "/dentist/appointments/past" },
-    ],
-  },
-  {
     name: "Referral History",
     icon: ConsentIcon,
     href: "/dentist/referral-history",

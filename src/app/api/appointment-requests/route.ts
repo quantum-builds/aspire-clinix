@@ -1,15 +1,37 @@
+import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { AppointmentRequestStatus, Prisma } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
+    const token = await getToken({
+      req,
+    });
+
+    console.log("token is ", token);
+
+    if (
+      token &&
+      token.role !== TokenRoles.PATIENT &&
+      token.role !== TokenRoles.ADMIN
+    ) {
+      return NextResponse.json(createResponse(false, "Unauthrized.", null), {
+        status: 403,
+      });
+    }
+
+    let patientId = "";
+    if (token && token.role === TokenRoles.PATIENT) {
+      patientId = token.sub || "";
+    }
+
     const { searchParams } = new URL(req.url);
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     const search = searchParams.get("search") || "";
-    const patientId = searchParams.get("patientId") || "";
     const on = searchParams.get("on") || "";
     const before = searchParams.get("before") || "";
     const after = searchParams.get("after") || "";
@@ -84,9 +106,23 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const token = await getToken({
+      req,
+    });
+    // console.log("token is", token);
+    if (token && token.role !== TokenRoles.PATIENT) {
+      return NextResponse.json(createResponse(false, "Unauthrized.", null), {
+        status: 403,
+      });
+    }
+    const patientId = token?.sub;
     const appointmentRequest = await req.json();
     const newAppointment = await prisma.appointmentRequests.create({
-      data: { ...appointmentRequest, status: AppointmentRequestStatus.PENDING },
+      data: {
+        ...appointmentRequest,
+        status: AppointmentRequestStatus.PENDING,
+        patientId: patientId,
+      },
     });
 
     return NextResponse.json(

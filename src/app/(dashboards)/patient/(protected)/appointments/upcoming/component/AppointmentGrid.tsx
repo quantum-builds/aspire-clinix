@@ -25,8 +25,6 @@ export default async function AppointmentGridWrapper({
 }: AppointmentGridWrapperProps) {
   const response: Response<TAppointmentResponse> = await getAppointments({
     search: query,
-    // dentistId: "cmfpmegmj0005l6qab0c10oil",
-    patientId: "cmfplxicq0000l6qaof724vtk",
     dateType: AppointmentDateType.UPCOMING,
     status,
     on,

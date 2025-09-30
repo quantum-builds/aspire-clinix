@@ -1,3 +1,4 @@
+import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { AppointmentDateType } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
@@ -11,12 +12,29 @@ export async function GET(req: NextRequest) {
       req,
     });
 
+    console.log("token is ", token);
+
+    if (token && token.role === TokenRoles.REFERRING_DENTIST) {
+      return NextResponse.json(createResponse(false, "Unauthrized.", null), {
+        status: 403,
+      });
+    }
+    let patientId = "";
+    let dentistId = "";
+
+    if (token && token.role === TokenRoles.PATIENT) {
+      patientId = token.sub || "";
+    } else if (
+      token &&
+      (token.role === TokenRoles.DENTIST ||
+        token.role === TokenRoles.RECIEVING_DENTIST)
+    ) {
+      dentistId = token.sub || "";
+    }
     const { searchParams } = new URL(req.url);
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     const search = searchParams.get("search") || "";
-    const patientId = searchParams.get("patientId") || "";
-    const dentistId = searchParams.get("dentistId") || "";
     const on = searchParams.get("on") || "";
     const before = searchParams.get("before") || "";
     const after = searchParams.get("after") || "";

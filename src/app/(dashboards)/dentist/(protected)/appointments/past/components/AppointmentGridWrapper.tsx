@@ -25,7 +25,6 @@ export default async function AppointmentGridWrapper({
   const response: Response<TAppointmentResponse> = await getAppointments({
     search: query,
     dateType: AppointmentDateType.PAST,
-    dentistId: "cmfpmcxf00003l6qa0rh5trss",
     page,
     status,
     on,
