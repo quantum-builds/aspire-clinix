@@ -41,12 +41,14 @@ export default function PatientDetails({
             {appointmentRequest.patient?.phoneNumber}
           </span>
         </p>
-        <p className="text-lg">
-          Gender:{" "}
-          <span className="text-lg font-medium">
-            {appointmentRequest.patient?.gender.toLowerCase()}
-          </span>
-        </p>
+        {appointmentRequest.patient?.gender && (
+          <p className="text-lg">
+            Gender:{" "}
+            <span className="text-lg font-medium">
+              {appointmentRequest.patient?.gender.toLowerCase()}
+            </span>
+          </p>
+        )}
         <p className="text-lg">
           Email:{" "}
           <span className="text-lg font-medium">

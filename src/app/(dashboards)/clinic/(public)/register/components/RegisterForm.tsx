@@ -6,14 +6,13 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { TextInputIcon } from "@/assets";
+import { EyeOpenIcon, EyeCloseIcon, TextIconV2, TextInputIcon } from "@/assets";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { z } from "zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useCreateAdmin } from "@/services/admin/adminMutation";
-import { useUploadFile } from "@/services/s3/s3Mutatin";
 
 export const adminSchema = z.object({
   fullName: z
@@ -29,39 +28,21 @@ export const adminSchema = z.object({
     .string()
     .min(10, "Phone number must be at least 10 digits")
     .regex(/^\+?[\d\s\-\(\)]+$/, "Please enter a valid phone number"),
-  profileImage: z
-    .instanceof(File)
-    .optional()
-    .refine((file) => !file || file.size <= 5 * 1024 * 1024, {
-      message: "Image must be less than 5MB",
-    })
-    .refine(
-      (file) =>
-        !file ||
-        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-          file.type
-        ),
-      { message: "Only JPEG, PNG, and WebP images are allowed" }
-    ),
 });
 
 type FormData = z.infer<typeof adminSchema>;
 
 export default function AdminRegisterForm() {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
   const { mutate: createAdmin, isPending: createAdminLoader } =
     useCreateAdmin();
-  const { mutateAsync: uploadFile, isPending: uploadFileLoader } =
-    useUploadFile();
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
-    setValue,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(adminSchema),
     defaultValues: {
@@ -73,21 +54,10 @@ export default function AdminRegisterForm() {
   });
 
   const onSubmit = async (data: FormData) => {
-    let fileUrl = undefined;
-    if (data.profileImage) {
-      const imageUploaded = await uploadFile({
-        selectedFile: data.profileImage,
-      });
-      console.log("image upload ", imageUploaded);
-
-      fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
-    }
-
     createAdmin(
       {
         adminCreate: {
           ...data,
-          fileUrl: fileUrl,
         },
       },
       {
@@ -104,54 +74,14 @@ export default function AdminRegisterForm() {
     );
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setValue("profileImage", file, { shouldValidate: true });
-      setPreviewUrl(URL.createObjectURL(file));
-    } else {
-      setValue("profileImage", undefined);
-      setPreviewUrl(null);
-    }
-  };
-
   return (
-    <form className="flex flex-col gap-7" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="flex flex-col gap-10 max-w-lg"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="flex flex-col gap-8">
-        {/* Profile Image Upload */}
-        <div className="flex items-center gap-4">
-          {previewUrl ? (
-            <img
-              src={previewUrl}
-              alt="Profile Preview"
-              className="w-[120px] h-[120px] rounded-full object-cover "
-            />
-          ) : (
-            <div className="w-[120px] h-[120px] rounded-full bg-gray flex items-center justify-center">
-              <span className="text-sm text-gray-500">No Image</span>
-            </div>
-          )}
-
-          <div className="flex flex-col gap-3">
-            <Label className="font-medium text-lg">
-              Profile Picture (Optional)
-            </Label>
-            <Input
-              type="file"
-              accept="image/jpeg,image/jpg,image/png,image/webp"
-              className="border border-green"
-              onChange={handleImageChange}
-            />
-            {errors.profileImage && (
-              <p className="text-sm text-red-500">
-                {errors.profileImage.message as string}
-              </p>
-            )}
-          </div>
-        </div>
-
         {/* Form Fields */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-x-6 gap-y-8">
           {/* Full Name */}
           <div className="space-y-2">
             <Label htmlFor="fullName" className="text-lg font-medium">
@@ -165,7 +95,7 @@ export default function AdminRegisterForm() {
                 className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
               />
               <Image
-                src={TextInputIcon}
+                src={TextIconV2}
                 alt="icon"
                 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
@@ -189,7 +119,7 @@ export default function AdminRegisterForm() {
                 className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
               />
               <Image
-                src={TextInputIcon}
+                src={TextIconV2}
                 alt="icon"
                 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
@@ -207,16 +137,22 @@ export default function AdminRegisterForm() {
             <div className="relative">
               <Input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter a strong password"
                 {...register("password")}
                 className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
               />
-              <Image
-                src={TextInputIcon}
-                alt="icon"
-                className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
-              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-4 top-1/2 -translate-y-1/2"
+              >
+                <Image
+                  src={showPassword ? EyeCloseIcon : EyeOpenIcon}
+                  alt={showPassword ? "Hide password" : "Show password"}
+                  className="h-4 w-4"
+                />
+              </button>
             </div>
             {errors.password && (
               <p className="text-sm text-red-500">{errors.password.message}</p>
@@ -237,7 +173,7 @@ export default function AdminRegisterForm() {
                 className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
               />
               <Image
-                src={TextInputIcon}
+                src={TextIconV2}
                 alt="icon"
                 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
@@ -252,34 +188,24 @@ export default function AdminRegisterForm() {
       </div>
 
       {/* Action Buttons */}
-      <div className="w-full flex justify-end items-center gap-3">
-        <CustomButton
-          style="secondary"
-          text="Cancel"
-          type="reset"
-          handleOnClick={() => reset()}
-        />
+      <div className="w-full flex  flex-col justify-end items-center gap-3">
         <CustomButton
           style="primary"
-          text={
-            createAdminLoader || uploadFileLoader
-              ? "Registering..."
-              : "Register"
-          }
+          text={createAdminLoader ? "Registering..." : "Register"}
           type="submit"
-          loading={createAdminLoader || uploadFileLoader}
+          loading={createAdminLoader}
+          className="py-4 w-full"
         />
+        <p className="text-sm text-muted-foreground mt-4">
+          Already have an account?{" "}
+          <Link
+            href="/clinic/login"
+            className="font-medium text-green hover:text-greenHover transition-colors"
+          >
+            Login
+          </Link>
+        </p>
       </div>
-
-      <p className="text-sm text-muted-foreground mt-4">
-        Already have an account?{" "}
-        <Link
-          href="/dentist/login"
-          className="font-medium text-green hover:text-greenHover transition-colors"
-        >
-          Login
-        </Link>
-      </p>
     </form>
   );
 }

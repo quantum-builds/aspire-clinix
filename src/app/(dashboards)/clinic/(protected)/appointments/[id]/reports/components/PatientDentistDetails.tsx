@@ -24,17 +24,21 @@ export default function PatientRDentistDetails({
             </div>
             <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
               <p className="flex-1">Name: {patientDetials.fullName}</p>
-              <p className="flex-1">
-                Gender: {patientDetials.gender.toLowerCase()}
-              </p>
+              {patientDetials.gender && (
+                <p className="flex-1">
+                  Gender: {patientDetials.gender.toLowerCase()}
+                </p>
+              )}{" "}
             </div>
             <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
               <p className="flex-1">Phone: {patientDetials.phoneNumber}</p>
               <p className="flex-1">Email: {patientDetials.email}</p>
             </div>
-            <div className="flex justify-between items-center text-lg ">
-              <p>Age: {calculateAge(patientDetials.dateOfBirth)}</p>
-            </div>
+            {patientDetials.dateOfBirth && (
+              <div className="flex justify-between items-center text-lg ">
+                <p>Age: {calculateAge(patientDetials.dateOfBirth)}</p>
+              </div>
+            )}
           </div>
         )}
         {dentistDetails && (

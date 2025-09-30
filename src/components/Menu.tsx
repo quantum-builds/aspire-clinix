@@ -54,7 +54,12 @@ const USER_MENU_LIST = [
   { category: "FEE GUIDE", path: "/fee-guide", services: [] },
   {
     category: " PATIENT PORTAL",
-    path: "/patient/appointments/upcoming",
+    path: "/patient",
+    services: [],
+  },
+  {
+    category: " DENTIST PORTAL",
+    path: "/dentist",
     services: [],
   },
   {

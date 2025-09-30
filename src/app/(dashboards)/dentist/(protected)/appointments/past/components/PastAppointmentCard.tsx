@@ -57,12 +57,14 @@ export default function PastAppointmentCard({
               {appointment.patient.phoneNumber}
             </span>
           </p>
-          <p className="flex-[40%] text-lg text-right">
-            Age:
-            <span className="font-medium">
-              {calculateAge(appointment.patient.dateOfBirth)}
-            </span>
-          </p>
+          {appointment.patient.dateOfBirth && (
+            <p className="flex-[40%] text-lg text-right">
+              Age:
+              <span className="font-medium">
+                {calculateAge(appointment.patient.dateOfBirth)}
+              </span>
+            </p>
+          )}
         </div>
       </div>
       <div className="flex justify-between items-center">
