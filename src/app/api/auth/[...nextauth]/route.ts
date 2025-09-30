@@ -4,7 +4,7 @@ import prisma from "@/lib/db";
 import { verifyPassword } from "@/utils/passwordUtils";
 import { UserRoles } from "@/types/common";
 
-const authOptions: AuthOptions = {
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
