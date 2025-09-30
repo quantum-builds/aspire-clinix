@@ -9,7 +9,7 @@ export default function RegisterPage() {
       <BackButton
         className="bg-gray hover:bg-lightGray w-fit mb-5"
         backToWebsite={true}
-        text="Back To Home"
+        text="Back To Website"
       />
 
       <div className="mx-auto w-full flex flex-col bg-dashboardBarBackground rounded-2xl  justify-center max-w-lg p-6 md:p-10">
