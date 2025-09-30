@@ -3,6 +3,7 @@
 import Button from "@/app/(dashboards)/components/Button";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import PdfModal from "@/app/(dashboards)/components/ViewPdfModal";
 import { CalenderInputIconV2, TimeIconV2, UploadPDFIcon } from "@/assets";
 import { usePatchAppointmentRequest } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { TAppointmentRequest } from "@/types/appointment-request";
@@ -17,6 +18,8 @@ export default function AppointmentRequestCard({
 }: {
   appointmentRequest: TAppointmentRequest;
 }) {
+  console.log(appointmentRequest);
+
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { mutate: updateAppointmentRequest, isPending } =
     usePatchAppointmentRequest();
@@ -46,7 +49,7 @@ export default function AppointmentRequestCard({
         appointmentRequest: partialAppointmentRequest,
       },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           refresh();
           setIsCancelModalOpen(false);
         },
@@ -143,12 +146,17 @@ export default function AppointmentRequestCard({
       )}
       <div className="flex items-center justify-between">
         {appointmentRequest.file && (
-          <div className="flex items-center gap-5">
-            <Image src={UploadPDFIcon} alt="PDF Icon" />
-            <p className="underline text-green">See Document</p>
-          </div>
+          <PdfModal
+            pdfUrl={appointmentRequest.file}
+            trigger={
+              <div className="flex items-center gap-3 cursor-pointer">
+                <Image src={UploadPDFIcon} alt="PDF Icon" />
+                <p className="underline text-green">See Document</p>
+              </div>
+            }
+          />
         )}
-        <div className="flex justify-end w-full gap-5">
+        <div className="flex justify-end  gap-5">
           {appointmentRequest.status === AppointmentRequestStatus.PENDING && (
             <CustomButton
               className="bg-dashboardBarBackground text-dashboardTextBlack"

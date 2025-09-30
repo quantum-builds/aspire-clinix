@@ -1,19 +1,10 @@
 import { TReport } from "@/types/reports";
-<<<<<<< HEAD:src/app/(dashboards)/clinic/resources/page.tsx
-import Pagination from "../../components/Pagination";
-import VideoReportCard from "../../components/VideoReportCard";
-import { VideoResourceGridSkeleton } from "../../patient/resources/videos/components/skeletons/ResourceGrid";
-import { Suspense } from "react";
-import PageTopBar from "../../components/custom-components/PageTopBar";
-import CustomButton from "../../components/custom-components/CustomButton";
-=======
 import Pagination from "../../../components/Pagination";
 import VideoReportCard from "../../../components/VideoReportCard";
 import { VideoResourceGridSkeleton } from "../../../patient/(protected)/resources/videos/components/skeletons/ResourceGrid";
 import { Suspense } from "react";
 import PageTopBar from "../../../components/custom-components/PageTopBar";
 import CustomButton from "../../../components/custom-components/CustomButton";
->>>>>>> 766c6aa04c1e4ab3a01fe3c9db12952e0029666c:src/app/(dashboards)/clinic/(protected)/resources/page.tsx
 
 const REPORTS: TReport[] = [
   {

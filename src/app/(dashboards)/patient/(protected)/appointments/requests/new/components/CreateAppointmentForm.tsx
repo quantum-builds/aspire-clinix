@@ -19,8 +19,8 @@ import { cn } from "@/lib/utils";
 import { useCreateAppointmentRequests } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { useRouter } from "next/navigation";
-import Spinner from "@/app/(dashboards)/components/custom-components/Spinner";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import PdfModal from "@/app/(dashboards)/components/ViewPdfModal";
 
 const appointmentSchema = z.object({
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
@@ -48,7 +48,11 @@ export default function AppointmentForm() {
   const { mutate: createAppointmentRequest, isPending } =
     useCreateAppointmentRequests();
   const { mutateAsync: uploadFile } = useUploadFile();
-  const { refresh, back, replace } = useRouter();
+  const { replace } = useRouter();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const handleUploadClick = () => fileInputRef.current?.click();
+
   const {
     control,
     handleSubmit,
@@ -87,18 +91,16 @@ export default function AppointmentForm() {
         },
       },
       {
-        onSuccess: (data: string) => {
+        onSuccess: () => {
           reset();
           // refresh();
           // back();
           replace(`/patient/appointments/requests?ts=${Date.now()}`);
         },
-        onError: (error) => {},
+        onError: () => {},
       }
     );
   };
-
-  const handleUploadClick = () => fileInputRef.current?.click();
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -207,7 +209,6 @@ export default function AppointmentForm() {
               control={control}
               render={({ field }) => (
                 <div className="flex flex-col gap-2">
-                  {/* Upload button row */}
                   <div className="flex items-center gap-5">
                     <div onClick={handleUploadClick} className="cursor-pointer">
                       <input
@@ -218,7 +219,10 @@ export default function AppointmentForm() {
                         className="hidden"
                         onChange={(e) => {
                           if (e.target.files && e.target.files.length > 0) {
-                            field.onChange(e.target.files[0]);
+                            const file = e.target.files[0];
+                            field.onChange(file);
+                            const objectUrl = URL.createObjectURL(file);
+                            setPreviewUrl(objectUrl);
                           }
                         }}
                       />
@@ -233,11 +237,15 @@ export default function AppointmentForm() {
                     </Label>
                   </div>
 
-                  {/* File name below */}
                   {field.value && (
-                    <p className="text-sm text-gray-600 truncate max-w-[300px]">
-                      {(field.value as File).name}
-                    </p>
+                    <PdfModal
+                      pdfUrl={previewUrl!}
+                      trigger={
+                        <p className="text-sm font-medium text-green truncate cursor-pointer">
+                          {(field.value as File).name}
+                        </p>
+                      }
+                    />
                   )}
                 </div>
               )}

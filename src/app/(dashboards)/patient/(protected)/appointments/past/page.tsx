@@ -3,6 +3,7 @@ import AppointmentGridWrapper from "./component/AppointmentGrid";
 import { AppointmentGridSkeleton } from "./component/skeletons/AppointmentGrid";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 import { AppointmentStatus } from "@prisma/client";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 
 export default async function PastAppointments(props: {
   searchParams?: Promise<{
@@ -45,6 +46,12 @@ export default async function PastAppointments(props: {
             value: AppointmentStatus.IN_SURGERY,
           },
         ]}
+        extraBtns={
+          <CustomButton
+            text="Request an appointment"
+            href="/patient/appointments/requests/new"
+          />
+        }
       />
       <Suspense
         key={query + page + status + on + before + after}

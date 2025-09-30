@@ -1,13 +1,10 @@
-import { Response, TDentistDeatils } from "@/types/common";
+import { Response } from "@/types/common";
 import DentistDetails from "./DentistDetails";
 import LetterReportGrid from "@/app/(dashboards)/components/LetterReportGrid";
 import VideoReportGrid from "@/app/(dashboards)/components/VideoReportGrid";
 import { TReport, TReportResponse } from "@/types/reports";
 import { getReports } from "@/services/reports/reportsQuery";
-import NoContent from "@/app/(dashboards)/components/NoContent";
-import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import { TDentist } from "@/types/dentist";
-import BackButton from "@/app/(dashboards)/components/BackButton";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 
 interface ResourceGridWrapperProps {

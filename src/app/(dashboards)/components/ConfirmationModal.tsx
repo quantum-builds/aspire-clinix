@@ -58,8 +58,7 @@ export default function ConfirmationModal({
             disabled={isPending}
           >
             <div className="flex items-center gap-2">
-              {isPending && <Spinner />}
-              {confirmText}
+              {isPending ? <Spinner /> : confirmText}
             </div>
           </Button>
         </DialogFooter>

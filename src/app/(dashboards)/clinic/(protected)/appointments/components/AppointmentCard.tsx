@@ -1,5 +1,5 @@
 import Button from "@/app/(dashboards)/components/Button";
-import { CalenderInputIcon, TimeIcon } from "@/assets";
+import { CalenderInputIconV2, TimeIconV2 } from "@/assets";
 import { TAppointment } from "@/types/appointment";
 import { AppointmentDateType } from "@/types/common";
 import { calculateAge, formatDate, formatTime } from "@/utils/formatDateTime";
@@ -23,7 +23,7 @@ export default function UpcomingAppointmentCard({
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
                 <Image
-                  src={CalenderInputIcon}
+                  src={CalenderInputIconV2}
                   alt="Calendar Icon"
                   className="w-4 h-4"
                 />
@@ -31,7 +31,7 @@ export default function UpcomingAppointmentCard({
               </div>
               {type === AppointmentDateType.UPCOMING && (
                 <div className="flex items-center gap-1">
-                  <Image src={TimeIcon} alt="TIme Icon" className="w-4 h-4" />
+                  <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />
                   <p className="text-lg">{formatTime(appointment.date)}</p>
                 </div>
               )}
