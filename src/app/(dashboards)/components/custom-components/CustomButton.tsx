@@ -37,6 +37,7 @@ export default function CustomButton({
   if (href) {
     return (
       <Link
+        onClick={handleOnClick}
         href={href}
         className={cn(
           "px-6 py-3 flex items-center justify-center gap-2 rounded-[100px] transition-all",

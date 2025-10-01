@@ -21,7 +21,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Image from "next/image";
-import { CalenderInputIcon, TextInputIcon, TimeIcon } from "@/assets";
+import { CalenderInputIconV2, TextInputIcon, TimeIconV2 } from "@/assets";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { TPractice } from "@/types/practice";
@@ -32,7 +32,7 @@ import { TAppointmentRequest } from "@/types/appointment-request";
 import { AppointmentRequestStatus, AppointmentStatus } from "@prisma/client";
 import { formatTimeForInput } from "@/utils/formatDateTime";
 import { usePatchAppointmentRequest } from "@/services/appointmentRequests/appointmentRequestMutation";
-import Spinner from "@/app/(dashboards)/components/custom-components/Spinner";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 
 const assignDentistSchema = z.object({
   dentistName: z.string().min(2, "Enter dentist name"),
@@ -69,6 +69,7 @@ export default function BookAppointmentForm({
   const pathname = usePathname();
   const router = useRouter();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const defaultValues = {
     dentistName: "",
     dentistEmail: "",
@@ -84,7 +85,6 @@ export default function BookAppointmentForm({
     handleSubmit,
     watch,
     setValue,
-    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(assignDentistSchema),
@@ -161,14 +161,16 @@ export default function BookAppointmentForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {/* White box with form fields */}
-      <div className="bg-white rounded-2xl p-6 space-y-10">
+      <div className="bg-white rounded-2xl px-6 py-8 space-y-6">
         <div>
-          <p className="text-2xl font-medium">Book an Appointment</p>
+          <p className="text-[22px] font-semibold text-green">
+            Book an Appointment
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Dentist */}
           {/* <div className="space-y-2">
             <Label className="text-lg font-medium">Dentist</Label>
@@ -200,8 +202,8 @@ export default function BookAppointmentForm({
           </div> */}
 
           {/* Branch */}
-          <div className="space-y-2">
-            <Label className="text-lg font-medium">Branch</Label>
+          <div className="space-y-1">
+            <Label className="text-[17px]">Branch</Label>
             <Controller
               name="practicAddress"
               control={control}
@@ -228,8 +230,8 @@ export default function BookAppointmentForm({
           </div>
 
           {/* Dentist */}
-          <div className="space-y-2">
-            <Label className="text-lg font-medium">Dentist</Label>
+          <div className="space-y-1">
+            <Label className="text-[17px]">Dentist</Label>
             <Controller
               name="dentistName"
               control={control}
@@ -275,9 +277,9 @@ export default function BookAppointmentForm({
         </div>
 
         {/*GDC & branch */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label className="text-lg font-medium">GDC No.</Label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <Label className="text-[17px]">GDC No.</Label>
             <Controller
               name="gdcNo"
               control={control}
@@ -303,8 +305,8 @@ export default function BookAppointmentForm({
           </div>
 
           {/* {Email} */}
-          <div className="space-y-2">
-            <Label className="text-lg font-medium">Email</Label>
+          <div className="space-y-1">
+            <Label className="text-[17px]">Email</Label>
             <Controller
               name="dentistEmail"
               control={control}
@@ -333,10 +335,10 @@ export default function BookAppointmentForm({
         </div>
 
         {/* Appointment Date, Start Time, End Time */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Date */}
-          <div className="space-y-2">
-            <Label className="text-lg font-medium">Appointment Date</Label>
+          <div className="space-y-1">
+            <Label className="text-[17px]">Appointment Date</Label>
             <Controller
               name="appointmentDate"
               control={control}
@@ -359,7 +361,7 @@ export default function BookAppointmentForm({
                         <span className="mr-auto">Select date</span>
                       )}
                       <Image
-                        src={CalenderInputIcon}
+                        src={CalenderInputIconV2}
                         alt="calender-input"
                         className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
                       />
@@ -386,9 +388,9 @@ export default function BookAppointmentForm({
           </div>
 
           {/* Start & End Time */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-lg font-medium">Start Time</Label>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <Label className="text-[17px]">Start Time</Label>
               <div className="relative">
                 <Controller
                   name="startTime"
@@ -413,7 +415,7 @@ export default function BookAppointmentForm({
                   )}
                 />
                 <Image
-                  src={TimeIcon}
+                  src={TimeIconV2}
                   alt="time-icon"
                   className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none"
                 />
@@ -425,8 +427,8 @@ export default function BookAppointmentForm({
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-lg font-medium">End Time</Label>
+            <div className="space-y-1">
+              <Label className="text-[17px]">End Time</Label>
               <div className="relative">
                 <Controller
                   name="finishTime"
@@ -451,7 +453,7 @@ export default function BookAppointmentForm({
                   )}
                 />
                 <Image
-                  src={TimeIcon}
+                  src={TimeIconV2}
                   alt="time-icon"
                   className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none"
                 />
@@ -468,25 +470,17 @@ export default function BookAppointmentForm({
 
       {isDirty && (
         <div className="w-full flex justify-end items-center gap-3">
-          <Button
-            type="submit"
+          <CustomButton
+            text="Cancel"
             className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
+          />
+
+          <CustomButton
+            text="Book Appointment"
+            disabled={updateAppointmentRequestLoader || createAppointmentLoader}
+            loading={updateAppointmentRequestLoader || createAppointmentLoader}
             className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
-          >
-            {updateAppointmentRequestLoader || createAppointmentLoader ? (
-              <div className="flex items-center gap-2">
-                <Spinner />
-                <span>Booking Appointment</span>
-              </div>
-            ) : (
-              "Book Appointment"
-            )}
-          </Button>
+          />
         </div>
       )}
     </form>

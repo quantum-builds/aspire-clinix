@@ -20,7 +20,7 @@ export default function PatientDetailsModal({
       <DialogTrigger className="focus:outline-none">
         {trigger && trigger}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[588px] rounded-2xl p-6 space-y-3   focus:outline-none">
+      <DialogContent className="w-[600px] rounded-2xl p-6 space-y-3  focus:outline-none">
         <div className="flex items-center justify-between">
           <p className="font-semibold text-green text-2xl">
             Appointment Details
@@ -39,13 +39,13 @@ export default function PatientDetailsModal({
           </p>
           <div>
             <div className="flex items-center">
-              <p className="flex-1">
+              <p className="w-3/4 truncate">
                 Name:{" "}
                 <span className="font-medium text-lg">
                   {appointment.patient.fullName}
                 </span>
               </p>
-              <p className="flex-1">
+              <p className="w-[33%]">
                 Age:{" "}
                 <span className="font-medium text-lg">
                   {calculateAge(appointment.patient.dateOfBirth!)} years
@@ -53,13 +53,13 @@ export default function PatientDetailsModal({
               </p>
             </div>
             <div className="flex items-center justify-between">
-              <p className="flex-1">
+              <p className="w-3/4 truncate">
                 Email:{" "}
                 <span className="font-medium text-lg">
                   {appointment.patient.email}
                 </span>
               </p>
-              <p className="flex-1">
+              <p className="w-[33%]">
                 Phone:{" "}
                 <span className="font-medium text-lg">
                   {appointment.patient.phoneNumber}

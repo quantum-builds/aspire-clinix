@@ -20,7 +20,7 @@ export default async function ReferralHistory(props: {
   const page = Number(searchParams?.page) || 1;
 
   return (
-    <div className="min-h-screen flex flex-col gap-5">
+    <div className="min-h-[103vh] flex flex-col gap-5">
       <PageTopBar
         pageHeading="Appointments"
         showSearch={true}

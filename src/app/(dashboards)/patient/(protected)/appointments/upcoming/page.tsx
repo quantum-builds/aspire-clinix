@@ -23,7 +23,7 @@ export default async function UpcomingAppointments(props: {
   const after = searchParams?.after || "";
 
   return (
-    <div className="min-h-full flex flex-col gap-5">
+    <div className="min-h-[103vh] flex flex-col gap-5">
       <PageTopBar
         pageHeading="Appointments"
         showSearch={true}
