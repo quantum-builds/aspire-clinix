@@ -20,7 +20,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Image from "next/image";
-import { CalenderInputIconV2, EyeCloseIcon, EyeOpenIcon, TextIconV2, TextInputIcon } from "@/assets";
+import {
+  CalenderInputIconV2,
+  EyeCloseIcon,
+  EyeOpenIcon,
+  TextIconV2,
+  TextInputIcon,
+} from "@/assets";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { z } from "zod";
 import { DentistRole, GenderType } from "@prisma/client";
@@ -310,7 +316,7 @@ export default function DentistRegisterForm() {
       </div>
 
       {/* Action Buttons */}
-      <div className="w-full flex flex-col justify-center   gap-3">
+      <div className="w-full flex flex-col items-end justify-center   gap-3">
         <CustomButton
           style="primary"
           text={createDentistLoader ? "Registering..." : "Register"}

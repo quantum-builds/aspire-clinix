@@ -21,28 +21,26 @@ export default async function UpcomingAppointments(props: {
   const page = Number(searchParams?.page) || 1;
 
   return (
-    <div>
-      <div className="min-h-[103vh] flex flex-col gap-5">
-        <PageTopBar
-          pageHeading="Appointments"
-          showSearch={true}
-          showFilters={true}
-          statusOptions={null}
-        />
-        <Suspense
-          key={query + page + on + before + after}
-          fallback={<AppointmentGridSkeleton />}
-        >
-          <AppointmentGridWrapper
-            query={query}
-            page={page}
-            status={AppointmentStatus.CONFIRMED}
-            on={on}
-            before={before}
-            after={after}
-          />{" "}
-        </Suspense>
-      </div>
+    <div className="min-h-screen flex flex-col gap-5">
+      <PageTopBar
+        pageHeading="Appointments"
+        showSearch={true}
+        showFilters={true}
+        statusOptions={null}
+      />
+      <Suspense
+        key={query + page + on + before + after}
+        fallback={<AppointmentGridSkeleton />}
+      >
+        <AppointmentGridWrapper
+          query={query}
+          page={page}
+          status={AppointmentStatus.CONFIRMED}
+          on={on}
+          before={before}
+          after={after}
+        />{" "}
+      </Suspense>
     </div>
   );
 }

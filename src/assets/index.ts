@@ -126,3 +126,4 @@ export { default as CloseIcon } from "@/assets/close-icon.svg";
 export { default as TextIconV2 } from "@/assets/text-input-v2.svg";
 export { default as EyeOpenIcon } from "@/assets/eye-open.svg";
 export { default as EyeCloseIcon } from "@/assets/eye-close.svg";
+export { default as PreviewPDFIcon } from "@/assets/preview-pdf-icon.svg";

@@ -60,6 +60,7 @@ export function RequestsDataTable({ entries }: RequestsDataTable) {
             <TableRow
               key={entry.id}
               className="text-lg hover:bg-gray text-dashboardTextBlack"
+              onClick={() => push(`/patient/appointments/requests/${entry.id}`)}
             >
               <TableCell className="px-6 py-4 rounded-l-full">
                 APR # 100{index}

@@ -4,6 +4,7 @@ import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopB
 import { RequestDataTableSkeleton } from "./components/skeleton/RequestDataTableSkeleton";
 import { AppointmentRequestStatus } from "@prisma/client";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import { AppointmentGridSkeleton } from "../past/component/skeletons/AppointmentGrid";
 
 export default async function ReferralHistory(props: {
   searchParams?: Promise<{
@@ -45,7 +46,7 @@ export default async function ReferralHistory(props: {
       />
       <Suspense
         key={query + page + status + ts}
-        fallback={<RequestDataTableSkeleton />}
+        fallback={<AppointmentGridSkeleton />}
       >
         <RequestDataTableWrapper query={query} page={page} status={status} />
       </Suspense>

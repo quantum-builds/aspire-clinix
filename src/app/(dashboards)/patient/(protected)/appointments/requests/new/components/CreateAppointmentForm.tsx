@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Image from "next/image";
-import { CalenderInputIconV2, UploadPDFIcon } from "@/assets";
+import { CalenderInputIconV2, PreviewPDFIcon, UploadPDFIcon } from "@/assets";
 import { cn } from "@/lib/utils";
 import { useCreateAppointmentRequests } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
@@ -243,7 +243,8 @@ export default function AppointmentForm() {
                     <PdfModal
                       pdfUrl={previewUrl!}
                       trigger={
-                        <p className="text-sm font-medium text-green truncate cursor-pointer">
+                        <p className="text-sm font-medium text-green truncate cursor-pointer flex gap-1 items-center">
+                          <Image src={PreviewPDFIcon} alt="Preview pdf icon" />{" "}
                           {(field.value as File).name}
                         </p>
                       }

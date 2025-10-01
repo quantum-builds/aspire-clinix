@@ -45,17 +45,18 @@ export default async function AppointmentGridWrapper({
       // <NoContent title="Resources" placeholder="Enter Appointment Number" />
       <>
         <NoContent1 />
-        <Pagination page={page} isLast={true} />
+        {/* <Pagination page={page} isLast={true} /> */}
       </>
     );
   }
 
   const appointments = response.data.appointments;
+  const total = response.data.pagination.totalPages;
 
   return (
     <>
       <AppointmentGrid appointments={appointments} />
-      <Pagination page={page} />
+      {total > 1 && <Pagination page={page} />}
     </>
   );
 }
