@@ -2,8 +2,17 @@ import Image from "next/image";
 import DentistRegisterForm from "./components/RegisterForm";
 import { AspireDarkLogo } from "@/assets";
 import BackButton from "@/app/(dashboards)/components/BackButton";
+import { Response } from "@/types/common";
+import { TPracticeResponse } from "@/types/practice";
+import { getPractices } from "@/services/practice/practiceQuery";
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const response: Response<TPracticeResponse> = await getPractices({});
+  const practices = response.data
+    ? response.data.practices
+      ? response.data.practices
+      : []
+    : [];
   return (
     <main className="min-h-[103vh] ">
       <BackButton
@@ -33,7 +42,7 @@ export default function RegisterPage() {
 
         <section className="w-full grid gap-6 md:grid-cols-5">
           <div className="md:col-span-5 ">
-            <DentistRegisterForm />
+            <DentistRegisterForm practices={practices} />
           </div>
         </section>
       </div>

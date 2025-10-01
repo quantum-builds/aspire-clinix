@@ -26,20 +26,6 @@ export default function AppointmentRequestCard({
   const { refresh } = useRouter();
 
   const handleCancelAppointment = () => {
-    // cancelAppointment(
-    //   {
-    //     appointment: { state: AppointmentStatus.CANCELLED },
-    //     id: appointment.id,
-    //     patientId: appointment.patientId, // will be getting in backend when token is implemented
-    //   },
-    //   {
-    //     onSuccess: (data) => {
-    //       console.log("updated appointment ", data);
-    //       refresh();
-    //       setIsCancelModalOpen(false);
-    //     },
-    //   }
-    // );
     const partialAppointmentRequest: Partial<TAppointmentRequest> = {
       status: AppointmentRequestStatus.CANCEL,
     };

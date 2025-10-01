@@ -17,6 +17,11 @@ const nextConfig = {
         permanent: false,
       },
       {
+        source: "/admin",
+        destination: "/clinic/appointments/upcoming",
+        permanent: false,
+      },
+      {
         source: "/patient",
         destination: "/patient/appointments/upcoming",
         permanent: false,

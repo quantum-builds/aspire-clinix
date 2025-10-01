@@ -1,10 +1,23 @@
+import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
+import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
+    const token = await getToken({ req });
+
+    if (!token || token.role !== TokenRoles.ADMIN) {
+      return NextResponse.json(
+        createResponse(false, "Forbidden to perform this action", null),
+        {
+          status: 403,
+        }
+      );
+    }
+
     const practiceId = req.nextUrl.pathname.split("/").pop();
     if (!practiceId || !isValidCuid(practiceId)) {
       return NextResponse.json(
@@ -15,7 +28,14 @@ export async function GET(req: NextRequest) {
 
     const practice = await prisma.practice.findUnique({
       where: { id: practiceId },
-      include: { dentists: true },
+      include: {
+        dentists: {
+          where: { status: "APPROVED" },
+          include: {
+            dentist: true, // this pulls the actual Dentist record
+          },
+        },
+      },
     });
 
     if (!practice) {

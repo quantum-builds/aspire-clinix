@@ -207,11 +207,18 @@ export const ENDPOINTS = {
   },
 
   dentistToPractice: {
-    get: (dentistId?: string, practiceId?: string) =>
+    get: (dentistId?: string, practiceId?: string, status?: string) =>
       `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
         practiceId ?? ""
-      }`,
-    create: "/api/dentist-practice",
+      }&status=${status ?? ""}`,
+    create: (status: string, dentistId?: string, practiceId?: string) =>
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
+        practiceId ?? ""
+      }&status=${status ?? ""}`,
+    updatedStatus: (dentistId?: string, practiceId?: string, status?: string) =>
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
+        practiceId ?? ""
+      }&status=${status ?? ""}`,
   },
 
   reports: {

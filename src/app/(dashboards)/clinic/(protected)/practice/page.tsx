@@ -25,7 +25,14 @@ export default async function PracticePage(props: {
           pageHeading="Practices"
           showSearch={true}
           showFilters={true}
-          statusOptions={[]}
+          statusOptions={[
+            {
+              value: "True",
+            },
+            {
+              value: "False",
+            },
+          ]}
           extraBtns={
             <CustomButton text="Add New Practice" href="/clinic/practice/new" />
           }

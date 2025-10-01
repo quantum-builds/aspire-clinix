@@ -1,68 +1,103 @@
 "use client";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 import Spinner from "./custom-components/Spinner";
+import { Button } from "@/components/ui/button";
 
-interface ConfirmationModalProps {
+interface CustomConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   isPending?: boolean;
   title: string;
   description: string;
-  cancelText: string;
-  confirmText: string;
+  cancelText?: string;
+  confirmText?: string;
 }
 
-export default function ConfirmationModal({
+export default function CustomConfirmationModal({
   isOpen,
   onClose,
   onConfirm,
+  isPending = false,
   title,
   description,
-  isPending = false,
-  cancelText,
-  confirmText,
-}: ConfirmationModalProps) {
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      onClose();
+  cancelText = "Cancel",
+  confirmText = "Confirm",
+}: CustomConfirmationModalProps) {
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
-  };
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[425px] border-green border-2">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button
-            variant="outline"
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={onClose}
-            className=""
-            disabled={isPending}
+          />
+
+          {/* Modal */}
+          <motion.div
+            className="fixed z-50 inset-0 flex items-center justify-center px-4"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
-            {cancelText}
-          </Button>
-          <Button
-            onClick={onConfirm}
-            className="bg-green hover:bg-green"
-            disabled={isPending}
-          >
-            <div className="flex items-center gap-2">
-              {isPending ? <Spinner /> : confirmText}
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg p-6 w-full max-w-md relative">
+              {/* Close Button */}
+              <button
+                className="absolute top-3 right-3 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-300"
+                onClick={onClose}
+                disabled={isPending}
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Title & Description */}
+              <h2 className="text-xl font-semibold mb-2">{title}</h2>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
+                {description}
+              </p>
+
+              {/* Footer Actions */}
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  onClick={onClose}
+                  disabled={isPending}
+                >
+                  {cancelText}
+                </Button>
+                <Button
+                  onClick={onConfirm}
+                  disabled={isPending}
+                  className="bg-green hover:bg-green/90 text-white"
+                >
+                  <div className="flex items-center gap-2">
+                    {isPending ? <Spinner /> : confirmText}
+                  </div>
+                </Button>
+              </div>
             </div>
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 }

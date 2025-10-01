@@ -69,7 +69,6 @@ export default function BookAppointmentForm({
   const pathname = usePathname();
   const router = useRouter();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const defaultValues = {
     dentistName: "",
     dentistEmail: "",

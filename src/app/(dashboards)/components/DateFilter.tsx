@@ -21,9 +21,13 @@ import { capitalize } from "@/utils/formatWords";
 
 interface DateFilterProps {
   statusOptions: TStatusOption[] | null;
+  showDateFilter?: boolean;
 }
 
-export default function DateFilter({ statusOptions }: DateFilterProps) {
+export default function DateFilter({
+  statusOptions,
+  showDateFilter,
+}: DateFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -149,114 +153,126 @@ export default function DateFilter({ statusOptions }: DateFilterProps) {
                 </div>
               )}
 
-              {/* On a date */}
-              <div className="w-full space-y-[2px]">
-                <p className="text-green font-medium">On a date</p>
-                <Popover modal={false}>
-                  <PopoverTrigger className="w-full relative">
-                    <input
-                      type="text"
-                      placeholder="Select Date"
-                      readOnly
-                      value={formatDate(onDate)}
-                      className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
-                    />
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
-                      <Image
-                        src={CalenderInputIconV2}
-                        alt="Dropdown Icon"
-                        className="w-5 h-5"
-                      />
+              {showDateFilter && (
+                <>
+                  {/* On a date */}
+                  <div className="w-full space-y-[2px]">
+                    <p className="text-green font-medium">On a date</p>
+                    <Popover modal={false}>
+                      <PopoverTrigger className="w-full relative">
+                        <input
+                          type="text"
+                          placeholder="Select Date"
+                          readOnly
+                          value={formatDate(onDate)}
+                          className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
+                        />
+                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
+                          <Image
+                            src={CalenderInputIconV2}
+                            alt="Dropdown Icon"
+                            className="w-5 h-5"
+                          />
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent side="bottom" sideOffset={10} align="end">
+                        <Calendar
+                          mode="single"
+                          selected={onDate || undefined}
+                          disabled={{ after: new Date() }}
+                          onSelect={(date) => {
+                            if (!date) return;
+                            setOnDate(date);
+                            updateQuery("on", formatDate(date));
+                          }}
+                          showOutsideDays={false}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  {/* After & Before */}
+                  <div className="flex gap-6">
+                    <div className="w-full space-y-[2px]">
+                      <p className="text-green font-medium">After a date</p>
+                      <Popover modal={false}>
+                        <PopoverTrigger className="w-full relative">
+                          <input
+                            type="text"
+                            placeholder="Select Date"
+                            readOnly
+                            value={formatDate(afterDate)}
+                            className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
+                          />
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
+                            <Image
+                              src={CalenderInputIconV2}
+                              alt="Dropdown Icon"
+                              className="w-5 h-5"
+                            />
+                          </div>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          side="bottom"
+                          sideOffset={10}
+                          align="end"
+                        >
+                          <Calendar
+                            mode="single"
+                            selected={afterDate || undefined}
+                            disabled={{ after: new Date() }}
+                            onSelect={(date) => {
+                              if (!date) return;
+                              setAfterDate(date);
+                              updateQuery("after", formatDate(date));
+                            }}
+                            showOutsideDays={false}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
-                  </PopoverTrigger>
-                  <PopoverContent side="bottom" sideOffset={10} align="end">
-                    <Calendar
-                      mode="single"
-                      selected={onDate || undefined}
-                      disabled={{ after: new Date() }}
-                      onSelect={(date) => {
-                        if (!date) return;
-                        setOnDate(date);
-                        updateQuery("on", formatDate(date));
-                      }}
-                      showOutsideDays={false}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
 
-              {/* After & Before */}
-              <div className="flex gap-6">
-                <div className="w-full space-y-[2px]">
-                  <p className="text-green font-medium">After a date</p>
-                  <Popover modal={false}>
-                    <PopoverTrigger className="w-full relative">
-                      <input
-                        type="text"
-                        placeholder="Select Date"
-                        readOnly
-                        value={formatDate(afterDate)}
-                        className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
-                      />
-                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
-                        <Image
-                          src={CalenderInputIconV2}
-                          alt="Dropdown Icon"
-                          className="w-5 h-5"
-                        />
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent side="bottom" sideOffset={10} align="end">
-                      <Calendar
-                        mode="single"
-                        selected={afterDate || undefined}
-                        disabled={{ after: new Date() }}
-                        onSelect={(date) => {
-                          if (!date) return;
-                          setAfterDate(date);
-                          updateQuery("after", formatDate(date));
-                        }}
-                        showOutsideDays={false}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div className="w-full space-y-[2px]">
-                  <p className="text-green font-medium">Before a date</p>
-                  <Popover modal={false}>
-                    <PopoverTrigger className="w-full relative">
-                      <input
-                        type="text"
-                        placeholder="Select Date"
-                        readOnly
-                        value={formatDate(beforeDate)}
-                        className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
-                      />
-                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
-                        <Image
-                          src={CalenderInputIconV2}
-                          alt="Dropdown Icon"
-                          className="w-5 h-5"
-                        />
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent side="bottom" sideOffset={10} align="end">
-                      <Calendar
-                        mode="single"
-                        selected={beforeDate || undefined}
-                        disabled={{ after: new Date() }}
-                        onSelect={(date) => {
-                          if (!date) return;
-                          setBeforeDate(date);
-                          updateQuery("before", formatDate(date));
-                        }}
-                        showOutsideDays={false}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
+                    <div className="w-full space-y-[2px]">
+                      <p className="text-green font-medium">Before a date</p>
+                      <Popover modal={false}>
+                        <PopoverTrigger className="w-full relative">
+                          <input
+                            type="text"
+                            placeholder="Select Date"
+                            readOnly
+                            value={formatDate(beforeDate)}
+                            className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
+                          />
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
+                            <Image
+                              src={CalenderInputIconV2}
+                              alt="Dropdown Icon"
+                              className="w-5 h-5"
+                            />
+                          </div>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          side="bottom"
+                          sideOffset={10}
+                          align="end"
+                        >
+                          <Calendar
+                            mode="single"
+                            selected={beforeDate || undefined}
+                            disabled={{ after: new Date() }}
+                            onSelect={(date) => {
+                              if (!date) return;
+                              setBeforeDate(date);
+                              updateQuery("before", formatDate(date));
+                            }}
+                            showOutsideDays={false}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

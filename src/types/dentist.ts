@@ -10,6 +10,7 @@ export type TDentistCreate = {
   gender?: GenderType;
   gdcNo: string;
   practiceAddress: string;
+  practiceId: string;
   role: DentistRole;
   fileUrl?: string;
 };

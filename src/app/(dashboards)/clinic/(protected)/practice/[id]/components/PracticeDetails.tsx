@@ -8,26 +8,29 @@ import Image from "next/image";
 import { useState } from "react";
 
 export default function PracticeDetails({ practice }: { practice: TPractice }) {
-  const [selectedDay, setSelectedDay] = useState("monday");
+  const availableDays = Object.keys(
+    practice.openingHours
+  ) as (keyof typeof practice.openingHours)[];
 
-  const DAYS = [
-    { value: "monday", label: "Monday" },
-    { value: "tuesday", label: "Tuesday" },
-    { value: "wednesday", label: "Wednesday" },
-    { value: "thursday", label: "Thursday" },
-    { value: "friday", label: "Friday" },
-    { value: "saturday", label: "Saturday" },
-    { value: "sunday", label: "Sunday" },
-  ];
+  const DAYS = availableDays.map((day) => ({
+    value: day.toLowerCase(),
+    label: day,
+  }));
+
+  const [selectedDay, setSelectedDay] = useState(DAYS[0]?.value || "");
 
   const getOpeningHoursForDay = (day: string) => {
+    if (!day) return { openingTime: "-", closingTime: "-" };
+
     const dayKey = (day.charAt(0).toUpperCase() +
       day.slice(1)) as keyof typeof practice.openingHours;
     const hours = practice.openingHours[dayKey];
 
+    if (!hours) return { openingTime: "-", closingTime: "-" };
+
     return {
-      openingTime: formatTime(hours!.open),
-      closingTime: formatTime(hours!.close),
+      openingTime: formatTime(hours.open),
+      closingTime: formatTime(hours.close),
     };
   };
 
@@ -42,12 +45,14 @@ export default function PracticeDetails({ practice }: { practice: TPractice }) {
             (Practice ID. PRA {practice.id})
           </span>
         </p>
-        <Dropdown
-          options={DAYS}
-          value={selectedDay}
-          onValueChange={setSelectedDay}
-          placeholder="Select Day"
-        />
+        {DAYS.length > 0 && (
+          <Dropdown
+            options={DAYS}
+            value={selectedDay}
+            onValueChange={setSelectedDay}
+            placeholder="Select Day"
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-3 xl:grid-cols-4 gap-4">

@@ -1,5 +1,6 @@
 import { TAppointment } from "./appointment";
 import { TDentist } from "./dentist";
+import { TDentistPractice } from "./dentistRequest";
 
 export interface OpeningHour {
   open: Date;
@@ -33,7 +34,7 @@ export type TPracticeCreate = {
 export type TPractice = TPracticeCreate & {
   id: string;
   logo?: string;
-  dentists?: TDentist[];
+  dentists?: TDentistPractice[];
   appointments?: TAppointment[];
 };
 

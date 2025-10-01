@@ -1,10 +1,23 @@
+import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { Prisma } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
+    // const token = await getToken({ req });
+
+    // if (!token || token.role !== TokenRoles.ADMIN) {
+    //   return NextResponse.json(
+    //     createResponse(false, "Forbidden to perform this action", null),
+    //     {
+    //       status: 403,
+    //     }
+    //   );
+    // }
+
     const practice = await req.json();
     const newPractce = await prisma.practice.create({
       data: { ...practice },
@@ -25,19 +38,32 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
+    const token = await getToken({ req });
+
+    if (!token || token.role !== TokenRoles.ADMIN) {
+      return NextResponse.json(
+        createResponse(false, "Forbidden to perform this action", null),
+        {
+          status: 403,
+        }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     const search = searchParams.get("search") || "";
     const statusParam = searchParams.get("status") || "";
 
-    // const status = statusParam === "True";
     const limit = 10;
     const skip = (page - 1) * limit;
 
-    let baseWhere: Prisma.PracticeWhereInput = {
+    const nhsFilter =
+      statusParam !== "" ? statusParam.toLowerCase() === "true" : undefined;
+
+    const baseWhere: Prisma.PracticeWhereInput = {
       ...(search && { id: { contains: search, mode: "insensitive" } }),
-      ...(statusParam !== "" ? { nhs: statusParam === "True" } : {}),
+      ...(nhsFilter !== undefined && { nhs: nhsFilter }),
     };
 
     const [practices, totalCount] = await Promise.all([
