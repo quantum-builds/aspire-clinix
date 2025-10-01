@@ -6,16 +6,12 @@ import { TReport, TReportResponse } from "@/types/reports";
 
 export async function getReports({
   search,
-  patientId,
-  dentistId,
   appointmentId,
   on,
   before,
   after,
 }: {
   search?: string;
-  patientId?: string;
-  dentistId?: string;
   appointmentId?: string;
   on?: string;
   before?: string;
@@ -23,7 +19,7 @@ export async function getReports({
 }) {
   try {
     const response = await axiosInstance.get(
-      ENDPOINTS.reports.get(search, patientId, dentistId,appointmentId, on, before, after)
+      ENDPOINTS.reports.get(search, appointmentId, on, before, after)
     );
     const responseData: Response<TReportResponse> = response.data;
 
@@ -35,39 +31,47 @@ export async function getReports({
       videos: responseData.data.reports?.videos || [],
     };
 
-    if (!reports.pdfs.length && !reports.videos.length) {
-      throw new Error("Reports not found");
-    }
-
     // fetch signed URLs for PDFs
-    const pdfUploads = await Promise.all(
-      reports.pdfs.map(async (resource) => {
-        if (resource.fileUrl) {
-          return await getAMedia(resource.fileUrl);
-        }
-        return null;
-      })
-    );
+    const pdfUploads =
+      reports.pdfs.length > 0
+        ? await Promise.all(
+            reports.pdfs.map(async (resource) => {
+              if (resource.fileUrl) {
+                return await getAMedia(resource.fileUrl);
+              }
+              return null;
+            })
+          )
+        : [];
 
-    reports.pdfs = reports.pdfs.map((resource, index) => ({
-      ...resource,
-      file: pdfUploads[index] || null,
-    }));
+    reports.pdfs =
+      reports.pdfs.length > 0
+        ? reports.pdfs.map((resource, index) => ({
+            ...resource,
+            file: pdfUploads[index] || null,
+          }))
+        : [];
 
     // fetch signed URLs for Videos
-    const videoUploads = await Promise.all(
-      reports.videos.map(async (resource) => {
-        if (resource.fileUrl) {
-          return await getAMedia(resource.fileUrl);
-        }
-        return null;
-      })
-    );
+    const videoUploads =
+      reports.videos.length > 0
+        ? await Promise.all(
+            reports.videos.map(async (resource) => {
+              if (resource.fileUrl) {
+                return await getAMedia(resource.fileUrl);
+              }
+              return null;
+            })
+          )
+        : [];
 
-    reports.videos = reports.videos.map((resource, index) => ({
-      ...resource,
-      file: videoUploads[index] || null,
-    }));
+    reports.videos =
+      reports.videos.length > 0
+        ? reports.videos.map((resource, index) => ({
+            ...resource,
+            file: videoUploads[index] || null,
+          }))
+        : [];
 
     // update the responseData with modified reports
     responseData.data.reports = reports;

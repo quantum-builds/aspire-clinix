@@ -216,18 +216,15 @@ export const ENDPOINTS = {
   reports: {
     get: (
       search?: string,
-      patientId?: string,
-      dentistId?: string,
       appointmentId?: string,
       on?: string,
       before?: string,
       after?: string
     ) =>
-      `/api/reports?search=${search ?? ""}&patientId=${
-        patientId ?? ""
-      }&dentistId=${dentistId ?? ""}&appointmentId=${appointmentId ?? ""}&on=${
-        on ?? ""
-      }&before=${before ?? ""}&after=${after ?? ""}`,
+      `/api/reports?search=${search ?? ""}&appointmentId=${
+        appointmentId ?? ""
+      }&on=${on ?? ""}&before=${before ?? ""}&after=${after ?? ""}`,
+    create: "/api/reports",
   },
 
   products: {

@@ -95,7 +95,7 @@ export default function UpcomingAppointmentCard({
         <div className="flex items-center gap-2 w-full mt-7">
           <CustomButton
             text="See Reports"
-            href={`/patient/appointments/${appointment.id}/reports`}
+            href={`/dentist/appointments/${appointment.id}/reports`}
           />
 
           {appointment.state !== AppointmentStatus.CANCELLED && (

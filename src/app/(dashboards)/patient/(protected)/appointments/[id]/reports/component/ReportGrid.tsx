@@ -10,7 +10,6 @@ import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 interface ResourceGridWrapperProps {
   query: string;
   appointmentId: string;
-  // dentistDetails: TDentistDeatils;
 }
 
 interface ReportGridProps {
@@ -22,12 +21,9 @@ interface ReportGridProps {
 export default async function ReportGridWrapper({
   query,
   appointmentId,
-}: // dentistDetails,
-ResourceGridWrapperProps) {
+}: ResourceGridWrapperProps) {
   const response: Response<TReportResponse> = await getReports({
     search: query,
-    // dentistId: "cmfpmegmj0005l6qab0c10oil",
-    // patientId: "cmfplxicq0000l6qaof724vtk",
     appointmentId: appointmentId,
   });
 
@@ -37,11 +33,15 @@ ResourceGridWrapperProps) {
     (response.data.reports.pdfs?.length === 0 &&
       response.data.reports.videos?.length === 0)
   ) {
-    // return <NoContent title="Reports" placeholder="Enter Report title" />;
     return <NoContent1 />;
   }
 
-  const dentistDetails = response.data.dentist;
+  const dentistDetails =
+    response.data.reports.pdfs && response.data.reports.pdfs?.length > 0
+      ? response.data.reports.pdfs[0].dentist
+      : response.data.reports.videos && response.data.reports.videos?.length > 0
+      ? response.data.reports.videos[0].dentist
+      : undefined;
   const pdfs = response.data.reports.pdfs;
   const videos = response.data.reports.videos;
 
