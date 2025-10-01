@@ -1,9 +1,8 @@
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
-import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { TPractice } from "@/types/practice";
-import PracticeDetails from "./components/PracticeDetails";
-import { PracticeDentistDataTable } from "./components/PracticeDentistsDataTable";
 import { DentistRole, GenderType } from "@prisma/client";
+import { PracticeDentistDataTable } from "../components/PracticeDentistsDataTable";
+import Pagination from "@/app/(dashboards)/components/Pagination";
 
 const PRACTICE_DATA: TPractice[] = [
   {
@@ -309,19 +308,17 @@ export default async function PracticePage(props: { params: { id: string } }) {
     <div>
       <div className="min-h-[98vh] flex flex-col gap-5">
         <PageTopBar
-          pageHeading="Practices"
+          pageHeading="Practice Requests"
           showSearch={false}
           showFilters={false}
+          showBackBtn={true}
           statusOptions={[]}
-          extraBtns={
-            <CustomButton text="Practice Requests" href={`1/requests`} />
-          }
         />
 
-        <PracticeDetails practice={PRACTICE_DATA[0]} />
         {PRACTICE_DATA[0].dentists?.length && (
           <PracticeDentistDataTable entries={PRACTICE_DATA[0].dentists} />
         )}
+        <Pagination page={1} />
       </div>
     </div>
   );
