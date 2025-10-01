@@ -233,7 +233,7 @@ model Dentist{
   dateOfBirth DateTime?
   gender  GenderType?
   gdcNo   String  @unique
-  practiceAddress String
+  practiceAddress String?
   role    DentistRole
   fileUrl      String?
 
@@ -283,7 +283,8 @@ model DentistOnPractice {
   practice   Practice     @relation(fields: [practiceId], references: [id],onDelete: Cascade)
   practiceId String 
   dentist    Dentist  @relation(fields: [dentistId], references: [id],onDelete: Cascade)
-  dentistId  String 
+  dentistId  String
+  status     PracticeApprovalStatus @default(PENDING)
 
   @@id([practiceId, dentistId])
 }
@@ -512,4 +513,10 @@ enum UserRoles {
   ADMIN
   PATIENT
   DENTIST
+}
+
+enum PracticeApprovalStatus {
+  PENDING
+  APPROVED
+  CANCELLED
 }

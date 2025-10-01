@@ -27,7 +27,11 @@ export const adminSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, "Phone number must be at least 10 digits")
-    .regex(/^\+?[\d\s\-\(\)]+$/, "Please enter a valid phone number"),
+    .max(15, "Phone number must be at most 15 digits")
+    .regex(
+      /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
+      "Please enter a valid UK mobile phone number"
+    ),
 });
 
 type FormData = z.infer<typeof adminSchema>;

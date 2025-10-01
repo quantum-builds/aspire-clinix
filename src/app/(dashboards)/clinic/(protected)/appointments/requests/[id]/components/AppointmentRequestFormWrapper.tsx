@@ -7,6 +7,7 @@ import { TPractice } from "@/types/practice";
 import { getDentistPractice } from "@/services/dentistOnPractice/dentistOnPracticeQuery";
 import { TDentistPractice } from "@/types/dentistRequest";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
+import { PracticeApprovalStatus } from "@prisma/client";
 
 interface AppointmentRequestFormWrapperProps {
   id: string;
@@ -24,11 +25,11 @@ export default async function AppointmentRequestFormWrapper({
   );
 
   let dentists: TDentist[] = [];
-  console.log("practice is ", practiceId);
   if (practiceId.trim().length > 0) {
     console.log("in the if ");
     const response: Response<TDentistPractice[]> = await getDentistPractice({
       practiceId: practiceId,
+      status: PracticeApprovalStatus.APPROVED,
     });
 
     dentists = response.data?.map((dp) => dp.dentist) ?? [];

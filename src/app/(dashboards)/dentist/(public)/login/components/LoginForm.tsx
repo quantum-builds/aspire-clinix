@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { EyeCloseIcon, EyeOpenIcon, TextIconV2, TextInputIcon } from "@/assets";
+import { EyeCloseIcon, EyeOpenIcon, TextIconV2 } from "@/assets";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { z } from "zod";
 import Link from "next/link";
@@ -77,12 +77,12 @@ export default function DentistLoginForm() {
           {/* Full Name */}
           <div className="space-y-2">
             <Label htmlFor="email" className="text-lg font-medium">
-              Full Name<span className="text-red-500">*</span>
+              Email<span className="text-red-500">*</span>
             </Label>
             <div className="relative">
               <Input
                 id="email"
-                placeholder="Enter your full name"
+                placeholder="Enter email"
                 {...register("email")}
                 className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
               />
@@ -106,7 +106,7 @@ export default function DentistLoginForm() {
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter a strong password"
+                placeholder="Enter password"
                 {...register("password")}
                 className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
               />

@@ -17,10 +17,12 @@ export default function RequestDetailsModal({
   open,
   onClose,
   request,
+  showBtns = true,
 }: {
   open: boolean;
   onClose: () => void;
   request: TAppointmentRequest;
+  showBtns?: boolean;
 }) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { mutate: updateAppointmentRequest, isPending } =
@@ -28,20 +30,6 @@ export default function RequestDetailsModal({
   const { refresh } = useRouter();
 
   const handleCancelAppointment = () => {
-    // cancelAppointment(
-    //   {
-    //     appointment: { state: AppointmentStatus.CANCELLED },
-    //     id: appointment.id,
-    //     patientId: appointment.patientId, // will be getting in backend when token is implemented
-    //   },
-    //   {
-    //     onSuccess: (data) => {
-    //       console.log("updated appointment ", data);
-    //       refresh();
-    //       setIsCancelModalOpen(false);
-    //     },
-    //   }
-    // );
     const partialAppointmentRequest: Partial<TAppointmentRequest> = {
       status: AppointmentRequestStatus.CANCEL,
     };
@@ -61,8 +49,11 @@ export default function RequestDetailsModal({
 
   return (
     <Dialog open={open}>
-      <DialogContent className="w-[720px] rounded-2xl p-6 space-y-3  focus:outline-none">
-        <div className="flex items-center justify-between w-[95%]">
+      <DialogContent
+        className="w-[720px] rounded-2xl p-6 space-y-3 focus:outline-none"
+        onInteractOutside={onClose}
+      >
+        <div className="flex items-center justify-between w-full">
           <p className="font-semibold text-green text-2xl">Request Details</p>
           <div
             className="size-11 cursor-pointer flex justify-center items-center bg-gray rounded-full"
@@ -137,21 +128,23 @@ export default function RequestDetailsModal({
           />
         )}
 
-        <div className="flex gap-5">
-          {request.status === AppointmentRequestStatus.PENDING && (
-            <CustomButton
-              text="Book an Appointment"
-              href={`/clinic/appointments/requests/${request.id}/book`}
-            />
-          )}
-          {request.status === AppointmentRequestStatus.PENDING && (
-            <CustomButton
-              style="secondary"
-              handleOnClick={() => setIsCancelModalOpen(true)}
-              text="Cancel"
-            />
-          )}
-        </div>
+        {showBtns && (
+          <div className="flex gap-3 flex-row-reverse">
+            {request.status === AppointmentRequestStatus.PENDING && (
+              <CustomButton
+                text="Book an Appointment"
+                href={`/clinic/appointments/requests/${request.id}/book`}
+              />
+            )}
+            {request.status === AppointmentRequestStatus.PENDING && (
+              <CustomButton
+                style="secondary"
+                handleOnClick={() => setIsCancelModalOpen(true)}
+                text="Cancel"
+              />
+            )}
+          </div>
+        )}
 
         <ConfirmationModal
           isOpen={isCancelModalOpen}

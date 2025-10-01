@@ -2,14 +2,17 @@ import { ResoucrceType } from "@prisma/client";
 import { TDentist } from "./dentist";
 import { TPatient } from "./patient";
 
-export type TReport = {
-  id: string;
-  dentistId: string;
+export type TReportCreate = {
   patientId: string;
   appointmentId: string;
   title: string;
   fileUrl: string;
   fileType: ResoucrceType;
+};
+
+export type TReport = TReportCreate & {
+  id: string;
+  dentistId: string;
   file?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -18,6 +21,5 @@ export type TReport = {
 };
 
 export type TReportResponse = {
-  dentist?: TDentist;
   reports: { pdfs?: TReport[]; videos?: TReport[] };
 };

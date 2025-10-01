@@ -203,31 +203,36 @@ export const ENDPOINTS = {
       `/api/appointments/${id}?patientId=${patientId ?? ""}&dentistId=${
         dentistId ?? ""
       }`,
+    getById: (id: string) => `/api/appointments/${id}`,
   },
 
   dentistToPractice: {
-    get: (dentistId?: string, practiceId?: string) =>
+    get: (dentistId?: string, practiceId?: string, status?: string) =>
       `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
         practiceId ?? ""
-      }`,
-    create: "/api/dentist-practice",
+      }&status=${status ?? ""}`,
+    create: (status: string, dentistId?: string, practiceId?: string) =>
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
+        practiceId ?? ""
+      }&status=${status ?? ""}`,
+    updatedStatus: (dentistId?: string, practiceId?: string, status?: string) =>
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
+        practiceId ?? ""
+      }&status=${status ?? ""}`,
   },
 
   reports: {
     get: (
       search?: string,
-      patientId?: string,
-      dentistId?: string,
       appointmentId?: string,
       on?: string,
       before?: string,
       after?: string
     ) =>
-      `/api/reports?search=${search ?? ""}&patientId=${
-        patientId ?? ""
-      }&dentistId=${dentistId ?? ""}&appointmentId=${appointmentId ?? ""}&on=${
-        on ?? ""
-      }&before=${before ?? ""}&after=${after ?? ""}`,
+      `/api/reports?search=${search ?? ""}&appointmentId=${
+        appointmentId ?? ""
+      }&on=${on ?? ""}&before=${before ?? ""}&after=${after ?? ""}`,
+    create: "/api/reports",
   },
 
   products: {

@@ -123,7 +123,7 @@ export default async function DentistLayout({
   }
 
   return (
-    <div className="font-inter text-dashboardTextBlack bg-dashboardBackground h-screen grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden">
+    <div className="font-inter text-dashboardTextBlack bg-dashboardBackground min-h-screen grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden">
       {/* Sidebar */}
       <div className="row-span-2 border-r">
         <Sidebar sideBarContnent={sidebarContent} />

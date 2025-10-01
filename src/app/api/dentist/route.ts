@@ -66,15 +66,35 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(dentist.password, 10);
 
-    const newDentist = await prisma.dentist.create({
-      data: {
-        ...dentist,
-        password: hashedPassword,
-      },
+    const result = await prisma.$transaction(async (tx) => {
+      const newDentist = await tx.dentist.create({
+        data: {
+          email: dentist.email,
+          password: hashedPassword,
+          fullName: dentist.fullName,
+          phoneNumber: dentist.phoneNumber,
+          country: dentist.country,
+          dateOfBirth: dentist.dateOfBirth,
+          gender: dentist.gender,
+          gdcNo: dentist.gdcNo,
+          practiceAddress: dentist.practiceAddress,
+          role: dentist.role,
+          fileUrl: dentist.fileUrl,
+        },
+      });
+
+      await tx.dentistOnPractice.create({
+        data: {
+          dentistId: newDentist.id,
+          practiceId: dentist.practiceId,
+        },
+      });
+
+      return newDentist;
     });
 
     return NextResponse.json(
-      createResponse(true, "Dentist registered successfully", newDentist),
+      createResponse(true, "Dentist registered successfully", result),
       { status: 201 }
     );
   } catch (error) {

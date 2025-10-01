@@ -32,7 +32,7 @@ export default function SearchBar({ placeholder }: { placeholder: string }) {
   }, [search]);
 
   return (
-    <div className="relative flex flex-1 flex-shrink-0 2xl:h-[60px] h-[50px] 2xl:w-[400px] w-[300px] ">
+    <div className="relative flex flex-1 flex-shrink-0 2xl:h-[60px] h-[50px] 2xl:w-[400px] w-[300px] -z-0">
       <input
         className="peer block w-full rounded-full py-2 pl-5 pr-2 border border-green text-base font-medium outline-none placeholder:text-lightBlack"
         placeholder={placeholder}

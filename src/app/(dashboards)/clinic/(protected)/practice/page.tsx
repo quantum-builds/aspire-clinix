@@ -20,12 +20,19 @@ export default async function PracticePage(props: {
 
   return (
     <div>
-      <div className="min-h-full flex flex-col gap-5">
+      <div className="min-h-screen flex flex-col gap-5">
         <PageTopBar
           pageHeading="Practices"
           showSearch={true}
           showFilters={true}
-          statusOptions={[]}
+          statusOptions={[
+            {
+              value: "True",
+            },
+            {
+              value: "False",
+            },
+          ]}
           extraBtns={
             <CustomButton text="Add New Practice" href="/clinic/practice/new" />
           }

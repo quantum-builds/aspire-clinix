@@ -3,6 +3,7 @@ import { TPractice, TPracticeResponse } from "@/types/practice";
 import { Response } from "@/types/common";
 import { getAMedia } from "../s3/s3Query";
 import axios from "axios";
+import { createServerAxios } from "@/lib/server-axios";
 
 export async function getPractices({
   page,
@@ -14,7 +15,8 @@ export async function getPractices({
   status?: string;
 }) {
   try {
-    const response = await axiosInstance.get(
+    const serverAxios = await createServerAxios();
+    const response = await serverAxios.get(
       ENDPOINTS.practices.getAll(page, search, status)
     );
     const responseData: Response<TPracticeResponse> = response.data;
@@ -50,7 +52,8 @@ export async function getPractices({
 
 export async function getPractice(id: string) {
   try {
-    const response = await axiosInstance.get(ENDPOINTS.practices.getById(id));
+    const serverAxios = await createServerAxios();
+    const response = await serverAxios.get(ENDPOINTS.practices.getById(id));
     const responseData: Response<TPractice> = response.data;
     const practice: TPractice = responseData.data;
 
@@ -64,6 +67,7 @@ export async function getPractice(id: string) {
     responseData.data = practice;
     return responseData;
   } catch (error) {
+    console.log(error);
     if (axios.isAxiosError(error) && error.response) {
       return error.response.data;
     } else {

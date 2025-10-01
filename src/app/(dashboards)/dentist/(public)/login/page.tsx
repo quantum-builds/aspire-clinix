@@ -5,7 +5,7 @@ import BackButton from "@/app/(dashboards)/components/BackButton";
 
 export default function LoginPage() {
   return (
-    <main className="min-h-[103vh] ">
+    <main className="min-h-[109vh]">
       <BackButton
         className="bg-gray hover:bg-lightGray w-fit mb-5"
         backToWebsite={true}
@@ -22,7 +22,7 @@ export default function LoginPage() {
           />
         </div>
         <header className="mb-8 text-start">
-          <h1 className="text-pretty text-2xl font-semibold tracking-tight md:text-3xl">
+          <h1 className="text-pretty text-2xl font-semibold tracking-tight">
             Login Dentist
           </h1>
           <p className="text-muted-foreground mt-2">

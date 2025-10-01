@@ -17,6 +17,7 @@ interface PageTopBarProps {
   showExport?: boolean;
   extraBtns?: ReactNode;
   showBackBtn?: boolean;
+  showDateFilter?: boolean;
   statusOptions: TStatusOption[] | null;
 }
 
@@ -27,6 +28,7 @@ export default function PageTopBar({
   showExport = false,
   extraBtns,
   statusOptions,
+  showDateFilter = true,
   showBackBtn = false,
 }: PageTopBarProps) {
   const router = useRouter();
@@ -46,7 +48,12 @@ export default function PageTopBar({
       <Suspense>
         <div className="flex justify-end gap-3">
           {showSearch && <SearchBar placeholder="Enter Appointment Number" />}
-          {showFilters && <DateFilter statusOptions={statusOptions} />}
+          {showFilters && (
+            <DateFilter
+              statusOptions={statusOptions}
+              showDateFilter={showDateFilter}
+            />
+          )}
           {showExport && <ExportButton />}
           {extraBtns}
         </div>

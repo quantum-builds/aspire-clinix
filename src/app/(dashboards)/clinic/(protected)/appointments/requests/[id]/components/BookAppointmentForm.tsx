@@ -69,7 +69,6 @@ export default function BookAppointmentForm({
   const pathname = usePathname();
   const router = useRouter();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const defaultValues = {
     dentistName: "",
     dentistEmail: "",
@@ -472,14 +471,15 @@ export default function BookAppointmentForm({
         <div className="w-full flex justify-end items-center gap-3">
           <CustomButton
             text="Cancel"
-            className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
+            className="text-[#A3A3A3] h-[60px] w-fit px-6 py-3 bg-gray hover:bg-lightGray shadow-none font-medium text-xl"
           />
 
           <CustomButton
+            type="submit"
             text="Book Appointment"
             disabled={updateAppointmentRequestLoader || createAppointmentLoader}
             loading={updateAppointmentRequestLoader || createAppointmentLoader}
-            className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
+            className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-greenHover flex items-center justify-center gap-2 rounded-[100px]"
           />
         </div>
       )}

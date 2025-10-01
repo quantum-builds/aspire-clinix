@@ -1,109 +1,57 @@
 "use client";
-import { CalenderInputIcon, UploadVideoIcon } from "@/assets";
+import { CalenderInputIconV2, UploadVideoIcon, UploadVideoIconV2 } from "@/assets";
 import Image from "next/image";
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useRef } from "react";
 
-const videoFormSchema = z.object({
-  videoFile: z
-    .any()
-    .refine((file) => file instanceof File, {
-      message: "Please upload a video file",
-    })
-    .refine(
-      (file) =>
-        !file ||
-        (file.type.startsWith("video/") && file.size <= 50 * 1024 * 1024),
-      { message: "Only video files under 50MB are allowed" }
-    ),
-});
+interface UploadVideoFormProps {
+  onVideoSelect: (file: File) => void;
+}
 
-type FormData = z.infer<typeof videoFormSchema>;
-
-export default function UploadVideoForm() {
+export default function UploadVideoForm({
+  onVideoSelect,
+}: UploadVideoFormProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm<FormData>({
-    resolver: zodResolver(videoFormSchema),
-    defaultValues: { videoFile: undefined },
-  });
-
-  const onSubmit = (data: FormData) => {
-    console.log("Video uploaded:", data.videoFile);
-  };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    onChange: (file: File | undefined) => void
-  ) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    onChange(file);
-    setValue("videoFile", file!);
+    if (file) {
+      onVideoSelect(file);
+      e.target.value = "";
+    }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-5 p-6 rounded-2xl bg-dashboardBackground"
+    <div
+      onClick={handleUploadClick}
+      className="flex flex-col items-center justify-center gap-2 p-8 pt-5 rounded-2xl bg-dashboardBackground cursor-pointer hover:bg-gray-100 transition"
     >
-      {/* Date */}
-      <div className="flex gap-3 items-center justify-end">
+      <div className="flex gap-3 items-center justify-end w-full">
         <div className="flex gap-1 items-center">
           <Image
-            src={CalenderInputIcon}
-            alt="calender-icon"
+            src={CalenderInputIconV2}
+            alt="calendar-icon"
             className="w-5 h-5"
           />
           <p className="text-lg">{new Date().toLocaleDateString("en-US")}</p>
         </div>
       </div>
 
-      {/* File Upload */}
-      <Controller
-        name="videoFile"
-        control={control}
-        render={({ field }) => (
-          <div className="flex flex-col items-center gap-2">
-            <input
-              type="file"
-              accept="video/*"
-              ref={fileInputRef}
-              className="hidden"
-              onChange={(e) => handleFileChange(e, field.onChange)}
-            />
-            <div
-              onClick={handleUploadClick}
-              className="max-w-[402px] h-[240px] w-full flex flex-col items-center justify-center gap-2 rounded-2xl bg-white cursor-pointer"
-            >
-              <Image src={UploadVideoIcon} alt="upload-video" />
-              {field.value && (
-                <p className="text-sm text-gray-600 text-center px-2 truncate w-[90%]">
-                  {(field.value as File).name}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
+      <input
+        type="file"
+        accept="video/*"
+        ref={fileInputRef}
+        className="hidden"
+        onChange={handleFileChange}
       />
-      {errors.videoFile && (
-        <p className="text-sm text-red-500">
-          {errors.videoFile.message as string}
-        </p>
-      )}
 
-      {/* Footer Label */}
-      <p className="text-center text-green font-medium text-lg">Upload Video</p>
-    </form>
+      <div className="w-[300px] h-[200px] flex flex-col items-center justify-center rounded-2xl bg-white border-2 border-dashed border-gray-300">
+        <Image src={UploadVideoIconV2} alt="upload-video" width={80} height={100}/>
+        <p className="mt-2 text-green font-medium text-lg">Upload Video</p>
+      </div>
+    </div>
   );
 }

@@ -20,6 +20,11 @@ export default function RequestDetailsModalWrapper({
   };
 
   return (
-    <RequestDetailsModal open={true} onClose={handleClose} request={request} />
+    <RequestDetailsModal
+      open={true}
+      onClose={handleClose}
+      request={request}
+      showBtns={false}
+    />
   );
 }

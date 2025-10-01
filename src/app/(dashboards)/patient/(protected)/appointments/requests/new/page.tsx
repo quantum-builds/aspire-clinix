@@ -1,4 +1,3 @@
-import BackButton from "@/app/(dashboards)/components/BackButton";
 import AppointmentForm from "./components/CreateAppointmentForm";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
@@ -9,7 +8,7 @@ export default async function BookAppointmentPage() {
         pageHeading="Appointment Request"
         showFilters={false}
         showSearch={false}
-        extraBtns={<BackButton />}
+        showBackBtn={true}
         statusOptions={[]}
       />
       <AppointmentForm />

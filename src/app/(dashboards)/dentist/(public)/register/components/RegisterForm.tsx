@@ -20,10 +20,20 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Image from "next/image";
-import { CalenderInputIconV2, EyeCloseIcon, EyeOpenIcon, TextIconV2, TextInputIcon } from "@/assets";
+import {
+  CalenderInputIconV2,
+  EyeCloseIcon,
+  EyeOpenIcon,
+  TextIconV2,
+  TextInputIcon,
+} from "@/assets";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { z } from "zod";
-import { DentistRole, GenderType } from "@prisma/client";
+import {
+  DentistRole,
+  GenderType,
+  PracticeApprovalStatus,
+} from "@prisma/client";
 import { capitalize, toTitleCase } from "@/utils/formatWords";
 import { COUNTRIES } from "@/utils/coutries";
 import Link from "next/link";
@@ -31,6 +41,8 @@ import { useCreateDentist } from "@/services/dentist/dentistMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
+import { TPractice } from "@/types/practice";
+import { useCreateDentistPractice } from "@/services/dentistOnPractice/dentistOnPracticeQuery";
 
 export const dentistSchema = z.object({
   fullName: z
@@ -45,14 +57,20 @@ export const dentistSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, "Phone number must be at least 10 digits")
-    .regex(/^\+?[\d\s\-\(\)]+$/, "Please enter a valid phone number"),
+    .max(15, "Phone number must be at most 15 digits")
+    .regex(
+      /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
+      "Please enter a valid UK mobile phone number"
+    ),
   gdcNo: z
     .string()
     .regex(/^\d+$/, "GDC number must contain only digits")
     .min(4, "GDC number must be at least 4 digits")
     .max(6, "GDC number must be at most 6 digits"),
 
-  practiceAddress: z.string().min(1, "Please select a practice address"),
+  practiceId: z.string().min(1, "Please select a practice address"),
+  practiceAddress: z.string().min(1, "Practice address is required"),
+
   role: z.nativeEnum(DentistRole, {
     errorMap: () => ({ message: "Please select a role" }),
   }),
@@ -72,9 +90,17 @@ const roles = [
 
 type FormData = z.infer<typeof dentistSchema>;
 
-export default function DentistRegisterForm() {
+interface DentistRegisterFormProps {
+  practices: TPractice[];
+}
+
+export default function DentistRegisterForm({
+  practices,
+}: DentistRegisterFormProps) {
+  // console.log(practices)
   const { mutate: createDentist, isPending: createDentistLoader } =
     useCreateDentist();
+
   const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
@@ -94,16 +120,17 @@ export default function DentistRegisterForm() {
       password: "",
       phoneNumber: "",
       gdcNo: "",
+      practiceId: "",
       practiceAddress: "",
       role: undefined,
     },
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (formData: FormData) => {
     createDentist(
       {
         dentistCreate: {
-          ...data,
+          ...formData,
         },
       },
       {
@@ -257,27 +284,49 @@ export default function DentistRegisterForm() {
           <Label className="text-lg font-medium">
             Practice Address<span className="text-red-500">*</span>
           </Label>
-          <Select
-            onValueChange={(val) =>
-              setValue("practiceAddress", val, { shouldValidate: true })
-            }
-            value={watch("practiceAddress")}
-          >
-            <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
-              <SelectValue placeholder="Select practice address" />
-            </SelectTrigger>
-            <SelectContent>
-              {roles.map((g) => (
-                <SelectItem key={g.value} value={g.value}>
-                  {g.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.practiceAddress && (
-            <p className="text-sm text-red-500">
-              {errors.practiceAddress.message}
-            </p>
+
+          {practices && practices.length > 0 ? (
+            <Select
+              onValueChange={(val) => {
+                const selectedPractice = practices.find((p) => p.id === val);
+                setValue("practiceId", val, { shouldValidate: true });
+                if (selectedPractice) {
+                  setValue(
+                    "practiceAddress",
+                    `${selectedPractice.name}, ${selectedPractice.addressLine1}, ${selectedPractice.town}, ${selectedPractice.postcode}`,
+                    { shouldValidate: true }
+                  );
+                }
+              }}
+              value={watch("practiceId")}
+            >
+              <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
+                <SelectValue placeholder="Select practice address" />
+              </SelectTrigger>
+              <SelectContent>
+                {practices.map((practice) => (
+                  <SelectItem key={practice.id} value={practice.id}>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{practice.name}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {practice.addressLine1}, {practice.town},{" "}
+                        {practice.postcode}
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <Input
+              disabled
+              value="No practice registered yet"
+              className="bg-gray px-6 py-3 h-[52px] rounded-2xl text-muted-foreground"
+            />
+          )}
+
+          {errors.practiceId && (
+            <p className="text-sm text-red-500">{errors.practiceId.message}</p>
           )}
         </div>
 
@@ -310,7 +359,7 @@ export default function DentistRegisterForm() {
       </div>
 
       {/* Action Buttons */}
-      <div className="w-full flex flex-col justify-center   gap-3">
+      <div className="w-full flex flex-col items-end justify-center   gap-3">
         <CustomButton
           style="primary"
           text={createDentistLoader ? "Registering..." : "Register"}

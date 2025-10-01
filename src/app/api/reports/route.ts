@@ -1,15 +1,21 @@
+import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { Prisma } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
+    // const token = await getToken({
+    //   req,
+    // });
+
     const { searchParams } = new URL(req.url);
 
     const search = searchParams.get("search") || "";
-    const dentistId = searchParams.get("dentistId") || null;
-    let patientId = searchParams.get("patientId") || null;
+    // const dentistId = searchParams.get("dentistId") || null;
+    // let patientId = searchParams.get("patientId") || null;
     let appointmentId = searchParams.get("appointmentId") || null;
 
     const baseWhere: Prisma.ReportWhereInput = {
@@ -21,8 +27,8 @@ export async function GET(req: NextRequest) {
             },
           }
         : {}),
-      ...(dentistId ? { dentistId } : {}),
-      ...(patientId ? { patientId } : {}),
+      // ...(dentistId ? { dentistId } : {}),
+      // ...(patientId ? { patientId } : {}),
       ...(appointmentId ? { appointmentId } : {}),
     };
 
@@ -47,24 +53,40 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    let dentist = null;
-    if (dentistId) {
-      dentist = await prisma.dentist.findUnique({
-        where: { id: dentistId },
-        select: {
-          id: true,
-          fullName: true,
-          gdcNo: true,
-          phoneNumber: true,
-          email: true,
-          practiceAddress: true,
-        },
-      });
-    }
+    // let dentist = null;
+    // let patient = null;
+    // if (token && token.role === TokenRoles.RECIEVING_DENTIST && token.sub) {
+    //   dentist = await prisma.patient.findUnique({
+    //     where: { id: videos[0].patientId },
+    //   });
+    // } else if (
+    //   token &&
+    //   token.sub &&
+    //   ((token.role === TokenRoles.DENTIST && token.role) ||
+    //     TokenRoles.REFERRING_DENTIST)
+    // ) {
+    //   dentist = await prisma.dentist.findUnique({
+    //     where: { id: token.sub },
+    //   });
+    //   patient;
+    // }
+
+    // if (dentistId) {
+    //   dentist = await prisma.dentist.findUnique({
+    //     where: { id: dentistId },
+    //     select: {
+    //       id: true,
+    //       fullName: true,
+    //       gdcNo: true,
+    //       phoneNumber: true,
+    //       email: true,
+    //       practiceAddress: true,
+    //     },
+    //   });
+    // }
 
     return NextResponse.json(
       createResponse(true, "Reports fetched successfully.", {
-        dentist,
         reports: { videos, pdfs },
       }),
       { status: 200 }
@@ -80,26 +102,45 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ req });
 
-    // if (!token || token.role !== "dentist") {
-    //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
-    //     status: 401,
-    //   });
-    // }
+    if (
+      !token ||
+      (token.role !== TokenRoles.DENTIST &&
+        token.role !== TokenRoles.RECIEVING_DENTIST)
+    ) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
 
-    const report = await req.json();
+    const dentistId = token.sub;
+    const body = await req.json();
 
-    await prisma.report.create({
-      data: report,
+    const reports = Array.isArray(body) ? body : [body];
+
+    if (!reports.length) {
+      return NextResponse.json(
+        createResponse(false, "No reports provided", null),
+        { status: 400 }
+      );
+    }
+
+    const reportsToCreate = reports.map((r) => ({
+      ...r,
+      dentistId,
+    }));
+
+    await prisma.report.createMany({
+      data: reportsToCreate,
     });
 
     return NextResponse.json(
-      createResponse(true, "Resource created successfully.", null),
+      createResponse(true, "Reports created successfully.", null),
       { status: 201 }
     );
   } catch (error) {
-    console.log("Error in creating report ", error);
+    console.error("Error in creating report ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

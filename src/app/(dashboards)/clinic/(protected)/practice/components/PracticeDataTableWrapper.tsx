@@ -2,7 +2,7 @@ import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import Pagination from "@/app/(dashboards)/components/Pagination";
 import { getPractices } from "@/services/practice/practiceQuery";
 import { Response } from "@/types/common";
-import { TPractice, TPracticeResponse } from "@/types/practice";
+import { TPracticeResponse } from "@/types/practice";
 import { PracticeDataTable } from "./PracticeDataTable";
 
 // export const revalidate = 0;
@@ -34,16 +34,17 @@ export default async function PracticeDataTableWrapper({
       // <NoContent title="Resources" placeholder="Enter Appointment Number" />
       <>
         <NoContent1 />
-        <Pagination page={page} isLast={true} />
+        {/* <Pagination page={page} isLast={true} /> */}
       </>
     );
   }
   const practices = response.data.practices;
+  const total = response.data.pagination.totalPages;
 
   return (
     <>
       <PracticeDataTable entries={practices} />
-      <Pagination page={page} />
+      {total > 1 && <Pagination page={page} />}
     </>
   );
 }

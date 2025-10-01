@@ -25,7 +25,7 @@ export default function PdfModal({ pdfUrl, trigger }: PdfModalProps) {
         )}
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[900px] h-[90vh]">
+      <DialogContent className="sm:max-w-[1000px] h-[90vh]">
         <div className="rounded-md w-full h-full overflow-hidden relative bg-white">
           {loading && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-900/40">

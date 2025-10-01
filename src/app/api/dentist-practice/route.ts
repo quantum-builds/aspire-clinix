@@ -1,11 +1,11 @@
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
-import { Prisma } from "@prisma/client";
+import { PracticeApprovalStatus, Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { practiceId, dentistId } = await req.json();
+    const { practiceId, dentistId, status } = await req.json();
 
     if (!practiceId || !dentistId) {
       return NextResponse.json(
@@ -60,6 +60,7 @@ export async function POST(req: NextRequest) {
       data: {
         dentistId: dentistId,
         practiceId: practiceId,
+        status: status,
       },
     });
 
@@ -82,10 +83,20 @@ export async function GET(req: NextRequest) {
 
     const practiceId = searchParams.get("practiceId") || "";
     const dentistId = searchParams.get("dentistId") || "";
+    const statusParam = searchParams.get("status") || "";
+
+    const status =
+      statusParam &&
+      Object.values(PracticeApprovalStatus).includes(
+        statusParam as PracticeApprovalStatus
+      )
+        ? (statusParam as PracticeApprovalStatus)
+        : undefined;
 
     let baseWhere: Prisma.DentistOnPracticeWhereInput = {
       ...(practiceId && { practiceId }),
       ...(dentistId && { dentistId }),
+      ...(status && { status }),
     };
 
     const data = await prisma.dentistOnPractice.findMany({
@@ -105,6 +116,70 @@ export async function GET(req: NextRequest) {
     );
   } catch (error) {
     console.log("Error in fetching dentist-practice ", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(createResponse(false, errorMessage, null), {
+      status: 500,
+    });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+
+    const practiceId = searchParams.get("practiceId") || "";
+    const dentistId = searchParams.get("dentistId") || "";
+    const statusParam = searchParams.get("status") || "";
+
+    const status =
+      statusParam &&
+      Object.values(PracticeApprovalStatus).includes(
+        statusParam as PracticeApprovalStatus
+      )
+        ? (statusParam as PracticeApprovalStatus)
+        : undefined;
+
+    if (!dentistId || !practiceId) {
+      return NextResponse.json(
+        createResponse(false, "Practice and Dentist Id is required", null),
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const data = await prisma.dentistOnPractice.findUnique({
+      where: {
+        practiceId_dentistId: {
+          practiceId,
+          dentistId,
+        },
+      },
+      include: { dentist: true, practice: true },
+    });
+
+    if (!data) {
+      return NextResponse.json(createResponse(false, "No Data Found", null), {
+        status: 404,
+      });
+    }
+
+    const updatedData = await prisma.dentistOnPractice.update({
+      where: {
+        practiceId_dentistId: {
+          practiceId,
+          dentistId,
+        },
+      },
+      data: { status: status },
+    });
+
+    return NextResponse.json(
+      createResponse(true, "Data updated successfully", updatedData),
+      { status: 200 }
+    );
+  } catch (error) {
+    console.log("Error in updating dentist-practice ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

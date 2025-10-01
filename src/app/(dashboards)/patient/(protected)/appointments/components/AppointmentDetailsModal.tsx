@@ -20,7 +20,10 @@ export default function AppointmentDetailsModal({
       <DialogTrigger className="focus:outline-none">
         {trigger && trigger}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[588px] rounded-2xl p-6 space-y-3 focus:outline-none">
+      <DialogContent
+        className="sm:max-w-[588px] rounded-2xl p-6 space-y-3 focus:outline-none"
+        onInteractOutside={onClose}
+      >
         <div className="flex items-center justify-between">
           <p className="font-semibold text-green text-2xl">
             Appointment Details
