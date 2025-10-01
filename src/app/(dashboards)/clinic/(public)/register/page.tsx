@@ -6,7 +6,11 @@ import BackButton from "@/app/(dashboards)/components/BackButton";
 export default function RegisterPage() {
   return (
     <main className="min-h-[103vh] ">
-      <BackButton className="bg-gray hover:bg-lightGray w-fit mb-5" />
+      <BackButton
+        className="bg-gray hover:bg-lightGray w-fit mb-5"
+        backToWebsite={true}
+        text="Back To Website"
+      />
 
       <div className="mx-auto w-full flex flex-col bg-dashboardBarBackground rounded-2xl  justify-center max-w-lg p-6 md:p-10">
         <div className="w-full flex items-center justify-center mb-8">

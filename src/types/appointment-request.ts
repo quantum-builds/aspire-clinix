@@ -3,7 +3,6 @@ import { TAppointmentPagination } from "./appointment";
 import { TPatient } from "./patient";
 
 export type TAppointmentRequestCreate = {
-  patientId: string;
   requestedDate: Date;
   reason: string;
   note?: string;
@@ -15,6 +14,7 @@ export type TAppointmentRequest = TAppointmentRequestCreate & {
   status: AppointmentRequestStatus;
   file?: string;
   createdAt: string;
+  patientId: string;
 
   patient?: TPatient;
 };

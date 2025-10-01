@@ -55,7 +55,8 @@ export async function POST(req: NextRequest) {
 
     if (
       dentist.role !== DentistRole.RECIEVING_DENTIST &&
-      dentist.role !== DentistRole.REFERRING_DENTIST
+      dentist.role !== DentistRole.REFERRING_DENTIST &&
+      dentist.role !== DentistRole.DENTIST
     ) {
       return NextResponse.json(
         createResponse(false, "Invalid Dentist role", null),

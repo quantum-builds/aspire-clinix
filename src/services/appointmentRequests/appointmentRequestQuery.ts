@@ -6,11 +6,11 @@ import {
 import { Response } from "@/types/common";
 import axios from "axios";
 import { getAMedia } from "../s3/s3Query";
+import { createServerAxios } from "@/lib/server-axios";
 
 export async function getAppointmentRequests({
   page,
   search,
-  patientId,
   on,
   before,
   after,
@@ -18,23 +18,15 @@ export async function getAppointmentRequests({
 }: {
   page?: number;
   search?: string;
-  patientId?: string;
   on?: string;
   before?: string;
   after?: string;
   status?: string;
 }) {
   try {
-    const response = await axiosInstance.get(
-      ENDPOINTS.appointemtRequest.get(
-        page,
-        search,
-        patientId,
-        on,
-        before,
-        after,
-        status
-      )
+    const serverAxios = await createServerAxios();
+    const response = await serverAxios.get(
+      ENDPOINTS.appointemtRequest.get(page, search, on, before, after, status)
     );
 
     const responseData: Response<TAppointmentRequestResponse> = response.data;

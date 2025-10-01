@@ -16,6 +16,11 @@ import { useEffect, useRef, useState } from "react";
 import { formatTimeForInput } from "@/utils/formatDateTime";
 import Image from "next/image";
 import { TimeIconV2, UploadImageIconV2 } from "@/assets";
+import { useUploadFile } from "@/services/s3/s3Mutatin";
+import { OpeningHours, TPracticeCreate } from "@/types/practice";
+import { useCreatePractice } from "@/services/practice/practiceMutation";
+import { showToast } from "@/utils/defaultToastOptions";
+import { useRouter } from "next/navigation";
 
 const practiceFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -26,13 +31,13 @@ const practiceFormSchema = z.object({
   town: z.string().min(1, "Town is required"),
   nhs: z.enum(["True", "False"], { required_error: "Select NHS option" }),
   address1: z.string().min(1, "Address Line 1 is required"),
-  address2: z.string().optional(),
+  address2: z.string().min(1, "Address Line 2 is required"),
   daysAndHours: z
     .array(
       z.object({
         day: z.string().min(1, "Day is required"),
-        opening: z.string().min(1, "Opening hours required"),
-        closing: z.string().min(1, "Closing hours required"),
+        opening: z.date({ required_error: "Opening hours required" }),
+        closing: z.date({ required_error: "Closing hours  is required" }),
       })
     )
     .min(1, "At least one day & hours entry is required"),
@@ -66,6 +71,11 @@ export default function PracticeForm() {
   const [isDirty, setIsDirty] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const { mutateAsync: uploadFile, isPending: uplaodFileLoader } =
+    useUploadFile();
+  const { mutate: createPractice, isPending: createPracticeLoader } =
+    useCreatePractice();
+  const { replace } = useRouter();
 
   const defaultValues: FormData = {
     name: "",
@@ -77,7 +87,7 @@ export default function PracticeForm() {
     nhs: "True",
     address1: "",
     address2: "",
-    daysAndHours: [{ day: "", opening: "", closing: "" }],
+    daysAndHours: [{ day: "", opening: new Date(), closing: new Date() }],
     logo: undefined,
   };
 
@@ -106,8 +116,55 @@ export default function PracticeForm() {
     setIsDirty(hasChanges);
   }, [values]);
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     console.log("Practice form submitted:", data);
+
+    let fileUrl = undefined;
+    if (data.logo instanceof File) {
+      const imageUploaded = await uploadFile({
+        selectedFile: data.logo,
+      });
+
+      fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+    }
+
+    const openingHours: OpeningHours = {};
+    data.daysAndHours.forEach((item) => {
+      openingHours[item.day as keyof OpeningHours] = {
+        open: item.opening,
+        close: item.closing,
+      };
+    });
+
+    const payload: TPracticeCreate = {
+      email: data.email,
+      name: data.name,
+      nhs: data.nhs === "True",
+      openingHours: openingHours,
+      addressLine1: data.address1,
+      addressLine2: data.address2,
+      phoneNumber: data.phone,
+      postcode: data.postcode,
+      timeZone: data.timezone,
+      town: data.town,
+      logoUrl: fileUrl,
+    };
+
+    createPractice(
+      {
+        practiceCreate: payload,
+      },
+      {
+        onSuccess: () => {
+          showToast("success", "Practice created successfully");
+          replace(`/clinic/practice?ts=${Date.now()}`);
+        },
+        onError: (error) => {
+          console.log("error in creating practice ", error);
+          showToast("error", "Failed to create practice");
+        },
+      }
+    );
   };
 
   const handleUploadClick = () => {
@@ -340,7 +397,9 @@ export default function PracticeForm() {
             </p>
             <button
               type="button"
-              onClick={() => append({ day: "", opening: "", closing: "" })}
+              onClick={() =>
+                append({ day: "", opening: new Date(), closing: new Date() })
+              }
               className="text-green font-medium"
             >
               + Add New
@@ -525,13 +584,20 @@ export default function PracticeForm() {
       {isDirty && (
         <div className="w-full flex justify-end items-center gap-3">
           <CustomButton
-            className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
-            text="Cancel"
+            style="secondary"
+            text={"Cancel"}
+            className="py-3 px-6 h-[60px]"
           />
-
           <CustomButton
-            text="Save Practice"
-            className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
+            style="primary"
+            text={
+              createPracticeLoader || uplaodFileLoader
+                ? "Saving Changes..."
+                : "Save Changes"
+            }
+            type="submit"
+            loading={createPracticeLoader || uplaodFileLoader}
+            className="py-3 px-6 h-[60px]"
           />
         </div>
       )}

@@ -2,12 +2,12 @@ import { Suspense } from "react";
 import AppointmentGridWrapper from "./components/AppointmentGridWrapper";
 import AppointmentGridSkeleton from "../components/skeletons/AppointmentGrid";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
+import { AppointmentStatus } from "@prisma/client";
 
 export default async function UpcomingAppointments(props: {
   searchParams?: Promise<{
     query?: string;
     page?: string;
-    status?: string;
     on?: string;
     before?: string;
     after?: string;
@@ -15,7 +15,6 @@ export default async function UpcomingAppointments(props: {
 }) {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
-  const status = searchParams?.status || "";
   const on = searchParams?.on || "";
   const before = searchParams?.before || "";
   const after = searchParams?.after || "";
@@ -31,13 +30,13 @@ export default async function UpcomingAppointments(props: {
           statusOptions={null}
         />
         <Suspense
-          key={query + page + status + on + before + after}
+          key={query + page + on + before + after}
           fallback={<AppointmentGridSkeleton />}
         >
           <AppointmentGridWrapper
             query={query}
             page={page}
-            status={status}
+            status={AppointmentStatus.CONFIRMED}
             on={on}
             before={before}
             after={after}
