@@ -115,18 +115,32 @@ export async function POST(req: NextRequest) {
     }
 
     const dentistId = token.sub;
-    const report = await req.json();
+    const body = await req.json();
 
-    await prisma.report.create({
-      data: { ...report, dentistId },
+    const reports = Array.isArray(body) ? body : [body];
+
+    if (!reports.length) {
+      return NextResponse.json(
+        createResponse(false, "No reports provided", null),
+        { status: 400 }
+      );
+    }
+
+    const reportsToCreate = reports.map((r) => ({
+      ...r,
+      dentistId,
+    }));
+
+    await prisma.report.createMany({
+      data: reportsToCreate,
     });
 
     return NextResponse.json(
-      createResponse(true, "Resource created successfully.", null),
+      createResponse(true, "Reports created successfully.", null),
       { status: 201 }
     );
   } catch (error) {
-    console.log("Error in creating report ", error);
+    console.error("Error in creating report ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

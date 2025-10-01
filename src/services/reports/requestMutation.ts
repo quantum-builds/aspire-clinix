@@ -4,10 +4,10 @@ import { useMutation } from "@tanstack/react-query";
 
 export const useCreateReport = () => {
   return useMutation({
-    mutationFn: async ({ report }: { report: TReportCreate }) => {
+    mutationFn: async ({ reports }: { reports: TReportCreate[] }) => {
       const response = await axiosInstance.post(
         ENDPOINTS.reports.create,
-        report
+        reports
       );
       return response.data.data;
     },

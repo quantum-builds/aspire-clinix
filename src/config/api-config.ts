@@ -203,6 +203,7 @@ export const ENDPOINTS = {
       `/api/appointments/${id}?patientId=${patientId ?? ""}&dentistId=${
         dentistId ?? ""
       }`,
+    getById: (id: string) => `/api/appointments/${id}`,
   },
 
   dentistToPractice: {

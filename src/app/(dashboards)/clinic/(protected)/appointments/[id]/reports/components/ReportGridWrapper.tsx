@@ -38,7 +38,6 @@ export default async function ReportGridWrapper({
     dentist: TDentist | undefined = undefined;
 
   const source = pdfs?.[0] || videos?.[0];
-  console.log("pdf", pdfs);
 
   if (source) {
     patient = source.patient;
