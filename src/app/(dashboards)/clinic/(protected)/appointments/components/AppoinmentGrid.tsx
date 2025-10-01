@@ -10,7 +10,7 @@ export default function AppointmentGrid({
   type,
 }: AppointmentGridProps) {
   return (
-    <div className="flex flex-col gap-10 bg-dashboardBarBackground rounded-2xl p-6">
+    <div className="flex flex-col gap-6 bg-dashboardBarBackground rounded-2xl py-6 px-8">
       <div className="flex items-center justify-between">
         <p className="text-2xl font-medium">
           {type === AppointmentDateType.UPCOMING ? "Upcoming" : "Past"}{" "}
@@ -23,7 +23,7 @@ export default function AppointmentGrid({
           </p>
         )}
       </div>
-      <div className={`grid xl:grid-cols-2 gap-6`}>
+      <div className="grid 1xl:grid-cols-2 gap-x-4 gap-y-4">
         {appointments.map((appointment, index) => (
           <AppointmentCard key={index} appointment={appointment} type={type} />
         ))}

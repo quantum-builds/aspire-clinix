@@ -1,11 +1,9 @@
 import { getAppointmentRequest } from "@/services/appointmentRequests/appointmentRequestQuery";
 import { TAppointmentRequest } from "@/types/appointment-request";
 import { Response } from "@/types/common";
-import PatientDetails from "./PatientDetails";
 import BookAppointmentForm from "./BookAppointmentForm";
 import { TDentist } from "@/types/dentist";
 import { TPractice } from "@/types/practice";
-import { getPractice } from "@/services/practice/practiceQuery";
 import { getDentistPractice } from "@/services/dentistOnPractice/dentistOnPracticeQuery";
 import { TDentistPractice } from "@/types/dentistRequest";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
@@ -41,7 +39,6 @@ export default async function AppointmentRequestFormWrapper({
   }
   return (
     <>
-      <PatientDetails appointmentRequest={response.data} />
       <BookAppointmentForm
         practices={practices}
         dentists={dentists}
