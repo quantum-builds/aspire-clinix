@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -18,7 +18,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalenderInputIconV2, TextInputIcon } from "@/assets";
+import { CalenderInputIconV2, TextIconV2 } from "@/assets";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,6 +27,10 @@ import { formatDate } from "@/utils/formatDateTime";
 import { usePatchPatient } from "@/services/patient/patientMutation";
 import { GenderType, ResoucrceType } from "@prisma/client";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import { showToast } from "@/utils/defaultToastOptions";
+import { useRouter } from "next/navigation";
+import { getAMedia } from "@/services/s3/s3Query";
 
 // Zod schema for form validation
 const profileFormSchema = z.object({
@@ -41,20 +45,32 @@ const profileFormSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, "Phone number must be at least 10 digits")
-    .regex(/^\+?[\d\s\-\(\)]+$/, "Please enter a valid phone number"),
+    .max(15, "Phone number must be at most 15 digits")
+    .regex(
+      /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
+      "Please enter a valid UK mobile phone number"
+    ),
   dateOfBirth: z
-    .date({
-      required_error: "Date of birth is required",
-      invalid_type_error: "Please select a valid date",
-    })
+    .preprocess(
+      (val) => {
+        if (typeof val === "string" && val) {
+          return new Date(val);
+        }
+        return val === "" ? undefined : val;
+      },
+      z.date({
+        required_error: "Date of birth is required",
+        invalid_type_error: "Please select a valid date",
+      })
+    )
     .refine((date) => {
+      if (!date) return false;
       const today = new Date();
       const age = today.getFullYear() - date.getFullYear();
       return age >= 13 && age <= 120;
     }, "You must be between 13 and 120 years old"),
   gender: z.string().min(1, "Please select a gender"),
   country: z.string().min(1, "Please select a country"),
-  // profileImage can be File (for uploads) or string (server URL)
   profileImage: z.union([
     z
       .instanceof(File)
@@ -100,20 +116,21 @@ interface ProfileFormProps {
 
 export default function ProfileForm({ patient }: ProfileFormProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { mutate: editPatientInfo } = usePatchPatient();
-  const { mutateAsync: uploadFile } = useUploadFile();
 
-  // Default values constant
+  const { mutate: editPatientInfo, isPending: editPatientInfoLoader } =
+    usePatchPatient();
+  const { mutateAsync: uploadFile, isPending: uplaodFileLoader } =
+    useUploadFile();
+  const { refresh } = useRouter();
+
   const defaultValues = {
     fullName: patient?.fullName || "",
     email: patient?.email || "",
     phoneNumber: patient?.phoneNumber || "",
-    dateOfBirth:
-      patient?.dateOfBirth || ""
-        ? new Date(patient.dateOfBirth || "")
-        : new Date(), // make sure it's always a Date
+    dateOfBirth: patient?.dateOfBirth
+      ? new Date(patient.dateOfBirth)
+      : undefined,
     gender: patient?.gender || undefined,
     country: patient?.country || undefined,
     profileImage: patient?.file || undefined,
@@ -125,62 +142,66 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
     setValue,
     watch,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty, dirtyFields },
   } = useForm<FormData>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
   });
 
-  const watchedValues = watch();
+  const onSubmit = async (formData: FormData) => {
+    console.log("Form submitted:", formData);
 
-  // Check if form values have changed from default values
-  useEffect(() => {
-    const isChanged =
-      watchedValues.fullName !== defaultValues.fullName ||
-      watchedValues.email !== defaultValues.email ||
-      watchedValues.phoneNumber !== defaultValues.phoneNumber ||
-      (watchedValues.dateOfBirth instanceof Date &&
-        defaultValues.dateOfBirth instanceof Date &&
-        watchedValues.dateOfBirth.toISOString() !==
-          defaultValues.dateOfBirth.toISOString()) ||
-      watchedValues.gender !== defaultValues.gender ||
-      watchedValues.country !== defaultValues.country ||
-      watchedValues.profileImage !== defaultValues.profileImage;
+    let payload: Partial<TPatientCreate> = {};
 
-    setHasChanges(isChanged);
-  }, [watchedValues]);
+    Object.keys(dirtyFields).forEach((field) => {
+      const key = field as keyof FormData;
 
-  const onSubmit = async (data: FormData) => {
-    console.log("Form submitted:", data);
+      if (key === "profileImage" && formData.profileImage instanceof File) {
+        return;
+      }
 
-    let fileUrl = "uploads/aspire-clinic/images/placeholder.png";
-    if (data.profileImage instanceof File) {
+      payload[key as keyof TPatientCreate] = formData[key] as any;
+    });
+
+    if (dirtyFields.profileImage && formData.profileImage instanceof File) {
       const imageUploaded = await uploadFile({
-        selectedFile: data.profileImage,
-        fileType: ResoucrceType.IMAGES, 
+        selectedFile: formData.profileImage,
+        fileType: ResoucrceType.IMAGES,
       });
 
-      fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+      payload.fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
     }
 
-    const payload: Partial<TPatientCreate> = {
-      fullName: data.fullName,
-      email: data.email,
-      phoneNumber: data.phoneNumber,
-      dateOfBirth: data.dateOfBirth,
-      gender: data.gender as GenderType,
-      country: data.country,
-      fileUrl: fileUrl,
-    };
+    if (Object.keys(payload).length === 0) {
+      showToast("info", "No changes to update");
+      return;
+    }
 
     editPatientInfo(
+      { partialPatient: payload },
       {
-        partialPatient: payload,
-        id: patient.id,
-      },
-      {
-        onSuccess: () => {
-          setHasChanges(false);
+        onSuccess: async (data) => {
+          showToast("success", "Profile Updated Successfully");
+          const file = await getAMedia(data.fileUrl || "");
+
+          reset(
+            {
+              fullName: data.fullName,
+              email: data.email,
+              phoneNumber: data.phoneNumber,
+              dateOfBirth: data.dateOfBirth
+                ? new Date(data.dateOfBirth)
+                : undefined,
+              gender: data.gender,
+              country: data.country,
+              profileImage: file,
+            },
+            { keepDefaultValues: false }
+          );
+          refresh();
+        },
+        onError: () => {
+          showToast("error", "Error in updating profile");
         },
       }
     );
@@ -188,7 +209,6 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
 
   const handleCancel = () => {
     reset(defaultValues);
-    setHasChanges(false);
   };
 
   const handleUploadClick = () => {
@@ -215,7 +235,6 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
 
         imageSchema.parse(file);
 
-        // update the form field directly
         setValue("profileImage", file, {
           shouldValidate: true,
           shouldDirty: true,
@@ -228,15 +247,20 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
         });
       }
     }
-    // If no file selected (user canceled), do nothing - preserve current file
   };
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
-      setValue("dateOfBirth", date);
+      setValue("dateOfBirth", date, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
       setIsCalendarOpen(false);
     }
   };
+
+  const profileImage = watch("profileImage");
+  const dateOfBirth = watch("dateOfBirth");
 
   return (
     <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
@@ -245,10 +269,10 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
 
         <div className="flex items-center gap-6">
           <div className="bg-gray rounded-2xl h-[120px] w-[120px] overflow-hidden flex items-center justify-center">
-            {watchedValues.profileImage ? (
-              typeof watchedValues.profileImage === "string" ? (
+            {profileImage ? (
+              typeof profileImage === "string" ? (
                 <Image
-                  src={watchedValues.profileImage}
+                  src={profileImage}
                   alt="Profile Preview"
                   width={120}
                   height={120}
@@ -257,7 +281,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
                 />
               ) : (
                 <Image
-                  src={URL.createObjectURL(watchedValues.profileImage)}
+                  src={URL.createObjectURL(profileImage)}
                   alt="Profile Preview"
                   width={120}
                   height={120}
@@ -312,7 +336,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
                 )}
               />
               <Image
-                src={TextInputIcon}
+                src={TextIconV2}
                 alt="text-input"
                 className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
@@ -341,7 +365,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
                 )}
               />
               <Image
-                src={TextInputIcon}
+                src={TextIconV2}
                 alt="text-input"
                 className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
@@ -370,7 +394,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
                 )}
               />
               <Image
-                src={TextInputIcon}
+                src={TextIconV2}
                 alt="text-input"
                 className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
@@ -393,13 +417,11 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
                   type="button"
                   className={cn(
                     "relative w-full text-left font-normal bg-gray px-6 py-3 h-[52px] rounded-2xl ",
-                    !watchedValues.dateOfBirth && "text-muted-foreground"
+                    !dateOfBirth && "text-muted-foreground"
                   )}
                 >
-                  {watchedValues.dateOfBirth ? (
-                    <span className="mr-auto">
-                      {formatDate(watchedValues.dateOfBirth)}{" "}
-                    </span>
+                  {dateOfBirth ? (
+                    <span className="mr-auto">{formatDate(dateOfBirth)} </span>
                   ) : (
                     <span className="mr-auto">Select date</span>
                   )}
@@ -413,7 +435,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
               <PopoverContent className="w-full p-0">
                 <Calendar
                   mode="single"
-                  selected={watchedValues.dateOfBirth}
+                  selected={dateOfBirth}
                   onSelect={handleDateSelect}
                   disabled={(date) =>
                     date > new Date() || date < new Date("1900-01-01")
@@ -486,24 +508,22 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
         </div>
       </div>
 
-      {/* Conditionally render buttons only when there are changes */}
-      {hasChanges && (
-        <div className="w-full flex justify-end items-center gap-3">
-          <Button
-            type="button"
-            onClick={handleCancel}
-            className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
-          >
-            Save Changes
-          </Button>
-        </div>
-      )}
+      <div className="w-full flex justify-end items-center gap-3">
+        <CustomButton
+          text="Cancel"
+          handleOnClick={handleCancel}
+          disabled={!isDirty || uplaodFileLoader || editPatientInfoLoader}
+          className="text-[#A3A3A3] h-[60px] w-fit px-6 py-3 bg-gray hover:bg-lightGray shadow-none font-medium text-xl"
+        />
+
+        <CustomButton
+          type="submit"
+          text="Save Changes"
+          disabled={!isDirty || uplaodFileLoader || editPatientInfoLoader}
+          loading={uplaodFileLoader || editPatientInfoLoader}
+          className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-greenHover flex items-center justify-center gap-2 rounded-[100px]"
+        />
+      </div>
     </form>
   );
 }

@@ -1,12 +1,14 @@
-import { axiosInstance, ENDPOINTS } from "@/config/api-config";
+import { ENDPOINTS } from "@/config/api-config";
 import { Response } from "@/types/common";
 import { TPatient } from "@/types/patient";
 import { getAMedia } from "../s3/s3Query";
 import axios from "axios";
+import { createServerAxios } from "@/lib/server-axios";
 
-export async function getPatient(id: string) {
+export async function getPatient() {
   try {
-    const response = await axiosInstance.get(ENDPOINTS.patient.getPatient(id));
+    const serverAxios = await createServerAxios();
+    const response = await serverAxios.get(ENDPOINTS.patient.getPatient);
     const responseData: Response<TPatient> = response.data;
     const patient: TPatient = responseData.data;
 

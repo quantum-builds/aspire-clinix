@@ -19,3 +19,22 @@ export const useCreateDentist = () => {
     },
   });
 };
+
+export const usePatchDentist = () => {
+  return useMutation({
+    mutationFn: async ({
+      partialDentist,
+    }: {
+      partialDentist: Partial<TDentistCreate>;
+    }) => {
+      console.log("patient patient is ", partialDentist);
+      const response = await axiosInstance.patch(
+        ENDPOINTS.dentist.editDentist,
+        partialDentist
+      );
+
+      const dentist: TDentist = response.data.data;
+      return dentist;
+    },
+  });
+};

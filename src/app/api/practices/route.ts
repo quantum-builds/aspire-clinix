@@ -38,16 +38,16 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    const token = await getToken({ req });
+    // const token = await getToken({ req });
 
-    if (!token || token.role !== TokenRoles.ADMIN) {
-      return NextResponse.json(
-        createResponse(false, "Forbidden to perform this action", null),
-        {
-          status: 403,
-        }
-      );
-    }
+    // if (!token || token.role !== TokenRoles.ADMIN) {
+    //   return NextResponse.json(
+    //     createResponse(false, "Forbidden to perform this action", null),
+    //     {
+    //       status: 403,
+    //     }
+    //   );
+    // }
 
     const { searchParams } = new URL(req.url);
 

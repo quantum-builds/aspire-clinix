@@ -1,4 +1,5 @@
 import { DentistRole, GenderType } from "@prisma/client";
+import { TDentistPractice } from "./dentistRequest";
 
 export type TDentistCreate = {
   email: string;
@@ -21,3 +22,8 @@ export type TDentist = Omit<TDentistCreate, "password"> & {
   updatedAt: Date;
   file?: string;
 };
+
+export interface TDenstistResponse {
+  dentist: TDentist;
+  request: TDentistPractice;
+}

@@ -49,8 +49,8 @@ export const ENDPOINTS = {
     // },
 
     createPatient: "/api/patient",
-    getPatient: (id: string) => `/api/patient/${id}`,
-    editPatient: (id: string) => `/api/patient/${id}`,
+    getPatient: `/api/patient`,
+    editPatient: `/api/patient`,
   },
 
   dentist: {
@@ -72,10 +72,14 @@ export const ENDPOINTS = {
     //   return `/v1/practitioners?${queryString}`;
     // },
     createDentist: "/api/dentist",
+    getDentist: `/api/dentist`,
+    editDentist: `/api/dentist`,
   },
 
   admin: {
     createAdmin: "/api/admin",
+    getAdmin: "/api/admin",
+    editAdmin: "/api/admin",
   },
 
   // appointment: {

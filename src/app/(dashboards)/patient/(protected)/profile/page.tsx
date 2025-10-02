@@ -5,9 +5,7 @@ import { getPatient } from "@/services/patient/patientQuery";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
 export default async function ProfilePage() {
-  const response: Response<TPatient> = await getPatient(
-    "cmfplxicq0000l6qaof724vtk"
-  );
+  const response: Response<TPatient> = await getPatient();
 
   return (
     <div className=" w-full min-h-[101vh] flex flex-col gap-5">
