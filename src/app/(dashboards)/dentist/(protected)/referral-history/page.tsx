@@ -15,6 +15,7 @@ import {
 import StatsCard from "../referral-request/components/StatsCard";
 import Pagination from "../../../components/Pagination";
 import { ReferralHistoryDataTable } from "./components/ReferralHistoryDataTable";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
 const DATA_TABLE_ENTRIES: TReferralHistoryDataTable[] = [
   {
@@ -115,29 +116,26 @@ export default async function ReferralHistory(props: {
   }
 
   return (
-    <div className="w-full min-h-full flex flex-col gap-7">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Referral History</h1>
-        <div className="flex items-center gap-3">
-          <SearchBar placeholder="Enter Id or patient/dentist name" />
-          <DateFilter
-            statusOptions={[
-              {
-                value: "APPROVED",
-              },
-              {
-                value: "PENDING",
-              },
-              {
-                value: "CANCEL",
-              },
-            ]}
-          />
-        </div>
-      </div>
+    <div className="w-full min-h-[99vh] flex flex-col gap-5">
+      <PageTopBar
+        showSearch={true}
+        showFilters={true}
+        pageHeading="Referral History"
+        statusOptions={[
+          {
+            value: "APPROVED",
+          },
+          {
+            value: "PENDING",
+          },
+          {
+            value: "CANCEL",
+          },
+        ]}
+      />
 
       <Suspense key={query} fallback={<div>Loading.....</div>}>
-        <div className="flex flex-wrap gap-6">
+        <div className="grid 1xl:grid-cols-4 grid-cols-2 gap-4">
           {Object.entries(REFERRAL_CARDS).map(([key, card]) => (
             <StatsCard
               key={key}

@@ -47,7 +47,7 @@ export default async function RequestDataTableWrapper({
     <>
       <div className="flex flex-col gap-4 bg-dashboardBarBackground rounded-2xl py-6 px-6">
         <p className="font-medium text-[22px]">Appointment Requests</p>
-        <div className="grid xl:grid-cols-2  grid-cols-1 gap-x-4 gap-y-4">
+        <div className="grid 1xl:grid-cols-2  grid-cols-1 gap-x-4 gap-y-4">
           {appointmentRequests.map((appointment, index) => (
             <AppointmentRequestCard key={index} request={appointment} />
           ))}

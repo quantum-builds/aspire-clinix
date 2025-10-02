@@ -21,17 +21,20 @@ export async function middleware(request: NextRequest) {
       "/dentist/referral-request",
       "/dentist/referral-history",
       "/dentist/loyalty-points",
+      "/dentist/profile",
     ],
     RECIEVING_DENTIST: [
       "/dentist/appointments",
       "/dentist/appointments/upcoming",
       "/dentist/appointments/past",
       "/dentist/referral-request",
+      "/dentist/profile",
     ],
     REFERRING_DENTIST: [
       "/dentist/appointments/past",
       "/dentist/referral-history",
       "/dentist/loyalty-points",
+      "/dentist/profile",
     ],
   };
 

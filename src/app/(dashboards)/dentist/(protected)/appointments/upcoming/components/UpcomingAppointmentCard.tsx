@@ -1,7 +1,7 @@
 "use client";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
-import { CalenderInputIconV2, TimeIconV2 } from "@/assets";
+import { CalenderInputIconV2, CancelIcon, TimeIconV2 } from "@/assets";
 import { usePatchAppointment } from "@/services/appointments/appointmentMutation";
 import { TAppointment } from "@/types/appointment";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
@@ -108,14 +108,15 @@ export default function UpcomingAppointmentCard({
         </div>
       </div>
       <ConfirmationModal
+        icon={CancelIcon}
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
         isPending={updateAppointmentLoader}
         onConfirm={handleStusChange}
         title="Cancel Appointemnt"
         description="Are you sure you want to cancel this appointment? This action cannot be undone."
-        cancelText="No, keep it PENDING"
-        confirmText="Yes, Cancel Appointment"
+        cancelText="No"
+        confirmText="Yes"
       />
     </div>
   );

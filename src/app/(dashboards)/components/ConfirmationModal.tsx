@@ -1,9 +1,8 @@
 "use client";
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
-import Spinner from "./custom-components/Spinner";
-import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import CustomButton from "./custom-components/CustomButton";
 
 interface CustomConfirmationModalProps {
   isOpen: boolean;
@@ -13,6 +12,7 @@ interface CustomConfirmationModalProps {
   title: string;
   description: string;
   cancelText?: string;
+  icon?: string;
   confirmText?: string;
 }
 
@@ -25,6 +25,7 @@ export default function CustomConfirmationModal({
   description,
   cancelText = "Cancel",
   confirmText = "Confirm",
+  icon,
 }: CustomConfirmationModalProps) {
   // Prevent background scroll when modal is open
   useEffect(() => {
@@ -41,62 +42,57 @@ export default function CustomConfirmationModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose} // clicking backdrop closes modal
+        >
           {/* Backdrop */}
-          <motion.div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
-          {/* Modal */}
+          {/* Modal box */}
           <motion.div
-            className="fixed z-50 inset-0 flex items-center justify-center px-4"
+            className="relative bg-dashboardBarBackground dark:bg-neutral-900 rounded-2xl shadow-lg px-6 py-8 w-[520px]"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            onClick={(e) => e.stopPropagation()} // prevent backdrop close
           >
-            <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg p-6 w-full max-w-md relative">
-              {/* Close Button */}
-              <button
-                className="absolute top-3 right-3 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-300"
-                onClick={onClose}
-                disabled={isPending}
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              {/* Title & Description */}
-              <h2 className="text-xl font-semibold mb-2">{title}</h2>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
-                {description}
-              </p>
-
-              {/* Footer Actions */}
-              <div className="flex justify-end gap-3">
-                <Button
-                  variant="outline"
-                  onClick={onClose}
-                  disabled={isPending}
-                >
-                  {cancelText}
-                </Button>
-                <Button
-                  onClick={onConfirm}
-                  disabled={isPending}
-                  className="bg-green hover:bg-green/90 text-white"
-                >
-                  <div className="flex items-center gap-2">
-                    {isPending ? <Spinner /> : confirmText}
-                  </div>
-                </Button>
+            {/* Title & Description */}
+            <div className="flex flex-col gap-4 justify-center items-center w-full">
+              <div>{icon && <Image src={icon} alt="icon" />}</div>
+              <div className="space-y-[2px]">
+                <h2 className="text-2xl text-green font-semibold text-center">
+                  {title}
+                </h2>
+                <p className="text-neutral-600 dark:text-neutral-400 text-center">
+                  {description}
+                </p>
               </div>
             </div>
+
+            {/* Footer Actions */}
+            <div className="flex justify-center gap-3 mt-5">
+              <CustomButton
+                className="w-[150px]"
+                style="secondary"
+                handleOnClick={onClose}
+                text={cancelText}
+                disabled={isPending}
+              />
+              <CustomButton
+                className="w-[150px]"
+                handleOnClick={onConfirm}
+                disabled={isPending}
+                loading={isPending}
+                text={confirmText}
+              />
+            </div>
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );

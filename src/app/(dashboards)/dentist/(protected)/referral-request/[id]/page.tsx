@@ -1,8 +1,7 @@
-import DateFilter from "@/app/(dashboards)/components/DateFilter";
-import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import PatientReferralDetails from "./components/PatientReferralDetials";
 import AppointmentGrid from "./components/AppointmentGrid";
 import { AppointmentDetails } from "@/types/common";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
 type PageProps = {
   params: {
@@ -41,14 +40,13 @@ export default async function ReferralDetailsPage({ params }: PageProps) {
   ];
 
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Referral Requests</h1>
-        <div className="flex items-center gap-3">
-          <SearchBar placeholder="Enter Id or patient/dentist name" />
-          <DateFilter statusOptions={null} />
-        </div>
-      </div>
+    <div className="w-full min-h-[98.4vh] flex flex-col gap-5">
+      <PageTopBar
+        showFilters={true}
+        showSearch={true}
+        statusOptions={[]}
+        pageHeading="Referral Requests"
+      />
       <PatientReferralDetails
         patientDetials={patientDetails}
         dentistDetails={dentistDetails}

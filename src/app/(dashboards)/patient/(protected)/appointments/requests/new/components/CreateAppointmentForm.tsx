@@ -21,6 +21,7 @@ import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { useRouter } from "next/navigation";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import PdfModal from "@/app/(dashboards)/components/ViewPdfModal";
+import { ResoucrceType } from "@prisma/client";
 
 const appointmentSchema = z.object({
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
@@ -76,6 +77,7 @@ export default function AppointmentForm() {
     if (data.medicalHistory) {
       const imageUploaded = await uploadFile({
         selectedFile: data.medicalHistory,
+        fileType: ResoucrceType.IMAGES,
       });
 
       fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;

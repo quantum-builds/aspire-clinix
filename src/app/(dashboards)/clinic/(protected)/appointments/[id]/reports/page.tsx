@@ -9,6 +9,7 @@ import PatientRDentistDetails from "./components/PatientDentistDetails";
 import ReportGridWrapper from "./components/ReportGridWrapper";
 import BackButton from "@/app/(dashboards)/components/BackButton";
 import ReportGridWrapperSkeleton from "./components/skeletons/ReportGridWrapper";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
 export default async function ReferralDetailsPage(props: {
   params: { id: string };
@@ -21,14 +22,14 @@ export default async function ReferralDetailsPage(props: {
   const title = searchParams?.query || "";
 
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Reports</h1>
-        <div className="flex items-center gap-3">
-          <SearchBar placeholder="Enter Id or patient/dentist name" />
-          <BackButton />
-        </div>
-      </div>
+    <div className="flex flex-col gap-5 min-h-screen">
+      <PageTopBar
+        pageHeading="Reports"
+        statusOptions={[]}
+        showFilters={false}
+        showSearch={true}
+        showBackBtn={true}
+      />
       <Suspense key={id + title} fallback={<ReportGridWrapperSkeleton />}>
         <ReportGridWrapper id={id} title={title} />
       </Suspense>

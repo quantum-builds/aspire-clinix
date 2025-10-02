@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
       );
     } // Map fileType to folder
     let folder = "";
+    console.log("file type is ", fileType);
     switch (fileType.toLowerCase()) {
       case "images":
         folder = "uploads/aspire-clinic/images";

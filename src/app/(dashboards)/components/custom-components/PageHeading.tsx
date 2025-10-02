@@ -3,5 +3,5 @@ interface PageHeadingProps {
 }
 
 export default function PageHeading({ text }: PageHeadingProps) {
-  return <h1 className="font-medium text-[27px]">{text}</h1>;
+  return <h1 className="font-medium text-[25px]">{text}</h1>;
 }

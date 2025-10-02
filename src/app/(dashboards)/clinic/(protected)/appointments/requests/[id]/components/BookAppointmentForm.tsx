@@ -218,7 +218,7 @@ export default function BookAppointmentForm({
                     <SelectContent>
                       {practices.map((b) => (
                         <SelectItem key={b.id} value={b.id}>
-                          {b.addressLine1}, {b.addressLine2}
+                          {b.name}, {b.addressLine1}, {b.town}, {b.postcode}
                         </SelectItem>
                       ))}
                     </SelectContent>
