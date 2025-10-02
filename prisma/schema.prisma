@@ -463,6 +463,7 @@ enum PatientTreatmentStatus {
 enum ResoucrceType {
   VIDEO
   PDF
+  IMAGES
 }
 
 enum PaymentStatus {

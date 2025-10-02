@@ -1,15 +1,22 @@
 import { axiosInstance, ENDPOINTS } from "@/config/api-config";
+import { ResoucrceType } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
 export const useUploadFile = () => {
   return useMutation({
-    mutationFn: async ({ selectedFile }: { selectedFile: File }) => {
+    mutationFn: async ({
+      selectedFile,
+      fileType = ResoucrceType.VIDEO,
+    }: {
+      selectedFile: File;
+      fileType?: string;
+    }) => {
       if (!selectedFile) throw new Error("Please select a file first!");
 
       const response = await axiosInstance.get(ENDPOINTS.s3.getSignedUrl, {
         params: {
           fileName: selectedFile.name,
-          fileType: selectedFile.type,
+          fileType: fileType,
           fileSize: selectedFile.size,
         },
       });

@@ -27,6 +27,7 @@ import Link from "next/link";
 import { useState } from "react";
 import ConfirmationModal from "./ConfirmationModal";
 import { signOutMutation } from "@/services/signOutMutation";
+import { UserMenu } from "./UserMenu";
 
 interface TopBarProps {
   name: string;
@@ -89,7 +90,7 @@ export default function TopBar({
         </div>
       </div>
 
-      <DropdownMenu>
+      {/* <DropdownMenu>
         <DropdownMenuTrigger>
           <div className="w-11 h-11 rounded-full bg-[#F3F5F7] flex justify-center items-center outline-none">
             <Image
@@ -123,7 +124,12 @@ export default function TopBar({
             </div>
           </DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
+
+      <UserMenu
+        profileLink={profileLink}
+        onLogout={() => setIsCancelModalOpen(true)}
+      />
 
       <ConfirmationModal
         icon={LogoutIconV2}

@@ -22,7 +22,13 @@ export const loginMutation = () => {
 
       console.log("response is ", result);
       if (!result || !result.ok) {
-        throw new Error(result?.error || "Invalid credentials");
+        throw new Error(
+          result?.error
+            ? result?.error?.includes("prisma")
+              ? "Something went wrong"
+              : result?.error
+            : "Something went wrong"
+        );
       }
       await new Promise((resolve) => setTimeout(resolve, 100));
 

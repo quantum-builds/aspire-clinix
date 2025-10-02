@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -13,36 +12,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import Image from "next/image";
-import {
-  CalenderInputIconV2,
-  EyeCloseIcon,
-  EyeOpenIcon,
-  TextIconV2,
-  TextInputIcon,
-} from "@/assets";
+import { EyeCloseIcon, EyeOpenIcon, TextIconV2 } from "@/assets";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { z } from "zod";
-import {
-  DentistRole,
-  GenderType,
-  PracticeApprovalStatus,
-} from "@prisma/client";
-import { capitalize, toTitleCase } from "@/utils/formatWords";
-import { COUNTRIES } from "@/utils/coutries";
+import { DentistRole } from "@prisma/client";
+import { toTitleCase } from "@/utils/formatWords";
 import Link from "next/link";
 import { useCreateDentist } from "@/services/dentist/dentistMutation";
-import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { TPractice } from "@/types/practice";
-import { useCreateDentistPractice } from "@/services/dentistOnPractice/dentistOnPracticeQuery";
 
 export const dentistSchema = z.object({
   fullName: z

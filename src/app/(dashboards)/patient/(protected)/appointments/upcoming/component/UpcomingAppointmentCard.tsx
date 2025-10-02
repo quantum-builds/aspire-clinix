@@ -11,6 +11,7 @@ import CustomButton from "@/app/(dashboards)/components/custom-components/Custom
 import { useState } from "react";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import AppointmentDetailsModal from "../../components/AppointmentDetailsModal";
+import StatusBage from "@/app/(dashboards)/components/StatusBadge";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -50,13 +51,18 @@ export default function UpcomingAppointmentCard({
     <div className="flex flex-col gap-1 p-5 rounded-2xl bg-gray">
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-1">
-            <Image
-              src={CalenderInputIconV2}
-              alt="Calendar Icon"
-              className="w-4 h-4"
-            />
-            <p className="text-lg">{formatDate(appointment.date)}</p>
+          <div className="flex gap-1 items-center">
+            <div className="flex items-center gap-1">
+              <Image
+                src={CalenderInputIconV2}
+                alt="Calendar Icon"
+                className="w-4 h-4"
+              />
+              <p className="text-lg">{formatDate(appointment.date)}</p>
+            </div>
+            <p className="text-lg flex gap-1 items-center">
+              <StatusBage status={appointment.state} />
+            </p>
           </div>
           <div className="flex items-center gap-1">
             <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />

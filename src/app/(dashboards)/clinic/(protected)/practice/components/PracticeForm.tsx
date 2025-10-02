@@ -21,6 +21,7 @@ import { OpeningHours, TPracticeCreate } from "@/types/practice";
 import { useCreatePractice } from "@/services/practice/practiceMutation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useRouter } from "next/navigation";
+import { ResoucrceType } from "@prisma/client";
 
 const practiceFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -123,6 +124,7 @@ export default function PracticeForm() {
     if (data.logo instanceof File) {
       const imageUploaded = await uploadFile({
         selectedFile: data.logo,
+        fileType: ResoucrceType.IMAGES,
       });
 
       fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;

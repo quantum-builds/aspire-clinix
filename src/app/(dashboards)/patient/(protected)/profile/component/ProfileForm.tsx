@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { TPatient, TPatientCreate } from "@/types/patient";
 import { formatDate } from "@/utils/formatDateTime";
 import { usePatchPatient } from "@/services/patient/patientMutation";
-import { GenderType } from "@prisma/client";
+import { GenderType, ResoucrceType } from "@prisma/client";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 
 // Zod schema for form validation
@@ -157,6 +157,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
     if (data.profileImage instanceof File) {
       const imageUploaded = await uploadFile({
         selectedFile: data.profileImage,
+        fileType: ResoucrceType.IMAGES, 
       });
 
       fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;

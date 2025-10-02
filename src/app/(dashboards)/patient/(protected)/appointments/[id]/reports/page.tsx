@@ -21,7 +21,7 @@ export default async function ReportsPage(props: {
         statusOptions={[]}
         showFilters={false}
         showSearch={true}
-        extraBtns={<BackButton />}
+        showBackBtn={true}
       />
       <Suspense key={title + id} fallback={<ReportGridWrapperSkeleton />}>
         <ReportGridWrapper appointmentId={id} query={title} />

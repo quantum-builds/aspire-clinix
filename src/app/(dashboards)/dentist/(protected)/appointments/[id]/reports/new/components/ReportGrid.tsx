@@ -49,7 +49,10 @@ export default function ReportGrid({ appointment }: ReportGridProps) {
 
       // Upload PDFs
       const pdfPromises = uploadedPdfs.map(async (file) => {
-        const uploaded = await uploadFile({ selectedFile: file });
+        const uploaded = await uploadFile({
+          selectedFile: file,
+          fileType: ResoucrceType.PDF,
+        });
         return {
           title: file.name,
           fileUrl: `uploads/aspire-clinic/pdfs/${uploaded.name}`,
@@ -61,7 +64,10 @@ export default function ReportGrid({ appointment }: ReportGridProps) {
 
       // Upload Videos
       const videoPromises = uploadedVideos.map(async (file) => {
-        const uploaded = await uploadFile({ selectedFile: file });
+        const uploaded = await uploadFile({
+          selectedFile: file,
+          fileType: ResoucrceType.VIDEO,
+        });
         return {
           title: file.name,
           fileUrl: `uploads/aspire-clinic/videos/${uploaded.name}`,
