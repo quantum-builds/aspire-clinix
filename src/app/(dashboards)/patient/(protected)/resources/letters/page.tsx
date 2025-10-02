@@ -1,8 +1,7 @@
-import { Suspense } from "react";
-import Pagination from "@/app/(dashboards)/components/Pagination";
 import ResourceGridWrapper from "./components/ResourceGrid";
 import { LetterReportGridSkeleton } from "./components/skeletons/ResourceGrid";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
+import { Suspense } from "react";
 
 export default async function LetterResourcePage(props: {
   searchParams?: Promise<{

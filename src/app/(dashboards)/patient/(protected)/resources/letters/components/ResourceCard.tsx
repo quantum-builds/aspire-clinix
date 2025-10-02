@@ -1,4 +1,4 @@
-import { PdfDownload } from "@/app/(dashboards)/components/PDFModal";
+import { PdfDownload } from "@/app/(dashboards)/components/PdfDownload";
 import { CalenderInputIcon, PDFImage, TimeIcon } from "@/assets";
 import { TResource } from "@/types/resources";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
@@ -33,7 +33,14 @@ export default function ResourceCard({ resource }: ResourceCardProps) {
       /> */}
 
       {resource.file ? (
-        <PdfDownload pdf={resource.file} thumbnail={PDFImage} />
+        <PdfDownload
+          pdf={resource.file}
+          trigger={
+            <button className="bg-green text-green hover:text-decoration-underline  shadow  hover:bg-greenHover transition">
+              Download
+            </button>
+          }
+        />
       ) : (
         <div className="bg-dashboardBackground rounded-2xl w-[420px] h-[240px]"></div>
       )}

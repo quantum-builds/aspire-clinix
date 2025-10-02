@@ -1,6 +1,6 @@
 "use client";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
-import { PdfDownload } from "@/app/(dashboards)/components/PDFModal";
+import { PdfDownload } from "@/app/(dashboards)/components/PdfDownload";
 import { CalenderInputIcon, PDFImage, TimeIcon, UploadPDFIcon } from "@/assets";
 import { useDeleteAppointmentRequests } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { TAppointmentRequest } from "@/types/appointment-request";
@@ -115,7 +115,14 @@ export default function AppointmentRequestCard({
           {/* <Image src={UploadPDFIcon} alt="PDF Icon" /> */}
           {appointmentRequest.file && (
             <>
-              <PdfDownload pdf={appointmentRequest.file} thumbnail={PDFImage} />
+              <PdfDownload
+                pdf={appointmentRequest.file}
+                trigger={
+                  <button className="bg-green text-green hover:text-decoration-underline  shadow  hover:bg-greenHover transition">
+                    Download
+                  </button>
+                }
+              />
               <p className="underline text-green">See Document</p>
             </>
           )}
