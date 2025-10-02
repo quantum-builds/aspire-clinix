@@ -1,6 +1,6 @@
 "use client";
 
-import { CalenderInputIconV2, TimeIconV2 } from "@/assets";
+import { CalenderInputIconV2, CancelIcon, TimeIconV2 } from "@/assets";
 import { usePatchAppointment } from "@/services/appointments/appointmentMutation";
 import { TAppointment } from "@/types/appointment";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
@@ -129,14 +129,15 @@ export default function FirstUpcomingAppointmentCard({
       </div>
 
       <ConfirmationModal
+        icon={CancelIcon}
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
         isPending={isCancelAppointment}
         onConfirm={handleCancelAppointment}
         title="Cancel Appointment"
         description="Are you sure you want to cancel this appointment? This action cannot be undone."
-        cancelText="No, Keep Appointment"
-        confirmText="Yes, Cancel Appointment"
+        cancelText="No, Keep "
+        confirmText="Yes, Cancel"
       />
     </div>
   );

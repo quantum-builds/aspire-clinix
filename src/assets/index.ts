@@ -129,3 +129,5 @@ export { default as EyeCloseIcon } from "@/assets/eye-close.svg";
 export { default as PreviewPDFIcon } from "@/assets/preview-pdf-icon.svg";
 
 export { default as VideoImage } from "@/assets/video-image.svg";
+export { default as CancelIcon } from "@/assets/cancel-icon.svg";
+export { default as LogoutIconV2 } from "@/assets/logout-icon-v2.svg";

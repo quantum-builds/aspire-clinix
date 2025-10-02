@@ -3,11 +3,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { useRef, useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { TextInputIcon } from "@/assets";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 
 const profileFormSchema = z.object({
   fullName: z
@@ -86,12 +86,6 @@ export default function SimpleProfileForm() {
         shouldDirty: true,
       });
       setImagePreview(URL.createObjectURL(file));
-    } else {
-      setValue("profileImage", undefined, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-      setImagePreview(null);
     }
   };
 
@@ -107,9 +101,9 @@ export default function SimpleProfileForm() {
   };
 
   return (
-    <form className="flex flex-col gap-7" onSubmit={handleSubmit(onSubmit)}>
-      <div className="bg-dashboardBarBackground rounded-2xl p-6 flex flex-col gap-8">
-        <p className="font-medium text-2xl text-green">Your Details</p>
+    <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+      <div className="bg-dashboardBarBackground rounded-2xl p-6 flex flex-col gap-5">
+        <p className="font-semibold text-[22px] text-green">Your Details</p>
 
         <div className="flex items-center gap-6">
           <div className="bg-gray rounded-2xl h-[120px] w-[120px] overflow-hidden flex items-center justify-center">
@@ -149,8 +143,8 @@ export default function SimpleProfileForm() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
-          <div className="space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
+          <div className="space-y-1">
             <Label htmlFor="fullName" className="text-lg font-medium">
               Full Name<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -178,7 +172,7 @@ export default function SimpleProfileForm() {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label htmlFor="email" className="text-lg font-medium">
               Email<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -207,7 +201,7 @@ export default function SimpleProfileForm() {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label htmlFor="phoneNumber" className="text-lg font-medium">
               Phone Number<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -242,19 +236,13 @@ export default function SimpleProfileForm() {
 
       {hasChanges && (
         <div className="w-full flex justify-end items-center gap-3">
-          <Button
+          <CustomButton
             type="button"
-            onClick={handleCancel}
+            text="Cancel"
+            handleOnClick={handleCancel}
             className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
-          >
-            Save Changes
-          </Button>
+          />
+          <CustomButton text="Save Changes" type="submit" />
         </div>
       )}
     </form>

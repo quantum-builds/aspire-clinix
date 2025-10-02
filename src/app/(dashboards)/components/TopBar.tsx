@@ -4,6 +4,7 @@ import {
   DropDownIcon,
   HarryKaneImage,
   LogoutIcon,
+  LogoutIconV2,
   NotificationIcon,
   ProfileIcon,
 } from "@/assets";
@@ -125,6 +126,7 @@ export default function TopBar({
       </DropdownMenu>
 
       <ConfirmationModal
+        icon={LogoutIconV2}
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
         isPending={isPending}
@@ -132,10 +134,10 @@ export default function TopBar({
           signOut();
           setIsCancelModalOpen(false);
         }}
-        title="Logout Confrimation"
+        title="Logout"
         description="Are you sure you want to logout"
-        cancelText="No"
-        confirmText="Yes"
+        cancelText="Cancel"
+        confirmText="Confirm"
       />
     </div>
   );

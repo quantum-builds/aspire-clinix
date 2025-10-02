@@ -1,13 +1,16 @@
-import BackButton from "@/app/(dashboards)/components/BackButton";
 import ProfileForm from "./components/ProfileForm";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
 export default function ProfilePage() {
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Profile Details</h1>
-        <BackButton />
-      </div>
+    <div className=" w-full min-h-[98vh] flex flex-col gap-5">
+      <PageTopBar
+        pageHeading="Profile Details"
+        showFilters={false}
+        showSearch={false}
+        statusOptions={null}
+        showBackBtn={true}
+      />
       <ProfileForm />
     </div>
   );

@@ -2,12 +2,12 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useRef, useState, useEffect } from "react";
 import { TextInputIcon } from "@/assets";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 
 // Zod schema for form validation
 const profileFormSchema = z.object({
@@ -48,17 +48,6 @@ const profileFormSchema = z.object({
 
 type FormData = z.infer<typeof profileFormSchema>;
 
-// Default values constant
-// const defaultValues = {
-//   fullName: "Jane Smith",
-//   email: "jane.smith@gmail.com",
-//   phoneNumber: "+44 7700 900123",
-//   dateOfBirth: new Date("1995-06-15"),
-//   gender: "female",
-//   country: "uk",
-//   profileImage: undefined,
-// };
-
 const defaultValues = {
   fullName: "",
   email: "",
@@ -71,6 +60,7 @@ const defaultValues = {
 export default function ProfileForm() {
   const [image, setImage] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
     handleSubmit,
@@ -108,10 +98,15 @@ export default function ProfileForm() {
 
   const handleCancel = () => {
     reset(defaultValues);
+    setImage(null);
     setHasChanges(false);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate the image file using Zod
@@ -134,21 +129,23 @@ export default function ProfileForm() {
 
         const imageUrl = URL.createObjectURL(file);
         setImage(imageUrl);
-        // setValue("profileImage", file);
+        setValue("profileImage", file, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
       } catch (error) {
         setImage(null);
         console.error("Image validation failed:", error);
       }
-    } else {
-      setImage(null);
     }
   };
 
   return (
-    <form className="flex flex-col gap-7" onSubmit={handleSubmit(onSubmit)}>
-      <div className="bg-dashboardBarBackground rounded-2xl p-6 flex flex-col gap-8">
-        <p className="font-medium text-2xl text-green">Your Details</p>
-        <div className="flex items-center gap-4">
+    <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+      <div className="bg-dashboardBarBackground rounded-2xl p-6 flex flex-col gap-5">
+        <p className="font-semibold text-[22px] text-green">Your Details</p>
+
+        <div className="flex items-center gap-6">
           <div className="bg-gray rounded-2xl h-[120px] w-[120px] overflow-hidden flex items-center justify-center">
             {image ? (
               <Image
@@ -162,22 +159,32 @@ export default function ProfileForm() {
               <span className="text-sm text-gray-500">No Image</span>
             )}
           </div>
+
           <div className="flex flex-col gap-3">
-            <Label className="font-medium text-lg">Profile Picture</Label>
-            <Input
+            <input
+              ref={fileInputRef}
               type="file"
               accept="image/jpeg,image/jpg,image/png,image/webp"
-              onChange={handleImageChange}
+              className="hidden"
+              onChange={handleFileChange}
             />
+            <label
+              onClick={handleUploadClick}
+              className="text-green underline cursor-pointer inline-block font-medium text-lg"
+            >
+              Take a picture
+            </label>
+
             {errors.profileImage && (
               <p className="text-sm text-red-500">
-                {errors.profileImage.message}
+                {errors.profileImage.message?.toString()}
               </p>
             )}
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
-          <div className="space-y-2">
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
+          <div className="space-y-1">
             <Label htmlFor="fullName" className="text-lg font-medium">
               Full Name<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -205,7 +212,7 @@ export default function ProfileForm() {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label htmlFor="email" className="text-lg font-medium">
               Email<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -233,7 +240,8 @@ export default function ProfileForm() {
               <p className="text-sm text-red-500">{errors.email.message}</p>
             )}
           </div>
-          <div className="space-y-2">
+
+          <div className="space-y-1">
             <Label htmlFor="" className="text-lg font-medium">
               Phone Number<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -264,7 +272,7 @@ export default function ProfileForm() {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label htmlFor="gdcNumber" className="text-lg font-medium">
               GDC No<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -292,7 +300,7 @@ export default function ProfileForm() {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label htmlFor="practiceAddress" className="text-lg font-medium">
               Practice Address
               <span className="text-red-500 text-sm ml-1">*</span>
@@ -328,19 +336,17 @@ export default function ProfileForm() {
       {/* Conditionally render buttons only when there are changes */}
       {hasChanges && (
         <div className="w-full flex justify-end items-center gap-3">
-          <Button
+          <CustomButton
+            text="Cancel"
             type="button"
-            onClick={handleCancel}
+            handleOnClick={handleCancel}
             className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
-          >
-            Cancel
-          </Button>
-          <Button
+          />
+          <CustomButton
+            text="Save Changes"
             type="submit"
             className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
-          >
-            Save Changes
-          </Button>
+          />
         </div>
       )}
     </form>

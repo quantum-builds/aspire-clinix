@@ -45,7 +45,7 @@ export default function AppointmentRequestCard({
             </span>
           </p>
           <p className="flex-1 truncate">
-            GDC No.{" "}
+            Email:{" "}
             <span className="font-medium text-lg">
               {request.patient?.email}
             </span>

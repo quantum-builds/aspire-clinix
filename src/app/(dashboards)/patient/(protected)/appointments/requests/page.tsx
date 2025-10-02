@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import RequestDataTableWrapper from "./components/RequestDataTableWrapper";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
-import { RequestDataTableSkeleton } from "./components/skeleton/RequestDataTableSkeleton";
 import { AppointmentRequestStatus } from "@prisma/client";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { AppointmentGridSkeleton } from "../past/component/skeletons/AppointmentGrid";

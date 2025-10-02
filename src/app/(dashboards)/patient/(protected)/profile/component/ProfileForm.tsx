@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -18,7 +18,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalenderInputIcon, TextInputIcon } from "@/assets";
+import { CalenderInputIconV2, TextInputIcon } from "@/assets";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -101,6 +101,7 @@ interface ProfileFormProps {
 export default function ProfileForm({ patient }: ProfileFormProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { mutate: editPatientInfo } = usePatchPatient();
   const { mutateAsync: uploadFile } = useUploadFile();
 
@@ -112,21 +113,11 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
     dateOfBirth:
       patient?.dateOfBirth || ""
         ? new Date(patient.dateOfBirth || "")
-        : new Date(), // make sure it’s always a Date
+        : new Date(), // make sure it's always a Date
     gender: patient?.gender || undefined,
     country: patient?.country || undefined,
     profileImage: patient?.file || undefined,
   };
-
-  // const defaultValues = {
-  //   fullName: "",
-  //   email: "",
-  //   phoneNumber: "",
-  //   dateOfBirth: new Date(),
-  //   gender: "",
-  //   country: "",
-  //   profileImage: undefined,
-  // };
 
   const {
     handleSubmit,
@@ -161,7 +152,6 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
 
   const onSubmit = async (data: FormData) => {
     console.log("Form submitted:", data);
-    // Handle form submission here
 
     let fileUrl = "uploads/aspire-clinic/images/placeholder.png";
     if (data.profileImage instanceof File) {
@@ -188,18 +178,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
         id: patient.id,
       },
       {
-        onSuccess: (data) => {
-          // console.log("dataaa is ", data);
-          // console.log("sucess");
-          // reset({
-          //   fullName: data.fullName || "",
-          //   email: data.email || "",
-          //   phoneNumber: data.phoneNumber || "",
-          //   dateOfBirth: data.dateOfBirth || new Date(),
-          //   gender: data.gender || undefined,
-          //   country: data.country || undefined,
-          //   profileImage: data.file,
-          // });
+        onSuccess: () => {
           setHasChanges(false);
         },
       }
@@ -211,40 +190,11 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
     setHasChanges(false);
   };
 
-  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
-  //   if (file) {
-  //     // Validate the image file using Zod
-  //     try {
-  //       const imageSchema = z
-  //         .instanceof(File)
-  //         .refine(
-  //           (file) => file.size <= 5 * 1024 * 1024,
-  //           "Image must be less than 5MB"
-  //         )
-  //         .refine(
-  //           (file) =>
-  //             ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-  //               file.type
-  //             ),
-  //           "Only JPEG, PNG, and WebP images are allowed"
-  //         );
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
 
-  //       imageSchema.parse(file);
-
-  //       const imageUrl = URL.createObjectURL(file);
-  //       setImage(imageUrl);
-  //       // setValue("profileImage", file);
-  //     } catch (error) {
-  //       setImage(null);
-  //       console.error("Image validation failed:", error);
-  //     }
-  //   } else {
-  //     setImage(null);
-  //   }
-  // };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       try {
@@ -276,12 +226,8 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
           shouldDirty: true,
         });
       }
-    } else {
-      setValue("profileImage", "", {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
     }
+    // If no file selected (user canceled), do nothing - preserve current file
   };
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -291,52 +237,63 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
     }
   };
 
-  // console.log("profile image is ", watchedValues.profileImage);
   return (
-    <form className="flex flex-col gap-7" onSubmit={handleSubmit(onSubmit)}>
-      <div className="bg-dashboardBarBackground rounded-2xl p-6 flex flex-col gap-8">
-        <p className="font-medium text-2xl text-green">Your Details</p>
-        <div className="flex items-center gap-4">
-          {watchedValues.profileImage ? (
-            typeof watchedValues.profileImage === "string" ? (
-              <Image
-                src={watchedValues.profileImage}
-                alt="Profile Preview"
-                width={120}
-                height={120}
-                priority
-                className=" w-[120px] h-[120px] object-cover"
-              />
+    <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+      <div className="bg-dashboardBarBackground rounded-2xl p-6 flex flex-col gap-5">
+        <p className="font-semibold text-[22px] text-green">Your Details</p>
+
+        <div className="flex items-center gap-6">
+          <div className="bg-gray rounded-2xl h-[120px] w-[120px] overflow-hidden flex items-center justify-center">
+            {watchedValues.profileImage ? (
+              typeof watchedValues.profileImage === "string" ? (
+                <Image
+                  src={watchedValues.profileImage}
+                  alt="Profile Preview"
+                  width={120}
+                  height={120}
+                  priority
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Image
+                  src={URL.createObjectURL(watchedValues.profileImage)}
+                  alt="Profile Preview"
+                  width={120}
+                  height={120}
+                  priority
+                  className="h-full w-full object-cover"
+                />
+              )
             ) : (
-              <Image
-                src={URL.createObjectURL(watchedValues.profileImage)}
-                alt="Profile Preview"
-                width={120}
-                height={120}
-                priority
-                className=" w-[120px] h-[120px] object-cover"
-              />
-            )
-          ) : (
-            <span className="text-sm text-gray-500">No Image</span>
-          )}
+              <span className="text-sm text-gray-500">No Image</span>
+            )}
+          </div>
 
           <div className="flex flex-col gap-3">
-            <Label className="font-medium text-lg">Profile Picture</Label>
-            <Input
+            <input
+              ref={fileInputRef}
               type="file"
               accept="image/jpeg,image/jpg,image/png,image/webp"
-              onChange={handleImageChange}
+              className="hidden"
+              onChange={handleFileChange}
             />
+            <label
+              onClick={handleUploadClick}
+              className="text-green underline cursor-pointer inline-block font-medium text-lg"
+            >
+              Take a picture
+            </label>
+
             {errors.profileImage && (
               <p className="text-sm text-red-500">
-                {errors.profileImage.message}
+                {errors.profileImage.message?.toString()}
               </p>
             )}
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
-          <div className="space-y-2">
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
+          <div className="space-y-1">
             <Label htmlFor="fullName" className="text-lg font-medium">
               Full Name<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -364,7 +321,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label htmlFor="email" className="text-lg font-medium">
               Email<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -393,7 +350,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label htmlFor="phoneNumber" className="text-lg font-medium">
               Phone Number<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -424,7 +381,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label className="text-lg font-medium">
               Date of Birth<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -446,7 +403,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
                     <span className="mr-auto">Select date</span>
                   )}
                   <Image
-                    src={CalenderInputIcon}
+                    src={CalenderInputIconV2}
                     alt="calender-input"
                     className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
                   />
@@ -472,7 +429,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label className="text-lg font-medium">
               Gender<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -499,7 +456,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label className="text-lg font-medium">
               Country<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
