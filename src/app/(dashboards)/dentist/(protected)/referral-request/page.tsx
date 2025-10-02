@@ -2,7 +2,6 @@ import {
   TReferraLRequestCards,
   TReferralRequestDataTable,
 } from "@/types/common";
-import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import NoContent from "@/app/(dashboards)/components/NoContent";
 import { Suspense } from "react";
 import { ReferralRequestDataTable } from "./components/ReferralRequestDataTable";
@@ -13,8 +12,8 @@ import {
   UnattendedReferrals,
   AverageReferrals,
 } from "@/assets";
-import DateFilter from "@/app/(dashboards)/components/DateFilter";
 import Pagination from "@/app/(dashboards)/components/Pagination";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
 const DATA_TABLE_ENTRIES: TReferralRequestDataTable[] = [
   {
@@ -116,29 +115,26 @@ export default async function ReferralHistoryPage(props: {
   }
 
   return (
-    <div className=" w-full min-h-full flex flex-col gap-7">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Referral Requests</h1>
-        <div className="flex items-center gap-3">
-          <SearchBar placeholder="Enter Id or patient/dentist name" />
-          <DateFilter
-            statusOptions={[
-              {
-                value: "APPROVED",
-              },
-              {
-                value: "PENDING",
-              },
-              {
-                value: "CANCEL",
-              },
-            ]}
-          />
-        </div>
-      </div>
+    <div className="w-full min-h-[103vh] flex flex-col gap-5">
+      <PageTopBar
+        pageHeading="Referral Requests"
+        showFilters={true}
+        showSearch={true}
+        statusOptions={[
+          {
+            value: "APPROVED",
+          },
+          {
+            value: "PENDING",
+          },
+          {
+            value: "CANCEL",
+          },
+        ]}
+      />
 
       <Suspense key={query} fallback={<div>Loading.....</div>}>
-        <div className="flex flex-wrap gap-6">
+        <div className="grid 1xl:grid-cols-4 grid-cols-2 gap-4">
           {Object.entries(REFERRAL_CARDS).map(([key, card]) => (
             <StatsCard
               key={key}

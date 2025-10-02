@@ -63,16 +63,16 @@ export default function StatsCard({
   }
 
   return (
-    <div className="max-w-[348px] w-full py-5 px-6 space-y-5 rounded-2xl bg-white">
+    <div className="min-w-[300px] w-full py-5 px-6 space-y-4 rounded-2xl bg-white">
       <div className="flex justify-between items-start">
-        <div className="bg-gray size-12 rounded-xl flex items-center justify-center">
-          <Image src={icon} alt={title} />
+        <div className="bg-gray size-11 rounded-xl flex items-center justify-center">
+          <Image src={icon} alt={title} className="size-6" />
         </div>
         <div className={`${text} font-semibold`}>{percentageChange}%</div>
       </div>
       <div className="flex justify-between items-center">
-        <p className="text-dashboardTextBlack text-xl font-medium">{title}</p>
-        <p className="text-dashboardTextBlack text-xl font-medium">{count}</p>
+        <p className="text-dashboardTextBlack text-lg font-medium">{title}</p>
+        <p className="text-dashboardTextBlack text-lg font-medium">{count}</p>
       </div>
       <div className="flex justify-between items-center">
         <button className="underline text-[#a3a3a3]" onClick={handleClick}>

@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
 import { TReferralHistoryDataTable } from "@/types/common";
 import Image from "next/image";
-import { CalenderInputIcon } from "@/assets";
+import { CalenderInputIconV2 } from "@/assets";
 import { useRouter } from "next/navigation";
 
 interface ReferralHistoryDataTableProps {
@@ -31,26 +31,26 @@ export function ReferralHistoryDataTable({
   const router = useRouter();
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto bg-dashboardBarBackground rounded-2xl px-4 pb-4 pt-4 tracking-tightest">
       <Table className="table-auto border-separate border-spacing-y-3 min-w-max">
         <TableHeader>
-          <TableRow>
-            <TableHead className="px-6 py-4 bg-dashboardBarBackground rounded-l-full text-xl text-dashboardTextBlack font-medium">
+          <TableRow className="bg-dashboardBackground">
+            <TableHead className="px-6 py-4 rounded-l-full text-xl text-dashboardTextBlack font-medium">
               Reference #
             </TableHead>
-            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
               Patient Name
             </TableHead>
-            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
               Disease
             </TableHead>
-            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
               Status
             </TableHead>
-            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
               Referral Date
             </TableHead>
-            <TableHead className="px-6 py-4 bg-dashboardBarBackground rounded-r-full text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 rounded-r-full text-xl text-dashboardTextBlack font-medium">
               Actions
             </TableHead>
           </TableRow>
@@ -60,13 +60,13 @@ export function ReferralHistoryDataTable({
           {entries.map((entry) => (
             <TableRow
               key={entry.referenceId}
-              className="bg-dashboardBackground text-lg text-dashboardTextBlack"
+              className="text-lg hover:bg-gray text-dashboardTextBlack cursor-pointer"
               onClick={() =>
                 router.push(`/dentist/referral-history/${entry.referenceId}`)
               }
             >
               <TableCell className="px-6 py-4 rounded-l-full">
-                {entry.referenceId}
+                REF # {entry.referenceId}
               </TableCell>
               <TableCell className="px-6 py-4">{entry.patientName}</TableCell>
               <TableCell className="px-6 py-4">{entry.disease}</TableCell>
@@ -82,7 +82,7 @@ export function ReferralHistoryDataTable({
               </TableCell>
               <TableCell className="px-6 py-4 flex gap-1 items-center">
                 <Image
-                  src={CalenderInputIcon}
+                  src={CalenderInputIconV2}
                   alt="calender input icon"
                   className="w-5 h-5"
                 />
