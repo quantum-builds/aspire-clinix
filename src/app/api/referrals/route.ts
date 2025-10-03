@@ -1,47 +1,37 @@
 import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
-import { ApiMethods } from "@/constants/ApiMethods";
-import { isValidCuid } from "@/utils/typeValidUtils";
 import { createResponse } from "@/utils/createResponse";
+import { DentistRole } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
+import { TokenRoles } from "@/constants/UserRoles";
 
 export async function POST(req: NextRequest) {
   const referralForm = await req.json();
 
   try {
-    // const { dentistId, patientId } = referralForm;
+    const patientEmail = referralForm.patientEmail;
+    const patient = await prisma.patient.findUnique({
+      where: { email: patientEmail },
+    });
 
-    // TODO
+    const referralEmail = referralForm.referralEmail;
+    const referralDentist = await prisma.dentist.findUnique({
+      where: { email: referralEmail },
+    });
 
-    // console.log(dentistId + " " + patientId);
+    if (referralDentist) {
+      if (referralDentist.role === DentistRole.RECIEVING_DENTIST) {
+        await prisma.dentist.update({
+          where: { id: referralDentist.id },
+          data: { role: DentistRole.DENTIST },
+        });
+      }
+      referralForm.referralDentistId = referralDentist.id;
+    }
 
-    // if (!isValidCuid(dentistId) || !isValidCuid(patientId)) {
-    //   return NextResponse.json(
-    //     { message: "Invalid patient or dentist Id." },
-    //     { status: 400 }
-    //   );
-    // }
-
-    // const dentist = await prisma.dentist.findUnique({
-    //   where: { id: dentistId },
-    // });
-
-    // if (!dentist) {
-    //   return NextResponse.json(
-    //     { message: "This doctor does not exists." },
-    //     { status: 404 }
-    //   );
-    // }
-
-    // const patient = await prisma.dentist.findUnique({
-    //   where: { id: patientId },
-    // });
-
-    // if (!patient) {
-    //   return NextResponse.json(
-    //     { message: "This patient does not exists." },
-    //     { status: 404 }
-    //   );
-    // }
+    if (patient) {
+      referralForm.patientId = patient.id;
+    }
 
     await prisma.referralForm.create({
       data: referralForm,
@@ -60,42 +50,57 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// export async function GET(req: NextRequest) {
-//   const searchParams = req.nextUrl.searchParams;
+export async function GET(req: NextRequest) {
+  try {
+    const token = await getToken({ req });
 
-//   try {
-//     const dentistId = searchParams.get("dentistId");
-//     // TODO Add is valid cuid
-//     if (!dentistId) {
-//       return NextResponse.json(
-//         { message: "Invalid Dentist Id." },
-//         { status: 400 }
-//       );
-//     }
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
 
-//     const referralForms = await prisma.referralForm.findMany({
-//       where: { dentistId: dentistId },
-//       // include: { Dentist: true, Patient: true },
-//     });
+    if (
+      token.role === TokenRoles.PATIENT ||
+      token.role === TokenRoles.RECIEVING_DENTIST
+    ) {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
+        status: 403,
+      });
+    }
 
-//     if (referralForms.length === 0) {
-//       return NextResponse.json(
-//         { message: "Dentist don't have any referrel form" },
-//         { status: 404 }
-//       );
-//     }
+    let dentistId = null;
+    if (
+      token.role === TokenRoles.DENTIST ||
+      token.role === TokenRoles.REFERRING_DENTIST
+    ) {
+      dentistId = token.sub;
+    }
 
-//     return NextResponse.json(
-//       {
-//         message: "Referral forms fetched successfully.",
-//         data: referralForms,
-//       },
-//       { status: 200 }
-//     );
-//   } catch (error) {
-//     return NextResponse.json(
-//       { message: "Internal server error" },
-//       { status: 500 }
-//     );
-//   }
-// }
+    const referralForms = await prisma.referralForm.findMany({
+      where: { referralDentistId: dentistId },
+    });
+
+    if (referralForms.length === 0) {
+      return NextResponse.json(
+        createResponse(false, "Dentist don't have any referrel form", null),
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      createResponse(
+        true,
+        "Referral forms fetched successfully.",
+        referralForms
+      ),
+      { status: 200 }
+    );
+  } catch (error) {
+    console.log("Error in fetching referral forms ", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(createResponse(false, errorMessage, null), {
+      status: 500,
+    });
+  }
+}

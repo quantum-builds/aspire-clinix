@@ -33,3 +33,16 @@ export interface UpdateReferralForm {
   medicalHistory?: string;
   treatmentDetails?: string;
 }
+
+
+export type TCreateReferralForm={
+  patientName:string
+  patientPhoneNumber:string
+  patientEmail:string
+  patientDateOfBirth:Date
+  patientAddress:string
+
+  medicalHistoryPdfUrl?:string
+  referralDetail:string[]
+
+}

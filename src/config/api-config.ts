@@ -138,9 +138,8 @@ export const ENDPOINTS = {
 
   referralForm: {
     create: `/api/referrals`,
-    get: (id: string) => `/api/referrals/${id}`,
-    getDentistForms: (dentistId: string) =>
-      `/api/referral?dentistId=${dentistId}`,
+    getById: (id: string) => `/api/referrals/${id}`,
+    get: `/api/referral`,
     update: (id: string) => `/api/referrals/${id}`,
     delete: (id: string) => `/api/referrals/${id}`,
   },

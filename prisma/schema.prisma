@@ -7,140 +7,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model Patient {
-//   id               String             @id @default(cuid())
-//   email            String             @unique
-//   address          String?
-//   dateOfBirth      DateTime?
-//   mobileNumber     String?            @unique
-//   name             String?
-//   userId           String             @unique
-//   Appointment      Appointment[]
-//   User             User               @relation(fields: [userId], references: [id])
-//   // PatientTreatment PatientTreatment[]
-//   // ReferralForm     ReferralForm[]
-//   Dentist          Dentist[]          @relation("PatientDentists")
-// }
-
-// model Dentist {
-//   id                String             @id @default(cuid())
-//   email             String             @unique
-//   GDCnumber         String?            @unique
-//   address           String?
-//   mobileNumber      String?            @unique
-//   name              String?
-//   specialty         String?
-//   userId            String             @unique
-//   yearsOfExperience Int?
-//   Appointment       Appointment[]
-//   User              User               @relation(fields: [userId], references: [id])
-//   // PatientTreatment  PatientTreatment[]
-//   // ReferralForm      ReferralForm[]
-//   Patient           Patient[]          @relation("PatientDentists")
-// }
-
 model ReferralForm {
   id                    String   @id @default(cuid())
-  // medicalHistory     String?
-  // medicalHistoryPdf  String?
-  createdAt             DateTime @default(now())
+  medicalHistoryPdfUrl  String?
   referralDetails       String[]
   treatmentDetails      String?
-  DOB                   String
-  address               String
-  email                 String
-  mobileNumber          String
-  name                  String
+  patientDateOfBirth    DateTime
+  patientAddress        String
+  patientEmail          String
+  patientPhoneNumber    String
+  patientName           String
   other                 String?
-  referralAddress       String
+  referralPracticeId    String
   referralEmail         String
   referralGDC           String
-  referralMobileNumber  String
+  referralPhoneNumber   String
   referralName          String
-  treatMeantAppointment String
-  // dentistId             String
-  // patientId             String
-  // Dentist               Dentist  @relation(fields: [dentistId], references: [id])
-  // Patient               Patient  @relation(fields: [patientId], references: [id])
+  treatmeantAppointment Boolean
+  createdAt             DateTime @default(now())
+  
+  referralDentistId             String?
+  patientId             String?
+  referralDentist       Dentist?  @relation(fields: [referralDentistId], references: [id])
+  patient               Patient?  @relation(fields: [patientId], references: [id])
 
+  referralRequest       ReferralRequest?
+
+  
   // @@unique([patientId, dentistId])
 }
 
-// model Appointment {
-//   id                String   @id @default(cuid())
-//   dentistId         String
-//   appointmentDate   DateTime
-//   appointmentStatus String?
-//   patientId         String
-//   downloadReport    String?
-//   service           String
-//   Dentist           Dentist  @relation(fields: [dentistId], references: [id])
-//   Patient           Patient  @relation(fields: [patientId], references: [id])
 
-//   @@unique([dentistId, patientId, appointmentDate])
-// }
+model ReferralRequest{
+  id  String @id @default(cuid())
+  referralFormId  String  @unique
+  assignedDentistId   String
+  appointmentId   String   @unique
 
-
-// // TODO : relation with patient and dentist
-// model PatientTreatment {
-//   id              String    @id @default(cuid())
-//   dentistId       String
-//   patientId       String
-//   treatmentId     String
-//   treatmentDate   DateTime
-//   treatmentStatus PatientTreatmentStatus @default(PENDING)
-//   // Dentist         Dentist   @relation(fields: [dentistId], references: [id])
-//   // Patient         Patient   @relation(fields: [patientId], references: [id])
-//   Treatment       Treatment @relation(fields: [treatmentId], references: [id])
-
-//   @@unique([patientId, treatmentId, treatmentDate])
-// }
-
-// model Treatment {
-//   id               String             @id @default(cuid())
-//   name             String             @unique
-//   description      String
-//   cost             Decimal            @db.Decimal(10, 2)
-//   PatientTreatment PatientTreatment[]
-// }
-
-// model User {
-//   id       String                @id @default(cuid())
-//   email    String                @unique
-//   password String
-//   role     String
-//   Admin    Admin?
-//   Dentist  Dentist?
-//   Invoices Invoice?
-//   Patient  Patient?
-//   plans    UserSubscribedPlans[]
-// }
-
-// model Invoice {
-//   id              String        @id @default(cuid())
-//   userId          String        @unique
-//   month           Int
-//   year            Int
-//   totalAmount     Float
-//   stripePaymentId String?
-//   createdAt       DateTime      @default(now())
-//   updatedAt       DateTime      @updatedAt
-//   status          InvoiceStatus @default(PENDING)
-//   User            User          @relation(fields: [userId], references: [id])
-//   Payment         Payment[]
-// }
-
-// model Payment {
-//   id              String        @id @default(cuid())
-//   userId          String
-//   invoiceId       String?
-//   stripePaymentId String        @unique
-//   amount          Float
-//   status          PaymentStatus @default(PENDING)
-//   createdAt       DateTime      @default(now())
-//   updatedAt       DateTime      @updatedAt
-//   Invoice         Invoice?      @relation(fields: [invoiceId], references: [id])
-// }
+  assignedDentist Dentist  @relation(fields: [assignedDentistId], references: [id])
+  referralForm  ReferralForm @relation(fields: [referralFormId],references: [id])
+  appointment       Appointment @relation(fields: [appointmentId],references: [id])
+}
 
 model Plan {
   id                 String                @id @default(uuid())
@@ -170,38 +77,9 @@ model UserSubscribedPlans {
   planId       String
   subscribedAt DateTime
   plans        Plan     @relation(fields: [planId], references: [id])
-  // user         User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, planId])
 }
-
-// model Admin {
-//   id     String @id @default(cuid())
-//   userId String @unique
-//   email  String @unique
-//   User   User   @relation(fields: [userId], references: [id])
-// }
-
-// PATIENT MODELS
-
-// model User{
-//   id String @id @default(cuid())
-//   email String @unique
-//   passsword String
-//   fullName String
-//   phoneNumber String @unique
-//   country String
-//   dateOfBirth DateTime
-//   gender  GenderType
-//   gdcNo   String?
-//   practiceAddress String?
-//   role    UserRole
-//   createdAt DateTime
-//   updatedAt DateTime
-
-//   @@index([role])
-//   @@index([gdcNo])
-// }
 
 model Patient {
   id           String       @id @default(cuid())
@@ -221,6 +99,8 @@ model Patient {
   appointments Appointment[]
   reports      Report[]
   appointmentRequest  AppointmentRequests[]
+
+  referralForms ReferralForm[]
 }
 
 model Dentist{
@@ -243,6 +123,9 @@ model Dentist{
   appointments  Appointment[]
   reports     Report[]
   practices   DentistOnPractice[]
+
+  referralForms ReferralForm[]
+  referralRequests ReferralRequest[]
 }
 
 model Admin{
@@ -321,6 +204,8 @@ model Appointment{
   practice  Practice  @relation(fields: [practiceId],references: [id],onDelete: Cascade)
   patient Patient  @relation(fields: [patientId],references: [id],onDelete: Cascade)
   dentist Dentist  @relation(fields: [dentistId],references: [id],onDelete: Cascade)
+
+  referralRequest   ReferralRequest? 
 }
 
 model Report{
