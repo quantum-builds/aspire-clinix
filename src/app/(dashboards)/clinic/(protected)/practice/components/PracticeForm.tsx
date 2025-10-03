@@ -22,6 +22,7 @@ import { useCreatePractice } from "@/services/practice/practiceMutation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useRouter } from "next/navigation";
 import { ResoucrceType } from "@prisma/client";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 const practiceFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -162,8 +163,8 @@ export default function PracticeForm() {
           replace(`/clinic/practice?ts=${Date.now()}`);
         },
         onError: (error) => {
-          console.log("error in creating practice ", error);
-          showToast("error", "Failed to create practice");
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
         },
       }
     );

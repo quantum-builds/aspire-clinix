@@ -22,6 +22,7 @@ import { PracticeApprovalStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 interface RequestsDataTable {
   entries: TDentistPractice[];
@@ -54,8 +55,9 @@ export function PracticeDentistDataTable({
           setIsCancelModalOpen(false);
           showToast("success", "Dentist Request Rejected");
         },
-        onError: () => {
-          showToast("error", "Error in Rejecting request");
+        onError: (error) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
         },
       }
     );
@@ -74,8 +76,9 @@ export function PracticeDentistDataTable({
           setIsApproveModalOpen(false);
           showToast("success", "Dentist Request Accepted");
         },
-        onError: () => {
-          showToast("error", "Error in Accepting request");
+        onError: (error) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
         },
       }
     );

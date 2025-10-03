@@ -15,6 +15,7 @@ import { ResoucrceType } from "@prisma/client";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useRouter } from "next/navigation";
 import { getAMedia } from "@/services/s3/s3Query";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 const profileFormSchema = z.object({
   fullName: z
@@ -175,8 +176,9 @@ export default function ProfileForm({ admin }: AdminFormProps) {
 
           refresh();
         },
-        onError: () => {
-          showToast("error", "Error in updating profile");
+        onError: (error) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
         },
       }
     );

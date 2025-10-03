@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { UserRoles } from "@/types/common";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useState } from "react";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 export const patientSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -58,8 +59,8 @@ export default function PatientLoginForm() {
           router.replace(`/patient`);
         },
         onError: (error) => {
-          console.log("error is ", error);
-          showToast("error", "Something went wrong");
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
         },
       }
     );

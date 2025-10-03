@@ -22,6 +22,8 @@ import { useRouter } from "next/navigation";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import PdfModal from "@/app/(dashboards)/components/ViewPdfModal";
 import { ResoucrceType } from "@prisma/client";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { showToast } from "@/utils/defaultToastOptions";
 
 const appointmentSchema = z.object({
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
@@ -97,9 +99,13 @@ export default function AppointmentForm() {
           reset();
           // refresh();
           // back();
+          showToast("success", "Appointemnt Request Sent");
           replace(`/patient/appointments/requests?ts=${Date.now()}`);
         },
-        onError: () => {},
+        onError: (error) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
+        },
       }
     );
   };

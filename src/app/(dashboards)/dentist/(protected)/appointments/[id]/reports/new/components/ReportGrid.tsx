@@ -6,6 +6,7 @@ import { useCreateReport } from "@/services/reports/requestMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { TAppointment } from "@/types/appointment";
 import { showToast } from "@/utils/defaultToastOptions";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { ResoucrceType } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -88,9 +89,9 @@ export default function ReportGrid({ appointment }: ReportGridProps) {
               `/dentist/appointments/${appointment.id}/reports?ts=${Date.now()}`
             );
           },
-          onError: (err) => {
-            console.error("Error saving reports: ", err);
-            showToast("error", "Failed to save reports");
+          onError: (error) => {
+            const msg = getAxiosErrorMessage(error);
+            showToast("error", msg);
           },
         }
       );

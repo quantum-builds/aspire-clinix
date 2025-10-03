@@ -23,6 +23,7 @@ import { useCreateDentist } from "@/services/dentist/dentistMutation";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { TPractice } from "@/types/practice";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 export const dentistSchema = z.object({
   fullName: z
@@ -120,8 +121,8 @@ export default function DentistRegisterForm({
           router.replace(`/dentist/login`);
         },
         onError: (error) => {
-          showToast("error", "Something went wrong");
-          console.log("error is ", error);
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
         },
       }
     );

@@ -31,6 +31,7 @@ import CustomButton from "@/app/(dashboards)/components/custom-components/Custom
 import { showToast } from "@/utils/defaultToastOptions";
 import { useRouter } from "next/navigation";
 import { getAMedia } from "@/services/s3/s3Query";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 // Zod schema for form validation
 const profileFormSchema = z.object({
@@ -200,8 +201,9 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
           );
           refresh();
         },
-        onError: () => {
-          showToast("error", "Error in updating profile");
+        onError: (error) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
         },
       }
     );

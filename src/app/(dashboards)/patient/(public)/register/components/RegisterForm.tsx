@@ -13,6 +13,7 @@ import { useCreatePatient } from "@/services/patient/patientMutation";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useState } from "react";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 export const patientSchema = z.object({
   fullName: z
@@ -70,8 +71,9 @@ export default function PatientRegisterForm() {
           reset();
           router.replace(`/patient/login`);
         },
-        onError: (error) => {
-          showToast("error", "Something went wrong");
+        onError: (error: any) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
         },
       }
     );

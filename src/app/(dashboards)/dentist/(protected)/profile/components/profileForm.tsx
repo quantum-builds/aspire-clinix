@@ -17,6 +17,7 @@ import { getAMedia } from "@/services/s3/s3Query";
 import { useRouter } from "next/navigation";
 import StatusBage from "@/app/(dashboards)/components/StatusBadge";
 import { TDentistPractice } from "@/types/dentistRequest";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 // Zod schema for form validation
 const profileFormSchema = z.object({
@@ -147,8 +148,9 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
 
           refresh();
         },
-        onError: () => {
-          showToast("error", "Error in updating profile");
+        onError: (error) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
         },
       }
     );

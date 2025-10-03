@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useCreateAdmin } from "@/services/admin/adminMutation";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 export const adminSchema = z.object({
   fullName: z
@@ -71,8 +72,8 @@ export default function AdminRegisterForm() {
           router.replace(`/clinic/login`);
         },
         onError: (error) => {
-          console.log("error is ", error);
-          showToast("error", "Something went wrong");
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
         },
       }
     );
