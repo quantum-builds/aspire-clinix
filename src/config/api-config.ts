@@ -1,5 +1,6 @@
 import { AppointmentDateType } from "@/types/common";
 import { convertCamelCaseToSnakeCase } from "@/utils/typeConventionConvertor";
+import { ReferralRequestStatus } from "@prisma/client";
 import axios from "axios";
 
 const DENTALLY_BASE_URL = "https://api.dentally.co";
@@ -142,6 +143,21 @@ export const ENDPOINTS = {
     get: `/api/referral`,
     update: (id: string) => `/api/referrals/${id}`,
     delete: (id: string) => `/api/referrals/${id}`,
+  },
+
+  referralRequest: {
+    get: (
+      page?: number,
+      search?: string,
+      on?: string,
+      before?: string,
+      after?: string,
+      status?: string
+    ) =>
+      `/api/referral-requests?page=${page ?? 1}&search=${search ?? ""}&on=${
+        on ?? ""
+      }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}`,
+    getById: (id: string) => `/api/referral-requests/${id}`,
   },
 
   email: {

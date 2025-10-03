@@ -1,16 +1,30 @@
 import { TDentist } from "./dentist";
 import { TAppointment } from "./appointment";
 import { TReferralForm } from "./referral-form";
+import { ReferralRequestStatus } from "@prisma/client";
 
 export type TCreateReferralRequest = {
   referralFormId: string;
-  assignedDentistId: string;
-  appointmentId: string;
+  requestStatus: ReferralRequestStatus;
+  assignedDentistId?: string;
+  appointmentId?: string;
 };
 
 export type TReferralRequest = TCreateReferralRequest & {
   id: string;
-  assignedDentist: TDentist;
+  createdAt: Date;
   referralForm: TReferralForm;
-  appointment: TAppointment;
+  assignedDentist?: TDentist;
+  appointment?: TAppointment;
+};
+
+export type TReferralRequestPagination = {
+  total: number;
+  totalPages: number;
+  page: number;
+};
+
+export type TReferralRequestResponse = {
+  referralRequests: TReferralRequest[];
+  pagination: TReferralRequestPagination;
 };

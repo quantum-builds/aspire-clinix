@@ -1,171 +1,122 @@
-import {
-  TClinicReferralDataTable,
-  TReferraLRequestCards,
-} from "@/types/common";
 import { Suspense } from "react";
-import {
-  AttendedReferrals,
-  AverageReferrals,
-  TotalReferrals,
-  UnattendedReferrals,
-} from "@/assets";
+
 import { ClinicReferralDataTable } from "./components/ClinicReferralDataTable";
 import NoContent from "@/app/(dashboards)/components/NoContent";
 import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import DateFilter from "@/app/(dashboards)/components/DateFilter";
-import StatsCard from "@/app/(dashboards)/dentist/(protected)/referral-request/components/StatsCard";
 import Pagination from "@/app/(dashboards)/components/Pagination";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
+import { ReferralRequestStatus } from "@prisma/client";
+import ReferralatDaTableWrapper from "./components/ReferralDataTableWrapper";
 
-const DATA_TABLE_ENTRIES: TClinicReferralDataTable[] = [
-  {
-    referenceId: "1",
-    patientName: "John Doe",
-    status: "Assigned",
-    disease: "Cavity",
-    referralDate: "2025-09-17",
-    dentistName: "Stone Wave",
-    referralDentistName: "Billy David",
-  },
-  {
-    referenceId: "2",
-    patientName: "Jane Roe",
-    status: "Assigned",
-    disease: "Gum Infection",
-    referralDate: "2025-09-16",
-    dentistName: "Stone Wave",
-    referralDentistName: "Billy David",
-  },
-  {
-    referenceId: "3",
-    patientName: "Michael Brown",
-    status: "Unassigned",
-    disease: "Tooth Decay",
-    referralDate: "2025-09-15",
-    dentistName: "Stone Wave",
-    referralDentistName: "Billy David",
-  },
-  {
-    referenceId: "4",
-    patientName: "Emily Davis",
-    status: "Assigned",
-    disease: "Wisdom Tooth",
-    referralDate: "2025-09-14",
-    dentistName: "Stone Wave",
-    referralDentistName: "Billy David",
-  },
-  {
-    referenceId: "5",
-    patientName: "Daniel Wilson",
-    status: "Unassigned",
-    disease: "Tooth Fracture",
-    referralDate: "2025-09-13",
-    dentistName: "Stone Wave",
-    referralDentistName: "Billy David",
-  },
-  {
-    referenceId: "6",
-    patientName: "Sophia Martinez",
-    status: "Assigned",
-    disease: "Root Canal",
-    referralDate: "2025-09-12",
-    dentistName: "Stone Wave",
-    referralDentistName: "Billy David",
-  },
-];
-
-const REFERRAL_CARDS: TReferraLRequestCards = {
-  totalReferrals: {
-    icon: TotalReferrals,
-    count: 120,
-    percentageChange: 100,
-    title: "Total Referrals",
-    link: "View all referrals",
-  },
-  attendedReferrals: {
-    icon: AttendedReferrals,
-    title: "Assigned Referrals",
-    count: 90,
-    percentageChange: 75,
-    link: "View assigned",
-  },
-  unattendedReferrals: {
-    icon: UnattendedReferrals,
-    title: "Unassigned Referrals",
-    count: 30,
-    link: "View unassigned",
-    percentageChange: -25,
-  },
-  averageReferrals: {
-    icon: AverageReferrals,
-    title: "Average Referrals",
-    count: 15,
-    percentageChange: 12.5,
-  },
-};
+// const DATA_TABLE_ENTRIES: TClinicReferralDataTable[] = [
+//   {
+//     referenceId: "1",
+//     patientName: "John Doe",
+//     status: "Assigned",
+//     disease: "Cavity",
+//     referralDate: "2025-09-17",
+//     dentistName: "Stone Wave",
+//     referralDentistName: "Billy David",
+//   },
+//   {
+//     referenceId: "2",
+//     patientName: "Jane Roe",
+//     status: "Assigned",
+//     disease: "Gum Infection",
+//     referralDate: "2025-09-16",
+//     dentistName: "Stone Wave",
+//     referralDentistName: "Billy David",
+//   },
+//   {
+//     referenceId: "3",
+//     patientName: "Michael Brown",
+//     status: "Unassigned",
+//     disease: "Tooth Decay",
+//     referralDate: "2025-09-15",
+//     dentistName: "Stone Wave",
+//     referralDentistName: "Billy David",
+//   },
+//   {
+//     referenceId: "4",
+//     patientName: "Emily Davis",
+//     status: "Assigned",
+//     disease: "Wisdom Tooth",
+//     referralDate: "2025-09-14",
+//     dentistName: "Stone Wave",
+//     referralDentistName: "Billy David",
+//   },
+//   {
+//     referenceId: "5",
+//     patientName: "Daniel Wilson",
+//     status: "Unassigned",
+//     disease: "Tooth Fracture",
+//     referralDate: "2025-09-13",
+//     dentistName: "Stone Wave",
+//     referralDentistName: "Billy David",
+//   },
+//   {
+//     referenceId: "6",
+//     patientName: "Sophia Martinez",
+//     status: "Assigned",
+//     disease: "Root Canal",
+//     referralDate: "2025-09-12",
+//     dentistName: "Stone Wave",
+//     referralDentistName: "Billy David",
+//   },
+// ];
 
 export default async function ReferralHistory(props: {
   searchParams?: Promise<{
     query?: string;
+    status?: string;
+    page?: string;
+    ts?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
+  const page = Number(searchParams?.page) || 1;
+  const ts = new Date(searchParams?.ts || "");
+  const status = searchParams?.status || "";
 
-  const filteredHistory = DATA_TABLE_ENTRIES.filter(
-    (history) =>
-      history.referenceId.toLowerCase().includes(query.toLowerCase()) ||
-      history.patientName.toLowerCase().includes(query.toLowerCase())
-  );
+  // const filteredHistory = DATA_TABLE_ENTRIES.filter(
+  //   (history) =>
+  //     history.referenceId.toLowerCase().includes(query.toLowerCase()) ||
+  //     history.patientName.toLowerCase().includes(query.toLowerCase())
+  // );
 
-  if (filteredHistory.length === 0) {
-    return (
-      <NoContent
-        title="Referral History"
-        placeholder="Enter Id or patient/dentist name"
-      />
-    );
-  }
+  // if (filteredHistory.length === 0) {
+  //   return (
+  //     <NoContent
+  //       title="Referral History"
+  //       placeholder="Enter Id or patient/dentist name"
+  //     />
+  //   );
+  // }
 
   return (
-    <div className="w-full min-h-full flex flex-col gap-7">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Referrals</h1>
-        <div className="flex items-center gap-3">
-          <SearchBar placeholder="Enter Id or patient/dentist name" />
-          <DateFilter
-            statusOptions={[
-              {
-                value: "CONFIRMED",
-              },
-              {
-                value: "PENDING",
-              },
-              {
-                value: "CANCELLED",
-              },
-            ]}
-          />
-        </div>
-      </div>
+    <div className="min-h-screen flex flex-col gap-5">
+      <PageTopBar
+        pageHeading="Referrals"
+        showSearch={true}
+        showFilters={true}
+        statusOptions={[
+          {
+            value: ReferralRequestStatus.ASSIGNED,
+          },
+          {
+            value: ReferralRequestStatus.UNASSIGNED,
+          },
+        ]}
+      />
 
-      <Suspense key={query} fallback={<div>Loading.....</div>}>
-        <div className="flex flex-wrap gap-6">
-          {Object.entries(REFERRAL_CARDS).map(([key, card]) => (
-            <StatsCard
-              key={key}
-              icon={card.icon}
-              title={card.title}
-              count={card.count}
-              link={card.link}
-              percentageChange={card.percentageChange}
-            />
-          ))}
-        </div>
-        <div className="min-w-full overflow-x-auto">
-          <ClinicReferralDataTable entries={DATA_TABLE_ENTRIES} />
-        </div>
+      <Suspense
+        key={query + page + status + ts}
+        fallback={<div>Loading.....</div>}
+      >
+        <ReferralatDaTableWrapper query={query} page={page} status={status} />
       </Suspense>
-      <Pagination page={10} />
     </div>
   );
 }

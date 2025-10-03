@@ -5,8 +5,6 @@ import { Response } from "@/types/common";
 import { TPracticeResponse } from "@/types/practice";
 import { PracticeDataTable } from "./PracticeDataTable";
 
-// export const revalidate = 0;
-
 interface PracticeDataTableWrapperProps {
   query: string;
   page: number;

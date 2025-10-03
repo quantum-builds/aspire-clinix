@@ -23,7 +23,7 @@ model ReferralForm {
   referralGDC           String
   referralPhoneNumber   String
   referralName          String
-  attendTreatment Boolean
+  attendTreatment String
   createdAt             DateTime @default(now())
   
   referralDentistId             String?
@@ -33,7 +33,6 @@ model ReferralForm {
 
   referralRequest       ReferralRequest?
 
-  
   // @@unique([patientId, dentistId])
 }
 
@@ -41,12 +40,15 @@ model ReferralForm {
 model ReferralRequest{
   id  String @id @default(cuid())
   referralFormId  String  @unique
-  assignedDentistId   String
-  appointmentId   String   @unique
+  assignedDentistId   String?
+  appointmentId   String?   @unique
+  requestStatus   ReferralRequestStatus
 
-  assignedDentist Dentist  @relation(fields: [assignedDentistId], references: [id])
+  assignedDentist Dentist?  @relation(fields: [assignedDentistId], references: [id])
   referralForm  ReferralForm @relation(fields: [referralFormId],references: [id])
-  appointment       Appointment @relation(fields: [appointmentId],references: [id])
+  appointment       Appointment? @relation(fields: [appointmentId],references: [id])
+
+  createdAt             DateTime @default(now())
 }
 
 model Plan {
@@ -405,4 +407,9 @@ enum PracticeApprovalStatus {
   PENDING
   APPROVED
   CANCELLED
+}
+
+enum ReferralRequestStatus {
+  ASSIGNED
+  UNASSIGNED
 }

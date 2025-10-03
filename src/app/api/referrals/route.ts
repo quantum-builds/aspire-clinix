@@ -1,7 +1,7 @@
 import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { createResponse } from "@/utils/createResponse";
-import { DentistRole } from "@prisma/client";
+import { DentistRole, ReferralRequestStatus } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
 
@@ -33,8 +33,18 @@ export async function POST(req: NextRequest) {
       referralForm.patientId = patient.id;
     }
 
-    const referral = await prisma.referralForm.create({
-      data: referralForm,
+    const referral = await prisma.$transaction(async (tx) => {
+      const newReferral = await tx.referralForm.create({
+        data: referralForm,
+      });
+
+      await tx.referralRequest.create({
+        data: {
+          referralFormId: newReferral.id,
+          requestStatus: ReferralRequestStatus.UNASSIGNED,
+        },
+      });
+      return newReferral;
     });
 
     return NextResponse.json(

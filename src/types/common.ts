@@ -1,4 +1,4 @@
-import { ResoucrceType } from "@prisma/client";
+import { ReferralRequestStatus, ResoucrceType } from "@prisma/client";
 import { StaticImageData } from "next/image";
 
 export interface Response<T> {
@@ -142,6 +142,7 @@ export type TTotalReferrals = {
   icon: string;
   title: string;
   link?: string;
+  statusParams?: string;
 };
 
 export type TAttendedReferrals = TTotalReferrals;

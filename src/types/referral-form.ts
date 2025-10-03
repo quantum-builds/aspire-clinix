@@ -56,7 +56,7 @@ export type TCreateReferralForm = {
   referralPhoneNumber: string;
   referralName: string;
 
-  attendTreatment: boolean;
+  attendTreatment: string;
 };
 
 export type TReferralForm = TCreateReferralForm & {

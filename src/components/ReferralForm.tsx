@@ -9,14 +9,9 @@ import { CheckboxInput } from "@/components/ui/CheckboxInput";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useState, ChangeEvent, useRef } from "react";
 import Image from "next/image";
-import {
-  CalenderInputIconV2,
-  PDFImage,
-  PreviewPDFIcon,
-  UploadPDFIcon,
-} from "@/assets";
+import { CalenderInputIconV2, UploadPDFIcon } from "@/assets";
 import { CreateReferralForm, TCreateReferralForm } from "@/types/referral-form";
-import { useCreateReferralForm } from "@/services/admin/referralForm/referralFormMutation";
+import { useCreateReferralForm } from "@/services/referralForm/referralFormMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
@@ -39,31 +34,16 @@ import { ResoucrceType } from "@prisma/client";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { TPractice } from "@/types/practice";
 import { Input } from "./ui/input";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 export const referralSchema = z.object({
   patientName: z
     .string()
     .min(2, "Full name must be at least 2 characters")
     .max(100, "Full name must be less than 100 characters"),
-  patientDateOfBirth: z
-    .preprocess(
-      (val) => {
-        if (typeof val === "string" && val) {
-          return new Date(val);
-        }
-        return val === "" ? undefined : val;
-      },
-      z.date({
-        required_error: "Date of birth is required",
-        invalid_type_error: "Please select a valid date",
-      })
-    )
-    .refine((date) => {
-      if (!date) return false;
-      const today = new Date();
-      const age = today.getFullYear() - date.getFullYear();
-      return age >= 13 && age <= 120;
-    }, "You must be between 13 and 120 years old"),
+  patientDateOfBirth: z.coerce.date({
+    required_error: "Appointment date is required",
+  }),
   patientEmail: z
     .string()
     .email("Please enter a valid email address")
@@ -106,7 +86,7 @@ export const referralSchema = z.object({
   other: z.string().optional(),
   treatmentDetails: z.string().optional(),
   referralDetails: z.array(z.string()),
-  attendTreatment: z.boolean(),
+  attendTreatment: z.string(),
 
   medicalHistoryPdfUrl: z
     .any()
@@ -184,7 +164,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
       referralPhoneNumber: "",
       referralEmail: "",
       referralDetails: [],
-      attendTreatment: true,
+      attendTreatment: "yes",
       medicalHistoryPdfUrl: undefined,
     },
   });
@@ -192,6 +172,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
   const handleUploadClick = () => fileInputRef.current?.click();
 
   const onSubmit = async (data: FormData) => {
+    console.log(data);
     let fileUrl = undefined;
     if (data.medicalHistoryPdfUrl) {
       const imageUploaded = await uploadFile({
@@ -212,11 +193,10 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
       referralPracticeId: data.referralPracticeId,
       referralPhoneNumber: data.referralPhoneNumber,
       referralEmail: data.referralEmail,
-      referralDetails: data.referralDetails, // optional
-      attendTreatment: data.attendTreatment, // optional
-      treatmentDetails: data.treatmentDetails, // optional
-      // medicalHistory: data.medicalHistory,       // if you add back in schema
-      medicalHistoryPdfUrl: fileUrl, // if you add back in schema
+      referralDetails: data.referralDetails,
+      attendTreatment: data.attendTreatment,
+      treatmentDetails: data.treatmentDetails,
+      medicalHistoryPdfUrl: fileUrl,
     };
 
     createReferralForm(
@@ -228,8 +208,9 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
           reset();
           showToast("success", "Referral Form Successfully Send");
         },
-        onError: () => {
-          showToast("error", "Error in creating referral form");
+        onError: (error) => {
+          const err = getAxiosErrorMessage(error);
+          showToast("error", err);
         },
       }
     );
@@ -398,7 +379,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
           />
 
           <div className="mt-[50px] flex flex-col gap-2 ">
-            <Label className="w-1/3 text-[16px] md:text-[24px] font-normal font-opus text-nowrap pb-3">
+            <Label className="w-1/3 text-[18px] md:text-[28px] font-normal font-opus text-nowrap pb-3">
               Appointment Date
             </Label>
             <Controller
@@ -443,7 +424,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
               )}
             />
             {errors.patientDateOfBirth && (
-              <p className="text-sm text-red-500">
+              <p className=" text-red-500 text-lg">
                 {errors.patientDateOfBirth.message}
               </p>
             )}
@@ -636,34 +617,22 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
               marginTop="50px"
               padding="13px"
             />
-            {/* <FormInput
-              type="text"
-              name="referralPracticeId"
-              label="Practice Name & Address"
-              control={control}
-              errorMessage={errors.referralPracticeId?.message}
-              backgroundColor="#ECE8E3"
-              marginTop="50px"
-              padding="13px"
-            /> */}
+
             <div className="mt-[50px] flex flex-col gap-2">
-              <Label className="w-1/3 text-[16px] md:text-[24px] font-normal font-opus text-nowrap pb-3">
+              <Label className="w-1/3 text-[18px] md:text-[28px] font-normal font-opus text-nowrap pb-3">
                 Practice Address
               </Label>
 
               {practices && practices.length > 0 ? (
                 <Select
                   onValueChange={(val) => {
-                    // const selectedPractice = practices.find(
-                    //   (p) => p.id === val
-                    // );
                     setValue("referralPracticeId", val, {
                       shouldValidate: true,
                     });
                   }}
                   value={watch("referralPracticeId")}
                 >
-                  <SelectTrigger className="w-full  p-[13px]  text-left font-opus outline-none flex-1 text-[24px] bg-[#ECE8E36] border border-solid border-[#000000] rounded-[10px]">
+                  <SelectTrigger className="w-full  p-[13px]  text-left font-opus outline-none flex-1 text-[28px] bg-[#ECE8E36] border border-solid border-[#000000] rounded-[10px]">
                     <SelectValue placeholder="Select practice address" />
                   </SelectTrigger>
                   <SelectContent>
@@ -671,7 +640,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
                       <SelectItem key={practice.id} value={practice.id}>
                         <div className="flex flex-col">
                           <span className="font-medium">{practice.name}</span>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-lg text-muted-foreground">
                             {practice.addressLine1}, {practice.town},{" "}
                             {practice.postcode}
                           </span>
@@ -689,7 +658,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
               )}
 
               {errors.referralPracticeId && (
-                <p className="text-sm text-red-500">
+                <p className="text-lg text-red-500">
                   {errors.referralPracticeId.message}
                 </p>
               )}
@@ -727,10 +696,10 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
                 patient and shadow the dentist?
               </p>
               <div className="grid justify-center items-start lg:gap-x-20 grid-cols-2 mt-3">
-                {TREATMENT_APPOINTMENT.optionsDentist.map((option) => (
+                {TREATMENT_APPOINTMENT.optionsDentist.map((option, index) => (
                   <CheckboxInput
                     type="radio"
-                    key={option.value}
+                    key={index}
                     name={TREATMENT_APPOINTMENT.name}
                     label={option.label}
                     value={option.value}
@@ -742,21 +711,6 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
             </div>
           </div>
           <div className=" my-20 flex md:justify-end justify-center items-center md:items-start gap-2">
-            {/* <CustomButton
-              type="submit"
-              title={
-                sendingEmailLoader || creatingReferralLoader
-                  ? "Submitting..."
-                  : "Submit Referral"
-              }
-              disabled={sendingEmailLoader || creatingReferralLoader}
-              className={`px-11 py-6 text-black rounded-[5px] md:rounded-xl text-2xl ${
-                sendingEmailLoader || creatingReferralLoader
-                  ? "bg-bookATreatmentBackground cursor-not-allowed"
-                  : "bg-bookATreatmentBackground"
-              }`}
-            /> */}
-
             <CustomButton
               text="Cancel"
               disabled={creatingReferralFormLoader || uplaodFileLoader}
