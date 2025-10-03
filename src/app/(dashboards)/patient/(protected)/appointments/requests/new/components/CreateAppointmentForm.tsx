@@ -266,7 +266,8 @@ export default function AppointmentForm() {
       <div className="w-full flex justify-end items-center gap-3">
         <CustomButton
           text="Cancel"
-          className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
+          disabled={createRequestLoader || uploadFileLoader}
+          className="text-[#A3A3A3] bg-gray  shadow-none hover:bg-lightGray font-medium text-xl"
         />
 
         <CustomButton
@@ -277,6 +278,7 @@ export default function AppointmentForm() {
           }
           // disabled={isPending}
           type="submit"
+          disabled={createRequestLoader || uploadFileLoader}
           loading={createRequestLoader || uploadFileLoader}
         />
       </div>

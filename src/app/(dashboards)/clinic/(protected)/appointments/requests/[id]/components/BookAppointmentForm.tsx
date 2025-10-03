@@ -74,7 +74,9 @@ export default function BookAppointmentForm({
     dentistEmail: "",
     gdcNo: "",
     practicAddress: "",
-    appointmentDate: new Date(),
+    appointmentDate: appointmentRequest.requestedDate
+      ? new Date(appointmentRequest.requestedDate)
+      : undefined,
     startTime: new Date(),
     finishTime: new Date(),
   };
@@ -471,6 +473,7 @@ export default function BookAppointmentForm({
         <div className="w-full flex justify-end items-center gap-3">
           <CustomButton
             text="Cancel"
+            disabled={updateAppointmentRequestLoader || createAppointmentLoader}
             className="text-[#A3A3A3] h-[60px] w-fit px-6 py-3 bg-gray hover:bg-lightGray shadow-none font-medium text-xl"
           />
 
