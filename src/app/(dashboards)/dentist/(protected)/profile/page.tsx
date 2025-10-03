@@ -13,7 +13,7 @@ export default async function ProfilePage() {
   const request: TDentistPractice = response.data.request;
 
   return (
-    <div className=" w-full min-h-[103px] flex flex-col gap-7">
+    <div className=" w-full min-h-[105px] flex flex-col gap-7">
       <PageTopBar
         pageHeading="Profile Details"
         showFilters={false}

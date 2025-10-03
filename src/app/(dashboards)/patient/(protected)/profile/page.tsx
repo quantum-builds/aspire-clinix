@@ -8,7 +8,7 @@ export default async function ProfilePage() {
   const response: Response<TPatient> = await getPatient();
 
   return (
-    <div className=" w-full min-h-[101vh] flex flex-col gap-5">
+    <div className=" w-full min-h-[105vh] flex flex-col gap-5">
       <PageTopBar
         pageHeading="Profile Details"
         statusOptions={null}

@@ -3,7 +3,7 @@ import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopB
 
 export default async function BookAppointmentPage() {
   return (
-    <div className="w-full min-h-screen flex flex-col gap-5">
+    <div className="w-full min-h-[103vh] flex flex-col gap-5">
       <PageTopBar
         pageHeading="Appointment Request"
         showFilters={false}
