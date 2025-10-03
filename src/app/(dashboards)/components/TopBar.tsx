@@ -1,37 +1,28 @@
 "use client";
 import {
   CalenderIcon,
-  DropDownIcon,
   HarryKaneImage,
-  LogoutIcon,
   LogoutIconV2,
   NotificationIcon,
-  ProfileIcon,
 } from "@/assets";
 import Image from "next/image";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Notifications from "./Notifications";
-import Link from "next/link";
 import { useState } from "react";
 import ConfirmationModal from "./ConfirmationModal";
 import { signOutMutation } from "@/services/signOutMutation";
 import { UserMenu } from "./UserMenu";
+import { getAMedia } from "@/services/s3/s3Query";
 
 interface TopBarProps {
   name: string;
-  profilePic?: string | undefined;
+  profilePic: string | null | undefined;
   role: string;
   profileLink: string;
 }
@@ -78,7 +69,7 @@ export default function TopBar({
 
       <div className="flex gap-3 items-center">
         <Image
-          src={profilePic || HarryKaneImage}
+          src={profilePic ? profilePic : HarryKaneImage}
           alt="User Image"
           width={40}
           height={40}

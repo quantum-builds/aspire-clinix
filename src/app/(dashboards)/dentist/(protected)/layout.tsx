@@ -11,6 +11,7 @@ import TopBar from "../../components/TopBar";
 import { getServerSession } from "next-auth";
 import { toTitleCase } from "@/utils/formatWords";
 import { authOptions } from "@/lib/auth";
+import TopBarWrapper from "../../components/TopBarWrapper";
 
 const SIDEBAR_CONTENT: SidebarPage[] = [
   {
@@ -113,6 +114,7 @@ export default async function DentistLayout({
 
   const role = session?.user.role;
   const name = session?.user.name;
+  const profilePic = session?.user.image;
 
   // Pick sidebar based on role
   let sidebarContent = SIDEBAR_CONTENT;
@@ -131,10 +133,11 @@ export default async function DentistLayout({
 
       {/* Topbar */}
       <div className="col-start-2 border-b">
-        <TopBar
+        <TopBarWrapper
           name={name || ""}
           role={toTitleCase(role || "")}
           profileLink="/dentist/profile"
+          profilePic={profilePic}
         />
       </div>
 

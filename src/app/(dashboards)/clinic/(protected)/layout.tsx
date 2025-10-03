@@ -10,10 +10,10 @@ import {
   StoreIcon,
 } from "@/assets";
 import Sidebar from "../../components/SideBar";
-import TopBar from "../../components/TopBar";
 import { getServerSession } from "next-auth";
 import { toTitleCase } from "@/utils/formatWords";
 import { authOptions } from "@/lib/auth";
+import TopBarWrapper from "../../components/TopBarWrapper";
 
 const SIDEBAR_CONTENT: SidebarPage[] = [
   {
@@ -79,6 +79,7 @@ export default async function ClinicLayout({
 
   const role = session?.user.role;
   const name = session?.user.name;
+  const profilePic = session?.user.image;
 
   return (
     <div className="font-inter text-dashboardTextBlack bg-dashboardBackground h-full grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden">
@@ -87,10 +88,11 @@ export default async function ClinicLayout({
       </div>
 
       <div className="col-start-2 border-b">
-        <TopBar
+        <TopBarWrapper
           name={name || ""}
           role={toTitleCase(role || "")}
           profileLink="/clinic/profile"
+          profilePic={profilePic}
         />
       </div>
 
