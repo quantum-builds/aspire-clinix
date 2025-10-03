@@ -1,9 +1,19 @@
 import HeroSection from "@/components/HeroSection";
 import ReferralForm from "@/components/ReferralForm";
+import { Response } from "@/types/common";
+import { TPracticeResponse } from "@/types/practice";
+import { getPractices } from "@/services/practice/practiceQuery";
 
-export default function ReferralPage() {
+export default async function ReferralPage() {
   const heroBackgroundColor = "#DCD4C9";
   const herobuttonColor = "#ECE8E3";
+  const response: Response<TPracticeResponse> = await getPractices({});
+  const practices = response.data
+    ? response.data.practices
+      ? response.data.practices
+      : []
+    : [];
+
   return (
     <div className="bg-feeGuide h-auto">
       <HeroSection
@@ -17,7 +27,7 @@ export default function ReferralPage() {
         heroScreenHieght="min-h-[55vh] md:min-h-[70vh]"
       />
       <div id="form">
-        <ReferralForm />
+        <ReferralForm practices={practices} />
       </div>
     </div>
   );

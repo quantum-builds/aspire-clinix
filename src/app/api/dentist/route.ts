@@ -114,23 +114,23 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    const referralForms = await prisma.referralForm.findMany({
+      where: { referralEmail: dentist.email },
+      select: { id: true },
+    });
+
+    if (referralForms.length > 0) {
+      dentist.role = DentistRole.DENTIST;
+    }
 
     const hashedPassword = await bcrypt.hash(dentist.password, 10);
 
     const result = await prisma.$transaction(async (tx) => {
       const newDentist = await tx.dentist.create({
         data: {
-          email: dentist.email,
+          ...dentist,
           password: hashedPassword,
-          fullName: dentist.fullName,
-          phoneNumber: dentist.phoneNumber,
-          country: dentist.country,
-          dateOfBirth: dentist.dateOfBirth,
-          gender: dentist.gender,
-          gdcNo: dentist.gdcNo,
-          practiceAddress: dentist.practiceAddress,
-          role: dentist.role,
-          fileUrl: dentist.fileUrl,
+          referralForms: { connect: referralForms.map((r) => ({ id: r.id })) },
         },
       });
 

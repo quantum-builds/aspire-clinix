@@ -273,6 +273,7 @@ export default function AppointmentForm() {
         <CustomButton
           text="Cancel"
           disabled={createRequestLoader || uploadFileLoader}
+          handleOnClick={() => reset()}
           className="text-[#A3A3A3] bg-gray  shadow-none hover:bg-lightGray font-medium text-xl"
         />
 

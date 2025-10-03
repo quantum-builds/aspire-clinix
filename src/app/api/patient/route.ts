@@ -86,12 +86,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const referralForms = await prisma.referralForm.findMany({
+      where: { patientEmail: patient.email },
+      select: { id: true },
+    });
+
     const hashedPassword = await bcrypt.hash(patient.password, 10);
 
     const newPatient = await prisma.patient.create({
       data: {
         ...patient,
         password: hashedPassword,
+        referralForms: { connect: referralForms.map((r) => ({ id: r.id })) },
       },
     });
 

@@ -14,6 +14,7 @@ interface CustomButtonProps {
   loading?: boolean;
   style?: "primary" | "secondary" | "white";
   type?: "button" | "submit" | "reset";
+  textSize?: number;
 }
 
 export default function CustomButton({
@@ -26,6 +27,7 @@ export default function CustomButton({
   loading,
   style = "primary",
   type = "button",
+  textSize = 17,
 }: CustomButtonProps) {
   const btnStyles =
     style === "primary"
@@ -46,7 +48,7 @@ export default function CustomButton({
         )}
       >
         {icon && <Image src={icon} alt="button icon" className="w-4 h-4" />}
-        <p className="text-[17px]">{text}</p>
+        <p style={{ fontSize: textSize }}>{text}</p>
       </Link>
     );
   }
@@ -65,7 +67,7 @@ export default function CustomButton({
       {!loading ? (
         <>
           {icon && <Image src={icon} alt="button icon" className="w-4 h-4" />}
-          <p className="text-[17px]">{text}</p>
+          <p style={{ fontSize: textSize }}>{text}</p>
         </>
       ) : (
         <Spinner />

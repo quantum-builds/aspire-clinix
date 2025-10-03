@@ -16,13 +16,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
-import { TClinicReferralDataTable } from "@/types/common";
 import Image from "next/image";
-import { CalenderInputIcon } from "@/assets";
+import { CalenderInputIcon, CalenderInputIconV2 } from "@/assets";
 import { useRouter } from "next/navigation";
+import { TReferralRequest } from "@/types/referral-request";
+import { ReferralRequestStatus } from "@prisma/client";
+import { formatDate } from "@/utils/formatDateTime";
 
 interface ClinicReferralDataTableProps {
-  entries: TClinicReferralDataTable[];
+  entries: TReferralRequest[];
 }
 
 export function ClinicReferralDataTable({
@@ -48,9 +50,6 @@ export function ClinicReferralDataTable({
               Referral Dentist Name
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
-              Disease
-            </TableHead>
-            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Status
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
@@ -65,42 +64,51 @@ export function ClinicReferralDataTable({
         <TableBody>
           {entries.map((entry) => (
             <TableRow
-              key={entry.referenceId}
-              className="bg-dashboardBackground text-lg text-dashboardTextBlack"
+              key={entry.id}
+              className="bg-dashboardBackground hover:bg-gray cursor-pointer text-lg text-dashboardTextBlack"
               onClick={() =>
                 router.push(
-                  `/clinic/referrals/${entry.referenceId}/${
-                    entry.status === "Assigned" ? "assigned" : "un-assigned"
+                  `/clinic/referrals/${entry.id}/${
+                    entry.requestStatus === ReferralRequestStatus.ASSIGNED
+                      ? ReferralRequestStatus.ASSIGNED.toLowerCase()
+                      : ReferralRequestStatus.UNASSIGNED.toLowerCase()
                   }`
                 )
               }
             >
               <TableCell className="px-6 py-4 rounded-l-full">
-                {entry.referenceId}
+                {entry.id.slice(0, 8)}
               </TableCell>
-              <TableCell className="px-6 py-4">{entry.patientName}</TableCell>
-              <TableCell className="px-6 py-4">{entry.dentistName}</TableCell>
               <TableCell className="px-6 py-4">
-                {entry.referralDentistName}
+                {entry.referralForm.patientName}
               </TableCell>
-              <TableCell className="px-6 py-4">{entry.disease}</TableCell>
+              <TableCell className="px-6 py-4">
+                {entry.assignedDentist
+                  ? entry.assignedDentist.fullName
+                  : "-----"}
+              </TableCell>
+              <TableCell className="px-6 py-4">
+                {entry.referralForm.referralName}
+              </TableCell>
               <TableCell className="px-6 py-4">
                 <div className="flex gap-2 items-center">
                   <div
                     className={`size-3 rounded-[4px] ${
-                      entry.status === "Assigned" ? "bg-green" : "bg-[#fcd833]"
+                      entry.requestStatus === ReferralRequestStatus.ASSIGNED
+                        ? "bg-green"
+                        : "bg-[#fcd833]"
                     }`}
                   />
-                  {entry.status}
+                  {entry.requestStatus}
                 </div>
               </TableCell>
               <TableCell className="px-6 py-4 flex gap-1 items-center">
                 <Image
-                  src={CalenderInputIcon}
+                  src={CalenderInputIconV2}
                   alt="calender input icon"
                   className="w-5 h-5"
                 />
-                {entry.referralDate}
+                {formatDate(entry.createdAt)}
               </TableCell>
               <TableCell className="px-6 py-4 rounded-r-full">
                 <DropdownMenu>
@@ -111,18 +119,18 @@ export function ClinicReferralDataTable({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
-                      onClick={() => alert(`Viewing ${entry.referenceId}`)}
+                      onClick={() => alert(`Viewing ${entry.id}`)}
                     >
                       View
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => alert(`Editing ${entry.referenceId}`)}
+                      onClick={() => alert(`Editing ${entry.id}`)}
                     >
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-red-600"
-                      onClick={() => alert(`Deleting ${entry.referenceId}`)}
+                      onClick={() => alert(`Deleting ${entry.id}`)}
                     >
                       Delete
                     </DropdownMenuItem>

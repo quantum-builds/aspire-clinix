@@ -40,7 +40,7 @@ const FormInput = <T extends FieldValues>({
           marginBottom: "0.2rem",
           fontSize: `${labelTextSize}`,
         }}
-        className="w-1/3 text-[16px] md:text-[24px] font-normal font-opus text-nowrap pb-3"
+        className="w-1/3 text-[18px] md:text-[28px] font-normal font-opus text-nowrap pb-3"
       >
         {label}
       </label>
@@ -57,10 +57,10 @@ const FormInput = <T extends FieldValues>({
           marginTop: `${inputMarginTop}`,
           padding: `${padding}`,
         }}
-        className="font-opus px-3 outline-none flex-1 text-[24px] "
+        className="font-opus px-3 outline-none flex-1 text-[28px] "
       />
       {error && (
-        <span style={{ color: "red", fontSize: "0.875rem" }}>
+        <span style={{ color: "red", fontSize: "18px" }}>
           {error.message}
         </span>
       )}
