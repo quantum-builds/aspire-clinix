@@ -33,12 +33,12 @@ export async function POST(req: NextRequest) {
       referralForm.patientId = patient.id;
     }
 
-    await prisma.referralForm.create({
+    const referral = await prisma.referralForm.create({
       data: referralForm,
     });
 
     return NextResponse.json(
-      createResponse(true, "Form created successfully.", null),
+      createResponse(true, "Form created successfully.", referral),
       { status: 201 }
     );
   } catch (error) {

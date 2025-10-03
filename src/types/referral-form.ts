@@ -1,3 +1,7 @@
+import { TDentist } from "./dentist";
+import { TPatient } from "./patient";
+import { TReferralRequest } from "./referral-request";
+
 export interface CreateReferralForm {
   name: string;
   DOB: String;
@@ -34,15 +38,35 @@ export interface UpdateReferralForm {
   treatmentDetails?: string;
 }
 
+export type TCreateReferralForm = {
+  patientName: string;
+  patientPhoneNumber: string;
+  patientEmail: string;
+  patientDateOfBirth: Date;
+  patientAddress: string;
 
-export type TCreateReferralForm={
-  patientName:string
-  patientPhoneNumber:string
-  patientEmail:string
-  patientDateOfBirth:Date
-  patientAddress:string
+  medicalHistoryPdfUrl?: string;
+  referralDetails: string[];
+  other?: string;
+  treatmentDetails?: string;
 
-  medicalHistoryPdfUrl?:string
-  referralDetail:string[]
+  referralPracticeId: string;
+  referralEmail: string;
+  referralGDC: string;
+  referralPhoneNumber: string;
+  referralName: string;
 
-}
+  attendTreatment: boolean;
+};
+
+export type TReferralForm = TCreateReferralForm & {
+  id: string;
+  createdAt: Date;
+
+  referralDentistId?: string;
+  patientId?: string;
+  referralDentist?: TDentist;
+  patient?: TPatient;
+
+  referralRequest?: TReferralRequest;
+};

@@ -23,7 +23,7 @@ model ReferralForm {
   referralGDC           String
   referralPhoneNumber   String
   referralName          String
-  treatmeantAppointment Boolean
+  attendTreatment Boolean
   createdAt             DateTime @default(now())
   
   referralDentistId             String?
