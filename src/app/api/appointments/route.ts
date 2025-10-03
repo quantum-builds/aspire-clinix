@@ -68,9 +68,11 @@ export async function GET(req: NextRequest) {
         ...(after && { gte: new Date(after) }),
       };
     } else if (dateType === AppointmentDateType.PAST) {
-      baseWhere.date = { lt: new Date() };
+      // baseWhere.date = { lt: new Date() };
+      baseWhere.finishTime = { lt: new Date() };
     } else if (dateType === AppointmentDateType.UPCOMING) {
-      baseWhere.date = { gte: new Date() };
+      // baseWhere.date = { gte: new Date() };
+      baseWhere.startTime = { gte: new Date() };
     }
 
     const [appointments, totalCount] = await Promise.all([

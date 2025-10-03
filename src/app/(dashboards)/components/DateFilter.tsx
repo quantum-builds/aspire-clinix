@@ -179,7 +179,6 @@ export default function DateFilter({
                         <Calendar
                           mode="single"
                           selected={onDate || undefined}
-                          disabled={{ after: new Date() }}
                           onSelect={(date) => {
                             if (!date) return;
                             setOnDate(date);
@@ -220,7 +219,7 @@ export default function DateFilter({
                           <Calendar
                             mode="single"
                             selected={afterDate || undefined}
-                            disabled={{ after: new Date() }}
+                            disabled={{ before: new Date() }}
                             onSelect={(date) => {
                               if (!date) return;
                               setAfterDate(date);
