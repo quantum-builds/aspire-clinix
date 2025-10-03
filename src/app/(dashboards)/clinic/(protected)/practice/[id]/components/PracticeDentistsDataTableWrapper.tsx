@@ -43,6 +43,7 @@ export default async function PracticeDentistsDataTableWrapper({
   ) {
     return <NoContent1 />;
   }
+
   return (
     <>
       <PracticeDetails practice={response.data} />

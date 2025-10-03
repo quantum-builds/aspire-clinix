@@ -1,7 +1,5 @@
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
-import {
-  PracticeApprovalStatus,
-} from "@prisma/client";
+import { PracticeApprovalStatus } from "@prisma/client";
 import { Suspense } from "react";
 import PracticeDentistsDataTableWrapper from "./components/PracticeDentistDataTableWrapper";
 import PracticeDentistDataTableSkeleton from "../components/skeletons/PracticeDentistDataTable";
@@ -16,7 +14,7 @@ export default async function PracticePage(props: {
 
   return (
     <div>
-      <div className="min-h-[98vh] flex flex-col gap-5">
+      <div className="min-h-[103vh] flex flex-col gap-5">
         <PageTopBar
           pageHeading="Practice Requests"
           showSearch={false}
