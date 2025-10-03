@@ -20,7 +20,6 @@ export const loginMutation = () => {
         role,
       });
 
-      console.log("response is ", result);
       if (!result || !result.ok) {
         throw new Error(
           result?.error

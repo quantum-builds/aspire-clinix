@@ -1,6 +1,8 @@
-import { AppointmentStatus } from "@prisma/client";
+import { AppointmentStatus, PracticeApprovalStatus } from "@prisma/client";
 
-export default function StatusBage({ status }: { status: AppointmentStatus }) {
+type StatusType = AppointmentStatus | PracticeApprovalStatus;
+
+export default function StatusBadge({ status }: { status: StatusType }) {
   const statusStyles = () => {
     switch (status) {
       case AppointmentStatus.PENDING:
@@ -17,6 +19,16 @@ export default function StatusBage({ status }: { status: AppointmentStatus }) {
         return { text: "Cancelled", bgColor: "bg-[#FFB3B3]" };
       case AppointmentStatus.ARRIVED:
         return { text: "Arrived", bgColor: "bg-[#FFC8FA]" };
+
+      case PracticeApprovalStatus.PENDING:
+        return { text: "Pending Approval", bgColor: "bg-[#FFF5C2]" };
+      case PracticeApprovalStatus.APPROVED:
+        return { text: "Approved", bgColor: "bg-[#B5FFB5]" };
+      case PracticeApprovalStatus.CANCELLED:
+        return { text: "Approval Cancelled", bgColor: "bg-[#FFB3B3]" };
+
+      default:
+        return { text: String(status), bgColor: "bg-gray-300" }; // fallback
     }
   };
 
@@ -24,7 +36,7 @@ export default function StatusBage({ status }: { status: AppointmentStatus }) {
 
   return (
     <div
-      className={`px-2 py-1 text-sm rounded-lg ${bgColor} text-dashboardTextBlack italic`}
+      className={`px-2 py-1 text-sm rounded-lg ${bgColor} text-dashboardTextBlack italic w-fit`}
     >
       {text}
     </div>

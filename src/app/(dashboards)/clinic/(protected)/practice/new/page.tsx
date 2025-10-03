@@ -11,7 +11,7 @@ export default async function NewPracticePage() {
           showSearch={false}
           showFilters={false}
           statusOptions={[]}
-          extraBtns={<BackButton />}
+          showBackBtn={true}
         />
         <PracticeForm />
       </div>

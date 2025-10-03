@@ -3,11 +3,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { useRef, useState, useEffect } from "react";
-import { TextInputIcon } from "@/assets";
+import { TextIconV2 } from "@/assets";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import { TDentist, TDentistCreate } from "@/types/dentist";
+import { usePatchDentist } from "@/services/dentist/dentistMutation";
+import { useUploadFile } from "@/services/s3/s3Mutatin";
+import { PracticeApprovalStatus, ResoucrceType } from "@prisma/client";
+import { showToast } from "@/utils/defaultToastOptions";
+import { getAMedia } from "@/services/s3/s3Query";
+import { useRouter } from "next/navigation";
+import StatusBage from "@/app/(dashboards)/components/StatusBadge";
+import { TDentistPractice } from "@/types/dentistRequest";
 
 // Zod schema for form validation
 const profileFormSchema = z.object({
@@ -22,7 +31,11 @@ const profileFormSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, "Phone number must be at least 10 digits")
-    .regex(/^\+?[\d\s\-\(\)]+$/, "Please enter a valid phone number"),
+    .max(15, "Phone number must be at most 15 digits")
+    .regex(
+      /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
+      "Please enter a valid UK mobile phone number"
+    ),
   gdcNumber: z
     .string()
     .min(4, "GDC number must be at least 4 characters")
@@ -31,36 +44,52 @@ const profileFormSchema = z.object({
     .string()
     .min(5, "Practice address must be at least 5 characters")
     .max(200, "Practice address must be less than 200 characters"),
-  profileImage: z
-    .instanceof(File)
-    .refine(
-      (file) => file.size <= 5 * 1024 * 1024,
-      "Image must be less than 5MB"
-    )
-    .refine(
-      (file) =>
-        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-          file.type
-        ),
-      "Only JPEG, PNG, and WebP images are allowed"
-    ),
+  profileImage: z.union([
+    z
+      .instanceof(File)
+      .refine(
+        (file) => file.size <= 5 * 1024 * 1024,
+        "Image must be less than 5MB"
+      )
+      .refine(
+        (file) =>
+          ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+            file.type
+          ),
+        "Only JPEG, PNG, and WebP images are allowed"
+      ),
+    z.string().url().or(z.literal("")),
+  ]),
 });
 
 type FormData = z.infer<typeof profileFormSchema>;
 
-const defaultValues = {
-  fullName: "",
-  email: "",
-  phoneNumber: "",
-  gdcNumber: "",
-  practiceAddress: "",
-  profileImage: undefined,
-};
+interface DentistFormProps {
+  dentist: TDentist;
+  request: TDentistPractice;
+}
 
-export default function ProfileForm() {
-  const [image, setImage] = useState<string | null>(null);
-  const [hasChanges, setHasChanges] = useState(false);
+export default function ProfileForm({ dentist, request }: DentistFormProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const { mutate: editDentistInfo, isPending: editDentistInfoLoader } =
+    usePatchDentist();
+  const { mutateAsync: uploadFile, isPending: uplaodFileLoader } =
+    useUploadFile();
+  const { refresh } = useRouter();
+
+  const practiceAddress = `${request.practice.name}, ${request.practice.addressLine1}, ${request.practice.town}, ${request.practice.postcode}`;
+  const practiceEmail = request.practice.email;
+  const status = request.status;
+
+  const defaultValues = {
+    fullName: dentist?.fullName || "",
+    email: dentist?.email || "",
+    phoneNumber: dentist?.phoneNumber || "",
+    gdcNumber: dentist?.gdcNo || "",
+    practiceAddress: practiceAddress || "",
+    profileImage: dentist?.file || undefined,
+  };
 
   const {
     handleSubmit,
@@ -68,38 +97,65 @@ export default function ProfileForm() {
     setValue,
     watch,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty, dirtyFields },
   } = useForm<FormData>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
   });
 
-  const watchedValues = watch();
+  const onSubmit = async (formData: FormData) => {
+    let payload: Partial<TDentistCreate> = {};
 
-  // Check if form values have changed from default values
-  useEffect(() => {
-    const isChanged =
-      watchedValues.fullName !== defaultValues.fullName ||
-      watchedValues.email !== defaultValues.email ||
-      watchedValues.phoneNumber !== defaultValues.phoneNumber ||
-      watchedValues.gdcNumber !== defaultValues.gdcNumber ||
-      watchedValues.practiceAddress !== defaultValues.practiceAddress ||
-      watchedValues.profileImage !== defaultValues.profileImage;
+    Object.keys(dirtyFields).forEach((field) => {
+      const key = field as keyof FormData;
 
-    setHasChanges(isChanged);
-  }, [watchedValues]);
+      if (key === "profileImage" && formData.profileImage instanceof File) {
+        payload.fileUrl = "uploads/aspire-clinic/images/placeholder.png";
+      } else {
+        payload[key as keyof TDentistCreate] = formData[key] as any;
+      }
+    });
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form submitted:", data);
-    // Handle form submission here
-    // Reset hasChanges after successful submission
-    setHasChanges(false);
+    if (dirtyFields.profileImage && formData.profileImage instanceof File) {
+      const imageUploaded = await uploadFile({
+        selectedFile: formData.profileImage,
+        fileType: ResoucrceType.IMAGES,
+      });
+
+      payload.fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+    }
+
+    if (Object.keys(payload).length === 0) {
+      showToast("info", "No changes to update");
+      return;
+    }
+
+    editDentistInfo(
+      { partialDentist: payload },
+      {
+        onSuccess: async (data) => {
+          showToast("success", "Profile Updated Successfully");
+          const file = await getAMedia(data.fileUrl || "");
+
+          reset(
+            {
+              ...formData,
+              profileImage: file,
+            },
+            { keepDefaultValues: false }
+          );
+
+          refresh();
+        },
+        onError: () => {
+          showToast("error", "Error in updating profile");
+        },
+      }
+    );
   };
 
   const handleCancel = () => {
     reset(defaultValues);
-    setImage(null);
-    setHasChanges(false);
   };
 
   const handleUploadClick = () => {
@@ -127,18 +183,22 @@ export default function ProfileForm() {
 
         imageSchema.parse(file);
 
-        const imageUrl = URL.createObjectURL(file);
-        setImage(imageUrl);
+        // update the form field directly
         setValue("profileImage", file, {
           shouldValidate: true,
           shouldDirty: true,
         });
       } catch (error) {
-        setImage(null);
         console.error("Image validation failed:", error);
+        setValue("profileImage", "", {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
       }
     }
   };
+
+  const profileImage = watch("profileImage");
 
   return (
     <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
@@ -147,14 +207,26 @@ export default function ProfileForm() {
 
         <div className="flex items-center gap-6">
           <div className="bg-gray rounded-2xl h-[120px] w-[120px] overflow-hidden flex items-center justify-center">
-            {image ? (
-              <Image
-                src={image}
-                alt="Profile Preview"
-                width={120}
-                height={120}
-                className="h-full w-full object-cover"
-              />
+            {profileImage ? (
+              typeof profileImage === "string" ? (
+                <Image
+                  src={profileImage}
+                  alt="Profile Preview"
+                  width={120}
+                  height={120}
+                  priority
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Image
+                  src={URL.createObjectURL(profileImage)}
+                  alt="Profile Preview"
+                  width={120}
+                  height={120}
+                  priority
+                  className="h-full w-full object-cover"
+                />
+              )
             ) : (
               <span className="text-sm text-gray-500">No Image</span>
             )}
@@ -202,7 +274,7 @@ export default function ProfileForm() {
                 )}
               />
               <Image
-                src={TextInputIcon}
+                src={TextIconV2}
                 alt="text-input"
                 className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
@@ -231,7 +303,7 @@ export default function ProfileForm() {
                 )}
               />
               <Image
-                src={TextInputIcon}
+                src={TextIconV2}
                 alt="text-input"
                 className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
@@ -260,7 +332,7 @@ export default function ProfileForm() {
                 )}
               />
               <Image
-                src={TextInputIcon}
+                src={TextIconV2}
                 alt="text-input"
                 className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
@@ -290,7 +362,7 @@ export default function ProfileForm() {
                 )}
               />
               <Image
-                src={TextInputIcon}
+                src={TextIconV2}
                 alt="text-input"
                 className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
@@ -300,7 +372,7 @@ export default function ProfileForm() {
             )}
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-1 col-span-2">
             <Label htmlFor="practiceAddress" className="text-lg font-medium">
               Practice Address
               <span className="text-red-500 text-sm ml-1">*</span>
@@ -315,13 +387,14 @@ export default function ProfileForm() {
                     id="practiceAddress"
                     placeholder="Enter your practice address"
                     className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                    disabled
                   />
                 )}
               />
               <Image
-                src={TextInputIcon}
+                src={TextIconV2}
                 alt="text-input"
-                className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
+                className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50"
               />
             </div>
             {errors.practiceAddress && (
@@ -331,24 +404,76 @@ export default function ProfileForm() {
             )}
           </div>
         </div>
+
+        <div className="flex flex-col gap-3 mt-10">
+          <div className="flex gap-1 items-center">
+            Practice Request Status:
+            <StatusBage status={status} />
+          </div>
+          {status === PracticeApprovalStatus.PENDING && (
+            <p className="italic font-light">
+              For the approval of a practice request, please mail us on{" "}
+              <a
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=aspireclinic@gmail.com&su=Practice%20Request%20Approval"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline text-green"
+              >
+                info@aspireclinic.co.uk
+              </a>{" "}
+              or{" "}
+              <a
+                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${practiceEmail}&su=Practice%20Request%20Approval`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline text-green"
+              >
+                {practiceEmail}
+              </a>{" "}
+            </p>
+          )}
+          {status === PracticeApprovalStatus.CANCELLED && (
+            <p className="italic font-light">
+              ​Your practice request has been cancelled. If you want to request
+              again, please mail us on{" "}
+              <a
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=aspireclinic@gmail.com&su=Practice%20Request%20Approval"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline text-green"
+              >
+                info@aspireclinic.co.uk
+              </a>{" "}
+              or{" "}
+              <a
+                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${practiceEmail}&su=Practice%20Request%20Approval`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline text-green"
+              >
+                {practiceEmail}
+              </a>
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* Conditionally render buttons only when there are changes */}
-      {hasChanges && (
-        <div className="w-full flex justify-end items-center gap-3">
-          <CustomButton
-            text="Cancel"
-            type="button"
-            handleOnClick={handleCancel}
-            className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
-          />
-          <CustomButton
-            text="Save Changes"
-            type="submit"
-            className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
-          />
-        </div>
-      )}
+      <div className="w-full flex justify-end items-center gap-3">
+        <CustomButton
+          text="Cancel"
+          handleOnClick={handleCancel}
+          disabled={!isDirty || uplaodFileLoader || editDentistInfoLoader}
+          className="text-[#A3A3A3] h-[60px] w-fit px-6 py-3 bg-gray hover:bg-lightGray shadow-none font-medium text-xl"
+        />
+
+        <CustomButton
+          type="submit"
+          text="Save Changes"
+          disabled={!isDirty || uplaodFileLoader || editDentistInfoLoader}
+          loading={uplaodFileLoader || editDentistInfoLoader}
+          className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-greenHover flex items-center justify-center gap-2 rounded-[100px]"
+        />
+      </div>
     </form>
   );
 }

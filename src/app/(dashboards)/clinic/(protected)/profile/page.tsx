@@ -1,7 +1,12 @@
+import { TAdmin } from "@/types/admin";
 import ProfileForm from "./components/ProfileForm";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
+import { getAdmin } from "@/services/admin/adminQuery";
+import { Response } from "@/types/common";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const response: Response<TAdmin> = await getAdmin();
+
   return (
     <div className=" w-full min-h-[98vh] flex flex-col gap-5">
       <PageTopBar
@@ -11,7 +16,7 @@ export default function ProfilePage() {
         statusOptions={null}
         showBackBtn={true}
       />
-      <ProfileForm />
+      <ProfileForm admin={response.data} />
     </div>
   );
 }

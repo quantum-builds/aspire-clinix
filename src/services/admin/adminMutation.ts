@@ -15,3 +15,22 @@ export const useCreateAdmin = () => {
     },
   });
 };
+
+export const usePatchAdmin = () => {
+  return useMutation({
+    mutationFn: async ({
+      partialAdmin,
+    }: {
+      partialAdmin: Partial<TAdminCreate>;
+    }) => {
+      console.log("patient patient is ", partialAdmin);
+      const response = await axiosInstance.patch(
+        ENDPOINTS.admin.editAdmin,
+        partialAdmin
+      );
+
+      const admin: TAdmin = response.data.data;
+      return admin;
+    },
+  });
+};

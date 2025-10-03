@@ -56,7 +56,7 @@ export function PracticeDataTable({ entries }: RequestsDataTable) {
             <TableRow
               onClick={() => push(`/clinic/practice/${entry.id}`)}
               key={entry.id}
-              className="text-lg hover:bg-gray text-dashboardTextBlack"
+              className="text-lg hover:bg-gray text-dashboardTextBlack !cursor-pointer"
             >
               <TableCell className="px-6 py-4 rounded-l-full">
                 PR # 100{index}

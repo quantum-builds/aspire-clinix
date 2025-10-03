@@ -6,13 +6,12 @@ export const usePatchPatient = () => {
   return useMutation({
     mutationFn: async ({
       partialPatient,
-      id,
     }: {
       partialPatient: Partial<TPatientCreate>;
-      id: string;
     }) => {
+      console.log("patient patient is ", partialPatient);
       const response = await axiosInstance.patch(
-        ENDPOINTS.patient.editPatient(id),
+        ENDPOINTS.patient.editPatient,
         partialPatient
       );
 
