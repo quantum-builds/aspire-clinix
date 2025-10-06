@@ -14,6 +14,7 @@ export async function getReferralRequests({
   before,
   after,
   status,
+  pageType
 }: {
   page?: number;
   search?: string;
@@ -21,11 +22,12 @@ export async function getReferralRequests({
   before?: string;
   after?: string;
   status?: string;
+  pageType?:string
 }) {
   try {
     const serverAxios = await createServerAxios();
     const response = await serverAxios.get(
-      ENDPOINTS.referralRequest.get(page, search, on, before, after, status)
+      ENDPOINTS.referralRequest.get(page, search, on, before, after, status,pageType)
     );
 
     const responseData: Response<TReferralRequestResponse> = response.data;

@@ -16,13 +16,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
-import { TReferralHistoryDataTable } from "@/types/common";
 import Image from "next/image";
-import { CalenderInputIconV2 } from "@/assets";
+import { CalenderInputIcon, CalenderInputIconV2 } from "@/assets";
 import { useRouter } from "next/navigation";
+import { TReferralRequest } from "@/types/referral-request";
+import { ReferralRequestStatus } from "@prisma/client";
+import { formatDate } from "@/utils/formatDateTime";
 
 interface ReferralHistoryDataTableProps {
-  entries: TReferralHistoryDataTable[];
+  entries: TReferralRequest[];
 }
 
 export function ReferralHistoryDataTable({
@@ -31,26 +33,26 @@ export function ReferralHistoryDataTable({
   const router = useRouter();
 
   return (
-    <div className="w-full overflow-x-auto bg-dashboardBarBackground rounded-2xl px-4 pb-4 pt-4 tracking-tightest">
+    <div className="w-full overflow-x-auto">
       <Table className="table-auto border-separate border-spacing-y-3 min-w-max">
         <TableHeader>
-          <TableRow className="bg-dashboardBackground">
-            <TableHead className="px-6 py-4 rounded-l-full text-xl text-dashboardTextBlack font-medium">
+          <TableRow>
+            <TableHead className="px-6 py-4 bg-dashboardBarBackground rounded-l-full text-xl text-dashboardTextBlack font-medium">
               Reference #
             </TableHead>
-            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Patient Name
             </TableHead>
-            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
-              Disease
+            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
+              Dentist Name
             </TableHead>
-            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Status
             </TableHead>
-            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Referral Date
             </TableHead>
-            <TableHead className="px-6 py-4 rounded-r-full text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 bg-dashboardBarBackground rounded-r-full text-xl text-dashboardTextBlack font-medium">
               Actions
             </TableHead>
           </TableRow>
@@ -59,25 +61,33 @@ export function ReferralHistoryDataTable({
         <TableBody>
           {entries.map((entry) => (
             <TableRow
-              key={entry.referenceId}
-              className="text-lg hover:bg-gray text-dashboardTextBlack cursor-pointer"
+              key={entry.id}
+              className="bg-dashboardBackground hover:bg-gray cursor-pointer text-lg text-dashboardTextBlack"
               onClick={() =>
-                router.push(`/dentist/referral-history/${entry.referenceId}`)
+                router.push(`/dentist/referral-history/${entry.id}`)
               }
             >
               <TableCell className="px-6 py-4 rounded-l-full">
-                REF # {entry.referenceId}
+                {entry.id.slice(0, 8)}
               </TableCell>
-              <TableCell className="px-6 py-4">{entry.patientName}</TableCell>
-              <TableCell className="px-6 py-4">{entry.disease}</TableCell>
+              <TableCell className="px-6 py-4">
+                {entry.referralForm.patientName}
+              </TableCell>
+              <TableCell className="px-6 py-4">
+                {entry.assignedDentist
+                  ? entry.assignedDentist.fullName
+                  : "-----"}
+              </TableCell>
               <TableCell className="px-6 py-4">
                 <div className="flex gap-2 items-center">
                   <div
                     className={`size-3 rounded-[4px] ${
-                      entry.status === "Assigned" ? "bg-green" : "bg-[#fcd833]"
+                      entry.requestStatus === ReferralRequestStatus.ASSIGNED
+                        ? "bg-green"
+                        : "bg-[#fcd833]"
                     }`}
                   />
-                  {entry.status}
+                  {entry.requestStatus}
                 </div>
               </TableCell>
               <TableCell className="px-6 py-4 flex gap-1 items-center">
@@ -86,7 +96,7 @@ export function ReferralHistoryDataTable({
                   alt="calender input icon"
                   className="w-5 h-5"
                 />
-                {entry.referralDate}
+                {formatDate(entry.createdAt)}
               </TableCell>
               <TableCell className="px-6 py-4 rounded-r-full">
                 <DropdownMenu>
@@ -97,18 +107,18 @@ export function ReferralHistoryDataTable({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
-                      onClick={() => alert(`Viewing ${entry.referenceId}`)}
+                      onClick={() => alert(`Viewing ${entry.id}`)}
                     >
                       View
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => alert(`Editing ${entry.referenceId}`)}
+                      onClick={() => alert(`Editing ${entry.id}`)}
                     >
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-red-600"
-                      onClick={() => alert(`Deleting ${entry.referenceId}`)}
+                      onClick={() => alert(`Deleting ${entry.id}`)}
                     >
                       Delete
                     </DropdownMenuItem>

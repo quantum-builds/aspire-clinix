@@ -50,7 +50,8 @@ export const ENDPOINTS = {
     // },
 
     createPatient: "/api/patient",
-    getPatient: `/api/patient`,
+    getPatient:(email?:string)=> `/api/patient?email=${email??null}`,
+    getById:(id:string)=>`/api/patient/${id}`,
     editPatient: `/api/patient`,
   },
 
@@ -152,12 +153,15 @@ export const ENDPOINTS = {
       on?: string,
       before?: string,
       after?: string,
-      status?: string
+      status?: string,
+      pageType?:string
     ) =>
       `/api/referral-requests?page=${page ?? 1}&search=${search ?? ""}&on=${
         on ?? ""
-      }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}`,
+      }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}&page-type=${pageType??""}`,
     getById: (id: string) => `/api/referral-requests/${id}`,
+    patch: (id: string) => `/api/referral-requests/${id}`,
+
   },
 
   email: {

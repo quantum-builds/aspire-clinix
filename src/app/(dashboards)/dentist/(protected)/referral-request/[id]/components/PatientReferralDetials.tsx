@@ -4,13 +4,12 @@ import Image from "next/image";
 interface PatientReferralDetailsProps {
   patientDetials: {
     name: string;
-    gender: string;
+    age: string;
     phone: string;
     email: string;
     disease: string;
   };
   dentistDetails: {
-    date: string;
     name: string;
     gdcNo: string;
     phone: string;
@@ -38,7 +37,7 @@ export default function PatientReferralDetails({
           </div>
           <div className="flex text-[17px] items-center">
             <p className="flex-1">Name: {patientDetials.name}</p>
-            <p className="flex-1">Gender: {patientDetials.gender}</p>
+            <p className="flex-1">Age: {patientDetials.age}</p>
           </div>
           <div className="flex text-[17px] items-center">
             <p className="flex-1">Phone: {patientDetials.phone}</p>
@@ -52,10 +51,6 @@ export default function PatientReferralDetails({
           <div className="flex items-center justify-between">
             <p className="text-green font-semibold text-xl">
               Referral Dentist Details
-            </p>
-            <p className="text-[17px] items-center justify-end gap-2 flex">
-              <Image src={CalenderInputIconV2} alt="Calender Icon" />
-              {dentistDetails.date}
             </p>
           </div>
           <div className="flex text-[17px] items-center">

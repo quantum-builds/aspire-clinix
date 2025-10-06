@@ -41,9 +41,24 @@ export const referralSchema = z.object({
     .string()
     .min(2, "Full name must be at least 2 characters")
     .max(100, "Full name must be less than 100 characters"),
-  patientDateOfBirth: z.coerce.date({
-    required_error: "Appointment date is required",
-  }),
+  patientDateOfBirth: z.preprocess(
+    (val) => {
+      if (typeof val === "string" && val) {
+        return new Date(val);
+      }
+      return val === "" ? undefined : val;
+    },
+    z.date({
+      required_error: "Date of birth is required",
+      invalid_type_error: "Please select a valid date",
+    })
+  )
+    .refine((date) => {
+      if (!date) return false;
+      const today = new Date();
+      const age = today.getFullYear() - date.getFullYear();
+      return age >= 13 && age <= 120;
+    }, "You must be between 13 and 120 years old"),
   patientEmail: z
     .string()
     .email("Please enter a valid email address")
@@ -380,7 +395,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
 
           <div className="mt-[50px] flex flex-col gap-2 ">
             <Label className="w-1/3 text-[18px] md:text-[28px] font-normal font-opus text-nowrap pb-3">
-              Appointment Date
+              Date Of Birth
             </Label>
             <Controller
               name="patientDateOfBirth"
@@ -417,7 +432,9 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
                       onSelect={(date) => date && field.onChange(date)}
                       captionLayout="dropdown"
                       showOutsideDays={false}
-                      disabled={{ before: new Date() }}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
                     />
                   </PopoverContent>
                 </Popover>

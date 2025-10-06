@@ -120,8 +120,17 @@ export async function POST(req: NextRequest) {
   try {
     const appointment = await req.json();
     const newAppointment = await prisma.appointment.create({
-      data: { ...appointment },
-    });
+       data: {
+        dentistId: appointment.dentistId,
+        practiceId: appointment.practiceId,
+        patientId: appointment.patientId,
+        reason: appointment.reason || "",
+        state: appointment.state || "PENDING",
+        date: new Date(appointment.date),
+        startTime: new Date(appointment.startTime),
+        finishTime: new Date(appointment.finishTime),
+      },
+    }); 
 
     return NextResponse.json(
       createResponse(true, "Appointment created successfully", newAppointment),

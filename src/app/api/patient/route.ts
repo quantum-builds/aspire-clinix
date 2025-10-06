@@ -32,17 +32,39 @@ export async function GET(req: NextRequest) {
         { status: 200 }
       );
     } else if (token.role === TokenRoles.ADMIN) {
-      const patients = await prisma.patient.findMany({});
+      const { searchParams } = new URL(req.url);
+      const emailParam = searchParams.get("email") || "";
 
-      if (patients.length < 1) {
+      // decode URL-encoded email
+      const email = decodeURIComponent(emailParam);
+      console.log("email is ",email)
+      if (email.trim().length > 0) {
+        const patient = await prisma.patient.findUnique({ where: { email: email } })
+        console.log("patient in api is ",patient)
+        if (!patient) {
+          return NextResponse.json(
+            createResponse(false, "No Patient found", patient),
+            { status: 404 }
+          );
+        }
+
         return NextResponse.json(
-          createResponse(false, "No Patient found", null)
+          createResponse(true, "Patiensts fetched successfully", patient),
+          { status: 200 }
+        );
+      } else {
+        const patients = await prisma.patient.findMany({});
+
+        if (patients.length < 1) {
+          return NextResponse.json(
+            createResponse(false, "No Patient found", null),{status:404}
+          );
+        }
+
+        return NextResponse.json(
+          createResponse(true, "Patiensts fetched successfully", patients),{status:200}
         );
       }
-
-      return NextResponse.json(
-        createResponse(true, "Patiensts fetched successfully", patients)
-      );
     } else {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,

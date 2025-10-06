@@ -16,13 +16,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
-import { TReferralRequestDataTable } from "@/types/common";
 import Image from "next/image";
 import { CalenderInputIconV2 } from "@/assets";
 import { useRouter } from "next/navigation";
+import { TReferralRequest } from "@/types/referral-request";
+import { formatDate } from "@/utils/formatDateTime";
 
 interface ReferralRequestDataTableProps {
-  entries: TReferralRequestDataTable[];
+  entries: TReferralRequest[];
 }
 
 export function ReferralRequestDataTable({
@@ -44,9 +45,9 @@ export function ReferralRequestDataTable({
             <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
               Referring Dentist
             </TableHead>
-            <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
+            {/* <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
               Disease
-            </TableHead>
+            </TableHead> */}
             <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
               Referral Date
             </TableHead>
@@ -66,20 +67,22 @@ export function ReferralRequestDataTable({
               }
             >
               <TableCell className="px-6 py-4 rounded-l-full">
-                {entry.id}
+                {entry.id.slice(0, 8)}
               </TableCell>
-              <TableCell className="px-6 py-4">{entry.patientName}</TableCell>
               <TableCell className="px-6 py-4">
-                {entry.referringDentistName}
+                {entry.referralForm.patientName}
               </TableCell>
-              <TableCell className="px-6 py-4">{entry.disease}</TableCell>
+              <TableCell className="px-6 py-4">
+                {entry.referralForm.referralName}
+              </TableCell>
+              {/* <TableCell className="px-6 py-4">{entry.disease}</TableCell> */}
               <TableCell className="px-6 py-4 flex gap-1 items-center">
                 <Image
                   src={CalenderInputIconV2}
                   alt="calender input icon"
                   className="w-5 h-5"
                 />
-                {entry.referralDate}
+                {formatDate(entry.createdAt)}
               </TableCell>
               <TableCell className="px-6 py-4 rounded-r-full">
                 <DropdownMenu>

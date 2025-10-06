@@ -4,97 +4,80 @@ import PatientReferralDetails from "./components/PatientReferralDetials";
 import AppointmentGrid from "./components/AppointmentGrid";
 import { AppointmentDetails } from "@/types/common";
 import Button from "@/app/(dashboards)/components/Button";
+import { getReferralRequest } from "@/services/referralRequest/referralRequestQuery";
+import { TReferralRequest } from "@/types/referral-request";
+import { Response } from "@/types/common";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
+import NoContent1 from "@/app/(dashboards)/components/NoContent1";
+import { calculateAge } from "@/utils/formatDateTime";
+import AssignedAppointmentCard from "@/app/(dashboards)/clinic/(protected)/referrals/[id]/assigned/components/AppointmentCard";
 
-type PageProps = {
-  params: {
-    id: string;
-  };
-};
+export default async function ReferralDetailsPage(props: {
+  params: { id: string };
+}) {
+  const { id } = props.params;
 
-export default async function ReferralDetailsPage({ params }: PageProps) {
-  const referralId = params.id;
+  const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
 
-  console.log(referralId);
+  if (!referralRequestResponse || !referralRequestResponse.status || !referralRequestResponse.data || !referralRequestResponse.data.referralForm) {
+    return (
+      <div className="min-h-screen flex flex-col gap-5">
+        <PageTopBar
+          pageHeading="Referrals Details"
+          showSearch={false}
+          showBackBtn={true}
+          showFilters={false}
+          statusOptions={null}
+        />
+        <NoContent1 />
+      </div>
+    )
+  }
+
+
+  const referralForm = referralRequestResponse.data.referralForm
+  const assignedDentist = referralRequestResponse.data.assignedDentist
+  const appointment = referralRequestResponse.data.appointment
 
   const patientDetails = {
-    name: "Harry Kane",
-    gender: "Male",
-    phone: "+971 1121 2234",
-    email: "harrykane@gmail.com",
-    disease: "Tooth Decay",
-  };
+    name: referralForm.patientName,
+    phone: referralForm.patientPhoneNumber,
+    email: referralForm.patientEmail,
+    disease: referralForm.referralDetails.join(","),
+    age: String(calculateAge(referralForm.patientDateOfBirth))
+  }
 
-  const dentistDetails = {
-    date: "July 07,2025",
-    name: "Harry Kane",
-    gdcNo: "192 168 344",
-    phone: "+971 1121 2234",
-    email: "harrykane@gmail.com",
-    address: "Clinic 400, Street 302, Oslo, Norway",
-  };
-
-  const PAST_APPOINTMENTS: AppointmentDetails[] = [
-    {
-      date: "July 07, 2025",
-      time: "12:30 PM",
-      status: "Did not attend",
-      appointmentNumber: "1621-115009",
-    },
-    {
-      date: "July 07, 2025",
-      time: "12:30 PM",
-      status: "Completed",
-      appointmentNumber: "1621-115009",
-    },
-  ];
-
-  const UPCOMING_APPOINTMENTS: AppointmentDetails[] = [
-    {
-      date: "July 07, 2025",
-      time: "12:30 PM",
-      status: "Pending",
-      appointmentNumber: "1621-115009",
-    },
-    {
-      date: "July 07, 2025",
-      time: "12:30 PM",
-      status: "Pending",
-      appointmentNumber: "1621-115009",
-    },
-  ];
+  const assignedDentistDetails = {
+    name: assignedDentist?.fullName,
+    phone: assignedDentist?.phoneNumber,
+    email: assignedDentist?.email,
+    gdcNo: assignedDentist?.gdcNo,
+    address: assignedDentist?.practiceAddress
+  }
 
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Referral Detail</h1>
-        <div className="flex items-center gap-3">
-          <SearchBar placeholder="Enter Id or patient/dentist name" />
-          <DateFilter statusOptions={null} />
-        </div>
-      </div>
-      <div className="flex justify-end">
-        <Button
-          text="View Referral form"
-          href={`/dentist/referral-history/${referralId}/edit`}
-        />
-      </div>
+    <div className="min-h-screen flex flex-col gap-5">
+      <PageTopBar
+        pageHeading="Referrals Details"
+        showSearch={false}
+        showFilters={false}
+        showBackBtn={true}
+        statusOptions={[]}
+        extraBtns={
+
+          <Button
+            text="View Referral form"
+            href={`/dentist/referral-history/${id}/edit`}
+          />
+        }
+      />
       <PatientReferralDetails
         patientDetials={patientDetails}
-        dentistDetails={dentistDetails}
+        assignedDentistDetails={assignedDentistDetails}
       />
-      {UPCOMING_APPOINTMENTS.length > 0 && (
-        <AppointmentGrid
-          appointments={UPCOMING_APPOINTMENTS}
-          appointmentType="upcoming"
-        />
-      )}
-
-      {PAST_APPOINTMENTS.length > 0 && (
-        <AppointmentGrid
-          appointments={PAST_APPOINTMENTS}
-          appointmentType="past"
-        />
-      )}
+      {appointment &&
+        <AssignedAppointmentCard appointment={appointment} />
+      }
     </div>
   );
 }

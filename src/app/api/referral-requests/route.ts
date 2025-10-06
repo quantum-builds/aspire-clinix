@@ -1,5 +1,6 @@
 import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
+import { DentistReferralPageTYpe } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
 import { Prisma, ReferralRequestStatus } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
@@ -32,35 +33,42 @@ export async function GET(req: NextRequest) {
     const before = searchParams.get("before") || "";
     const after = searchParams.get("after") || "";
     const statusParam = searchParams.get("status") || "";
+    const pageType = searchParams.get("page-type") || "";
+
 
     const limit = 10;
     const skip = (page - 1) * limit;
 
     const status =
       statusParam &&
-      Object.values(ReferralRequestStatus).includes(
-        statusParam as ReferralRequestStatus
-      )
+        Object.values(ReferralRequestStatus).includes(
+          statusParam as ReferralRequestStatus
+        )
         ? (statusParam as ReferralRequestStatus)
         : undefined;
 
-    let dentistId = null;
+    let referringDentist = null;
     if (
-      token.role === TokenRoles.DENTIST ||
+      (pageType === DentistReferralPageTYpe.HISTORY && token.role === TokenRoles.DENTIST) ||
       token.role === TokenRoles.REFERRING_DENTIST
     ) {
-      dentistId = token.sub;
+      referringDentist = token.sub;
+    }
+
+    let recievingDentist = null;
+    if (
+      (pageType === DentistReferralPageTYpe.REQUEST && token.role === TokenRoles.DENTIST) ||
+      token.role === TokenRoles.RECIEVING_DENTIST
+    ) {
+      recievingDentist = token.sub;
     }
 
     let baseWhere: Prisma.ReferralRequestWhereInput = {
       ...(search && { id: { contains: search, mode: "insensitive" } }),
-      ...(dentistId && { assignedDentistId: dentistId }),
+      ...(referringDentist && { referralForm: { referralDentistId: referringDentist } }),
+      ...(recievingDentist && {assignedDentistId:recievingDentist}),
       requestStatus: status,
     };
-
-    // const referralRequests = await prisma.referralRequest.findMany({
-    //   where: { assignedDentistId: dentistId },
-    // });
 
     const [referralRequests, totalCount] = await Promise.all([
       prisma.referralRequest.findMany({
@@ -68,7 +76,7 @@ export async function GET(req: NextRequest) {
         skip,
         take: limit,
         orderBy: { createdAt: "desc" },
-        include: { referralForm: true },
+        include: { referralForm: true, assignedDentist: true },
       }),
       prisma.referralRequest.count({ where: baseWhere }),
     ]);

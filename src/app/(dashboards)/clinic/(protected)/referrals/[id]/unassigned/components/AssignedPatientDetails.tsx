@@ -2,14 +2,13 @@ interface PatientReferralDetailsProps {
   patientDetials: {
     referenceId?: string;
     name: string;
-    gender: string;
+    age: string;
     phone: string;
     email: string;
     disease: string;
   };
 
   referralDentistDetails: {
-    date: string;
     name: string;
     gdcNo: string;
     phone: string;
@@ -37,7 +36,7 @@ export default function AssignedPatientDetails({
           </div>
           <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
             <p className="flex-1">Name: {patientDetials.name}</p>
-            <p className="flex-1">Gender: {patientDetials.gender}</p>
+            <p className="flex-1">Age: {patientDetials.age}</p>
           </div>
           <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
             <p className="flex-1">Phone: {patientDetials.phone}</p>

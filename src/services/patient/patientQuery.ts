@@ -5,14 +5,14 @@ import { getAMedia } from "../s3/s3Query";
 import axios from "axios";
 import { createServerAxios } from "@/lib/server-axios";
 
-export async function getPatient() {
+export async function getPatient(email?:string) {
   try {
     const serverAxios = await createServerAxios();
-    const response = await serverAxios.get(ENDPOINTS.patient.getPatient);
+    const response = await serverAxios.get(ENDPOINTS.patient.getPatient(email));
     const responseData: Response<TPatient> = response.data;
     const patient: TPatient = responseData.data;
 
-    console.log(patient.fileUrl);
+    // console.log("url is ",patient.fileUrl);
     const upload = patient.fileUrl
       ? await getAMedia(patient.fileUrl)
       : // : "/uploads/aspire-clinic/images/placeholder.png";
@@ -31,6 +31,6 @@ export async function getPatient() {
       console.error("Error in fetching patient: ", errorMessage);
 
       return { errorMessage };
-    }
+    } 
   }
 }

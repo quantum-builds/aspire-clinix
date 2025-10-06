@@ -271,3 +271,8 @@ export enum UserRoles {
   PATIENT = "PATIENT",
   DENTIST = "DENTIST",
 }
+
+export enum DentistReferralPageTYpe{
+  HISTORY="HISTORY",
+  REQUEST="REQUEST"
+}

@@ -2,13 +2,12 @@ interface PatientReferralDetailsProps {
   patientDetials: {
     referenceId?: string;
     name: string;
-    gender: string;
+    age: string;
     phone: string;
     email: string;
     disease: string;
   };
   assignedDentistDetails: {
-    date: string;
     name: string;
     gdcNo: string;
     phone: string;
@@ -16,7 +15,6 @@ interface PatientReferralDetailsProps {
     address: string;
   };
   referralDentistDetails: {
-    date: string;
     name: string;
     gdcNo: string;
     phone: string;
@@ -49,7 +47,7 @@ export default function AssignedPatientDetails({
             <p>Phone: {patientDetials.phone}</p>
           </div>
           <div className="space-y-3">
-            <p>Gender: {patientDetials.gender}</p>
+            <p>Age: {patientDetials.age}</p>
             <p>Email: {patientDetials.email}</p>
           </div>
           <div className="space-y-3">

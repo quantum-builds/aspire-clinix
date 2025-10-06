@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
 
     const existingRequest = await prisma.referralRequest.findUnique({
       where: { id: referralRequestId },
-      include: { assignedDentist: true, referralForm: true, appointment: true },
+      include: { assignedDentist: true, referralForm: true, appointment: { include: { dentist: true } } },
     });
 
     if (!existingRequest) {
@@ -104,6 +104,67 @@ export async function GET(req: NextRequest) {
     );
   } catch (error) {
     console.log("Error in fetching referral request ", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(createResponse(false, errorMessage, null), {
+      status: 500,
+    });
+  }
+}
+
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
+    if (token.role !== TokenRoles.ADMIN) {
+      return NextResponse.json(createResponse(false, "FOrbidden", null), {
+        status: 403,
+      });
+    }
+    const referralRequestId = req.nextUrl.pathname.split("/").pop();
+    const partialReferralRequest = await req.json();
+    // const { searchParams } = new URL(req.url);
+    // const patientId = searchParams.get("patientId") || "";
+
+    if (!referralRequestId || !isValidCuid(referralRequestId)) {
+      return NextResponse.json(
+        createResponse(false, "Invalid Referral Request id.", null),
+        { status: 400 }
+      );
+    }
+
+    const referral = await prisma.referralRequest.findUnique({
+      where: { id: referralRequestId },
+    });
+
+    if (!referral) {
+      return NextResponse.json(
+        createResponse(false, "Referral request does not exist.", null),
+        { status: 404 }
+      );
+    }
+
+    const updatedReferralRequest = await prisma.referralRequest.update({
+      where: { id: referralRequestId },
+      data: partialReferralRequest,
+    });
+
+    return NextResponse.json(
+      createResponse(
+        true,
+        "Referral request Updated successfully.",
+        updatedReferralRequest
+      ),
+      { status: 200 }
+    );
+  } catch (error) {
+    console.log("Error in updating referral request", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

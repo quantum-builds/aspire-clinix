@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
 
   // Get token
   const token = await getToken({ req: request, secret });
-
+  console.log("token is ", token)
   // ---- 1. If no token ----
   if (!token) {
     if (pathname.startsWith("/patient") && !patientPublic.includes(pathname)) {
@@ -58,7 +58,7 @@ export async function middleware(request: NextRequest) {
 
   // ---- 2. If token exists ----
   const role = token.role as string;
-
+  console.log("role is ", role)
   // Redirect logged-in users away from login pages
   if (patientPublic.includes(pathname) && role === "PATIENT") {
     return NextResponse.redirect(new URL("/patient", request.url));
@@ -84,6 +84,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/patient/login", request.url));
   }
 
+  // Allow ADMINs to view dentist reports
+  if (pathname.startsWith("/dentist/appointments") && pathname.includes("/reports") && role === "ADMIN") {
+    return NextResponse.next();
+  }
+
   if (
     pathname.startsWith("/dentist") &&
     !dentistPublic.includes(pathname) &&
@@ -105,6 +110,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // ---- 4. Dentist role-specific restrictions ----
+
   if (
     pathname.startsWith("/dentist") &&
     (role === "DENTIST" ||

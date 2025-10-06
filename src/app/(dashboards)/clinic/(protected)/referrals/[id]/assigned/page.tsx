@@ -1,44 +1,77 @@
-import DateFilter from "@/app/(dashboards)/components/DateFilter";
-import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import AssignedPatientDetails from "./components/AssignedPatientDetails";
 import AssignedAppointmentCard from "./components/AppointmentCard";
-import { AppointmentDetails } from "@/types/common";
-import Button from "@/app/(dashboards)/components/Button";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 import { Suspense } from "react";
-import AssignedRequestWrapper from "./components/AssignedRequestWrapper";
+import { calculateAge } from "@/utils/formatDateTime";
+import NoContent1 from "@/app/(dashboards)/components/NoContent1";
+import { getReferralRequest } from "@/services/referralRequest/referralRequestQuery";
+import { TReferralRequest } from "@/types/referral-request";
+import { Response } from "@/types/common";
+
 
 export default async function ReferralDetailsPage(props: {
   params: { id: string };
 }) {
   const { id } = props.params;
+  const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
 
-  // console.log(referralId);
+  if (!referralRequestResponse || !referralRequestResponse.status || !referralRequestResponse.data || !referralRequestResponse.data.referralForm) {
+    return (
+      <div className="min-h-screen flex flex-col gap-5">
+        <PageTopBar
+          pageHeading="Referrals Details"
+          showSearch={false}
+          showBackBtn={true}
+          showFilters={false}
+          statusOptions={null}
+        />
+        <NoContent1 />
+      </div>
+    )
+  }
+  console.log("referral request is  ",referralRequestResponse)
+  if (!referralRequestResponse.data.assignedDentist || !referralRequestResponse.data.appointment) {
+    return (
+      <div className="min-h-screen flex flex-col gap-5">
+        <PageTopBar
+          pageHeading="Referrals Details"
+          showSearch={false}
+          showBackBtn={true}
+          showFilters={false}
+          statusOptions={null}
+        />
+        <NoContent1 text="Referral is not assigned yet!!!" />
+      </div>)
+  }
 
-  // const patientDetails = {
-  //   name: "Harry Kane",
-  //   gender: "Male",
-  //   phone: "+971 1121 2234",
-  //   email: "harrykane@gmail.com",
-  //   disease: "Tooth Decay",
-  //   referenceId: "121 110",
-  // };
+  const referralForm = referralRequestResponse.data.referralForm
+  const assignedDentist = referralRequestResponse.data.assignedDentist
+  const appointment=referralRequestResponse.data.appointment
 
-  // const dentistDetails = {
-  //   date: "July 07,2025",
-  //   name: "Harry Kane",
-  //   gdcNo: "192 168 344",
-  //   phone: "+971 1121 2234",
-  //   email: "harrykane@gmail.com",
-  //   address: "Clinic 400, Street 302, Oslo, Norway",
-  // };
+  const patientDetails = {
+    name: referralForm.patientName,
+    phone: referralForm.patientPhoneNumber,
+    email: referralForm.patientEmail,
+    disease: referralForm.referralDetails.join(","),
+    age: String(calculateAge(referralForm.patientDateOfBirth))
+  }
 
-  // const PAST_APPOINTMENTS: AppointmentDetails = {
-  //   date: "July 07, 2025",
-  //   time: "12:30 PM",
-  //   status: "Pending",
-  //   appointmentNumber: "1621-115009",
-  // };
+  const dentistDetails = {
+    name: referralForm.referralName,
+    phone: referralForm.referralPhoneNumber,
+    email: referralForm.referralEmail,
+    gdcNo: referralForm.referralGDC,
+    address: referralForm.patientAddress
+  }
+
+  const assignedDentistDetails = {
+    name: assignedDentist?.fullName,
+    phone: assignedDentist?.phoneNumber,
+    email: assignedDentist?.email,
+    gdcNo: assignedDentist?.gdcNo,
+    address: assignedDentist?.practiceAddress
+  }
+
 
   return (
     <div className="min-h-screen flex flex-col gap-5">
@@ -50,16 +83,15 @@ export default async function ReferralDetailsPage(props: {
         statusOptions={[]}
       />
 
-      <Suspense key={id} fallback={<div>Loading...</div>}>
-        <AssignedRequestWrapper id={id} />
-      </Suspense>
-      {/* <AssignedPatientDetails
+      <AssignedPatientDetails
         patientDetials={patientDetails}
         assignedDentistDetails={dentistDetails}
-        referralDentistDetails={dentistDetails}
+        referralDentistDetails={assignedDentistDetails}
       />
 
-      <AssignedAppointmentCard appointment={PAST_APPOINTMENTS} /> */}
+      <AssignedAppointmentCard appointment={appointment} />
     </div>
   );
 }
+
+

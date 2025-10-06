@@ -1,43 +1,55 @@
 import PatientReferralDetails from "./components/PatientReferralDetials";
 import AppointmentGrid from "./components/AppointmentGrid";
-import { AppointmentDetails } from "@/types/common";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
+import { getReferralRequest } from "@/services/referralRequest/referralRequestQuery";
+import { TReferralRequest } from "@/types/referral-request";
+import { Response } from "@/types/common";
+import NoContent1 from "@/app/(dashboards)/components/NoContent1";
+import { calculateAge } from "@/utils/formatDateTime";
+import UpcomingAppointmentCard from "../../appointments/upcoming/components/UpcomingAppointmentCard";
+import AssignedAppointmentCard from "@/app/(dashboards)/clinic/(protected)/referrals/[id]/assigned/components/AppointmentCard";
 
-type PageProps = {
-  params: {
-    id: string;
-  };
-};
 
-export default async function ReferralDetailsPage({ params }: PageProps) {
-  const referralId = params.id;
-  console.log(referralId);
+export default async function ReferralDetailsPage(props: {
+  params: { id: string };
+}) {
+  const { id } = props.params;
+
+  const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
+
+  if (!referralRequestResponse || !referralRequestResponse.status || !referralRequestResponse.data || !referralRequestResponse.data.referralForm) {
+    return (
+      <div className="min-h-screen flex flex-col gap-5">
+        <PageTopBar
+          pageHeading="Referrals Details"
+          showSearch={false}
+          showBackBtn={true}
+          showFilters={false}
+          statusOptions={null}
+        />
+        <NoContent1 />
+      </div>
+    )
+  }
+
+  const referralForm = referralRequestResponse.data.referralForm
+  const appointment = referralRequestResponse.data.appointment
 
   const patientDetails = {
-    name: "Harry Kane",
-    gender: "Male",
-    phone: "+971 1121 2234",
-    email: "harrykane@gmail.com",
-    disease: "Tooth Decay",
-  };
+    name: referralForm.patientName,
+    phone: referralForm.patientPhoneNumber,
+    email: referralForm.patientEmail,
+    disease: referralForm.referralDetails.join(","),
+    age: String(calculateAge(referralForm.patientDateOfBirth))
+  }
 
   const dentistDetails = {
-    date: "July 07,2025",
-    name: "Harry Kane",
-    gdcNo: "192 168 344",
-    phone: "+971 1121 2234",
-    email: "harrykane@gmail.com",
-    address: "Clinic 400, Street 302, Oslo, Norway",
-  };
-
-  const APPOINTMENTS: AppointmentDetails[] = [
-    {
-      date: "July 07, 2025",
-      time: "12:30 PM",
-      status: "Pending",
-      appointmentNumber: "1621-115009",
-    },
-  ];
+    name: referralForm.referralName,
+    phone: referralForm.referralPhoneNumber,
+    email: referralForm.referralEmail,
+    gdcNo: referralForm.referralGDC,
+    address: referralForm.patientAddress
+  }
 
   return (
     <div className="w-full min-h-[98.4vh] flex flex-col gap-5">
@@ -51,9 +63,11 @@ export default async function ReferralDetailsPage({ params }: PageProps) {
         patientDetials={patientDetails}
         dentistDetails={dentistDetails}
       />
-      {APPOINTMENTS.length > 0 && (
-        <AppointmentGrid appointments={APPOINTMENTS} />
-      )}
+
+      {
+        appointment &&
+        <AssignedAppointmentCard appointment={appointment} />
+      }
     </div>
   );
 }

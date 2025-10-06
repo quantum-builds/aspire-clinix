@@ -1,52 +1,63 @@
-import DateFilter from "@/app/(dashboards)/components/DateFilter";
-import SearchBar from "@/app/(dashboards)/components/SearchBar";
 import AssignedPatientDetails from "./components/AssignedPatientDetails";
 import Button from "@/app/(dashboards)/components/Button";
+import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
+import { TReferralRequest } from "@/types/referral-request";
+import { getReferralRequest } from "@/services/referralRequest/referralRequestQuery";
+import { Response } from "@/types/common";
+import NoContent1 from "@/app/(dashboards)/components/NoContent1";
+import { calculateAge } from "@/utils/formatDateTime";
 
-type PageProps = {
-  params: {
-    id: string;
-  };
-};
+export default async function ReferralDetailsPage(props: { params: { id: string }; }) {
+  const { id } = props.params;
+  const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
 
-export default async function ReferralDetailsPage({ params }: PageProps) {
-  const referralId = params.id;
+  if (!referralRequestResponse || !referralRequestResponse.status || !referralRequestResponse.data || !referralRequestResponse.data.referralForm) {
+    return (
+      <div className="min-h-screen flex flex-col gap-5">
+        <PageTopBar
+          pageHeading="Referrals Details"
+          showSearch={false}
+          showBackBtn={true}
+          showFilters={false}
+          statusOptions={null}
+        />
+        <NoContent1 />
+      </div>
+    )
+  }
 
-  console.log(referralId);
+  const referralForm=referralRequestResponse.data.referralForm
+  const patientDetails={
+    name:referralForm.patientName,
+    phone:referralForm.patientPhoneNumber,
+    email:referralForm.patientEmail,
+    disease:referralForm.referralDetails.join(","),
+    age:String(calculateAge(referralForm.patientDateOfBirth))
+  }
 
-  const patientDetails = {
-    name: "Harry Kane",
-    gender: "Male",
-    phone: "+971 1121 2234",
-    email: "harrykane@gmail.com",
-    disease: "Tooth Decay",
-    referenceId: "121 110",
-  };
-
-  const dentistDetails = {
-    date: "July 07,2025",
-    name: "Harry Kane",
-    gdcNo: "192 168 344",
-    phone: "+971 1121 2234",
-    email: "harrykane@gmail.com",
-    address: "Clinic 400, Street 302, Oslo, Norway",
-  };
+  const dentistDetails={
+    name:referralForm.referralName,
+    phone:referralForm.referralPhoneNumber,
+    email:referralForm.referralEmail,
+    gdcNo:referralForm.referralGDC,
+    address:referralForm.patientAddress
+  }
 
   return (
-    <div className=" w-full h-full flex flex-col gap-7">
-      <div className="flex items-center justify-between">
-        <h1 className="font-medium text-3xl">Referral Details</h1>
-        <div className="flex items-center gap-3">
-          <SearchBar placeholder="Enter Id or patient/dentist name" />
-          <DateFilter statusOptions={null} />
-        </div>
-      </div>
-      <div className="flex justify-end">
-        <Button
-          text="Assign Patient"
-          href={`/clinic/referrals/${referralId}/assigned/edit`}
-        />
-      </div>
+    <div className="min-h-screen flex flex-col gap-5">
+      <PageTopBar
+        pageHeading="Referrals Details"
+        showSearch={false}
+        showBackBtn={true}
+        showFilters={false}
+        statusOptions={null}
+        extraBtns={
+          <Button
+            text="Book an Appointment"
+            href={`/clinic/referrals/${id}/unassigned/edit`}
+          />
+        }
+      />
       <AssignedPatientDetails
         patientDetials={patientDetails}
         referralDentistDetails={dentistDetails}

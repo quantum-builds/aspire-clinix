@@ -17,3 +17,4 @@ export type TPatient = Omit<TPatientCreate, "password"> & {
   updatedAt: Date;
   file?: string;
 };
+

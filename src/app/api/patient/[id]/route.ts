@@ -1,18 +1,25 @@
+import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
+import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const token = await getToken({ req });
 
-  // if (!token || token.role !== "patient") {
-  //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
-  //     status: 401,
-  //   });
-  // }
+  if (!token) {
+    return NextResponse.json(createResponse(false, "Unauthorized", null), {
+      status: 401,
+    });
+  }
 
-  // get id from the token but for now will be getting in search params
+  if (token.role === TokenRoles.PATIENT || token.role === TokenRoles.ADMIN) {
+    return NextResponse.json(createResponse(false, "Forbidden", null), {
+      status: 403,
+    });
+  }
+
   try {
     const patientId = req.nextUrl.pathname.split("/").pop();
 
@@ -23,6 +30,12 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    if (token.role === TokenRoles.PATIENT && patientId !== token.sub) {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
+        status: 403,
+      });
+    }
+    
     const patient = await prisma.patient.findUnique({
       where: { id: patientId },
       select: {
