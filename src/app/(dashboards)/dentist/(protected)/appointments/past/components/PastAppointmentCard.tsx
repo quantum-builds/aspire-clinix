@@ -161,7 +161,7 @@ export default function PastAppointmentCard({
         isOpen={isConfirmModalOpen}
         onClose={() => {
           setIsConfirmModalOpen(false);
-          setMenuOpen(false); // ✅ safety reset
+          setMenuOpen(false); 
         }}
         isPending={updateAppointmentLoader}
         onConfirm={handleStatusChange}

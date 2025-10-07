@@ -3,26 +3,30 @@ import { DentistReferralPageTYpe, Response } from "@/types/common";
 import { getReferralRequests } from "@/services/referralRequest/referralRequestQuery";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import Pagination from "@/app/(dashboards)/components/Pagination";
-import StatsCardWrapper from "./StatsCardWrapper";
 import { ReferralHistoryDataTable } from "./ReferralHistoryDataTable";
 
 interface ReferralHistoryDataTableWrapperProps {
   query: string;
   page: number;
   status: string;
+  on: string
+  before: string
+  after: string
 }
 
 export default async function ReferralHistoryDataTableWrapper({
   query,
   page,
   status,
+  on, before, after
 }: ReferralHistoryDataTableWrapperProps) {
   const response: Response<TReferralRequestResponse> =
     await getReferralRequests({
       page: page,
       search: query,
       status: status,
-      pageType:DentistReferralPageTYpe.HISTORY
+      pageType: DentistReferralPageTYpe.HISTORY,
+      on: on, before: before, after: after
     });
 
   if (
@@ -43,7 +47,6 @@ export default async function ReferralHistoryDataTableWrapper({
   console.log(referralRequests);
   return (
     <>
-      <StatsCardWrapper />
       <div className="min-w-full overflow-x-auto">
         <ReferralHistoryDataTable entries={referralRequests} />
       </div>

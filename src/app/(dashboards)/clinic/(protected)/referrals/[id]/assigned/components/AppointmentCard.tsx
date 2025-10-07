@@ -12,7 +12,7 @@ export default function AssignedAppointmentCard({
   return (
     <div className="bg-white rounded-2xl p-6 space-y-10">
       <p className="font-medium text-2xl">Appointment</p>
-      <div className="w-full">
+      <div className="lg50:w-3/4 1xl:w-2/3 2xl:w-1/2">
         <div
           className="border border-green rounded-2xl p-6 space-y-8"
           key={appointment.id}

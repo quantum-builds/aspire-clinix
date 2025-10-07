@@ -2,7 +2,6 @@ import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
-import { Prisma, ReferralRequestStatus } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -169,5 +168,83 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,
     });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+
+
+  const referralRequestId = req.nextUrl.pathname.split("/").pop();
+
+  try {
+    const token = await getToken({ req });
+
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
+    if (token.role !== TokenRoles.ADMIN && token.role !== TokenRoles.DENTIST && token.role !== TokenRoles.REFERRING_DENTIST) {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
+        status: 403,
+      });
+    }
+
+    if (!referralRequestId || !isValidCuid(referralRequestId)) {
+      return NextResponse.json(
+        { message: "Invalid Request Id." },
+        { status: 400 }
+      );
+    }
+
+    const referralRequest = await prisma.referralRequest.findUnique({
+      where: { id: referralRequestId },
+      include: { referralForm: true }
+    });
+
+    if (!referralRequest) {
+      return NextResponse.json(
+        { message: "Referral request with this Id does not exists." },
+        { status: 404 }
+      );
+    }
+
+    if (token.role !== TokenRoles.ADMIN && referralRequest.referralForm.referralDentistId != token.sub) {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
+        status: 403,
+      });
+    }
+    await prisma.$transaction(async (tx) => {
+      // finally delete referral request
+      await tx.referralRequest.delete({
+        where: { id: referralRequestId },
+      });
+
+      // delete appointment if it exists
+      if (referralRequest.appointmentId) {
+        await tx.appointment.delete({
+          where: { id: referralRequest.appointmentId },
+        });
+      }
+
+      // delete referral form if it exists
+      if (referralRequest.referralFormId) {
+        await tx.referralForm.delete({
+          where: { id: referralRequest.referralFormId },
+        });
+      }
+    });
+
+    return NextResponse.json(
+      { message: "Referral deleted successfully." },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.log(err)
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

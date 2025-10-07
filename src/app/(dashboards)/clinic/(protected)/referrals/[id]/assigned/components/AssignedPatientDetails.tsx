@@ -37,9 +37,6 @@ export default function AssignedPatientDetails({
       <div className="bg-gray p-6 space-y-5 rounded-2xl">
         <div className="flex items-center justify-between">
           <p className="text-2xl font-medium text-green">Patient</p>
-          <p className="text-xl italic text-green">
-            Reference Number: REF {patientDetials.referenceId}
-          </p>
         </div>
         <div className="flex  1xl:gap-[100px] gap-10 text-lg">
           <div className="space-y-3">

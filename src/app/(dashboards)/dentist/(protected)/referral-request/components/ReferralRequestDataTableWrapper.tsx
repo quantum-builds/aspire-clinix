@@ -10,19 +10,24 @@ interface ReferralRequestDataTableWrapperProps {
   query: string;
   page: number;
   status: string;
+  on: string
+  before: string
+  after: string
 }
 
 export default async function ReferralRequestDataTableWrapper({
   query,
   page,
   status,
+  on, before, after
 }: ReferralRequestDataTableWrapperProps) {
   const response: Response<TReferralRequestResponse> =
     await getReferralRequests({
       page: page,
       search: query,
       status: status,
-      pageType:DentistReferralPageTYpe.REQUEST
+      pageType: DentistReferralPageTYpe.REQUEST,
+      on: on, before: before, after: after
     });
 
   if (
@@ -43,7 +48,6 @@ export default async function ReferralRequestDataTableWrapper({
   console.log(referralRequests);
   return (
     <>
-      <StatsCardWrapper />
       <div className="min-w-full overflow-x-auto">
         <ReferralRequestDataTable entries={referralRequests} />
       </div>

@@ -148,20 +148,21 @@ export const ENDPOINTS = {
 
   referralRequest: {
     get: (
+      statsOnly:boolean,
       page?: number,
       search?: string,
       on?: string,
       before?: string,
       after?: string,
       status?: string,
-      pageType?:string
+      pageType?:string,
     ) =>
       `/api/referral-requests?page=${page ?? 1}&search=${search ?? ""}&on=${
         on ?? ""
-      }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}&page-type=${pageType??""}`,
+      }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}&page-type=${pageType??""}&stats-only=${statsOnly}`,
     getById: (id: string) => `/api/referral-requests/${id}`,
     patch: (id: string) => `/api/referral-requests/${id}`,
-
+    delete: (id: string) => `/api/referral-requests/${id}`,
   },
 
   email: {
@@ -222,10 +223,8 @@ export const ENDPOINTS = {
         dateType ?? ""
       }&status=${status ?? ""}`,
     post: "/api/appointments",
-    patch: (id: string, patientId?: string, dentistId?: string) =>
-      `/api/appointments/${id}?patientId=${patientId ?? ""}&dentistId=${
-        dentistId ?? ""
-      }`,
+    patch: (id: string) =>
+      `/api/appointments/${id}`,
     getById: (id: string) => `/api/appointments/${id}`,
   },
 

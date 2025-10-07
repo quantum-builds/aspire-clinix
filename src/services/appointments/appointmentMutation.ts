@@ -7,8 +7,6 @@ export const usePatchAppointment = () => {
     mutationFn: async ({
       appointment,
       id,
-      patientId,
-      dentistId,
     }: {
       appointment: Partial<TAppointmentCreate>;
       id: string;
@@ -16,7 +14,7 @@ export const usePatchAppointment = () => {
       dentistId?: string;
     }) => {
       const response = await axiosInstance.patch(
-        ENDPOINTS.appointemt.patch(id, patientId, dentistId),
+        ENDPOINTS.appointemt.patch(id),
         appointment
       );
       return response.data.data;

@@ -17,7 +17,7 @@ interface PatientReferralDetailsProps {
   };
 }
 
-export default function AssignedPatientDetails({
+export default function UnAssignedPatientDetails({
   patientDetials,
   referralDentistDetails,
 }: PatientReferralDetailsProps) {

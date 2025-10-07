@@ -22,6 +22,9 @@ import { useRouter } from "next/navigation";
 import { TReferralRequest } from "@/types/referral-request";
 import { ReferralRequestStatus } from "@prisma/client";
 import { formatDate } from "@/utils/formatDateTime";
+import { useDeleteReferralRequests } from "@/services/referralRequest/referralRequestMutation";
+import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
+import { useState } from "react";
 
 interface ReferralHistoryDataTableProps {
   entries: TReferralRequest[];
@@ -31,6 +34,26 @@ export function ReferralHistoryDataTable({
   entries,
 }: ReferralHistoryDataTableProps) {
   const router = useRouter();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+
+  const { mutate: deleteReferralRequest, isPending } =
+    useDeleteReferralRequests();
+
+  const handleDeleteReferralRequest = () => {
+    if (!selectedRequestId) return;
+
+    deleteReferralRequest(
+      { id: selectedRequestId },
+      {
+        onSuccess: () => {
+          router.refresh();
+          setIsDeleteModalOpen(false);
+          setSelectedRequestId(null);
+        }
+      }
+    );
+  };
 
   return (
     <div className="w-full overflow-x-auto">
@@ -63,8 +86,10 @@ export function ReferralHistoryDataTable({
             <TableRow
               key={entry.id}
               className="bg-dashboardBackground hover:bg-gray cursor-pointer text-lg text-dashboardTextBlack"
-              onClick={() =>
+              onClick={(e) => {
+                e.stopPropagation();
                 router.push(`/dentist/referral-history/${entry.id}`)
+              }
               }
             >
               <TableCell className="px-6 py-4 rounded-l-full">
@@ -81,11 +106,10 @@ export function ReferralHistoryDataTable({
               <TableCell className="px-6 py-4">
                 <div className="flex gap-2 items-center">
                   <div
-                    className={`size-3 rounded-[4px] ${
-                      entry.requestStatus === ReferralRequestStatus.ASSIGNED
-                        ? "bg-green"
-                        : "bg-[#fcd833]"
-                    }`}
+                    className={`size-3 rounded-[4px] ${entry.requestStatus === ReferralRequestStatus.ASSIGNED
+                      ? "bg-green"
+                      : "bg-[#fcd833]"
+                      }`}
                   />
                   {entry.requestStatus}
                 </div>
@@ -107,19 +131,20 @@ export function ReferralHistoryDataTable({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
-                      onClick={() => alert(`Viewing ${entry.id}`)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/dentist/referral-history/${entry.id}`)
+                      }}
                     >
                       View
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => alert(`Editing ${entry.id}`)}
-                    >
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
                       className="text-red-600"
-                      onClick={() => alert(`Deleting ${entry.id}`)}
-                    >
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedRequestId(entry.id);
+                        setIsDeleteModalOpen(true);
+                      }}                    >
                       Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -129,6 +154,17 @@ export function ReferralHistoryDataTable({
           ))}
         </TableBody>
       </Table>
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        isPending={isPending}
+        onConfirm={handleDeleteReferralRequest}
+        title="Delete Referral Request"
+        description="Are you sure you want to delete this request? This action cannot be undone."
+        cancelText="No, Keep Request"
+        confirmText="Yes, Delete Request"
+      />
     </div>
   );
 }

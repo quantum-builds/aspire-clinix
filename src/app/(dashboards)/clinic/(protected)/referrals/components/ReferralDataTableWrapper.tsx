@@ -3,25 +3,29 @@ import { Response } from "@/types/common";
 import { getReferralRequests } from "@/services/referralRequest/referralRequestQuery";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import Pagination from "@/app/(dashboards)/components/Pagination";
-import { ClinicReferralDataTable } from "./ClinicReferralDataTable";
-import StatsCardWrapper from "./StatsCardWrapper";
+import { ClinicReferralDataTable } from "./ReferralDataTable";
 
 interface ReferralDataTableWrapperProps {
   query: string;
   page: number;
   status: string;
+  on: string
+  before: string
+  after: string
 }
 
 export default async function ReferralatDaTableWrapper({
   query,
   page,
   status,
+  on, before, after
 }: ReferralDataTableWrapperProps) {
   const response: Response<TReferralRequestResponse> =
     await getReferralRequests({
       page: page,
       search: query,
       status: status,
+      on: on, before: before, after: after
     });
 
   if (
@@ -39,10 +43,8 @@ export default async function ReferralatDaTableWrapper({
   const referralRequests = response.data.referralRequests;
   const total = response.data.pagination.totalPages;
 
-  console.log(referralRequests);
   return (
     <>
-      <StatsCardWrapper />
       <div className="min-w-full overflow-x-auto">
         <ClinicReferralDataTable entries={referralRequests} />
       </div>

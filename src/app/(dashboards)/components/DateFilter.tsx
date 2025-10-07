@@ -134,9 +134,8 @@ export default function DateFilter({
                       {statusOptions.map((option) => (
                         <DropdownMenuItem
                           key={option.value}
-                          className={`px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors ${
-                            status === option.value ? "bg-green-50" : ""
-                          }`}
+                          className={`px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors ${status === option.value ? "bg-green-50" : ""
+                            }`}
                           onClick={() => updateQuery("status", option.value)}
                         >
                           {capitalize(option.value)}
@@ -156,7 +155,7 @@ export default function DateFilter({
               {showDateFilter && (
                 <>
                   {/* On a date */}
-                  <div className="w-full space-y-[2px]">
+                  < div className="w-full space-y-[2px]">
                     <p className="text-green font-medium">On a date</p>
                     <Popover modal={false}>
                       <PopoverTrigger className="w-full relative">
@@ -168,11 +167,7 @@ export default function DateFilter({
                           className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
                         />
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
-                          <Image
-                            src={CalenderInputIconV2}
-                            alt="Dropdown Icon"
-                            className="w-5 h-5"
-                          />
+                          <Image src={CalenderInputIconV2} alt="Dropdown Icon" className="w-5 h-5" />
                         </div>
                       </PopoverTrigger>
                       <PopoverContent side="bottom" sideOffset={10} align="end">
@@ -188,10 +183,23 @@ export default function DateFilter({
                         />
                       </PopoverContent>
                     </Popover>
+
+                    {onDate && (
+                      <button
+                        onClick={() => {
+                          setOnDate(null);
+                          updateQuery("on", null);
+                        }}
+                        className="text-sm text-green mt-1 underline hover:opacity-80"
+                      >
+                        Clear selection
+                      </button>
+                    )}
                   </div>
 
                   {/* After & Before */}
                   <div className="flex gap-6">
+                    {/* After */}
                     <div className="w-full space-y-[2px]">
                       <p className="text-green font-medium">After a date</p>
                       <Popover modal={false}>
@@ -204,22 +212,13 @@ export default function DateFilter({
                             className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
                           />
                           <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
-                            <Image
-                              src={CalenderInputIconV2}
-                              alt="Dropdown Icon"
-                              className="w-5 h-5"
-                            />
+                            <Image src={CalenderInputIconV2} alt="Dropdown Icon" className="w-5 h-5" />
                           </div>
                         </PopoverTrigger>
-                        <PopoverContent
-                          side="bottom"
-                          sideOffset={10}
-                          align="end"
-                        >
+                        <PopoverContent side="bottom" sideOffset={10} align="end">
                           <Calendar
                             mode="single"
                             selected={afterDate || undefined}
-                            disabled={{ before: new Date() }}
                             onSelect={(date) => {
                               if (!date) return;
                               setAfterDate(date);
@@ -229,8 +228,21 @@ export default function DateFilter({
                           />
                         </PopoverContent>
                       </Popover>
+
+                      {afterDate && (
+                        <button
+                          onClick={() => {
+                            setAfterDate(null);
+                            updateQuery("after", null);
+                          }}
+                          className="text-sm text-green mt-1 underline hover:opacity-80"
+                        >
+                          Clear selection
+                        </button>
+                      )}
                     </div>
 
+                    {/* Before */}
                     <div className="w-full space-y-[2px]">
                       <p className="text-green font-medium">Before a date</p>
                       <Popover modal={false}>
@@ -243,22 +255,13 @@ export default function DateFilter({
                             className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
                           />
                           <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
-                            <Image
-                              src={CalenderInputIconV2}
-                              alt="Dropdown Icon"
-                              className="w-5 h-5"
-                            />
+                            <Image src={CalenderInputIconV2} alt="Dropdown Icon" className="w-5 h-5" />
                           </div>
                         </PopoverTrigger>
-                        <PopoverContent
-                          side="bottom"
-                          sideOffset={10}
-                          align="end"
-                        >
+                        <PopoverContent side="bottom" sideOffset={10} align="end">
                           <Calendar
                             mode="single"
                             selected={beforeDate || undefined}
-                            disabled={{ after: new Date() }}
                             onSelect={(date) => {
                               if (!date) return;
                               setBeforeDate(date);
@@ -268,6 +271,18 @@ export default function DateFilter({
                           />
                         </PopoverContent>
                       </Popover>
+
+                      {beforeDate && (
+                        <button
+                          onClick={() => {
+                            setBeforeDate(null);
+                            updateQuery("before", null);
+                          }}
+                          className="text-sm text-green mt-1 underline hover:opacity-80"
+                        >
+                          Clear selection
+                        </button>
+                      )}
                     </div>
                   </div>
                 </>
@@ -276,6 +291,6 @@ export default function DateFilter({
           </div>
         </div>
       </PopoverContent>
-    </Popover>
+    </Popover >
   );
 }

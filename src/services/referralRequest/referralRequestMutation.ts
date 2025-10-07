@@ -19,3 +19,19 @@ export const usePatchReferralRequest = () => {
     },
   });
 };
+
+export const useDeleteReferralRequests = () => {
+  return useMutation({
+    mutationFn: async ({
+      id,
+    }: {
+      id: string;
+    }) => {
+      const response = await axiosInstance.delete(
+        ENDPOINTS.referralRequest.delete(id)
+      );
+      return response.data.data;
+    },
+  });
+};
+

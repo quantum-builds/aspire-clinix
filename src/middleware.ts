@@ -40,7 +40,6 @@ export async function middleware(request: NextRequest) {
 
   // Get token
   const token = await getToken({ req: request, secret });
-  console.log("token is ", token)
   // ---- 1. If no token ----
   if (!token) {
     if (pathname.startsWith("/patient") && !patientPublic.includes(pathname)) {
@@ -58,7 +57,6 @@ export async function middleware(request: NextRequest) {
 
   // ---- 2. If token exists ----
   const role = token.role as string;
-  console.log("role is ", role)
   // Redirect logged-in users away from login pages
   if (patientPublic.includes(pathname) && role === "PATIENT") {
     return NextResponse.redirect(new URL("/patient", request.url));

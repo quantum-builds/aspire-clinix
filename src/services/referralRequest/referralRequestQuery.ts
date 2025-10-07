@@ -14,7 +14,8 @@ export async function getReferralRequests({
   before,
   after,
   status,
-  pageType
+  pageType,
+  statsOnly=false
 }: {
   page?: number;
   search?: string;
@@ -23,22 +24,22 @@ export async function getReferralRequests({
   after?: string;
   status?: string;
   pageType?:string
+  statsOnly?:boolean
 }) {
   try {
     const serverAxios = await createServerAxios();
     const response = await serverAxios.get(
-      ENDPOINTS.referralRequest.get(page, search, on, before, after, status,pageType)
+      ENDPOINTS.referralRequest.get(statsOnly,page, search, on, before, after, status,pageType)
     );
 
-    const responseData: Response<TReferralRequestResponse> = response.data;
-    return responseData;
+    return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       return error.response.data;
     } else {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      console.error("Error in fetching appointments: ", errorMessage);
+      console.error("Error in fetching referral requests: ", errorMessage);
 
       return { errorMessage };
     }

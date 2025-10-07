@@ -32,26 +32,26 @@ export function ReferralRequestDataTable({
   const router = useRouter();
 
   return (
-    <div className="w-full overflow-x-auto bg-dashboardBarBackground rounded-2xl px-4 pb-4 pt-4 tracking-tightest">
+    <div className="w-full overflow-x-auto">
       <Table className="table-auto border-separate border-spacing-y-3 min-w-max">
         <TableHeader>
-          <TableRow className="bg-dashboardBackground">
-            <TableHead className="px-6 py-4  rounded-l-full text-xl text-dashboardTextBlack font-medium">
+          <TableRow >
+            <TableHead className="px-6 py-4 bg-dashboardBarBackground rounded-l-full text-xl text-dashboardTextBlack font-medium">
               ID#
             </TableHead>
-            <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Patient Name
             </TableHead>
-            <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 bg-dashboardBarBackground  text-xl text-dashboardTextBlack font-medium">
               Referring Dentist
             </TableHead>
             {/* <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
               Disease
             </TableHead> */}
-            <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 bg-dashboardBarBackground  text-xl text-dashboardTextBlack font-medium">
               Referral Date
             </TableHead>
-            <TableHead className="px-6 py-4  rounded-r-full text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4  bg-dashboardBarBackground rounded-r-full text-xl text-dashboardTextBlack font-medium">
               Actions
             </TableHead>
           </TableRow>
@@ -62,8 +62,10 @@ export function ReferralRequestDataTable({
             <TableRow
               key={entry.id}
               className="text-lg hover:bg-gray text-dashboardTextBlack cursor-pointer"
-              onClick={() =>
+              onClick={(e) => {
+                e.stopPropagation()
                 router.push(`/dentist/referral-request/${entry.id}`)
+              }
               }
             >
               <TableCell className="px-6 py-4 rounded-l-full">
@@ -93,20 +95,13 @@ export function ReferralRequestDataTable({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
-                      onClick={() => alert(`Viewing ${entry.id}`)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        router.push(`/dentist/referral-request/${entry.id}`)
+                      }
+                      }
                     >
                       View
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => alert(`Editing ${entry.id}`)}
-                    >
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="text-red-600"
-                      onClick={() => alert(`Deleting ${entry.id}`)}
-                    >
-                      Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

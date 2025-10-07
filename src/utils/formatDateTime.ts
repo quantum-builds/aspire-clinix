@@ -15,7 +15,7 @@ export function calculateAge(dateOfBirth: string | Date) {
     age--;
   }
 
-  return age;
+  return Math.max(age, 0);
 }
 
 export const formatTimeForInput = (date: string | Date) => {

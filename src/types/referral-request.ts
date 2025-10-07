@@ -28,3 +28,22 @@ export type TReferralRequestResponse = {
   referralRequests: TReferralRequest[];
   pagination: TReferralRequestPagination;
 };
+
+export type TReferralRequestStasts = {
+  totalReferrals: {
+    count: number,
+    percentageChange: number
+  };
+  assignedReferrals: {
+    count: number,
+    percentageChange: number
+  };
+  unassignedReferrals: {
+    count: number,
+    percentageChange: number
+  };
+  averageReferrals: {
+    count: number,
+    percentageChange: number
+  };
+}

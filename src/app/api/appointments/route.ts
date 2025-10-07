@@ -44,9 +44,9 @@ export async function GET(req: NextRequest) {
 
     const status =
       statusParam &&
-      Object.values(AppointmentStatus).includes(
-        statusParam as AppointmentStatus
-      )
+        Object.values(AppointmentStatus).includes(
+          statusParam as AppointmentStatus
+        )
         ? (statusParam as AppointmentStatus)
         : undefined;
 
@@ -57,7 +57,28 @@ export async function GET(req: NextRequest) {
       state: status, // always set, defaults to PENDING
     };
 
-    // Date filters (on, before, after) have same precedence
+    // // Date filters (on, before, after) have same precedence
+    // if (on || before || after) {
+    //   baseWhere.date = {
+    //     ...(on && {
+    //       gte: new Date(on),
+    //       lt: new Date(new Date(on).setDate(new Date(on).getDate() + 1)),
+    //     }),
+    //     ...(before && { lte: new Date(before) }),
+    //     ...(after && { gte: new Date(after) }),
+    //   };
+    // } else if (dateType === AppointmentDateType.PAST) {
+    //   baseWhere.date = { lt: new Date() };
+    //   // baseWhere.finishTime = { lt: new Date() };
+    // } else if (dateType === AppointmentDateType.UPCOMING) {
+    //   baseWhere.date = { gte: new Date() };
+    //   // baseWhere.startTime = { gte: new Date() };
+    // }
+
+    const now = new Date();
+    const todayStart = new Date(now.setHours(0, 0, 0, 0));
+    const todayEnd = new Date(now.setHours(23, 59, 59, 999));
+
     if (on || before || after) {
       baseWhere.date = {
         ...(on && {
@@ -68,13 +89,35 @@ export async function GET(req: NextRequest) {
         ...(after && { gte: new Date(after) }),
       };
     } else if (dateType === AppointmentDateType.PAST) {
-      // baseWhere.date = { lt: new Date() };
-      baseWhere.finishTime = { lt: new Date() };
+      baseWhere = {
+        ...baseWhere,
+        OR: [
+          // past appointments before today
+          { date: { lt: todayStart } },
+          // appointments today that already finished
+          {
+            date: { gte: todayStart, lte: todayEnd },
+            finishTime: { lt: new Date() },
+          },
+        ],
+      };
     } else if (dateType === AppointmentDateType.UPCOMING) {
-      // baseWhere.date = { gte: new Date() };
-      baseWhere.startTime = { gte: new Date() };
+      baseWhere = {
+        ...baseWhere,
+        OR: [
+          // appointments after today
+          { date: { gt: todayEnd } },
+          // appointments today that haven't started yet
+          {
+            date: { gte: todayStart, lte: todayEnd },
+            startTime: { gte: new Date() },
+          },
+        ],
+      };
     }
 
+
+    console.log(baseWhere)
     const [appointments, totalCount] = await Promise.all([
       prisma.appointment.findMany({
         where: baseWhere,
@@ -120,7 +163,7 @@ export async function POST(req: NextRequest) {
   try {
     const appointment = await req.json();
     const newAppointment = await prisma.appointment.create({
-       data: {
+      data: {
         dentistId: appointment.dentistId,
         practiceId: appointment.practiceId,
         patientId: appointment.patientId,
@@ -130,7 +173,7 @@ export async function POST(req: NextRequest) {
         startTime: new Date(appointment.startTime),
         finishTime: new Date(appointment.finishTime),
       },
-    }); 
+    });
 
     return NextResponse.json(
       createResponse(true, "Appointment created successfully", newAppointment),

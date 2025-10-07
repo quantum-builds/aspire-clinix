@@ -2,6 +2,7 @@ import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
+import { ReferralRequestStatus } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -81,22 +82,36 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// we will be geting the id of patient or dentist from token but for now give it in searchOaram
 export async function PATCH(req: NextRequest) {
   try {
-    // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    // if (!token || token.role !== "patient") {
-    //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
-    //     status: 401,
-    //   });
-    // }
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
 
     const appointmentId = req.nextUrl.pathname.split("/").pop();
     const partialAppointment = await req.json();
-    const { searchParams } = new URL(req.url);
-    const patientId = searchParams.get("patientId") || undefined;
-    const dentistId = searchParams.get("dentistId") || undefined;
+    
+    let patientId = undefined;
+    let dentistId = undefined;
+    if (token.role === TokenRoles.PATIENT) {
+      patientId = token.sub;
+    } else if (
+      token.role === TokenRoles.DENTIST ||
+      token.role === TokenRoles.RECIEVING_DENTIST
+    ) {
+      dentistId = token.sub;
+    } else if (token.role == TokenRoles.REFERRING_DENTIST) {
+      return NextResponse.json(
+        createResponse(false, "You are forbidden to view this data", null),
+        {
+          status: 403,
+        }
+      );
+    }
 
     if (!appointmentId || !isValidCuid(appointmentId)) {
       return NextResponse.json(
@@ -116,49 +131,42 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    console.log("patient id is ", patientId);
-    console.log("appointment patient id is ", appointment.patientId);
-
-    console.log("dentist id is ", dentistId);
-    console.log("appointment dentist id is ", appointment.dentistId);
-    if (
-      patientId &&
-      patientId.trim().length > 0 &&
-      appointment.patientId !== patientId
-    ) {
-      console.log("hey there in patient");
-    }
-
-    if (
-      dentistId &&
-      dentistId.trim().length > 0 &&
-      appointment.dentistId !== dentistId
-    ) {
-      console.log("hey there in detist");
-    }
-
-    if (
-      (patientId &&
-        patientId.trim().length > 0 &&
-        appointment.patientId !== patientId) ||
-      (dentistId &&
-        dentistId.trim().length > 0 &&
-        appointment.dentistId !== dentistId)
-    ) {
-      return NextResponse.json(
-        createResponse(
-          false,
-          "You are not authorized to updated this appointment.",
-          null
-        ),
-        { status: 403 }
-      );
+    if (token.role !== TokenRoles.ADMIN) {
+      if (
+        (patientId && patientId.trim().length > 0 && appointment.patientId !== patientId) ||
+        (dentistId && dentistId.trim().length > 0 && appointment.dentistId !== dentistId)
+      ) {
+        return NextResponse.json(
+          createResponse(
+            false,
+            "You are not authorized to update this appointment.",
+            null
+          ),
+          { status: 403 }
+        );
+      }
     }
 
     const updatedAppointment = await prisma.appointment.update({
       where: { id: appointmentId },
       data: partialAppointment,
     });
+
+    if (updatedAppointment.state === "CANCELLED") {
+      const referralRequest = await prisma.referralRequest.findUnique({ where: { appointmentId: appointmentId } })
+
+      // If this appointment has a linked referral request, unassign it
+      if (referralRequest) {
+        await prisma.referralRequest.update({
+          where: { id: referralRequest.id },
+          data: {
+            appointmentId: null,
+            assignedDentistId: null,
+            requestStatus: ReferralRequestStatus.UNASSIGNED,
+          },
+        });
+      }
+    }
 
     return NextResponse.json(
       createResponse(
@@ -179,11 +187,17 @@ export async function PATCH(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    // if (!token || token.role !== "patient") {
-    //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
-    //     status: 401,
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
+    // if (token.role === TokenRoles.PATIENT) {
+    //   return NextResponse.json(createResponse(false, "Forbidden", null), {
+    //     status: 403,
     //   });
     // }
 

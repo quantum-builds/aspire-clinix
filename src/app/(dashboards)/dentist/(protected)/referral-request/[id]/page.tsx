@@ -1,19 +1,21 @@
 import PatientReferralDetails from "./components/PatientReferralDetials";
-import AppointmentGrid from "./components/AppointmentGrid";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 import { getReferralRequest } from "@/services/referralRequest/referralRequestQuery";
 import { TReferralRequest } from "@/types/referral-request";
 import { Response } from "@/types/common";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import { calculateAge } from "@/utils/formatDateTime";
-import UpcomingAppointmentCard from "../../appointments/upcoming/components/UpcomingAppointmentCard";
-import AssignedAppointmentCard from "@/app/(dashboards)/clinic/(protected)/referrals/[id]/assigned/components/AppointmentCard";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth/next";
+import AppointmentCard from "./components/AppointmentCard";
 
 
 export default async function ReferralDetailsPage(props: {
   params: { id: string };
 }) {
   const { id } = props.params;
+  const session = await getServerSession(authOptions);
+  const role = session?.user.role;
 
   const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
 
@@ -56,6 +58,7 @@ export default async function ReferralDetailsPage(props: {
       <PageTopBar
         showFilters={true}
         showSearch={true}
+        showBackBtn={true}
         statusOptions={[]}
         pageHeading="Referral Requests"
       />
@@ -66,7 +69,7 @@ export default async function ReferralDetailsPage(props: {
 
       {
         appointment &&
-        <AssignedAppointmentCard appointment={appointment} />
+        <AppointmentCard appointment={appointment} role={role??""} />
       }
     </div>
   );

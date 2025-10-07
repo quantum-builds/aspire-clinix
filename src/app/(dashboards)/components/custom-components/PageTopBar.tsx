@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 interface PageTopBarProps {
   pageHeading: string;
   showSearch: boolean;
+  searchPlaceHolder?:string
   showFilters: boolean;
   showExport?: boolean;
   extraBtns?: ReactNode;
@@ -24,6 +25,7 @@ interface PageTopBarProps {
 export default function PageTopBar({
   pageHeading,
   showSearch,
+  searchPlaceHolder="Enter Appointment Number",
   showFilters,
   showExport = false,
   extraBtns,
@@ -47,7 +49,7 @@ export default function PageTopBar({
       </div>
       <Suspense>
         <div className="flex justify-end gap-3">
-          {showSearch && <SearchBar placeholder="Enter Appointment Number" />}
+          {showSearch && <SearchBar placeholder={searchPlaceHolder} />}
           {showFilters && (
             <DateFilter
               statusOptions={statusOptions}
