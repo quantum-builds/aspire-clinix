@@ -5,8 +5,6 @@ import { TReferralRequest } from "@/types/referral-request";
 import { Response } from "@/types/common";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import { calculateAge } from "@/utils/formatDateTime";
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth/next";
 import AppointmentCard from "./components/AppointmentCard";
 
 
@@ -14,8 +12,7 @@ export default async function ReferralDetailsPage(props: {
   params: { id: string };
 }) {
   const { id } = props.params;
-  const session = await getServerSession(authOptions);
-  const role = session?.user.role;
+
 
   const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
 
@@ -69,7 +66,7 @@ export default async function ReferralDetailsPage(props: {
 
       {
         appointment &&
-        <AppointmentCard appointment={appointment} role={role??""} />
+        <AppointmentCard appointment={appointment} role={""} />
       }
     </div>
   );

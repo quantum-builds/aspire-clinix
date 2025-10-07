@@ -9,6 +9,7 @@ export default function ReferralDetailsPage(props: {
   params: { id: string };
 }) {
   const { id } = props.params;
+  
  
   return (
     <Suspense key={id} fallback={<AssignedWrapperSkeleton/>}>

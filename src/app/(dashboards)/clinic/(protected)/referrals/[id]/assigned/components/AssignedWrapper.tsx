@@ -4,15 +4,19 @@ import { getReferralRequest } from "@/services/referralRequest/referralRequestQu
 import { TReferralRequest } from "@/types/referral-request";
 import { Response } from "@/types/common";
 import AssignedPatientDetails from "../components/AssignedPatientDetails";
-import AssignedAppointmentCard from "../components/AppointmentCard";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 import { toTitleCase } from "@/utils/formatWords";
+import AppointmentCard from "@/app/(dashboards)/dentist/(protected)/referral-request/[id]/components/AppointmentCard";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 interface AssignedWrapperProps {
     id: string
 }
 export default async function AssignedWrapper({ id }: AssignedWrapperProps) {
     const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
+    const session = await getServerSession(authOptions);
+    const role = session?.user.role;
 
     if (!referralRequestResponse || !referralRequestResponse.status || !referralRequestResponse.data || !referralRequestResponse.data.referralForm) {
         return (
@@ -51,7 +55,7 @@ export default async function AssignedWrapper({ id }: AssignedWrapperProps) {
         name: referralForm.patientName,
         phone: referralForm.patientPhoneNumber,
         email: referralForm.patientEmail,
-        disease: referralForm.referralDetails.map((disease)=>toTitleCase(disease)).join(", "),
+        disease: referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", "),
         age: String(calculateAge(referralForm.patientDateOfBirth))
     }
 
@@ -88,7 +92,7 @@ export default async function AssignedWrapper({ id }: AssignedWrapperProps) {
                 referralDentistDetails={assignedDentistDetails}
             />
 
-            <AssignedAppointmentCard appointment={appointment} />
+            <AppointmentCard appointment={appointment} role={role ?? ""} />
         </div >
     )
 }

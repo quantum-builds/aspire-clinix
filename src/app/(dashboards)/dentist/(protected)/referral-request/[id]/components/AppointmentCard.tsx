@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { capitalize } from "@/utils/formatWords";
 import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
+import { TokenRoles } from "@/constants/UserRoles";
 
 export default function AppointmentCard({
   appointment,
@@ -47,7 +48,10 @@ export default function AppointmentCard({
       },
       {
         onSuccess: () => {
-          router.refresh();
+
+          router.refresh()
+          if (selectedStatus === "CANCELLED")
+            router.back()
           setIsUpdateModalOpen(false);
           setIsCancelModalOpen(false);
           setIsCOnfirmModelOpen(false);
@@ -134,14 +138,16 @@ export default function AppointmentCard({
             <div className="flex justify-between w-full">
               {appointment.state === AppointmentStatus.PENDING &&
                 <div className="flex items-center gap-2 w-full mt-7">
-                  <CustomButton
-                    text="Confirm Appointment"
-                    handleOnClick={() => {
-                      setSelectedStatus(AppointmentStatus.CONFIRMED)
-                      setIsCOnfirmModelOpen(true)
-                    }
-                    }
-                  />
+                  {role === TokenRoles.ADMIN &&
+                    <CustomButton
+                      text="Confirm Appointment"
+                      handleOnClick={() => {
+                        setSelectedStatus(AppointmentStatus.CONFIRMED)
+                        setIsCOnfirmModelOpen(true)
+                      }
+                      }
+                    />
+                  }
                   <CustomButton
                     handleOnClick={() => {
                       setSelectedStatus(AppointmentStatus.CANCELLED)
@@ -184,10 +190,8 @@ export default function AppointmentCard({
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
         isPending={updateAppointmentLoader}
-        onConfirm={()=>{
+        onConfirm={() => {
           handleStusChange()
-          router.refresh()
-          router.back()
         }}
         title="Cancel Appointemnt"
         description="Are you sure you want to cancel this appointment? This action cannot be undone."
