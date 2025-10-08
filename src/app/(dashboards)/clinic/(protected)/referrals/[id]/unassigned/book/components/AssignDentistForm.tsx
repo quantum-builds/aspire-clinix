@@ -176,6 +176,9 @@ export default function AssignDentistForm({ practiceId, practices, dentists, pat
                 router.replace(
                   `/clinic/referrals?ts=${Date.now()}`
                 );
+              }, onError: (error) => {
+                const err = getAxiosErrorMessage(error)
+                showToast("error", err)
               }
             }
           );

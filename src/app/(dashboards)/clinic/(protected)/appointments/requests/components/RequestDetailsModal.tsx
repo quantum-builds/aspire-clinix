@@ -17,6 +17,8 @@ import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import { usePatchAppointmentRequest } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { showToast } from "@/utils/defaultToastOptions";
 
 export default function RequestDetailsModal({
   open,
@@ -48,6 +50,10 @@ export default function RequestDetailsModal({
           refresh();
           setIsCancelModalOpen(false);
         },
+        onError: (error) => {
+          const err = getAxiosErrorMessage(error)
+          showToast("error", err)
+        }
       }
     );
   };

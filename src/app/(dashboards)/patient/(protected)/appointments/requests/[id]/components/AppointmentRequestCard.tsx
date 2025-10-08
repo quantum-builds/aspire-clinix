@@ -4,7 +4,9 @@ import { PdfDownload } from "@/app/(dashboards)/components/PdfDownload";
 import { CalenderInputIcon, PDFImage, TimeIcon, UploadPDFIcon } from "@/assets";
 import { useDeleteAppointmentRequests } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { TAppointmentRequest } from "@/types/appointment-request";
+import { showToast } from "@/utils/defaultToastOptions";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -30,7 +32,9 @@ export default function AppointmentRequestCard({
           replace(`/patient/appointments/requests?ts=${Date.now()}`);
           setIsCancelModalOpen(false);
         },
-        onError: () => {
+        onError: (error) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
           setIsCancelModalOpen(false);
         },
       }

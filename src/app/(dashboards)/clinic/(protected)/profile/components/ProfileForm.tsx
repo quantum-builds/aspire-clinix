@@ -175,8 +175,7 @@ export default function ProfileForm({ admin }: AdminFormProps) {
           );
 
           refresh();
-        },
-        onError: (error) => {
+        },onError: (error) => {
           const msg = getAxiosErrorMessage(error);
           showToast("error", msg);
         },

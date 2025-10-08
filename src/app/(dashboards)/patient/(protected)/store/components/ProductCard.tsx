@@ -11,6 +11,8 @@ import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEditCartProduct } from "@/services/cartProducts/cartProductMutation";
 import Stars from "../../components/Star";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { showToast } from "@/utils/defaultToastOptions";
 
 interface ProductCardProps {
   product: TProduct;
@@ -39,6 +41,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           refresh();
         },
         onError: (error) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
           console.log("error is ", error.message);
         },
       }

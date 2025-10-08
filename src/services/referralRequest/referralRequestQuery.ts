@@ -62,8 +62,6 @@ export async function getReferralRequest(id: string) {
       ? await getAMedia(referralForm.medicalHistoryPdfUrl)
       : null;
 
-    console.log("referral form is ", referralForm)
-
     referralForm.medicalHistoryPdf = upload;
     responseData.data.referralForm = referralForm
     return responseData;

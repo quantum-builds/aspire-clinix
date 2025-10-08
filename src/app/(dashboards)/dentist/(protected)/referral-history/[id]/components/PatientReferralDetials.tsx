@@ -40,6 +40,9 @@ export default function PatientReferralDetails({
   const pathname = usePathname();
   const modalUrl = `${pathname}?showModal=true`;
 
+  console.log("Assigned dentist ", assignedDentistDetails)
+  console.log("length is ",Object.keys(assignedDentistDetails).length)
+
   return (
     <div className="bg-white w-full rounded-2xl p-6 space-y-6">
       <div className="w-full flex justify-between items-center">
@@ -69,7 +72,7 @@ export default function PatientReferralDetails({
             <p>Address: {patientDetials.address}</p>
           </div>
         </div>
-        {Object.values(assignedDentistDetails ?? {}).every(v => v) && (
+        {Object.keys(assignedDentistDetails).length !== 0 && Object.values(assignedDentistDetails ?? {}).every(v => v) && (
           <div className="bg-gray p-6 space-y-5 rounded-2xl">
             <div className="flex justify-between items-center">
               <p className="text-green font-medium text-2xl">

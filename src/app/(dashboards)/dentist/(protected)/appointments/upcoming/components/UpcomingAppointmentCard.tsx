@@ -10,6 +10,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import PatientDetailsModal from "../../components/PatientDetailsModal";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { showToast } from "@/utils/defaultToastOptions";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -30,8 +32,8 @@ export default function UpcomingAppointmentCard({
       state: isCancelModalOpen
         ? AppointmentStatus.CANCELLED
         : isConfirmModalOpen
-        ? AppointmentStatus.CONFIRMED
-        : AppointmentStatus.PENDING,
+          ? AppointmentStatus.CONFIRMED
+          : AppointmentStatus.PENDING,
     };
     console.log("appointment dentist id is ", appointment.dentistId);
     updateAppointment(
@@ -46,7 +48,10 @@ export default function UpcomingAppointmentCard({
           router.refresh();
           setIsCancelModalOpen(false);
           setIsCOnfirmModelOpen(false);
-        },
+        }, onError: (error) => {
+          const err = getAxiosErrorMessage(error)
+          showToast("error", err)
+        }
       }
     );
   };

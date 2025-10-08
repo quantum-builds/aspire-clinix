@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import PatientDetailsModal from "../../components/PatientDetailsModal";
 import StatusBage from "@/app/(dashboards)/components/StatusBadge";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { showToast } from "@/utils/defaultToastOptions";
 
 interface RequestAppointmentCardProps {
   appointment: TAppointment;
@@ -42,7 +44,10 @@ export default function RequestAppointmentCard({
           router.refresh();
           setIsCancelModalOpen(false);
           setIsConfirmModalOpen(false);
-        },
+        }, onError: (error) => {
+          const err = getAxiosErrorMessage(error)
+          showToast("error", err)
+        }
       }
     );
   };

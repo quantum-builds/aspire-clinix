@@ -14,6 +14,8 @@ import { useState } from "react";
 import { capitalize } from "@/utils/formatWords";
 import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 import { TokenRoles } from "@/constants/UserRoles";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { showToast } from "@/utils/defaultToastOptions";
 
 export default function AppointmentCard({
   appointment,
@@ -50,13 +52,14 @@ export default function AppointmentCard({
             else if (role === TokenRoles.DENTIST || role === TokenRoles.RECIEVING_DENTIST)
               router.replace(`/dentist/referral-request?ts=${Date.now()}`)
           }
-          // router.back()
           setIsUpdateModalOpen(false);
           setIsCancelModalOpen(false);
           setIsCOnfirmModelOpen(false);
           setMenuOpen(false);
         },
-        onError: () => {
+        onError: (error) => {
+          const err = getAxiosErrorMessage(error)
+          showToast("error", err)
           setIsUpdateModalOpen(false);
           setIsCancelModalOpen(false);
           setIsCOnfirmModelOpen(false);

@@ -7,7 +7,9 @@ import PdfModal from "@/app/(dashboards)/components/ViewPdfModal";
 import { CalenderInputIconV2, TimeIconV2, UploadPDFIcon } from "@/assets";
 import { usePatchAppointmentRequest } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { TAppointmentRequest } from "@/types/appointment-request";
+import { showToast } from "@/utils/defaultToastOptions";
 import { calculateAge, formatDate, formatTime } from "@/utils/formatDateTime";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { AppointmentRequestStatus } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -38,7 +40,10 @@ export default function AppointmentRequestCard({
         onSuccess: () => {
           refresh();
           setIsCancelModalOpen(false);
-        },
+        }, onError: (error) => {
+          const err = getAxiosErrorMessage(error)
+          showToast("error", err)
+        }
       }
     );
   };

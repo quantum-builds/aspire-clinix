@@ -25,6 +25,8 @@ import { formatDate } from "@/utils/formatDateTime";
 import { useDeleteReferralRequests } from "@/services/referralRequest/referralRequestMutation";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import { useState } from "react";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { showToast } from "@/utils/defaultToastOptions";
 
 interface ReferralHistoryDataTableProps {
   entries: TReferralRequest[];
@@ -50,6 +52,9 @@ export function ReferralHistoryDataTable({
           router.refresh();
           setIsDeleteModalOpen(false);
           setSelectedRequestId(null);
+        }, onError: (error) => {
+          const err = getAxiosErrorMessage(error)
+          showToast("error", err)
         }
       }
     );

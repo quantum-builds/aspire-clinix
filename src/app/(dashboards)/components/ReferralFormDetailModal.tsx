@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import Image from "next/image";
 import { CloseIcon, UploadPDFIcon } from "@/assets";
 import PdfModal from "./ViewPdfModal";
@@ -32,9 +32,10 @@ export default function ReferralFormDetailModal({
                     onInteractOutside={handleClose}
                 >
                     <div className="flex items-center justify-between w-full">
-                        <p className="font-semibold text-green text-2xl">
+                        <DialogTitle className="font-semibold text-green text-2xl">
                             Referral Form Details
-                        </p>
+                        </DialogTitle>
+
                         <div
                             className="size-11 cursor-pointer flex justify-center items-center bg-gray rounded-full"
                             onClick={handleClose}

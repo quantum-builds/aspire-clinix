@@ -97,8 +97,6 @@ export default function AppointmentForm() {
       {
         onSuccess: () => {
           reset();
-          // refresh();
-          // back();
           showToast("success", "Appointemnt Request Sent");
           replace(`/patient/appointments/requests?ts=${Date.now()}`);
         },

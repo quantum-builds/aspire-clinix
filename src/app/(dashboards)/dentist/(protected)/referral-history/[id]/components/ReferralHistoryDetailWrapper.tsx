@@ -54,7 +54,6 @@ export default async function ReferralHistoryDetail({ id, showModel }: ReferralH
         gdcNo: assignedDentist?.gdcNo,
         address: assignedDentist?.practiceAddress
     }
-
     const referralFormDetails = {
         referralDeatils: referralForm.other ? referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", ") + ", " + referralForm.other : referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", "),
         treatmentDetails: referralForm.treatmentDetails,

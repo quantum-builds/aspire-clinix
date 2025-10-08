@@ -40,7 +40,6 @@ export async function GET(req: NextRequest) {
       console.log("email is ",email)
       if (email.trim().length > 0) {
         const patient = await prisma.patient.findUnique({ where: { email: email } })
-        console.log("patient in api is ",patient)
         if (!patient) {
           return NextResponse.json(
             createResponse(false, "No Patient found", patient),

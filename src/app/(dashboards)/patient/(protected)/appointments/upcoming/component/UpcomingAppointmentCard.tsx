@@ -12,6 +12,8 @@ import { useState } from "react";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import AppointmentDetailsModal from "../../components/AppointmentDetailsModal";
 import StatusBage from "@/app/(dashboards)/components/StatusBadge";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { showToast } from "@/utils/defaultToastOptions";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -40,7 +42,9 @@ export default function UpcomingAppointmentCard({
           refresh();
           setIsCancelModalOpen(false);
         },
-        onError: () => {
+        onError: (error) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
           setIsCancelModalOpen(false);
         },
       }

@@ -33,6 +33,8 @@ import { AppointmentRequestStatus, AppointmentStatus } from "@prisma/client";
 import { formatTimeForInput } from "@/utils/formatDateTime";
 import { usePatchAppointmentRequest } from "@/services/appointmentRequests/appointmentRequestMutation";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import { showToast } from "@/utils/defaultToastOptions";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 const assignDentistSchema = z.object({
   dentistName: z.string().min(2, "Enter dentist name"),
@@ -129,16 +131,19 @@ export default function BookAppointmentForm({
             },
             {
               onSuccess: (data) => {
-                console.log("data on success,", data);
-                // router.refresh();
-                // router.back();
                 router.replace(
                   `/clinic/appointments/requests?ts=${Date.now()}`
                 );
-              },
+              }, onError: (error) => {
+                const err = getAxiosErrorMessage(error)
+                showToast("error", err)
+              }
             }
           );
-        },
+        }, onError: (error) => {
+          const err = getAxiosErrorMessage(error)
+          showToast("error", err)
+        }
       }
     );
   };
@@ -251,8 +256,8 @@ export default function BookAppointmentForm({
                           !selectedPracticeId
                             ? "Select a branch first"
                             : dentists.length > 0
-                            ? "Select Dentist Name"
-                            : "No dentists available in this branch"
+                              ? "Select Dentist Name"
+                              : "No dentists available in this branch"
                         }
                       />
                     </SelectTrigger>
