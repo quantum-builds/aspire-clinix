@@ -78,41 +78,27 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const dentist = await req.json();
-    const email = dentist.email;
-    const phoneNumber = dentist.phoneNumber;
-    const gdc = dentist.gdcNo;
+    const { email, phoneNumber, gdcNo, practiceId } = dentist;
 
+    // Check if email, phone or GDC number already exist
     const existingDentist = await prisma.dentist.findFirst({
-      where: {
-        OR: [{ email: dentist.email }, { phoneNumber: dentist.phoneNumber }],
-      },
+      where: { OR: [{ email }, { phoneNumber }] },
     });
 
     const existingPatient = await prisma.patient.findFirst({
-      where: {
-        OR: [{ email: dentist.email }, { phoneNumber: dentist.phoneNumber }],
-      },
+      where: { OR: [{ email }, { phoneNumber }] },
     });
 
     const existingAdmin = await prisma.admin.findFirst({
-      where: {
-        OR: [{ email: dentist.email }, { phoneNumber: dentist.phoneNumber }],
-      },
+      where: { OR: [{ email }, { phoneNumber }] },
     });
-
-    // if (existingDentist || existingPatient || existingAdmin) {
-    //   return NextResponse.json(
-    //     createResponse(false, "User data already exists", null),
-    //     { status: 400 }
-    //   );
-    // }
 
     const conflicts: string[] = [];
 
     if (existingDentist) {
       if (existingDentist.email === email) conflicts.push("email");
       if (existingDentist.phoneNumber === phoneNumber) conflicts.push("phone number");
-      if (existingDentist.gdcNo === gdc) conflicts.push("GDC number");
+      if (existingDentist.gdcNo === gdcNo) conflicts.push("GDC number");
     }
 
     if (existingPatient) {
@@ -129,27 +115,19 @@ export async function POST(req: NextRequest) {
 
     if (uniqueConflicts.length > 0) {
       return NextResponse.json(
-        createResponse(
-          false,
-          `These fields are already in use: ${uniqueConflicts.join(", ")}`,
-          null
-        ),
+        createResponse(false, `These fields are already in use: ${uniqueConflicts.join(", ")}`, null),
         { status: 400 }
       );
     }
 
-    if (
-      dentist.role !== DentistRole.RECIEVING_DENTIST &&
-      dentist.role !== DentistRole.REFERRING_DENTIST &&
-      dentist.role !== DentistRole.DENTIST
-    ) {
-      return NextResponse.json(
-        createResponse(false, "Invalid Dentist role", null),
-        { status: 400 }
-      );
+    // Validate role
+    if (![DentistRole.RECIEVING_DENTIST, DentistRole.REFERRING_DENTIST, DentistRole.DENTIST].includes(dentist.role)) {
+      return NextResponse.json(createResponse(false, "Invalid Dentist role", null), { status: 400 });
     }
+
+    // Check referral forms
     const referralForms = await prisma.referralForm.findMany({
-      where: { referralEmail: dentist.email },
+      where: { referralEmail: email },
       select: { id: true },
     });
 
@@ -157,39 +135,42 @@ export async function POST(req: NextRequest) {
       dentist.role = DentistRole.DENTIST;
     }
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(dentist.password, 10);
+
+    // Remove practiceId before creating dentist
+    const { practiceId: _unused, ...dentistData } = dentist;
 
     const result = await prisma.$transaction(async (tx) => {
       const newDentist = await tx.dentist.create({
         data: {
-          ...dentist,
+          ...dentistData,
           password: hashedPassword,
           referralForms: { connect: referralForms.map((r) => ({ id: r.id })) },
         },
       });
 
-      await tx.dentistOnPractice.create({
-        data: {
-          dentistId: newDentist.id,
-          practiceId: dentist.practiceId,
-        },
-      });
+      // Create the relation in DentistOnPractice
+      if (practiceId) {
+        await tx.dentistOnPractice.create({
+          data: {
+            dentistId: newDentist.id,
+            practiceId,
+          },
+        });
+      }
 
       return newDentist;
     });
 
-    return NextResponse.json(
-      createResponse(true, "Dentist registered successfully", result),
-      { status: 201 }
-    );
+    return NextResponse.json(createResponse(true, "Dentist registered successfully", result), { status: 201 });
   } catch (error) {
-    console.log("Error in creating detist ", error);
+    console.error("Error in creating dentist:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(createResponse(false, errorMessage, null), {
-      status: 500,
-    });
+    return NextResponse.json(createResponse(false, errorMessage, null), { status: 500 });
   }
 }
+
 
 export async function PATCH(req: NextRequest) {
   try {
