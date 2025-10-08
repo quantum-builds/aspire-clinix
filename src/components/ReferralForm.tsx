@@ -702,8 +702,6 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
               )}
             </div>
 
-
-
             <div className="flex flex-wrap justify-between gap-16">
               <div className="flex flex-1 items-center">
                 <FormInput

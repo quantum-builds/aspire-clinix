@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         createResponse(
           false,
-          `The following fields are already in use: ${uniqueConflicts.join(", ")}`,
+          `These fields are already in use: ${uniqueConflicts.join(", ")}`,
           null
         ),
         { status: 400 }
@@ -273,7 +273,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json(
         createResponse(
           false,
-          `The following fields are already in use: ${uniqueConflicts.join(", ")}`,
+          `These fields are already in use: ${uniqueConflicts.join(", ")}`,
           null
         ),
         { status: 400 }
