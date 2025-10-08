@@ -6,11 +6,13 @@ import { getReferralRequest } from "@/services/referralRequest/referralRequestQu
 import { Response } from "@/types/common";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import { calculateAge } from "@/utils/formatDateTime";
+import { toTitleCase } from "@/utils/formatWords";
 
-interface UnAssignedWrapperProps{
-    id:string
+interface UnAssignedWrapperProps {
+    id: string
+    showModel: boolean
 }
-export default async function UnAssignedWrapper({id}:UnAssignedWrapperProps) {
+export default async function UnAssignedWrapper({ id, showModel }: UnAssignedWrapperProps) {
     const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
 
     if (!referralRequestResponse || !referralRequestResponse.status || !referralRequestResponse.data || !referralRequestResponse.data.referralForm) {
@@ -35,7 +37,7 @@ export default async function UnAssignedWrapper({id}:UnAssignedWrapperProps) {
         name: referralForm.patientName,
         phone: referralForm.patientPhoneNumber,
         email: referralForm.patientEmail,
-        disease: referralForm.referralDetails.join(","),
+        address: referralForm.patientAddress,
         age: String(calculateAge(referralForm.patientDateOfBirth))
     }
 
@@ -45,6 +47,13 @@ export default async function UnAssignedWrapper({id}:UnAssignedWrapperProps) {
         email: referralForm.referralEmail,
         gdcNo: referralForm.referralGDC,
         address: referralForm.patientAddress
+    }
+
+    const referralFormDetails = {
+        referralDeatils: referralForm.other ? referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", ") + ", " + referralForm.other : referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", "),
+        treatmentDetails: referralForm.treatmentDetails,
+        attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
+        medicalHistoryPDF: referralForm.medicalHistoryPdf
     }
 
     return (<div className="min-h-screen flex flex-col gap-5">
@@ -63,6 +72,9 @@ export default async function UnAssignedWrapper({id}:UnAssignedWrapperProps) {
             }
         />
         <UnAssignedPatientDetails
+            id={id}
+            showModel={showModel}
+            referralFormDetails={referralFormDetails}
             patientDetials={patientDetails}
             referralDentistDetails={dentistDetails}
         />

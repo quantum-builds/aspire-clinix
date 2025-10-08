@@ -63,6 +63,7 @@ export type TReferralForm = TCreateReferralForm & {
   id: string;
   createdAt: Date;
 
+  medicalHistoryPdf?:string;
   referralDentistId?: string;
   patientId?: string;
   referralDentist?: TDentist;

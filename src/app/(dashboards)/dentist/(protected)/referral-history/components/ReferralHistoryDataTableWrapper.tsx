@@ -37,7 +37,7 @@ export default async function ReferralHistoryDataTableWrapper({
   ) {
     return (
       <>
-        <NoContent1 />
+        <NoContent1 text="No records found for now" />
       </>
     );
   }

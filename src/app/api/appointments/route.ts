@@ -117,7 +117,6 @@ export async function GET(req: NextRequest) {
     }
 
 
-    console.log(baseWhere)
     const [appointments, totalCount] = await Promise.all([
       prisma.appointment.findMany({
         where: baseWhere,

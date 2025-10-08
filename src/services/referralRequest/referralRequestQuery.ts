@@ -1,11 +1,13 @@
 import { ENDPOINTS } from "@/config/api-config";
 import { createServerAxios } from "@/lib/server-axios";
 import { Response } from "@/types/common";
+import { TReferralForm } from "@/types/referral-form";
 import {
   TReferralRequest,
   TReferralRequestResponse,
 } from "@/types/referral-request";
 import axios from "axios";
+import { getAMedia } from "../s3/s3Query";
 
 export async function getReferralRequests({
   page,
@@ -15,7 +17,7 @@ export async function getReferralRequests({
   after,
   status,
   pageType,
-  statsOnly=false
+  statsOnly = false
 }: {
   page?: number;
   search?: string;
@@ -23,13 +25,13 @@ export async function getReferralRequests({
   before?: string;
   after?: string;
   status?: string;
-  pageType?:string
-  statsOnly?:boolean
+  pageType?: string
+  statsOnly?: boolean
 }) {
   try {
     const serverAxios = await createServerAxios();
     const response = await serverAxios.get(
-      ENDPOINTS.referralRequest.get(statsOnly,page, search, on, before, after, status,pageType)
+      ENDPOINTS.referralRequest.get(statsOnly, page, search, on, before, after, status, pageType)
     );
 
     return response.data;
@@ -54,6 +56,16 @@ export async function getReferralRequest(id: string) {
     );
 
     const responseData: Response<TReferralRequest> = response.data;
+    const referralForm: TReferralForm = responseData.data.referralForm
+
+    const upload = referralForm.medicalHistoryPdfUrl
+      ? await getAMedia(referralForm.medicalHistoryPdfUrl)
+      : null;
+
+    console.log("referral form is ", referralForm)
+
+    referralForm.medicalHistoryPdf = upload;
+    responseData.data.referralForm = referralForm
     return responseData;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

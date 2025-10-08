@@ -89,13 +89,25 @@ export default function DateFilter({
     router.push(`?${params.toString()}`);
   };
 
+  // Count the number of active filters
+  const activeFilterCount =
+    (status ? 1 : 0) +
+    (onDate ? 1 : 0) +
+    (afterDate ? 1 : 0) +
+    (beforeDate ? 1 : 0);
+
   return (
     <Popover>
       <PopoverTrigger>
         <div className="bg-dashboardBarBackground h-14 xl:w-36 w-14 xl:p-2 xl:pl-4 flex xl:justify-between justify-center items-center gap-4 rounded-full cursor-pointer">
           <p className="text-[17px] hidden xl:block">Filters</p>
-          <div className="xl:w-10 xl:h-10 w-11 h-11 rounded-full xl:bg-gray flex justify-center items-center">
+          <div className="relative xl:w-10 xl:h-10 w-11 h-11 rounded-full xl:bg-gray flex justify-center items-center">
             <Image src={CalenderIcon} alt="Calendar Icon" className="w-5 h-5" />
+            {activeFilterCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-semibold w-5 h-5 rounded-full flex items-center justify-center">
+                {activeFilterCount}
+              </span>
+            )}
           </div>
         </div>
       </PopoverTrigger>
@@ -155,7 +167,7 @@ export default function DateFilter({
               {showDateFilter && (
                 <>
                   {/* On a date */}
-                  < div className="w-full space-y-[2px]">
+                  <div className="w-full space-y-[2px]">
                     <p className="text-green font-medium">On a date</p>
                     <Popover modal={false}>
                       <PopoverTrigger className="w-full relative">
@@ -167,7 +179,11 @@ export default function DateFilter({
                           className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
                         />
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
-                          <Image src={CalenderInputIconV2} alt="Dropdown Icon" className="w-5 h-5" />
+                          <Image
+                            src={CalenderInputIconV2}
+                            alt="Dropdown Icon"
+                            className="w-5 h-5"
+                          />
                         </div>
                       </PopoverTrigger>
                       <PopoverContent side="bottom" sideOffset={10} align="end">
@@ -212,7 +228,11 @@ export default function DateFilter({
                             className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
                           />
                           <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
-                            <Image src={CalenderInputIconV2} alt="Dropdown Icon" className="w-5 h-5" />
+                            <Image
+                              src={CalenderInputIconV2}
+                              alt="Dropdown Icon"
+                              className="w-5 h-5"
+                            />
                           </div>
                         </PopoverTrigger>
                         <PopoverContent side="bottom" sideOffset={10} align="end">
@@ -255,7 +275,11 @@ export default function DateFilter({
                             className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
                           />
                           <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
-                            <Image src={CalenderInputIconV2} alt="Dropdown Icon" className="w-5 h-5" />
+                            <Image
+                              src={CalenderInputIconV2}
+                              alt="Dropdown Icon"
+                              className="w-5 h-5"
+                            />
                           </div>
                         </PopoverTrigger>
                         <PopoverContent side="bottom" sideOffset={10} align="end">
@@ -291,6 +315,6 @@ export default function DateFilter({
           </div>
         </div>
       </PopoverContent>
-    </Popover >
+    </Popover>
   );
 }

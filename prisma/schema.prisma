@@ -92,6 +92,7 @@ model Patient {
   country      String?
   dateOfBirth  DateTime?
   gender       GenderType?
+  address     String?
   fileUrl      String?
 
   createdAt    DateTime     @default(now())

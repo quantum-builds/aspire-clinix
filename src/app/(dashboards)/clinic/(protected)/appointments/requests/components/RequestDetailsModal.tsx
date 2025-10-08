@@ -151,7 +151,7 @@ export default function RequestDetailsModal({
                     onClose();
                     setIsCancelModalOpen(true);
                   }}
-                  text="Cancel"
+                  text="Cancel Appointment"
                 />
               )}
             </div>

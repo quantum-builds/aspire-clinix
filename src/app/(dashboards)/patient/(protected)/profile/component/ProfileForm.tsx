@@ -72,6 +72,10 @@ const profileFormSchema = z.object({
     }, "You must be between 13 and 120 years old"),
   gender: z.string().min(1, "Please select a gender"),
   country: z.string().min(1, "Please select a country"),
+  address: z
+    .string()
+    .min(5, "Practice address must be at least 5 characters")
+    .max(200, "Practice address must be less than 200 characters"),
   profileImage: z.union([
     z
       .instanceof(File)
@@ -129,6 +133,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
     fullName: patient?.fullName || "",
     email: patient?.email || "",
     phoneNumber: patient?.phoneNumber || "",
+    address: patient?.address || "",
     dateOfBirth: patient?.dateOfBirth
       ? new Date(patient.dateOfBirth)
       : undefined,
@@ -505,6 +510,36 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
             />
             {errors.country && (
               <p className="text-sm text-red-500">{errors.country.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1 col-span-2">
+            <Label htmlFor="address" className="text-lg font-medium">
+              Address
+            </Label>
+            <div className="relative">
+              <Controller
+                name="address"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="address"
+                    placeholder="Enter your address"
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              <Image
+                src={TextIconV2}
+                alt="text-input"
+                className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50"
+              />
+            </div>
+            {errors.address && (
+              <p className="text-sm text-red-500">
+                {errors.address.message}
+              </p>
             )}
           </div>
         </div>

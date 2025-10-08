@@ -28,10 +28,8 @@ export default async function ReferralHistory(props: {
   const before = searchParams?.before || "";
   const after = searchParams?.after || "";
 
-
-
   return (
-    <div className="w-full min-h-[99vh] flex flex-col gap-5">
+    <div className="w-full min-h-screen flex flex-col gap-5">
       <PageTopBar
         showSearch={true}
         showFilters={true}

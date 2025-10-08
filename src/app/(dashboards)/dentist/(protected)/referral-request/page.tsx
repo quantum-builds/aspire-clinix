@@ -185,7 +185,7 @@ export default async function ReferralRequest(props: {
 
 
   return (
-    <div className="w-full min-h-[99vh] flex flex-col gap-5">
+    <div className="w-full min-h-screen flex flex-col gap-5">
       <PageTopBar
         showSearch={true}
         showFilters={true}

@@ -38,7 +38,7 @@ export default async function ReferralRequestDataTableWrapper({
   ) {
     return (
       <>
-        <NoContent1 />
+        <NoContent1 text="No records found for now" />
       </>
     );
   }

@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
 import Image from "next/image";
-import { CalenderInputIcon, CalenderInputIconV2 } from "@/assets";
+import { CalenderInputIcon, CalenderInputIconV2, DeleteIconV2 } from "@/assets";
 import { useRouter } from "next/navigation";
 import { TReferralRequest } from "@/types/referral-request";
 import { ReferralRequestStatus } from "@prisma/client";
@@ -156,6 +156,7 @@ export function ReferralHistoryDataTable({
       </Table>
 
       <ConfirmationModal
+        icon={DeleteIconV2}
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         isPending={isPending}

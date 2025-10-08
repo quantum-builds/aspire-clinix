@@ -1,3 +1,4 @@
+
 import { calculateAge } from "@/utils/formatDateTime";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import { getReferralRequest } from "@/services/referralRequest/referralRequestQuery";
@@ -9,11 +10,13 @@ import { toTitleCase } from "@/utils/formatWords";
 import AppointmentCard from "@/app/(dashboards)/dentist/(protected)/referral-request/[id]/components/AppointmentCard";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 
 interface AssignedWrapperProps {
     id: string
+    showModel: boolean
 }
-export default async function AssignedWrapper({ id }: AssignedWrapperProps) {
+export default async function AssignedWrapper({ id,showModel }: AssignedWrapperProps) {
     const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
     const session = await getServerSession(authOptions);
     const role = session?.user.role;
@@ -32,7 +35,6 @@ export default async function AssignedWrapper({ id }: AssignedWrapperProps) {
             </div>
         )
     }
-    console.log("referral request is  ", referralRequestResponse)
     if (!referralRequestResponse.data.assignedDentist || !referralRequestResponse.data.appointment) {
         return (
             <div className="min-h-screen flex flex-col gap-5">
@@ -55,7 +57,8 @@ export default async function AssignedWrapper({ id }: AssignedWrapperProps) {
         name: referralForm.patientName,
         phone: referralForm.patientPhoneNumber,
         email: referralForm.patientEmail,
-        disease: referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", "),
+        address: referralForm.patientAddress,
+        // referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", "),
         age: String(calculateAge(referralForm.patientDateOfBirth))
     }
 
@@ -75,6 +78,12 @@ export default async function AssignedWrapper({ id }: AssignedWrapperProps) {
         address: assignedDentist?.practiceAddress
     }
 
+    const referralFormDetails = {
+        referralDeatils: referralForm.other ? referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", ") + ", " + referralForm.other : referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", "),
+        treatmentDetails: referralForm.treatmentDetails,
+        attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
+        medicalHistoryPDF: referralForm.medicalHistoryPdf
+    }
 
     return (
         < div className="min-h-screen flex flex-col gap-5" >
@@ -87,6 +96,9 @@ export default async function AssignedWrapper({ id }: AssignedWrapperProps) {
             />
 
             <AssignedPatientDetails
+                id={id}
+                showModel={showModel}
+                referralFormDetails={referralFormDetails}
                 patientDetials={patientDetails}
                 assignedDentistDetails={dentistDetails}
                 referralDentistDetails={assignedDentistDetails}

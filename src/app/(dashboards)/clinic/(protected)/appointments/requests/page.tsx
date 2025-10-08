@@ -20,7 +20,7 @@ export default async function RequestAppointments(props: {
 
   return (
     <div>
-      <div className="min-h-[98vh] flex flex-col gap-5">
+      <div className="min-h-screen flex flex-col gap-5">
         <PageTopBar
           pageHeading="Appointments Requests"
           showSearch={true}

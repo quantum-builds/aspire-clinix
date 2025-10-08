@@ -42,9 +42,11 @@ export default function UpcomingAppointmentCard({
         </div>
       </div>
       <div className="flex items-center justify-between">
-        <p className="text-xl font-medium w-2/3 truncate">
-          Appointment # {appointment.id.slice(0, 10)}
-        </p>
+        <div className="flex justify-between items-center">
+          <p className="italic text-green font-medium text-xl">
+            Status: {appointment.state}
+          </p>
+        </div>
         <PatientDetailsModal
           appointment={appointment}
           trigger={

@@ -1,15 +1,9 @@
 "use client"
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import StatusBage from "@/app/(dashboards)/components/StatusBadge";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
-import { CalenderGreenIcon, CalenderInputIconV2, CancelIcon, DropDownIcon, TimeIcon, TimeIconV2 } from "@/assets";
+import { CalenderInputIconV2, CancelIcon, DropDownIcon, TimeIcon, TimeIconV2 } from "@/assets";
 import { usePatchAppointment } from "@/services/appointments/appointmentMutation";
 import { TAppointment } from "@/types/appointment";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
@@ -50,8 +44,13 @@ export default function AppointmentCard({
         onSuccess: () => {
 
           router.refresh()
-          if (selectedStatus === "CANCELLED")
-            router.back()
+          if (selectedStatus === "CANCELLED") {
+            if (role === TokenRoles.ADMIN)
+              router.replace(`/clinic/referrals?ts=${Date.now()}`)
+            else if (role === TokenRoles.DENTIST || role === TokenRoles.RECIEVING_DENTIST)
+              router.replace(`/dentist/referral-request?ts=${Date.now()}`)
+          }
+          // router.back()
           setIsUpdateModalOpen(false);
           setIsCancelModalOpen(false);
           setIsCOnfirmModelOpen(false);
@@ -70,7 +69,7 @@ export default function AppointmentCard({
   const statusOptions: AppointmentStatus[] = [
     AppointmentStatus.COMPLETED,
     AppointmentStatus.CONFIRMED,
-    AppointmentStatus.CANCELLED,
+    // AppointmentStatus.CANCELLED,
     AppointmentStatus.DID_NOT_ATTEND,
     AppointmentStatus.ARRIVED,
     AppointmentStatus.IN_SURGERY,
@@ -138,7 +137,7 @@ export default function AppointmentCard({
             <div className="flex justify-between w-full">
               {appointment.state === AppointmentStatus.PENDING &&
                 <div className="flex items-center gap-2 w-full mt-7">
-                  {role === TokenRoles.ADMIN &&
+                  {role !== TokenRoles.ADMIN &&
                     <CustomButton
                       text="Confirm Appointment"
                       handleOnClick={() => {
@@ -166,7 +165,7 @@ export default function AppointmentCard({
                     text="See Reports"
                     href={`/dentist/appointments/${appointment.id}/reports`}
                   />
-                  {/* <CustomButton
+                  <CustomButton
                     handleOnClick={() => {
                       setSelectedStatus(AppointmentStatus.CANCELLED)
                       setIsCancelModalOpen(true)
@@ -175,7 +174,7 @@ export default function AppointmentCard({
                     text="Cancel"
                     style="white"
                     className="hover:bg-lightGray"
-                  /> */}
+                  />
                 </div>
               }
             </div>

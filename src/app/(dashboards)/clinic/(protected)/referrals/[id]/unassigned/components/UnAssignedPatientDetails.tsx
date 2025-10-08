@@ -1,11 +1,19 @@
+"use client"
+
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import ReferralFormDetailModal from "@/app/(dashboards)/components/ReferralFormDetailModal";
+import { usePathname } from "next/navigation";
+
 interface PatientReferralDetailsProps {
+  id: string
+  showModel: boolean
   patientDetials: {
     referenceId?: string;
     name: string;
     age: string;
     phone: string;
     email: string;
-    disease: string;
+    address: string;
   };
 
   referralDentistDetails: {
@@ -15,17 +23,37 @@ interface PatientReferralDetailsProps {
     email: string;
     address: string;
   };
+
+  referralFormDetails: {
+    referralDeatils: string
+    treatmentDetails?: string,
+    attendTreatment: string,
+    medicalHistoryPDF?: string
+  }
 }
 
 export default function UnAssignedPatientDetails({
+  id,
+  showModel,
+  referralFormDetails,
   patientDetials,
   referralDentistDetails,
 }: PatientReferralDetailsProps) {
+  const pathname = usePathname();
+  const modalUrl = `${pathname}?showModal=true`;
+
   return (
     <div className="bg-white w-full rounded-2xl p-6 space-y-6">
-      <p className="font-medium text-dashboardTextBlack text-2xl">
-        Patient & Referral Dentist Details
-      </p>
+      <div className="w-full flex justify-between items-center">
+        <p className="font-medium text-dashboardTextBlack text-2xl">
+          Patient & Referral Dentist Details
+        </p>
+        <CustomButton
+          text="See Referral Form Details"
+          style="secondary"
+          href={modalUrl}
+        />
+      </div>
 
       <div className="grid grid-cols-2 gap-6">
         <div className="bg-gray p-6 1xl50:space-y-5 space-y-0 rounded-2xl">
@@ -43,7 +71,7 @@ export default function UnAssignedPatientDetails({
             <p className="flex-1">Email: {patientDetials.email}</p>
           </div>
           <div className="flex justify-between items-center text-lg max-1xl50:pt-3">
-            <p>Disease: {patientDetials.disease}</p>
+            <p>Address: {patientDetials.address}</p>
           </div>
         </div>
         <div className="bg-gray p-6 1xl50:space-y-5 space-y-0 rounded-2xl">
@@ -65,6 +93,11 @@ export default function UnAssignedPatientDetails({
           </div>
         </div>
       </div>
+      {showModel && (
+        <ReferralFormDetailModal
+          referralFormDetails={referralFormDetails}
+        />
+      )}
     </div>
   );
 }
