@@ -643,23 +643,44 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
               {practices && practices.length > 0 ? (
                 <Select
                   onValueChange={(val) => {
-                    setValue("referralPracticeId", val, {
-                      shouldValidate: true,
-                    });
+                    setValue("referralPracticeId", val, { shouldValidate: true });
                   }}
                   value={watch("referralPracticeId")}
                 >
-                  <SelectTrigger className="w-full  p-[13px]  text-left font-opus outline-none flex-1 text-[28px] bg-[#ECE8E36] border border-solid border-[#000000] rounded-[10px]">
-                    <SelectValue placeholder="Select practice address" />
+                  <SelectTrigger className="w-full p-[13px] text-left font-opus outline-none flex-1 text-[28px] bg-[#ECE8E36] border border-solid border-[#000000] rounded-[10px]">
+                    {(() => {
+                      const selectedPractice = practices.find(
+                        (p) => p.id === watch("referralPracticeId")
+                      );
+                      if (!selectedPractice) {
+                        return (
+                          <SelectValue
+                            placeholder="Select practice address"
+                            className="font-semibold"
+                          />
+                        );
+                      }
+                      return (
+                        <div className="flex flex-col">
+                          <span className="text-[22px] font-semibold leading-tight">
+                            {selectedPractice.name}
+                          </span>
+                          <span className="text-[16px] text-muted-foreground leading-snug">
+                            {selectedPractice.addressLine1}, {selectedPractice.town},{" "}
+                            {selectedPractice.postcode}
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </SelectTrigger>
+
                   <SelectContent>
                     {practices.map((practice) => (
                       <SelectItem key={practice.id} value={practice.id}>
                         <div className="flex flex-col">
-                          <span className="font-medium">{practice.name}</span>
-                          <span className="text-lg text-muted-foreground">
-                            {practice.addressLine1}, {practice.town},{" "}
-                            {practice.postcode}
+                          <span className="text-lg font-medium">{practice.name}</span>
+                          <span className="text-md text-muted-foreground">
+                            {practice.addressLine1}, {practice.town}, {practice.postcode}
                           </span>
                         </div>
                       </SelectItem>
@@ -680,6 +701,8 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
                 </p>
               )}
             </div>
+
+
 
             <div className="flex flex-wrap justify-between gap-16">
               <div className="flex flex-1 items-center">
@@ -732,13 +755,12 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
               text="Cancel"
               disabled={creatingReferralFormLoader || uplaodFileLoader}
               handleOnClick={() => reset()}
-              textSize={25}
-              className="text-[#A3A3A3] bg-gray  shadow-none hover:bg-lightGray font-medium "
+              className="text-[#A3A3A3] bg-gray  shadow-none hover:bg-lightGray font-medium text-2xl "
             />
             <CustomButton
               text={"Submit Form"}
               type="submit"
-              textSize={25}
+              className="text-2xl font-medium "
               disabled={creatingReferralFormLoader || uplaodFileLoader}
               loading={creatingReferralFormLoader || uplaodFileLoader}
             />

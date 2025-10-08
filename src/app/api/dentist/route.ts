@@ -78,6 +78,9 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const dentist = await req.json();
+    const email = dentist.email;
+    const phoneNumber = dentist.phoneNumber;
+    const gdc = dentist.gdcNo;
 
     const existingDentist = await prisma.dentist.findFirst({
       where: {
@@ -97,9 +100,40 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (existingDentist || existingPatient || existingAdmin) {
+    // if (existingDentist || existingPatient || existingAdmin) {
+    //   return NextResponse.json(
+    //     createResponse(false, "User data already exists", null),
+    //     { status: 400 }
+    //   );
+    // }
+
+    const conflicts: string[] = [];
+
+    if (existingDentist) {
+      if (existingDentist.email === email) conflicts.push("email");
+      if (existingDentist.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingDentist.gdcNo === gdc) conflicts.push("GDC number");
+    }
+
+    if (existingPatient) {
+      if (existingPatient.email === email) conflicts.push("email");
+      if (existingPatient.phoneNumber === phoneNumber) conflicts.push("phone number");
+    }
+
+    if (existingAdmin) {
+      if (existingAdmin.email === email) conflicts.push("email");
+      if (existingAdmin.phoneNumber === phoneNumber) conflicts.push("phone number");
+    }
+
+    const uniqueConflicts = Array.from(new Set(conflicts));
+
+    if (uniqueConflicts.length > 0) {
       return NextResponse.json(
-        createResponse(false, "User data already exists", null),
+        createResponse(
+          false,
+          `The following fields are already in use: ${uniqueConflicts.join(", ")}`,
+          null
+        ),
         { status: 400 }
       );
     }
@@ -208,9 +242,40 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    if (existingDentist || existingPatient || existingAdmin) {
+    // if (existingDentist || existingPatient || existingAdmin) {
+    //   return NextResponse.json(
+    //     createResponse(false, "User data already exists", null),
+    //     { status: 400 }
+    //   );
+    // }
+
+    const conflicts: string[] = [];
+
+    if (existingDentist) {
+      if (existingDentist.email === email) conflicts.push("email");
+      if (existingDentist.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingDentist.gdcNo === gdc) conflicts.push("GDC number");
+    }
+
+    if (existingPatient) {
+      if (existingPatient.email === email) conflicts.push("email");
+      if (existingPatient.phoneNumber === phoneNumber) conflicts.push("phone number");
+    }
+
+    if (existingAdmin) {
+      if (existingAdmin.email === email) conflicts.push("email");
+      if (existingAdmin.phoneNumber === phoneNumber) conflicts.push("phone number");
+    }
+
+    const uniqueConflicts = Array.from(new Set(conflicts));
+
+    if (uniqueConflicts.length > 0) {
       return NextResponse.json(
-        createResponse(false, "User data already exists", null),
+        createResponse(
+          false,
+          `The following fields are already in use: ${uniqueConflicts.join(", ")}`,
+          null
+        ),
         { status: 400 }
       );
     }
