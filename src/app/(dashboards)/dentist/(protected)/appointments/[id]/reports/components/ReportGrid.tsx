@@ -63,13 +63,7 @@ function ReportGrid({
   letterReports,
   patientDetails,
   isNewUploadPage = false,
-}: ReportGridProps) {
-  // const videoReports = reports.filter(
-  //   (report) => report.fileType !== ResoucrceType.PDF
-  // );
-  // const letterReports = reports.filter(
-  //   (report) => report.fileType !== ResoucrceType.PDF
-  // );
+}: ReportGridProps) { 
   return (
     <div className="flex flex-col gap-7 bg-dashboardBackground">
       <PatientDetails patientDetails={patientDetails} />

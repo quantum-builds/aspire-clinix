@@ -15,26 +15,7 @@ export default function DentistDetails({
       <div className="space-y-2">
         <div className="w-full flex items-center justify-between gap-2">
           <p className="font-medium text-2xl">Appointment</p>
-          {/* <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <Image
-                src={CalenderInputIcon}
-                alt="Calendar Icon"
-                className="w-4 h-4"
-              />
-              <p className="text-xl">{patientDetails.date}</p>
-            </div>
-            <div className="flex items-center gap-1">
-              <Image src={TimeIcon} alt="TIme Icon" className="w-4 h-4" />
-              <p className="text-xl">{patientDetails.time}</p>
-            </div>
-          </div> */}
         </div>
-        {/* <div className="flex flex-col gap-3 items-end">
-          <p className="text-xl italic">
-            Appointment # {patientDetails.appointmentNumber}
-          </p>
-        </div> */}
       </div>
       {patientDetails && (
         <div className="flex flex-col gap-5">
@@ -42,18 +23,18 @@ export default function DentistDetails({
           <div className="grid grid-row-2 gap-y-5 gap-x-5">
             {/* First column - 2 items */}
             <div className="flex items-center gap-2">
-              <p className="flex-[35%] text-xl">
+              <p className="flex-[20%] text-xl">
                 Name:{" "}
                 <span className="font-medium">{patientDetails.fullName}</span>
               </p>
-              <p className="flex-[25%] text-xl">
+              <p className="flex-[20%] text-xl">
                 Age:{" "}
                 <span className="font-medium">
                   {calculateAge(patientDetails.dateOfBirth || new Date())}
                 </span>
               </p>
 
-              <div className="flex-[40%] text-xl text-right truncate">
+              <div className="flex-[30%] text-xl text-left truncate">
                 Email:{" "}
                 <span className="font-medium">{patientDetails.email}</span>
               </div>
@@ -61,7 +42,7 @@ export default function DentistDetails({
 
             {/* Second column - 3 items */}
             <div className="flex items-ceter gap-2">
-              <p className="flex-[35%] text-xl">
+              <p className="flex-[25%] text-xl">
                 Phone:{" "}
                 <span className="font-medium">
                   {patientDetails.phoneNumber}

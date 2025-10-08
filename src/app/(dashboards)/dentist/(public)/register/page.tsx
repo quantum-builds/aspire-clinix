@@ -14,7 +14,7 @@ export default async function RegisterPage() {
       : []
     : [];
   return (
-    <main className="min-h-[103vh] ">
+    <main className="min-h-[110vh] ">
       <BackButton
         className="bg-gray hover:bg-lightGray w-fit mb-5"
         backToWebsite={true}

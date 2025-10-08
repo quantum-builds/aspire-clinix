@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 import ReportGrid from "./components/ReportGrid";
 import ReportGridWrapper from "./components/ReportGridWrapper";
+import ReportGridWrapperSkeleton from "./components/skeleton/ReportGridWrapper";
 
 export default async function NewReport(props: { params: { id: string } }) {
   const { id } = props.params;
@@ -15,7 +16,7 @@ export default async function NewReport(props: { params: { id: string } }) {
         showSearch={false}
         showBackBtn={true}
       />
-      <Suspense key={id} fallback={<div>Loading.....</div>}>
+      <Suspense key={id} fallback={<ReportGridWrapperSkeleton/>}>
         <ReportGridWrapper id={id} />
       </Suspense>
     </div>
