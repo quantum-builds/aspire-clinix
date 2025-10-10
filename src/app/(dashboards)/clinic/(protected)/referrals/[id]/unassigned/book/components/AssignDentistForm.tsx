@@ -21,7 +21,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Image from "next/image";
-import { CalenderInputIcon, CalenderInputIconV2, TextInputIcon, TimeIcon, TimeIconV2 } from "@/assets";
+import { CalenderInputIcon, CalenderInputIconV2, TextIconV2, TextInputIcon, TimeIcon, TimeIconV2 } from "@/assets";
 import { cn } from "@/lib/utils";
 import { TPractice } from "@/types/practice";
 import { TDentist } from "@/types/dentist";
@@ -38,15 +38,16 @@ import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { formatTimeForInput } from "@/utils/formatDateTime";
 import { convertOffsetToTimes } from "framer-motion";
+import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 
 const assignDentistSchema = z.object({
   dentistName: z.string().min(2, "Enter dentist name"),
   dentistEmail: z.string().email("Please enter a valid email address"),
   gdcNo: z
-  .string()
-  .regex(/^[a-zA-Z0-9]+$/, "GDC number must be alphanumeric")
-  .min(4, "GDC number must be at least 4 characters")
-  .max(6, "GDC number must be at most 6 characters"),
+    .string()
+    .regex(/^[a-zA-Z0-9]+$/, "GDC number must be alphanumeric")
+    .min(4, "GDC number must be at least 4 characters")
+    .max(6, "GDC number must be at most 6 characters"),
   practicAddress: z.string().min(1, "Please select a practice"),
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
   startTime: z.date({ required_error: "Start time is required" }),
@@ -62,9 +63,10 @@ interface AssignDentistFormProps {
   dentists: TDentist[]
   patient: TPatient | null
   referralRequest: TReferralRequest
+  dentistLoading?: boolean;
 }
 
-export default function AssignDentistForm({ practiceId, practices, dentists, patient, referralRequest }: AssignDentistFormProps) {
+export default function AssignDentistForm({ practiceId, practices, dentists, patient, referralRequest, dentistLoading = false, }: AssignDentistFormProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const { mutate: createAppointment, isPending: createAppointmentLoader } =
     useCreateAppointment();
@@ -224,35 +226,46 @@ export default function AssignDentistForm({ practiceId, practices, dentists, pat
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Branch */}
-          <div className="space-y-1">
+          <div className="space-y-1 flex flex-col">
             <Label className="text-[17px]">Branch</Label>
             <Controller
               name="practicAddress"
               control={control}
-              render={({ field }) => (
-                <Select
-                  onValueChange={handlePracticeChange}
-                  value={field.value}
-                >
-                  <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
-                    <SelectValue placeholder="Select Branch" />
-                  </SelectTrigger>
-                  {practices && practices.length > 0 && (
-                    <SelectContent>
-                      {practices.map((b) => (
-                        <SelectItem key={b.id} value={b.id}>
-                          {b.name}, {b.addressLine1}, {b.town}, {b.postcode}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
+              render={() => (
+                <Controller
+                  name="practicAddress"
+                  control={control}
+                  render={({ field }) => (
+                    <Dropdown
+                      value={field.value}
+                      onValueChange={(val) => {
+                        handlePracticeChange(val || "");
+                        field.onChange(val || "");
+                      }}
+                      options={
+                        practices.map((b) => ({
+                          value: b.id,
+                          label: `${b.name}, ${b.addressLine1}, ${b.town}, ${b.postcode}`,
+                        })) || []
+                      }
+                      placeholder="Select Branch"
+                      placeholderClassName="text-sm text-muted-foreground"
+                      triggerClassName="w-full bg-gray px-6 py-3 h-[52px] rounded-2xl text-left"
+                      contentClassName="w-full "
+                      className="w-full shadow-sm border rounded-2xl"
+                      showClearOption={true}
+                      emptyText="No Practice Found"
+                    />
                   )}
-                </Select>
+                />
+
               )}
             />
           </div>
 
+
           {/* Dentist */}
-          <div className="space-y-1">
+          <div className="space-y-1 flex flex-col">
             <Label className="text-[17px]">Dentist</Label>
             <Controller
               name="dentistName"
@@ -260,36 +273,46 @@ export default function AssignDentistForm({ practiceId, practices, dentists, pat
               render={({ field }) => {
                 const selectedPracticeId = watch("practicAddress");
 
+                const dentistOptions =
+                  dentists?.map((d) => ({
+                    value: d.fullName,
+                    label: `${d.fullName} - ${d.email}`,
+                  })) ?? [];
+
                 return (
-                  <Select
-                    onValueChange={handleDentistChange}
+                  <Dropdown
                     value={field.value}
-                    disabled={!selectedPracticeId} // disable until branch selected
-                  >
-                    <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
-                      <SelectValue
-                        placeholder={
-                          !selectedPracticeId
-                            ? "Select a branch first"
-                            : dentists.length > 0
-                              ? "Select Dentist Name"
-                              : "No dentists available in this branch"
-                        }
-                      />
-                    </SelectTrigger>
-                    {selectedPracticeId && dentists.length > 0 && (
-                      <SelectContent>
-                        {dentists.map((d) => (
-                          <SelectItem key={d.id} value={d.fullName}>
-                            {d.fullName} - {d.email}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    )}
-                  </Select>
+                    onValueChange={(val) => {
+                      handleDentistChange(val || "");
+                      field.onChange(val || "");
+                    }}
+                    options={
+                      !selectedPracticeId
+                        ? []
+                        : dentistLoading
+                          ? [{ value: "", label: "Loading dentists..." }]
+                          : dentistOptions.length > 0
+                            ? dentistOptions
+                            : [{ value: "", label: "No dentist found in this branch" }]
+                    }
+                    disabled={!selectedPracticeId || dentistLoading}
+                    placeholder={
+                      !selectedPracticeId
+                        ? "Select a branch first"
+                        : dentistLoading
+                          ? "Loading dentists..."
+                          : "Select Dentist Name"
+                    }
+                    placeholderClassName="text-sm text-muted-foreground"
+                    triggerClassName="w-full bg-gray px-6 py-3 h-[52px] rounded-2xl text-left"
+                    contentClassName="w-full"
+                    showClearOption={true}
+                    className="w-full shadow-sm border rounded-2xl"
+                  />
                 );
               }}
             />
+
             {errors.dentistName && (
               <p className="text-sm text-red-500">
                 {errors.dentistName.message}
@@ -314,7 +337,7 @@ export default function AssignDentistForm({ practiceId, practices, dentists, pat
                     readOnly
                   />
                   <Image
-                    src={TextInputIcon}
+                    src={TextIconV2}
                     alt="text-input"
                     className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
                   />
@@ -341,7 +364,7 @@ export default function AssignDentistForm({ practiceId, practices, dentists, pat
                     readOnly
                   />
                   <Image
-                    src={TextInputIcon}
+                    src={TextIconV2}
                     alt="text-input"
                     className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
                   />

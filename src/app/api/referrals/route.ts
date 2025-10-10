@@ -6,18 +6,27 @@ import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
 
 export async function POST(req: NextRequest) {
-  const referralForm = await req.json();
 
+  const referralForm = await req.json();
   try {
     const patientEmail = referralForm.patientEmail;
+    console.log("patient email", patientEmail)
     const patient = await prisma.patient.findUnique({
       where: { email: patientEmail },
     });
 
+    console.log("patient", patient)
+    
+
     const referralEmail = referralForm.referralEmail;
+    console.log("referral email", referralEmail)
+
     const referralDentist = await prisma.dentist.findUnique({
       where: { email: referralEmail },
     });
+
+    console.log("referral ", referralDentist)
+
 
     if (referralDentist) {
       if (referralDentist.role === DentistRole.RECIEVING_DENTIST) {
@@ -33,6 +42,7 @@ export async function POST(req: NextRequest) {
       referralForm.patientId = patient.id;
     }
 
+    console.log("Referral form is ",referralForm)
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({
         data: referralForm,

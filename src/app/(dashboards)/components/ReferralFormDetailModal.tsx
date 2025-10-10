@@ -55,7 +55,7 @@ export default function ReferralFormDetailModal({
                         <p className="text-xl font-semibold text-green mb-3">
                             Description:
                         </p>
-                        <p>{referralFormDetails.treatmentDetails}</p>
+                        <p>{referralFormDetails.treatmentDetails ?referralFormDetails.treatmentDetails: <span className="italic">NO Description Added</span>}</p>
                     </div>
 
                     {referralFormDetails.medicalHistoryPDF && (

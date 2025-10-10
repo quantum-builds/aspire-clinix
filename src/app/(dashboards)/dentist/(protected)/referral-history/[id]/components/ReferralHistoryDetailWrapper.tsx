@@ -69,13 +69,6 @@ export default async function ReferralHistoryDetail({ id, showModel }: ReferralH
                 showFilters={false}
                 showBackBtn={true}
                 statusOptions={[]}
-                extraBtns={
-
-                    <Button
-                        text="View Referral form"
-                        href={`/dentist/referral-history/${id}/edit`}
-                    />
-                }
             />
             <PatientReferralDetails
                 id={id}

@@ -40,11 +40,11 @@ import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 const assignDentistSchema = z.object({
   dentistName: z.string().min(2, "Enter dentist name"),
   dentistEmail: z.string().email("Please enter a valid email address"),
- gdcNo: z
-  .string()
-  .regex(/^[a-zA-Z0-9]+$/, "GDC number must be alphanumeric")
-  .min(4, "GDC number must be at least 4 characters")
-  .max(6, "GDC number must be at most 6 characters"),
+  gdcNo: z
+    .string()
+    .regex(/^[a-zA-Z0-9]+$/, "GDC number must be alphanumeric")
+    .min(4, "GDC number must be at least 4 characters")
+    .max(6, "GDC number must be at most 6 characters"),
   practicAddress: z.string().min(1, "Please select a practice"),
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
   startTime: z.date({ required_error: "Start time is required" }),
@@ -131,7 +131,7 @@ export default function BookAppointmentForm({
           console.log(data)
           const partialAppointmentRequest: Partial<TAppointmentRequest> = {
             status: AppointmentRequestStatus.APPROVED,
-            appointmentId:data.id
+            appointmentId: data.id
           };
           updateAppointmentRequest(
             {
@@ -213,7 +213,7 @@ export default function BookAppointmentForm({
                       placeholderClassName="text-sm text-muted-foreground"
                       triggerClassName="w-full bg-gray px-6 py-3 h-[52px] rounded-2xl text-left"
                       contentClassName="w-full"
-                      className="w-full"
+                      className="w-full shadow-sm border rounded-2xl"
                       showClearOption={true}
                       emptyText="No Practice Found"
                     />
@@ -227,43 +227,6 @@ export default function BookAppointmentForm({
           {/* Dentist */}
           <div className="space-y-1 flex flex-col">
             <Label className="text-[17px]">Dentist</Label>
-            {/* <Controller
-              name="dentistName"
-              control={control}
-              render={({ field }) => {
-                const selectedPracticeId = watch("practicAddress");
-
-                return (
-                  <Select
-                    onValueChange={handleDentistChange}
-                    value={field.value}
-                    disabled={!selectedPracticeId} // disable until branch selected
-                  >
-                    <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
-                      <SelectValue
-                        placeholder={
-                          !selectedPracticeId
-                            ? "Select a branch first"
-                            : dentists.length > 0
-                              ? "Select Dentist Name"
-                              : "No dentists available in this branch"
-                        }
-                      />
-                    </SelectTrigger>
-                    {selectedPracticeId && dentists.length > 0 && (
-                      <SelectContent>
-                        {dentists.map((d) => (
-                          <SelectItem key={d.id} value={d.fullName}>
-                            {d.fullName} - {d.email}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    )}
-                  </Select>
-                );
-              }}
-            /> */}
-
             <Controller
               name="dentistName"
               control={control}
@@ -304,6 +267,7 @@ export default function BookAppointmentForm({
                     triggerClassName="w-full bg-gray px-6 py-3 h-[52px] rounded-2xl text-left"
                     contentClassName="w-full"
                     showClearOption={true}
+                    className="w-full shadow-sm border rounded-2xl"
                   />
                 );
               }}

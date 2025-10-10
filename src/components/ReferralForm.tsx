@@ -472,6 +472,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
             <FormInput
               type="text"
               name="patientPhoneNumber"
+              placeholder="e.g. +44 7123 456 789"
               label="Mobile Number"
               control={control}
               errorMessage={errors.patientPhoneNumber?.message}

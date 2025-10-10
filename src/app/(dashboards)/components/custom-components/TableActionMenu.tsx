@@ -46,14 +46,14 @@ export function TableActionMenu({ options }: TableActionMenuProps) {
         const rect = triggerRef.current.getBoundingClientRect();
         const scrollY = window.scrollY || window.pageYOffset;
         const scrollX = window.scrollX || window.pageXOffset;
-        
+
         // Get the computed zoom level
         const zoom = parseFloat(getComputedStyle(document.documentElement).zoom || '1');
-        
+
         // Calculate position - align to the right of the trigger
-        const left = (rect.right / zoom) + scrollX - 144; 
+        const left = (rect.right / zoom) + scrollX - 144;
         const top = (rect.bottom / zoom) + scrollY + 8;
-        
+
         setMenuPosition({ top, left });
       }
     };
@@ -84,11 +84,13 @@ export function TableActionMenu({ options }: TableActionMenuProps) {
         {options.map((option, index) => (
           <li key={index}>
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 option.onClick();
                 setIsOpen(false);
               }}
-            className="flex items-center gap-2 w-full px-4 py-2 text-left hover:text-green text-sm"
+              className="flex items-center gap-2 w-full px-4 py-2 text-left hover:text-green text-sm"
             >
               {option.label}
             </button>
