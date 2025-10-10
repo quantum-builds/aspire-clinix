@@ -9,7 +9,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import Image from "next/image";
-import { CalenderInputIconV2, CancelIcon, DropDownIcon } from "@/assets";
+import { CalenderInputIconV2, CancelIcon } from "@/assets";
 import { formatDate } from "@/utils/formatDateTime";
 import { TAppointmentRequest } from "@/types/appointment-request";
 import { AppointmentRequestStatus } from "@prisma/client";
@@ -20,8 +20,7 @@ import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import { usePatchAppointmentRequest } from "@/services/appointmentRequests/appointmentRequestMutation";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { showToast } from "@/utils/defaultToastOptions";
-import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
-import { MoreVertical } from "lucide-react";
+import { TableActionMenu } from "@/app/(dashboards)/components/custom-components/TableActionMenu";
 
 export function RequestsDataTable({ entries }: { entries: TAppointmentRequest[] }) {
   const [selectedRequest, setSelectedRequest] = useState<TAppointmentRequest | null>(null);
@@ -36,7 +35,6 @@ export function RequestsDataTable({ entries }: { entries: TAppointmentRequest[] 
     setModalOpen(true);
   };
 
-  console.log("data is ",entries)
   const handleCancelAppointment = () => {
     if (!requestToCancel) return;
     const partialAppointmentRequest: Partial<TAppointmentRequest> = {
@@ -51,6 +49,7 @@ export function RequestsDataTable({ entries }: { entries: TAppointmentRequest[] 
         onSuccess: () => {
           refresh();
           setIsCancelModalOpen(false);
+          showToast("success", "Appointment request cancelled successfully");
         },
         onError: (error) => {
           const err = getAxiosErrorMessage(error);
@@ -60,16 +59,34 @@ export function RequestsDataTable({ entries }: { entries: TAppointmentRequest[] 
     );
   };
 
+  const getMenuOptions = (entry: TAppointmentRequest) => {
+    if (entry.status !== AppointmentRequestStatus.PENDING) return [];
+
+    return [
+      {
+        label: "Book Appointment",
+        onClick: () => push(`/clinic/appointments/requests/${entry.id}/book`),
+      },
+      {
+        label: "Cancel Appointment",
+        onClick: () => {
+          setRequestToCancel(entry);
+          setIsCancelModalOpen(true);
+        },
+      },
+    ];
+  };
+
   return (
     <>
-    <div className="w-full overflow-x-auto">
-      <Table className="border-separate border-spacing-y-3 min-w-max">
+      <div className="w-full overflow-x-auto">
+        <Table className="border-separate border-spacing-y-3 min-w-max">
           <TableHeader>
             <TableRow className="bg-dashboardBackground">
               <TableHead className="px-6 py-4 bg-dashboardBarBackground rounded-l-full text-xl text-dashboardTextBlack font-medium">
                 Patient Name
               </TableHead>
-              <TableHead className="px-6 py-4  bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
+              <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
                 Patient Email
               </TableHead>
               <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
@@ -140,42 +157,7 @@ export function RequestsDataTable({ entries }: { entries: TAppointmentRequest[] 
                 </TableCell>
 
                 <TableCell className="px-6 py-4 rounded-r-full">
-                  {entry.status === AppointmentRequestStatus.PENDING ? (
-                    <Dropdown
-                      options={[
-                        {
-                          value: "book",
-                          label: "Book Appointment",
-                        },
-                        {
-                          value: "cancel",
-                          label: "Cancel Appointment",
-                        },
-                      ]}
-                      value=""
-                      onValueChange={(val) => {
-                        if (val === "book") {
-                          push(`/clinic/appointments/requests/${entry.id}/book`);
-                        } else if (val === "cancel") {
-                          setRequestToCancel(entry);
-                          setIsCancelModalOpen(true);
-                        }
-                      }}
-                      placeholder=""
-                      customTrigger={
-                        <button className="p-2 rounded-full hover:bg-gray-100">
-                          <MoreVertical className="h-5 w-5 text-gray-600" />
-                        </button>
-                      }
-                      showClearOption={false}
-                      contentClassName="min-w-[180px]"
-
-                    />
-                  ) : (
-                    <p className="text-gray-400 italic text-base">
-                      No actions found
-                    </p>
-                  )}
+                  <TableActionMenu options={getMenuOptions(entry)} />
                 </TableCell>
               </TableRow>
             ))}

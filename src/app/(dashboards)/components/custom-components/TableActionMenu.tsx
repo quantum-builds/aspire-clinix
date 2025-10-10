@@ -88,7 +88,7 @@ export function TableActionMenu({ options }: TableActionMenuProps) {
                 option.onClick();
                 setIsOpen(false);
               }}
-              className="flex items-center gap-2 w-full px-4 py-2 text-left hover:bg-gray-100 text-sm"
+            className="flex items-center gap-2 w-full px-4 py-2 text-left hover:text-green text-sm"
             >
               {option.label}
             </button>
