@@ -6,7 +6,7 @@ const secret = process.env.NEXTAUTH_SECRET; // required for getToken
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
+  console.log("pathname ", pathname)
   // Define public routes
   const patientPublic = ["/patient/login", "/patient/register"];
   const dentistPublic = ["/dentist/login", "/dentist/register"];
@@ -31,7 +31,6 @@ export async function middleware(request: NextRequest) {
       "/dentist/profile",
     ],
     REFERRING_DENTIST: [
-      "/dentist/appointments/past",
       "/dentist/referral-history",
       "/dentist/loyalty-points",
       "/dentist/profile",
@@ -110,6 +109,13 @@ export async function middleware(request: NextRequest) {
   // ---- 4. Dentist role-specific restrictions ----
 
   if (
+    role === "REFERRING_DENTIST" &&
+    pathname.startsWith("/dentist/appointments/upcoming")
+  ) {
+    return NextResponse.redirect(new URL("/dentist/referral-history", request.url));
+  }
+
+  if (
     pathname.startsWith("/dentist") &&
     (role === "DENTIST" ||
       role === "RECIEVING_DENTIST" ||
@@ -118,7 +124,7 @@ export async function middleware(request: NextRequest) {
     const allowedRoutes = dentistAllowedRoutes[role] || [];
 
     const isAllowed = allowedRoutes.some((route) => pathname.startsWith(route));
-
+    console.log("is allowed ", isAllowed)
     if (!isAllowed) {
       return NextResponse.redirect(new URL("/403", request.url));
     }
