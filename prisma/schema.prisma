@@ -8,47 +8,46 @@ datasource db {
 }
 
 model ReferralForm {
-  id                    String   @id @default(cuid())
-  medicalHistoryPdfUrl  String?
-  referralDetails       String[]
-  treatmentDetails      String?
-  patientDateOfBirth    DateTime
-  patientAddress        String
-  patientEmail          String
-  patientPhoneNumber    String
-  patientName           String
-  other                 String?
-  referralPracticeId    String
-  referralEmail         String
-  referralGDC           String
-  referralPhoneNumber   String
-  referralName          String
-  attendTreatment String
-  createdAt             DateTime @default(now())
-  
-  referralDentistId             String?
-  patientId             String?
-  referralDentist       Dentist?  @relation(fields: [referralDentistId], references: [id])
-  patient               Patient?  @relation(fields: [patientId], references: [id])
+  id                   String   @id @default(cuid())
+  medicalHistoryPdfUrl String?
+  referralDetails      String[]
+  treatmentDetails     String?
+  patientDateOfBirth   DateTime
+  patientAddress       String
+  patientEmail         String
+  patientPhoneNumber   String
+  patientName          String
+  other                String?
+  referralPracticeId   String
+  referralEmail        String
+  referralGDC          String
+  referralPhoneNumber  String
+  referralName         String
+  attendTreatment      String
+  createdAt            DateTime @default(now())
 
-  referralRequest       ReferralRequest?
+  referralDentistId String?
+  patientId         String?
+  referralDentist   Dentist? @relation(fields: [referralDentistId], references: [id])
+  patient           Patient? @relation(fields: [patientId], references: [id])
+
+  referralRequest ReferralRequest?
 
   // @@unique([patientId, dentistId])
 }
 
+model ReferralRequest {
+  id                String                @id @default(cuid())
+  referralFormId    String                @unique
+  assignedDentistId String?
+  appointmentId     String?               @unique
+  requestStatus     ReferralRequestStatus
 
-model ReferralRequest{
-  id  String @id @default(cuid())
-  referralFormId  String  @unique
-  assignedDentistId   String?
-  appointmentId   String?   @unique
-  requestStatus   ReferralRequestStatus
+  assignedDentist Dentist?     @relation(fields: [assignedDentistId], references: [id])
+  referralForm    ReferralForm @relation(fields: [referralFormId], references: [id])
+  appointment     Appointment? @relation(fields: [appointmentId], references: [id])
 
-  assignedDentist Dentist?  @relation(fields: [assignedDentistId], references: [id])
-  referralForm  ReferralForm @relation(fields: [referralFormId],references: [id])
-  appointment       Appointment? @relation(fields: [appointmentId],references: [id])
-
-  createdAt             DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
 model Plan {
@@ -84,226 +83,226 @@ model UserSubscribedPlans {
 }
 
 model Patient {
-  id           String       @id @default(cuid())
-  email        String       @unique
-  password     String
-  fullName     String
-  phoneNumber  String       @unique
-  country      String?
-  dateOfBirth  DateTime?
-  gender       GenderType?
+  id          String      @id @default(cuid())
+  email       String      @unique
+  password    String
+  fullName    String
+  phoneNumber String      @unique
+  country     String?
+  dateOfBirth DateTime?
+  gender      GenderType?
   address     String?
-  fileUrl      String?
+  fileUrl     String?
 
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  cart         Cart?        @relation
-  appointments Appointment[]
-  reports      Report[]
-  appointmentRequest  AppointmentRequests[]
+  cart               Cart?                 @relation
+  appointments       Appointment[]
+  reports            Report[]
+  appointmentRequest AppointmentRequests[]
 
   referralForms ReferralForm[]
 }
 
-model Dentist{
-  id String @id @default(cuid())
-  email String @unique
-  password String
-  fullName String
-  phoneNumber String @unique
-  country String?
-  dateOfBirth DateTime?
-  gender  GenderType?
-  gdcNo   String  @unique
+model Dentist {
+  id              String      @id @default(cuid())
+  email           String      @unique
+  password        String
+  fullName        String
+  phoneNumber     String      @unique
+  country         String?
+  dateOfBirth     DateTime?
+  gender          GenderType?
+  gdcNo           String      @unique
   practiceAddress String?
-  role    DentistRole
-  fileUrl      String?
+  role            DentistRole
+  fileUrl         String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  appointments  Appointment[]
-  reports     Report[]
-  practices   DentistOnPractice[]
+  appointments Appointment[]
+  reports      Report[]
+  practices    DentistOnPractice[]
 
-  referralForms ReferralForm[]
+  referralForms    ReferralForm[]
   referralRequests ReferralRequest[]
 }
 
-model Admin{
-  id  String @id @default(cuid())
-  fullName  String
-  password  String
-  email     String  @unique
+model Admin {
+  id          String  @id @default(cuid())
+  fullName    String
+  password    String
+  email       String  @unique
   phoneNumber String  @unique
-  fileUrl      String?
+  fileUrl     String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Practice{
-  id  String @id @default(cuid())
-  email   String  @unique
-  name  String  @unique
-  phoneNumber String @unique  
-  postcode  String
-  timeZone  String
-  town  String
-  nhs   Boolean @default(false)
-  openingHours  Json
-  addressLine1  String 
-  addressLine2  String
-  logoUrl   String?
+model Practice {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  name         String  @unique
+  phoneNumber  String  @unique
+  postcode     String
+  timeZone     String
+  town         String
+  nhs          Boolean @default(false)
+  openingHours Json
+  addressLine1 String
+  addressLine2 String
+  logoUrl      String?
 
-  dentists  DentistOnPractice[]
-  appointments  Appointment[]
+  dentists     DentistOnPractice[]
+  appointments Appointment[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
-
 
 model DentistOnPractice {
-  practice   Practice     @relation(fields: [practiceId], references: [id],onDelete: Cascade)
-  practiceId String 
-  dentist    Dentist  @relation(fields: [dentistId], references: [id],onDelete: Cascade)
+  practice   Practice               @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+  practiceId String
+  dentist    Dentist                @relation(fields: [dentistId], references: [id], onDelete: Cascade)
   dentistId  String
   status     PracticeApprovalStatus @default(PENDING)
 
   @@id([practiceId, dentistId])
 }
 
-model AppointmentRequests{
-  id String @id @default(cuid())
-  patientId   String 
+model AppointmentRequests {
+  id            String                   @id @default(cuid())
+  appointmentId String?                  @unique
+  patientId     String
   requestedDate DateTime
-  reason  String
-  status  AppointmentRequestStatus @default(PENDING)
-  note  String?
-  fileUrl  String?
+  reason        String
+  status        AppointmentRequestStatus @default(PENDING)
+  note          String?
+  fileUrl       String?
 
-  createdAt  DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  patient Patient  @relation(fields: [patientId],references: [id],onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  patient     Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointment Appointment? @relation(fields: [appointmentId], references: [id],onDelete: Cascade)
 }
 
-model Appointment{
-  id String @id @default(cuid())
+model Appointment {
+  id         String            @id @default(cuid())
   practiceId String
-  date  DateTime
-  startTime   DateTime          
-  finishTime     DateTime 
-  patientId   String 
-  dentistId   String 
-  reason  String
-  state   AppointmentStatus @default(PENDING)
+  date       DateTime
+  startTime  DateTime
+  finishTime DateTime
+  patientId  String
+  dentistId  String
+  reason     String
+  state      AppointmentStatus @default(PENDING)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  reports Report[]
-  practice  Practice  @relation(fields: [practiceId],references: [id],onDelete: Cascade)
-  patient Patient  @relation(fields: [patientId],references: [id],onDelete: Cascade)
-  dentist Dentist  @relation(fields: [dentistId],references: [id],onDelete: Cascade)
+  reports  Report[]
+  practice Practice @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+  patient  Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  dentist  Dentist  @relation(fields: [dentistId], references: [id], onDelete: Cascade)
 
-  referralRequest   ReferralRequest? 
+  referralRequest     ReferralRequest?
+  appointmentRequests AppointmentRequests?
 }
 
-model Report{
-  id          String   @id @default(cuid())
-  dentistId   String
-  patientId   String
+model Report {
+  id            String        @id @default(cuid())
+  dentistId     String
+  patientId     String
   appointmentId String
-  title       String
-  fileUrl     String
-  fileType    ResoucrceType
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  title         String
+  fileUrl       String
+  fileType      ResoucrceType
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
-  patient Patient  @relation(fields: [patientId],references: [id],onDelete: Cascade)
-  dentist Dentist  @relation(fields: [dentistId],references: [id],onDelete: Cascade)
-  appointment Appointment @relation(fields: [appointmentId],references: [id],onDelete: Cascade)
-  @@index([fileType])
-}
-
-model Resource{
-  id          String   @id @default(cuid())
-  title       String
-  fileUrl     String
-  fileType    ResoucrceType
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  patient     Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  dentist     Dentist     @relation(fields: [dentistId], references: [id], onDelete: Cascade)
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
 
   @@index([fileType])
 }
 
+model Resource {
+  id        String        @id @default(cuid())
+  title     String
+  fileUrl   String
+  fileType  ResoucrceType
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([fileType])
+}
 
 model Product {
-  id       String     @id @default(cuid())
-  name     String     @unique
-  productId String    @unique
-  price    Float
-  stock    Int
-  ratings  Float
-  imageUrl String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String   @unique
+  productId String   @unique
+  price     Float
+  stock     Int
+  ratings   Float
+  imageUrl  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  cartProducts CartProduct[]
+  cartProducts      CartProduct[]
   purchasedProducts PurchasedProduct[]
-
 }
 
 model Cart {
-  id           String       @id @default(cuid())
-  patient      Patient      @relation(fields: [patientId], references: [id],onDelete: Cascade)
-  patientId    String       @unique
+  id        String  @id @default(cuid())
+  patient   Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientId String  @unique
 
   cartProducts CartProduct[]
 }
 
-model CartProduct{
-  id        String   @id @default(cuid())
+model CartProduct {
+  id        String  @id @default(cuid())
   cartId    String
   productId String
   quantity  Int
-  Cart      Cart     @relation(fields: [cartId], references: [id],onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id],onDelete: Cascade)
+  Cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productId])
 }
 
-model PurchasedProduct{
-  id          String   @id @default(cuid())
-  patientId   String
-  itemId      String
-  productId   String
-  productPaymentId String 
-  purchaseDate DateTime @default(now())
-  quantity    Int
-  product     Product  @relation(fields: [itemId], references: [id],onDelete: Cascade)
-  payment     ProductPayment @relation(fields: [productPaymentId], references: [id])
+model PurchasedProduct {
+  id               String         @id @default(cuid())
+  patientId        String
+  itemId           String
+  productId        String
+  productPaymentId String
+  purchaseDate     DateTime       @default(now())
+  quantity         Int
+  product          Product        @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  payment          ProductPayment @relation(fields: [productPaymentId], references: [id])
 
-  @@unique([productPaymentId,productId])
-  @@index([patientId,productId])
+  @@unique([productPaymentId, productId])
+  @@index([patientId, productId])
 }
 
-model ProductPayment{
-  id              String        @id @default(cuid())
-  patientId       String
-  email           String        
-  paymentIntent   String        
-  amount          Float
-  status          PaymentStatus @default(PENDING)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  products        PurchasedProduct[]
+model ProductPayment {
+  id            String             @id @default(cuid())
+  patientId     String
+  email         String
+  paymentIntent String
+  amount        Float
+  status        PaymentStatus      @default(PENDING)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  products      PurchasedProduct[]
 
-  @@unique([email,paymentIntent]) 
+  @@unique([email, paymentIntent])
 }
-
 
 model Video {
   id          String @id @default(cuid())
@@ -321,8 +320,6 @@ enum InvoiceStatus {
   FAILED
 }
 
-
-
 enum PlanStatus {
   ACTIVE
   EXPIRED
@@ -335,15 +332,15 @@ enum DiscountType {
 }
 
 enum PatientTreatmentStatus {
-  SCHEDULED 
-  PENDING 
+  SCHEDULED
+  PENDING
   RESCHEDULED
-  ONGOING 
-  COMPLETED 
-  CANCELED 
-  NO_SHOW 
-  FAILED 
-  EXPIRED 
+  ONGOING
+  COMPLETED
+  CANCELED
+  NO_SHOW
+  FAILED
+  EXPIRED
 }
 
 // PATIENT ENUMS

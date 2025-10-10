@@ -47,13 +47,13 @@ export default async function AppointmentRequestPageWrapper({
         }
       />
 
-      <Suspense key={id} fallback={<BookAppointmentFormSkeleton />}>
+      {/* <Suspense key={id} fallback={<BookAppointmentFormSkeleton />}> */}
         <AppointmentRequestFormWrapper
           id={id}
           practiceId={practiceId}
           practices={practices}
         />
-      </Suspense>
+      {/* </Suspense> */}
 
       {showModal && appointmentRequest && (
         <RequestDetailsModalWrapper

@@ -23,13 +23,33 @@ import { showToast } from "@/utils/defaultToastOptions";
 import { useRouter } from "next/navigation";
 import { ResoucrceType } from "@prisma/client";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 
 const practiceFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Enter a valid email"),
-  phone: z.string().min(1, "Phone is required"),
-  postcode: z.string().min(1, "Postcode is required"),
-  timezone: z.string().min(1, "Time zone is required"),
+  phoneNumber: z
+    .string()
+    .regex(
+      /^(\+44\s?\d{9,10}|0\d{9,10})$/,
+      "Please enter a valid UK phone number"
+    )
+    .refine(
+      (val) => {
+        const digitsOnly = val.replace(/\s+/g, "");
+        return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+      },
+      { message: "Phone number must be between 10 and 15 digits" }
+    )
+    .transform((val) => val.replace(/\s+/g, "")),
+
+  postcode: z
+    .string()
+    .regex(
+      /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i,
+      "Enter a valid UK postcode"
+    ),
+  timezone: z.literal("Europe/London").default("Europe/London"),
   town: z.string().min(1, "Town is required"),
   nhs: z.enum(["True", "False"], { required_error: "Select NHS option" }),
   address1: z.string().min(1, "Address Line 1 is required"),
@@ -79,17 +99,22 @@ export default function PracticeForm() {
     useCreatePractice();
   const { replace } = useRouter();
 
+  const open = new Date();
+  open.setHours(9, 0, 0, 0);
+  const close = new Date();
+  close.setHours(17, 0, 0, 0);
+
   const defaultValues: FormData = {
     name: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     postcode: "",
-    timezone: "",
+    timezone: "Europe/London",
     town: "",
     nhs: "True",
     address1: "",
     address2: "",
-    daysAndHours: [{ day: "", opening: new Date(), closing: new Date() }],
+    daysAndHours: [{ day: "", opening: open, closing: close }],
     logo: undefined,
   };
 
@@ -98,6 +123,7 @@ export default function PracticeForm() {
     handleSubmit,
     formState: { errors },
     watch,
+    reset,
     setValue,
   } = useForm<FormData>({
     resolver: zodResolver(practiceFormSchema),
@@ -110,6 +136,8 @@ export default function PracticeForm() {
   });
 
   const values = watch();
+  const selectedDays = watch("daysAndHours").map((d) => d.day);
+
   useEffect(() => {
     const hasChanges = Object.keys(values).some(
       (key) =>
@@ -117,6 +145,7 @@ export default function PracticeForm() {
     );
     setIsDirty(hasChanges);
   }, [values]);
+
 
   const onSubmit = async (data: FormData) => {
     console.log("Practice form submitted:", data);
@@ -146,7 +175,7 @@ export default function PracticeForm() {
       openingHours: openingHours,
       addressLine1: data.address1,
       addressLine2: data.address2,
-      phoneNumber: data.phone,
+      phoneNumber: data.phoneNumber,
       postcode: data.postcode,
       timeZone: data.timezone,
       town: data.town,
@@ -189,7 +218,7 @@ export default function PracticeForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 overflow-y-hidden">
       <div className="bg-dashboardBarBackground rounded-2xl">
         {/* Section 1: Practice Form */}
         <div className="rounded-2xl p-6 space-y-10">
@@ -199,7 +228,9 @@ export default function PracticeForm() {
           <div className="grid grid-cols-2 gap-6">
             {/* Name */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Name</Label>
+              <Label className="text-lg font-medium">Name
+                <span className="text-red-500 text-sm ml-1">*</span>
+              </Label>
               <Controller
                 name="name"
                 control={control}
@@ -218,7 +249,9 @@ export default function PracticeForm() {
 
             {/* Email */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Email</Label>
+              <Label className="text-lg font-medium">Email
+                <span className="text-red-500 text-sm ml-1">*</span>
+              </Label>
               <Controller
                 name="email"
                 control={control}
@@ -240,33 +273,38 @@ export default function PracticeForm() {
           <div className="grid grid-cols-2 gap-6">
             {/* Phone */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Phone</Label>
+              <Label className="text-lg font-medium">Phone Number
+                <span className="text-red-500 text-sm ml-1">*</span>
+              </Label>
               <Controller
-                name="phone"
+                name="phoneNumber"
                 control={control}
                 render={({ field }) => (
                   <Input
+                    type="tel"
                     {...field}
-                    placeholder="Enter phone number"
+                    placeholder="e.g. 01632960001, +44 20 7946 0056"
                     className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
                   />
                 )}
               />
-              {errors.phone && (
-                <p className="text-sm text-red-500">{errors.phone.message}</p>
+              {errors.phoneNumber && (
+                <p className="text-sm text-red-500">{errors.phoneNumber.message}</p>
               )}
             </div>
 
             {/* Postcode */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Postcode</Label>
+              <Label className="text-lg font-medium">Postcode
+                <span className="text-red-500 text-sm ml-1">*</span>
+              </Label>
               <Controller
                 name="postcode"
                 control={control}
                 render={({ field }) => (
                   <Input
                     {...field}
-                    placeholder="Enter postcode"
+                    placeholder="e.g SW1A 1AA"
                     className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
                   />
                 )}
@@ -283,13 +321,15 @@ export default function PracticeForm() {
           <div className="grid grid-cols-4 gap-6">
             {/* Timezone */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Time Zone</Label>
+              <Label className="text-lg font-medium">Time Zone
+              </Label>
               <Controller
                 name="timezone"
                 control={control}
                 render={({ field }) => (
                   <Input
                     {...field}
+                    disabled
                     placeholder="Enter time zone"
                     className="bg-gray px-6 py-3 h-[52px] rounded-2xl mb-4"
                   />
@@ -302,7 +342,9 @@ export default function PracticeForm() {
               )}
             </div>
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Town</Label>
+              <Label className="text-lg font-medium">Town
+                <span className="text-red-500 text-sm ml-1">*</span>
+              </Label>
               <Controller
                 name="town"
                 control={control}
@@ -321,23 +363,40 @@ export default function PracticeForm() {
 
             {/* NHS Dropdown */}
             <div className="space-y-2 col-span-2">
-              <Label className="text-lg font-medium">NHS</Label>
+              <Label className="text-lg font-medium">NHS Contracted Practice
+                <span className="text-red-500 text-sm ml-1">*</span>
+              </Label>
               <Controller
                 name="nhs"
                 control={control}
                 render={({ field }) => (
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
-                      <SelectValue placeholder="Enter NHS" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="True">True</SelectItem>
-                      <SelectItem value="False">False</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="space-y-2 col-span-2">
+                    <Controller
+                      name="nhs"
+                      control={control}
+                      render={({ field }) => (
+                        <Dropdown
+                          options={[
+                            { value: "True", label: "Yes, NHS Contracted" },
+                            { value: "False", label: "No, Private Practice" },
+                          ]}
+                          value={field.value}
+                          onValueChange={(val) => field.onChange(val || "")}
+                          placeholder="Select NHS option"
+                          className="w-full"
+                          contentClassName="w-full"
+                          triggerClassName="bg-gray px-6 py-3 h-[52px] rounded-2xl justify-between"
+                          placeholderClassName="text-gray-600"
+                          showClearOption={true}
+                        />
+                      )}
+                    />
+
+                    {errors.nhs && (
+                      <p className="text-sm text-red-500">{errors.nhs.message}</p>
+                    )}
+                  </div>
+
                 )}
               />
               {errors.nhs && (
@@ -350,7 +409,9 @@ export default function PracticeForm() {
           <div className="grid grid-cols-2 gap-6">
             {/* Address 1 */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Address Line 1</Label>
+              <Label className="text-lg font-medium">Address Line 1
+                <span className="text-red-500 text-sm ml-1">*</span>
+              </Label>
               <Controller
                 name="address1"
                 control={control}
@@ -371,7 +432,9 @@ export default function PracticeForm() {
 
             {/* Address 2 */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Address Line 2</Label>
+              <Label className="text-lg font-medium">Address Line 2
+                <span className="text-red-500 text-sm ml-1">*</span>
+              </Label>
               <Controller
                 name="address2"
                 control={control}
@@ -400,9 +463,17 @@ export default function PracticeForm() {
             </p>
             <button
               type="button"
-              onClick={() =>
-                append({ day: "", opening: new Date(), closing: new Date() })
-              }
+              onClick={() => {
+                if (fields.length >= 7) {
+                  showToast("error", "You can only add up to 7 days");
+                  return;
+                }
+                const open = new Date();
+                open.setHours(9, 0, 0, 0);
+                const close = new Date();
+                close.setHours(17, 0, 0, 0);
+                append({ day: "", opening: open, closing: close });
+              }}
               className="text-green font-medium"
             >
               + Add New
@@ -411,32 +482,38 @@ export default function PracticeForm() {
 
           <div className="space-y-6">
             {fields.map((field, index) => (
-              <div
-                key={field.id}
-                className="grid grid-cols-2 gap-6 items-start"
-              >
+              <div key={field.id} className="grid grid-cols-2 gap-6 items-start">
                 {/* Day dropdown */}
                 <div className="space-y-2">
-                  <Label className="text-lg font-medium">Choose Day</Label>
+                  {index === 0 && (
+                    <Label className="text-lg font-medium">
+                      Choose Day
+                      <span className="text-red-500 text-sm ml-1">*</span>
+                    </Label>
+                  )}
                   <Controller
                     name={`daysAndHours.${index}.day`}
                     control={control}
                     render={({ field }) => (
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
-                          <SelectValue placeholder="Select day" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {daysOfWeek.map((day) => (
-                            <SelectItem key={day} value={day}>
-                              {day}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Dropdown
+                        options={daysOfWeek.map((day) => {
+                          const isSelectedElsewhere = selectedDays.includes(day);
+                          const isCurrent = field.value === day;
+                          return {
+                            value: day,
+                            label: day,
+                            disabled: isSelectedElsewhere && !isCurrent,
+                          };
+                        })}
+                        value={field.value}
+                        onValueChange={(val) => field.onChange(val || "")}
+                        placeholder="Select day"
+                        className="w-full"
+                        triggerClassName="bg-gray px-6 py-3 h-[52px] rounded-2xl justify-between"
+                        placeholderClassName="text-gray-600"
+                        showClearOption={true}
+                        contentClassName="w-full"
+                      />
                     )}
                   />
                   {errors.daysAndHours?.[index]?.day && (
@@ -448,8 +525,11 @@ export default function PracticeForm() {
 
                 {/* Opening & Closing */}
                 <div className="grid grid-cols-2 gap-4">
+                  {/* Opening Time */}
                   <div className="space-y-2">
-                    <Label className="text-lg font-medium">Opening Hours</Label>
+                    {index === 0 && (
+                      <Label className="text-lg font-medium">Opening Hours</Label>
+                    )}
                     <div className="relative">
                       <Controller
                         name={`daysAndHours.${index}.opening`}
@@ -458,13 +538,9 @@ export default function PracticeForm() {
                           <Input
                             {...field}
                             type="time"
-                            value={
-                              field.value ? formatTimeForInput(field.value) : ""
-                            }
+                            value={field.value ? formatTimeForInput(field.value) : ""}
                             onChange={(e) => {
-                              const [hours, minutes] = e.target.value
-                                .split(":")
-                                .map(Number);
+                              const [hours, minutes] = e.target.value.split(":").map(Number);
                               const newDate = new Date();
                               newDate.setHours(hours);
                               newDate.setMinutes(minutes);
@@ -487,8 +563,11 @@ export default function PracticeForm() {
                     )}
                   </div>
 
+                  {/* Closing Time */}
                   <div className="space-y-2">
-                    <Label className="text-lg font-medium">Closing Hours</Label>
+                    {index === 0 && (
+                      <Label className="text-lg font-medium">Closing Hours</Label>
+                    )}
                     <div className="relative">
                       <Controller
                         name={`daysAndHours.${index}.closing`}
@@ -497,13 +576,9 @@ export default function PracticeForm() {
                           <Input
                             {...field}
                             type="time"
-                            value={
-                              field.value ? formatTimeForInput(field.value) : ""
-                            }
+                            value={field.value ? formatTimeForInput(field.value) : ""}
                             onChange={(e) => {
-                              const [hours, minutes] = e.target.value
-                                .split(":")
-                                .map(Number);
+                              const [hours, minutes] = e.target.value.split(":").map(Number);
                               const newDate = new Date();
                               newDate.setHours(hours);
                               newDate.setMinutes(minutes);
@@ -589,6 +664,7 @@ export default function PracticeForm() {
           <CustomButton
             style="secondary"
             text={"Cancel"}
+            handleOnClick={() => reset()}
             className="py-3 px-6 h-[60px]"
           />
           <CustomButton

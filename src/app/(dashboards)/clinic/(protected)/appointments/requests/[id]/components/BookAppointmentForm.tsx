@@ -21,7 +21,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Image from "next/image";
-import { CalenderInputIconV2, TextInputIcon, TimeIconV2 } from "@/assets";
+import { CalenderInputIconV2, TextIconV2, TextInputIcon, TimeIconV2 } from "@/assets";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { TPractice } from "@/types/practice";
@@ -35,11 +35,16 @@ import { usePatchAppointmentRequest } from "@/services/appointmentRequests/appoi
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 
 const assignDentistSchema = z.object({
   dentistName: z.string().min(2, "Enter dentist name"),
   dentistEmail: z.string().email("Please enter a valid email address"),
-  gdcNo: z.string().min(1, "Enter GDC number"),
+ gdcNo: z
+  .string()
+  .regex(/^[a-zA-Z0-9]+$/, "GDC number must be alphanumeric")
+  .min(4, "GDC number must be at least 4 characters")
+  .max(6, "GDC number must be at most 6 characters"),
   practicAddress: z.string().min(1, "Please select a practice"),
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
   startTime: z.date({ required_error: "Start time is required" }),
@@ -52,12 +57,14 @@ interface BookAppointmentFormProps {
   practices: TPractice[];
   dentists: TDentist[];
   appointmentRequest: TAppointmentRequest;
+  dentistLoading?: boolean;
 }
 
 export default function BookAppointmentForm({
   practices,
   dentists,
   appointmentRequest,
+  dentistLoading = false,
 }: BookAppointmentFormProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const { mutate: createAppointment, isPending: createAppointmentLoader } =
@@ -120,9 +127,11 @@ export default function BookAppointmentForm({
     createAppointment(
       { appointment: newAppointment },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
+          console.log(data)
           const partialAppointmentRequest: Partial<TAppointmentRequest> = {
             status: AppointmentRequestStatus.APPROVED,
+            appointmentId:data.id
           };
           updateAppointmentRequest(
             {
@@ -177,68 +186,48 @@ export default function BookAppointmentForm({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Dentist */}
-          {/* <div className="space-y-2">
-            <Label className="text-lg font-medium">Dentist</Label>
-            <Controller
-              name="dentistName"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={handleDentistChange} value={field.value}>
-                  <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
-                    <SelectValue placeholder="Select Dentist Name" />
-                  </SelectTrigger>
-                  {dentists && dentists.length > 0 && (
-                    <SelectContent>
-                      {dentists.map((d) => (
-                        <SelectItem key={d.id} value={d.fullName}>
-                          {d.fullName} - {d.email}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  )}
-                </Select>
-              )}
-            />
-            {errors.dentistName && (
-              <p className="text-sm text-red-500">
-                {errors.dentistName.message}
-              </p>
-            )}
-          </div> */}
-
           {/* Branch */}
-          <div className="space-y-1">
+          <div className="space-y-1 flex flex-col">
             <Label className="text-[17px]">Branch</Label>
             <Controller
               name="practicAddress"
               control={control}
-              render={({ field }) => (
-                <Select
-                  onValueChange={handlePracticeChange}
-                  value={field.value}
-                >
-                  <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
-                    <SelectValue placeholder="Select Branch" />
-                  </SelectTrigger>
-                  {practices && practices.length > 0 && (
-                    <SelectContent>
-                      {practices.map((b) => (
-                        <SelectItem key={b.id} value={b.id}>
-                          {b.name}, {b.addressLine1}, {b.town}, {b.postcode}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
+              render={() => (
+                <Controller
+                  name="practicAddress"
+                  control={control}
+                  render={({ field }) => (
+                    <Dropdown
+                      value={field.value}
+                      onValueChange={(val) => {
+                        handlePracticeChange(val || "");
+                        field.onChange(val || "");
+                      }}
+                      options={
+                        practices.map((b) => ({
+                          value: b.id,
+                          label: `${b.name}, ${b.addressLine1}, ${b.town}, ${b.postcode}`,
+                        })) || []
+                      }
+                      placeholder="Select Branch"
+                      placeholderClassName="text-sm text-muted-foreground"
+                      triggerClassName="w-full bg-gray px-6 py-3 h-[52px] rounded-2xl text-left"
+                      contentClassName="w-full"
+                      className="w-full"
+                      showClearOption={true}
+                      emptyText="No Practice Found"
+                    />
                   )}
-                </Select>
+                />
+
               )}
             />
           </div>
 
           {/* Dentist */}
-          <div className="space-y-1">
+          <div className="space-y-1 flex flex-col">
             <Label className="text-[17px]">Dentist</Label>
-            <Controller
+            {/* <Controller
               name="dentistName"
               control={control}
               render={({ field }) => {
@@ -273,7 +262,53 @@ export default function BookAppointmentForm({
                   </Select>
                 );
               }}
+            /> */}
+
+            <Controller
+              name="dentistName"
+              control={control}
+              render={({ field }) => {
+                const selectedPracticeId = watch("practicAddress");
+
+                const dentistOptions =
+                  dentists?.map((d) => ({
+                    value: d.fullName,
+                    label: `${d.fullName} - ${d.email}`,
+                  })) ?? [];
+
+                return (
+                  <Dropdown
+                    value={field.value}
+                    onValueChange={(val) => {
+                      handleDentistChange(val || "");
+                      field.onChange(val || "");
+                    }}
+                    options={
+                      !selectedPracticeId
+                        ? []
+                        : dentistLoading
+                          ? [{ value: "", label: "Loading dentists..." }]
+                          : dentistOptions.length > 0
+                            ? dentistOptions
+                            : [{ value: "", label: "No dentist found in this branch" }]
+                    }
+                    disabled={!selectedPracticeId || dentistLoading}
+                    placeholder={
+                      !selectedPracticeId
+                        ? "Select a branch first"
+                        : dentistLoading
+                          ? "Loading dentists..."
+                          : "Select Dentist Name"
+                    }
+                    placeholderClassName="text-sm text-muted-foreground"
+                    triggerClassName="w-full bg-gray px-6 py-3 h-[52px] rounded-2xl text-left"
+                    contentClassName="w-full"
+                    showClearOption={true}
+                  />
+                );
+              }}
             />
+
             {errors.dentistName && (
               <p className="text-sm text-red-500">
                 {errors.dentistName.message}
@@ -298,7 +333,7 @@ export default function BookAppointmentForm({
                     readOnly
                   />
                   <Image
-                    src={TextInputIcon}
+                    src={TextIconV2}
                     alt="text-input"
                     className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
                   />
@@ -325,7 +360,7 @@ export default function BookAppointmentForm({
                     readOnly
                   />
                   <Image
-                    src={TextInputIcon}
+                    src={TextIconV2}
                     alt="text-input"
                     className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
                   />
@@ -340,7 +375,6 @@ export default function BookAppointmentForm({
           </div>
         </div>
 
-        {/* Appointment Date, Start Time, End Time */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Date */}
           <div className="space-y-1">

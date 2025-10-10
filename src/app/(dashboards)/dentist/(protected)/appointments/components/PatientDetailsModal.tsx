@@ -80,6 +80,46 @@ export default function PatientDetailsModal({
           </div>
         </div>
 
+
+        <div className="space-y-2">
+          <p className="text-xl font-semibold text-green mb-3">
+            Dentists Details
+          </p>
+          <div>
+            <div className="flex items-center">
+              <p className="w-3/4 truncate">
+                Name:{" "}
+                <span className="font-medium text-lg">
+                  {appointment.dentist.fullName}
+                </span>
+              </p>
+              {appointment.dentist.dateOfBirth &&
+                <p className="w-[33%]">
+                  Age:{" "}
+                  <span className="font-medium text-lg">
+                    {calculateAge(appointment.dentist.dateOfBirth!)} years
+                  </span>
+                </p>
+              }
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="w-3/4 truncate">
+                Email:{" "}
+                <span className="font-medium text-lg">
+                  {appointment.dentist.email}
+                </span>
+              </p>
+              <p className="w-[33%]">
+                Phone:{" "}
+                <span className="font-medium text-lg">
+                  {appointment.dentist.phoneNumber}
+                </span>
+              </p>
+            </div>
+
+          </div>
+        </div>
+
         <div>
           <p className="text-xl font-semibold text-green mb-3">
             Appointment Date & Time

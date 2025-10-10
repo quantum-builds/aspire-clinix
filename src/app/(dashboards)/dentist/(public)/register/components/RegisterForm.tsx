@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { TPractice } from "@/types/practice";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 
 export const dentistSchema = z.object({
   fullName: z
@@ -37,18 +38,23 @@ export const dentistSchema = z.object({
     .max(100),
   phoneNumber: z
     .string()
-    .min(10, "Phone number must be at least 10 digits")
-    .max(15, "Phone number must be at most 15 digits")
     .regex(
       /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
       "Please enter a valid UK mobile phone number"
-    ),
+    )
+    .refine(
+      (val) => {
+        const digitsOnly = val.replace(/\s+/g, "");
+        return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+      },
+      { message: "Phone number must be between 10 and 15 digits" }
+    )
+    .transform((val) => val.replace(/\s+/g, "")),
   gdcNo: z
     .string()
-    .regex(/^\d+$/, "GDC number must contain only digits")
-    .min(4, "GDC number must be at least 4 digits")
-    .max(6, "GDC number must be at most 6 digits"),
-
+    .regex(/^[a-zA-Z0-9]+$/, "GDC number must be alphanumeric")
+    .min(4, "GDC number must be at least 4 characters")
+    .max(6, "GDC number must be at most 6 characters"),
   practiceId: z.string().min(1, "Please select a practice address"),
   practiceAddress: z.string().min(1, "Practice address is required"),
 
@@ -221,7 +227,7 @@ export default function DentistRegisterForm({
             <Input
               id="phoneNumber"
               type="tel"
-              placeholder="Enter your phone number"
+              placeholder="e.g. +44 7123 456 789"
               {...register("phoneNumber")}
               className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
             />
@@ -267,10 +273,15 @@ export default function DentistRegisterForm({
           </Label>
 
           {practices && practices.length > 0 ? (
-            <Select
+            <Dropdown
+              options={practices.map((practice) => ({
+                value: practice.id,
+                label: `${practice.name}, ${practice.addressLine1}, ${practice.town}, ${practice.postcode}`,
+              }))}
+              value={watch("practiceId")}
               onValueChange={(val) => {
+                setValue("practiceId", val || "", { shouldValidate: true });
                 const selectedPractice = practices.find((p) => p.id === val);
-                setValue("practiceId", val, { shouldValidate: true });
                 if (selectedPractice) {
                   setValue(
                     "practiceAddress",
@@ -279,25 +290,11 @@ export default function DentistRegisterForm({
                   );
                 }
               }}
-              value={watch("practiceId")}
-            >
-              <SelectTrigger className="bg-gray px-6 py-3 h-[52px] rounded-2xl">
-                <SelectValue placeholder="Select practice address" />
-              </SelectTrigger>
-              <SelectContent>
-                {practices.map((practice) => (
-                  <SelectItem key={practice.id} value={practice.id}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{practice.name}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {practice.addressLine1}, {practice.town},{" "}
-                        {practice.postcode}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              placeholder="Select practice address"
+              className="border shadow-sm text-base bg-gray rounded-2xl w-full"
+              placeholderClassName="text-sm text-muted-foreground"
+              triggerClassName="w-full bg-gray px-6 py-3 h-[52px] rounded-2xl text-left"
+            />
           ) : (
             <Input
               disabled
@@ -312,7 +309,7 @@ export default function DentistRegisterForm({
         </div>
 
         {/* Role */}
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <Label className="text-lg font-medium">
             Role<span className="text-red-500">*</span>
           </Label>
@@ -336,7 +333,34 @@ export default function DentistRegisterForm({
           {errors.role && (
             <p className="text-sm text-red-500">{errors.role.message}</p>
           )}
+        </div> */}
+
+        <div className="space-y-2">
+          <Label className="text-lg font-medium">
+            Role<span className="text-red-500">*</span>
+          </Label>
+
+          <Dropdown
+            options={roles.map((role) => ({
+              value: role.value,
+              label: role.label,
+            }))}
+            value={watch("role") || ""}
+            onValueChange={(val) => {
+              setValue("role", val as DentistRole, { shouldValidate: true });
+            }}
+            placeholder="Select role"
+            className="border shadow-sm text-base bg-gray rounded-2xl w-full"
+            placeholderClassName="text-sm text-muted-foreground"
+            triggerClassName="w-full bg-gray px-6 py-3 h-[52px] rounded-2xl text-left"
+            contentClassName="w-full"
+          />
+
+          {errors.role && (
+            <p className="text-sm text-red-500">{errors.role.message}</p>
+          )}
         </div>
+
       </div>
 
       {/* Action Buttons */}

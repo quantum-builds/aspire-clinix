@@ -132,3 +132,6 @@ export { default as VideoImage } from "@/assets/video-image.svg";
 export { default as CancelIcon } from "@/assets/cancel-icon.svg";
 export { default as LogoutIconV2 } from "@/assets/logout-icon-v2.svg";
 export { default as DeleteIconV2 } from "@/assets/delete-icon-v2.svg"
+
+export { default as UploadImageSmalIcon } from "@/assets/uplaod-pdf-icon.svg";
+export { default as UploadVideoSmallIcon } from "@/assets/uplaod-video-icon.svg"

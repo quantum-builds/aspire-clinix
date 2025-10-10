@@ -8,11 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import Image from "next/image";
 import { CalenderInputIconV2, PreviewPDFIcon, UploadPDFIcon } from "@/assets";
 import { cn } from "@/lib/utils";
@@ -24,6 +19,7 @@ import PdfModal from "@/app/(dashboards)/components/ViewPdfModal";
 import { ResoucrceType } from "@prisma/client";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { showToast } from "@/utils/defaultToastOptions";
+import CustomPopover from "@/app/(dashboards)/components/custom-components/Popover";
 
 const appointmentSchema = z.object({
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
@@ -97,7 +93,7 @@ export default function AppointmentForm() {
       {
         onSuccess: () => {
           reset();
-          showToast("success", "Appointemnt Request Sent");
+          showToast("success", "Appointment Request Sent");
           replace(`/patient/appointments/requests?ts=${Date.now()}`);
         },
         onError: (error) => {
@@ -118,19 +114,21 @@ export default function AppointmentForm() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Appointment Date */}
           <div className="space-y-2">
             <Label className="text-[17px]">Appointment Date</Label>
             <Controller
               name="appointmentDate"
               control={control}
               render={({ field }) => (
-                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
+                <CustomPopover
+                  parentClassName="w-full"
+                  trigger={
+                    <button
                       type="button"
+                      onClick={() => setIsCalendarOpen(!isCalendarOpen)}
                       className={cn(
-                        "relative w-full text-left font-normal bg-gray px-6 py-3 h-[52px] rounded-2xl",
+                        "relative w-full text-left font-normal bg-gray px-6 py-3 h-[52px] rounded-2xl border border-gray-300",
                         !field.value && "text-muted-foreground"
                       )}
                     >
@@ -143,22 +141,38 @@ export default function AppointmentForm() {
                       )}
                       <Image
                         src={CalenderInputIconV2}
-                        alt="calender-input"
+                        alt="calendar-input"
                         className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
                       />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-full p-0">
+                    </button>
+                  }
+                >
+                  <div className="w-full p-3">
+                    <div className="border-b border-gray-200 pb-2 mb-3 text-right">
+                      <button
+                        type="button"
+                        className="text-sm hover:text-green"
+                        onClick={() => {
+                          field.onChange(null);
+                          setIsCalendarOpen(false);
+                        }}
+                      >
+                        Clear selection
+                      </button>
+                    </div>
                     <Calendar
                       mode="single"
                       selected={field.value}
-                      onSelect={(date) => date && field.onChange(date)}
+                      onSelect={(date) => {
+                        if (date) field.onChange(date);
+                        setIsCalendarOpen(false);
+                      }}
                       captionLayout="dropdown"
                       showOutsideDays={false}
                       disabled={{ before: new Date() }}
                     />
-                  </PopoverContent>
-                </Popover>
+                  </div>
+                </CustomPopover>
               )}
             />
             {errors.appointmentDate && (
@@ -168,6 +182,7 @@ export default function AppointmentForm() {
             )}
           </div>
 
+          {/* Appointment Reason */}
           <div className="space-y-2">
             <Label className="text-[17px]">Appointment Reason</Label>
             <Controller
@@ -189,6 +204,7 @@ export default function AppointmentForm() {
           </div>
         </div>
 
+        {/* Note */}
         <div className="space-y-2">
           <Label className="text-[17px]">Note</Label>
           <Controller
@@ -203,6 +219,8 @@ export default function AppointmentForm() {
             )}
           />
         </div>
+
+        {/* Medical History */}
         <div className="space-y-2">
           <div>
             <p className="text-[22px] font-semibold text-green">
@@ -267,6 +285,7 @@ export default function AppointmentForm() {
         </div>
       </div>
 
+      {/* Buttons */}
       <div className="w-full flex justify-end items-center gap-3">
         <CustomButton
           text="Cancel"
@@ -281,7 +300,6 @@ export default function AppointmentForm() {
               ? "Making Request"
               : "Request an Appointment"
           }
-          // disabled={isPending}
           type="submit"
           disabled={createRequestLoader || uploadFileLoader}
           loading={createRequestLoader || uploadFileLoader}

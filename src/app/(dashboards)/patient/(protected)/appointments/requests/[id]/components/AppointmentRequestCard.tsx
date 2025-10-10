@@ -146,8 +146,8 @@ export default function AppointmentRequestCard({
         onConfirm={handleDeleteAppointmentRequest}
         title="Cancel Request"
         description="Are you sure you want to cancel this reqyes? This action cannot be undone."
-        cancelText="No, Keep the Request"
-        confirmText="Yes, Cancel the Request"
+        cancelText="No"
+        confirmText="Yes"
       />
     </div>
   );

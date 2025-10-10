@@ -120,8 +120,8 @@ export default function UpcomingAppointmentCard({
         isPending={isCancelAppointment}
         title="Cancel Appointment"
         description="Are you sure you want to cancel this appointment? This action cannot be undone."
-        cancelText="No, Keep"
-        confirmText="Yes, Cancel"
+        cancelText="No"
+        confirmText="Yes  "
       />
     </div>
   );

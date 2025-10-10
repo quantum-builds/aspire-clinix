@@ -31,7 +31,7 @@ export default async function RegisterPage() {
           />
         </div>
         <header className="mb-8 text-start">
-          <h1 className="text-pretty text-2xl font-semibold tracking-tight md:text-3xl">
+          <h1 className="text-pretty text-2xl font-medium tracking-tight">
             Register Dentist
           </h1>
           <p className="text-muted-foreground mt-2">

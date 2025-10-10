@@ -68,12 +68,18 @@ export const referralSchema = z.object({
     .min(6, "Address must be at least 6 characters long."),
   patientPhoneNumber: z
     .string()
-    .min(10, "Phone number must be at least 10 digits")
-    .max(15, "Phone number must be at most 15 digits")
     .regex(
       /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
       "Please enter a valid UK mobile phone number"
-    ),
+    )
+    .refine(
+      (val) => {
+        const digitsOnly = val.replace(/\s+/g, "");
+        return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+      },
+      { message: "Phone number must be between 10 and 15 digits" }
+    )
+    .transform((val) => val.replace(/\s+/g, "")),
   referralName: z
     .string()
     .min(3, "Full name must be at least 3 characters")
@@ -88,12 +94,18 @@ export const referralSchema = z.object({
     .max(200, "Practice address must be less than 200 characters"),
   referralPhoneNumber: z
     .string()
-    .min(10, "Phone number must be at least 10 digits")
-    .max(15, "Phone number must be at most 15 digits")
     .regex(
       /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
       "Please enter a valid UK mobile phone number"
-    ),
+    )
+    .refine(
+      (val) => {
+        const digitsOnly = val.replace(/\s+/g, "");
+        return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+      },
+      { message: "Phone number must be between 10 and 15 digits" }
+    )
+    .transform((val) => val.replace(/\s+/g, "")),
   referralEmail: z
     .string()
     .email("Please enter a valid email address")

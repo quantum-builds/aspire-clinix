@@ -9,7 +9,7 @@ import {
 } from "@/assets";
 import Image from "next/image";
 import { TAppointmentRequest } from "@/types/appointment-request";
-import { formatDate } from "@/utils/formatDateTime";
+import { calculateAge, formatDate } from "@/utils/formatDateTime";
 import PdfModal from "@/app/(dashboards)/components/ViewPdfModal";
 import { AppointmentRequestStatus } from "@prisma/client";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
@@ -68,7 +68,7 @@ export default function RequestDetailsModal({
           <div className="flex items-center justify-between w-full">
             <p className="font-semibold text-green text-2xl">Request Details</p>
             <div
-              className="size-11 cursor-pointer flex justify-center items-center bg-gray rounded-full"
+              className="size-11 cursor-pointer flex justify-center items-center bg-gray hover:bg-lightGray rounded-full"
               onClick={onClose}
             >
               <Image src={CloseIcon} alt="close" />
@@ -101,13 +101,54 @@ export default function RequestDetailsModal({
             </p>
           </div>
 
+          {request.appointment?.dentist &&
+            <div className="space-y-2">
+              <p className="text-xl font-semibold text-green mb-3">
+                Dentists Details
+              </p>
+              <div>
+                <div className="flex items-center">
+                  <p className="w-3/4 truncate">
+                    Name:{" "}
+                    <span className="font-medium text-lg">
+                      {request.appointment.dentist.fullName}
+                    </span>
+                  </p>
+                  {request.appointment.dentist.dateOfBirth &&
+                    <p className="w-[33%]">
+                      Age:{" "}
+                      <span className="font-medium text-lg">
+                        {calculateAge(request.appointment.dentist.dateOfBirth!)} years
+                      </span>
+                    </p>
+                  }
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="w-3/4 truncate">
+                    Email:{" "}
+                    <span className="font-medium text-lg">
+                      {request.appointment.dentist.email}
+                    </span>
+                  </p>
+                  <p className="w-[33%]">
+                    Phone:{" "}
+                    <span className="font-medium text-lg">
+                      {request.appointment.dentist.phoneNumber}
+                    </span>
+                  </p>
+                </div>
+
+              </div>
+            </div>
+          }
+
           <div className="flex gap-4">
             <div className="w-2/5 space-y-1">
               <p className="font-medium text-xl text-green">Appointment Date</p>
               <div className="flex gap-2 items-center">
                 <Image src={CalenderInputIconV2} alt="Calender Icon" />
                 <p className="text-lg tracking-tightest">
-                  {formatDate(request.requestedDate)}
+                  {request.appointment?.date ? formatDate(request.appointment.date) : formatDate(request.requestedDate)}
                 </p>
               </div>
             </div>

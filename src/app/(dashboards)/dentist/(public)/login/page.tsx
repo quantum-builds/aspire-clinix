@@ -22,7 +22,7 @@ export default function LoginPage() {
           />
         </div>
         <header className="mb-8 text-start">
-          <h1 className="text-pretty text-2xl font-semibold tracking-tight">
+          <h1 className="text-pretty text-2xl font-medium tracking-tight">
             Login Dentist
           </h1>
           <p className="text-muted-foreground mt-2">

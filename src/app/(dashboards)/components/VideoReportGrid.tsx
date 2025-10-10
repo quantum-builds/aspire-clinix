@@ -1,11 +1,13 @@
 "use client";
 import { TReport } from "@/types/reports";
-import { CalenderInputIconV2, VideoImage } from "@/assets";
+import { CalenderInputIconV2, UploadVideoSmallIcon, VideoImage } from "@/assets";
 import Image from "next/image";
 import VideoReportCard from "./VideoReportCard";
 import { X } from "lucide-react";
 import { VideoModal } from "./VideoModal";
 import UploadVideoForm from "../dentist/(protected)/appointments/[id]/reports/new/components/UploadVideoForm";
+import CustomButton from "./custom-components/CustomButton";
+import { useRef } from "react";
 
 interface VideoReportGridProps {
   reports: TReport[];
@@ -22,11 +24,52 @@ export default function VideoReportGrid({
   handleRemoveVideo,
   handleVideoSelect,
 }: VideoReportGridProps) {
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && handleVideoSelect) {
+      handleVideoSelect(file);
+      event.target.value = ""; // reset input for selecting same file again
+    }
+  };
+
   return (
     <div className="flex flex-col gap-10">
-      <p className="font-medium text-2xl">
-        {isNewUploadPage ? "Upload Video" : "Video Reports"}
-      </p>
+      <div className="flex justify-between items-center">
+        <p className="font-medium text-2xl">
+          {isNewUploadPage ? "Upload Video" : "Video Reports"}
+        </p>
+        {isNewUploadPage &&
+          <>
+            <button
+              onClick={handleUploadClick}
+              className="px-5 text-base py-2 flex items-center justify-center gap-2 rounded-[100px] disabled:cursor-not-allowed disabled:opacity-75 transition-all bg-gray hover:bg-lightGray w-fit"
+            >
+              <p>Upload Video</p>
+              <div className="p-4 rounded-full bg-dashboardBarBackground">
+                <Image
+                  src={UploadVideoSmallIcon}
+                  alt="button icon"
+                  className="w-5 h-5"
+                />
+              </div>
+            </button>
+            <input
+              type="file"
+              accept="video/*"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </>}
+      </div>
+
 
       <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 gap-x-6 gap-y-10">
         {/* Render already saved reports */}
@@ -94,9 +137,11 @@ export default function VideoReportGrid({
         })}
 
         {/* Upload new video form */}
-        {isNewUploadPage && handleVideoSelect && (
+        {/* {isNewUploadPage && handleVideoSelect && (
           <UploadVideoForm onVideoSelect={handleVideoSelect} />
-        )}
+        )} */}
+        {uploadedVideos.length === 0 && isNewUploadPage &&
+          <p className="italic text-lg">Please upload the patient's video reports here.</p>}
       </div>
     </div>
   );

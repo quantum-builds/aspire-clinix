@@ -185,8 +185,8 @@ export function ClinicReferralDataTable({
         onConfirm={handleDeleteReferralRequest}
         title="Delete Referral Request"
         description="Are you sure you want to delete this request? This action cannot be undone."
-        cancelText="No, Keep Request"
-        confirmText="Yes, Delete Request"
+        cancelText="No"
+        confirmText="Yes"
       />
     </div>
   );

@@ -42,7 +42,11 @@ import { convertOffsetToTimes } from "framer-motion";
 const assignDentistSchema = z.object({
   dentistName: z.string().min(2, "Enter dentist name"),
   dentistEmail: z.string().email("Please enter a valid email address"),
-  gdcNo: z.string().min(1, "Enter GDC number"),
+  gdcNo: z
+  .string()
+  .regex(/^[a-zA-Z0-9]+$/, "GDC number must be alphanumeric")
+  .min(4, "GDC number must be at least 4 characters")
+  .max(6, "GDC number must be at most 6 characters"),
   practicAddress: z.string().min(1, "Please select a practice"),
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
   startTime: z.date({ required_error: "Start time is required" }),

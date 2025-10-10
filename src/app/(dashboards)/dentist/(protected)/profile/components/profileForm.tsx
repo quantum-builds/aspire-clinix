@@ -31,12 +31,18 @@ const profileFormSchema = z.object({
     .min(1, "Email is required"),
   phoneNumber: z
     .string()
-    .min(10, "Phone number must be at least 10 digits")
-    .max(15, "Phone number must be at most 15 digits")
     .regex(
       /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
       "Please enter a valid UK mobile phone number"
-    ),
+    )
+    .refine(
+      (val) => {
+        const digitsOnly = val.replace(/\s+/g, "");
+        return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+      },
+      { message: "Phone number must be between 10 and 15 digits" }
+    )
+    .transform((val) => val.replace(/\s+/g, "")),
   gdcNumber: z
     .string()
     .min(4, "GDC number must be at least 4 characters")
@@ -328,7 +334,7 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
                     {...field}
                     id="phoneNumber"
                     type="tel"
-                    placeholder="Enter your phone number"
+                    placeholder="e.g. +44 7123 456 789"
                     className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
                   />
                 )}
@@ -436,7 +442,7 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
           )}
           {status === PracticeApprovalStatus.CANCELLED && (
             <p className="italic font-light">
-              ​Your practice request has been cancelled. If you want to request
+              Your practice request has been cancelled. If you want to request
               again, please mail us on{" "}
               <a
                 href="https://mail.google.com/mail/?view=cm&fs=1&to=aspireclinic@gmail.com&su=Practice%20Request%20Approval"

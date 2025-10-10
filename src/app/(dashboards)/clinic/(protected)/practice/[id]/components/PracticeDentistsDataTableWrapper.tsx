@@ -25,11 +25,7 @@ export default async function PracticeDentistsDataTableWrapper({
     return (
       <>
         <PracticeDetails practice={response.data} />
-        <PracticeDentistDataTable
-          entries={[]}
-          practiceId={id}
-          status={PracticeApprovalStatus.APPROVED}
-        />
+        <NoContent1 text="No Dentist Added yet!!!"/>
       </>
     );
   }

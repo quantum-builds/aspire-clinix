@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Table,
   TableHeader,
@@ -7,14 +8,6 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MoreVertical } from "lucide-react";
 import { TDentistPractice } from "@/types/dentistRequest";
 import { useState } from "react";
 import { updateDentistPractice } from "@/services/dentistOnPractice/dentistOnPracticeQuery";
@@ -23,6 +16,8 @@ import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { TableActionMenu } from "@/app/(dashboards)/components/custom-components/TableActionMenu";
+import { CancelIcon } from "@/assets";
 
 interface RequestsDataTable {
   entries: TDentistPractice[];
@@ -45,7 +40,7 @@ export function PracticeDentistDataTable({
   const handleCancelRequest = () => {
     updateStatus(
       {
-        practiceId: practiceId,
+        practiceId,
         dentistId: selectedDentistId,
         status: PracticeApprovalStatus.CANCELLED,
       },
@@ -55,10 +50,7 @@ export function PracticeDentistDataTable({
           setIsCancelModalOpen(false);
           showToast("success", "Dentist Request Rejected");
         },
-        onError: (error) => {
-          const msg = getAxiosErrorMessage(error);
-          showToast("error", msg);
-        },
+        onError: (error) => showToast("error", getAxiosErrorMessage(error)),
       }
     );
   };
@@ -66,7 +58,7 @@ export function PracticeDentistDataTable({
   const handleApprovalRequest = () => {
     updateStatus(
       {
-        practiceId: practiceId,
+        practiceId,
         dentistId: selectedDentistId,
         status: PracticeApprovalStatus.APPROVED,
       },
@@ -76,12 +68,35 @@ export function PracticeDentistDataTable({
           setIsApproveModalOpen(false);
           showToast("success", "Dentist Request Accepted");
         },
-        onError: (error) => {
-          const msg = getAxiosErrorMessage(error);
-          showToast("error", msg);
-        },
+        onError: (error) => showToast("error", getAxiosErrorMessage(error)),
       }
     );
+  };
+
+  const getMenuOptions = (dentistId: string) => {
+    const options = [];
+
+    if (status !== PracticeApprovalStatus.APPROVED) {
+      options.push({
+        label: "Approve",
+        onClick: () => {
+          setIsSelectedDentistId(dentistId);
+          setIsApproveModalOpen(true);
+        },
+      });
+    }
+
+    if (status !== PracticeApprovalStatus.CANCELLED) {
+      options.push({
+        label: "Cancel",
+        onClick: () => {
+          setIsSelectedDentistId(dentistId);
+          setIsCancelModalOpen(true);
+        },
+      });
+    }
+
+    return options;
   };
 
   return (
@@ -95,13 +110,13 @@ export function PracticeDentistDataTable({
             <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
               Dentist Email
             </TableHead>
-            <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
               Dentist Phone
             </TableHead>
-            <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
               GDC No.
             </TableHead>
-            <TableHead className="px-6 py-4  rounded-r-full text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 rounded-r-full text-xl text-dashboardTextBlack font-medium">
               Actions
             </TableHead>
           </TableRow>
@@ -117,41 +132,11 @@ export function PracticeDentistDataTable({
                 {entry.dentist.fullName}
               </TableCell>
               <TableCell className="px-6 py-4">{entry.dentist.email}</TableCell>
-              <TableCell className="px-6 py-4 flex gap-1 items-center">
-                {entry.dentist.phoneNumber}
-              </TableCell>
+              <TableCell className="px-6 py-4">{entry.dentist.phoneNumber}</TableCell>
               <TableCell className="px-6 py-4">{entry.dentist.gdcNo}</TableCell>
 
               <TableCell className="px-6 py-4 rounded-r-full">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreVertical className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    {status !== PracticeApprovalStatus.APPROVED && (
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setIsSelectedDentistId(entry.dentistId);
-                          setIsApproveModalOpen(true);
-                        }}
-                      >
-                        Approve
-                      </DropdownMenuItem>
-                    )}
-                    {status !== PracticeApprovalStatus.CANCELLED && (
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setIsSelectedDentistId(entry.dentistId);
-                          setIsCancelModalOpen(true);
-                        }}
-                      >
-                        Cancel
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <TableActionMenu options={getMenuOptions(entry.dentistId)} />
               </TableCell>
             </TableRow>
           ))}
@@ -159,14 +144,15 @@ export function PracticeDentistDataTable({
       </Table>
 
       <ConfirmationModal
+        icon={CancelIcon}
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
         isPending={isPending}
         onConfirm={handleCancelRequest}
-        title="Cancel Dentist Rquest"
+        title="Cancel Dentist Request"
         description="Are you sure you want to cancel this request? This action cannot be undone."
-        cancelText="No, Keep Request"
-        confirmText="Yes, Cancel Request"
+        cancelText="No"
+        confirmText="Yes"
       />
 
       <ConfirmationModal
@@ -174,10 +160,10 @@ export function PracticeDentistDataTable({
         onClose={() => setIsApproveModalOpen(false)}
         isPending={isPending}
         onConfirm={handleApprovalRequest}
-        title="Approve Dentist Rquest"
+        title="Approve Dentist Request"
         description="Are you sure you want to approve this request? This action cannot be undone."
-        cancelText="No, Keep Pending"
-        confirmText="Yes, Approve Request"
+        cancelText="No"
+        confirmText="Yes"
       />
     </div>
   );

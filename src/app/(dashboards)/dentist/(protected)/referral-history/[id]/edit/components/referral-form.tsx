@@ -21,8 +21,18 @@ const profileFormSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   phoneNumber: z
     .string()
-    .min(10, "Phone number must be at least 10 digits")
-    .regex(/^\+?[\d\s\-\(\)]+$/, "Please enter a valid phone number"),
+    .regex(
+      /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
+      "Please enter a valid UK mobile phone number"
+    )
+    .refine(
+      (val) => {
+        const digitsOnly = val.replace(/\s+/g, "");
+        return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+      },
+      { message: "Phone number must be between 10 and 15 digits" }
+    )
+    .transform((val) => val.replace(/\s+/g, "")),
   dateOfBirth: z.date({
     required_error: "Date of Birth is required",
     invalid_type_error: "Invalid date",
@@ -202,7 +212,7 @@ export default function ReferralForm() {
                     {...field}
                     id="phoneNumber"
                     type="tel"
-                    placeholder="Enter phone number"
+                    placeholder="e.g. +44 7123 456 789"
                     className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
                   />
                 )}

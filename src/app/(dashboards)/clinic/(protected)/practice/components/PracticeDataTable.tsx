@@ -7,16 +7,9 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MoreVertical } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { TPractice } from "@/types/practice";
+import { TableActionMenu } from "@/app/(dashboards)/components/custom-components/TableActionMenu";
 
 interface RequestsDataTable {
   entries: TPractice[];
@@ -24,6 +17,15 @@ interface RequestsDataTable {
 
 export function PracticeDataTable({ entries }: RequestsDataTable) {
   const { push } = useRouter();
+
+  const getMenuOptions = (practiceId: string) => {
+    return [
+      {
+        label: "View",
+        onClick: () => push(`/clinic/practice/${practiceId}`),
+      },
+    ];
+  };
 
   return (
     <div className="w-full overflow-x-auto bg-dashboardBarBackground rounded-2xl px-4 pb-4 pt-4 tracking-tightest">
@@ -36,21 +38,20 @@ export function PracticeDataTable({ entries }: RequestsDataTable) {
             <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
               Name
             </TableHead>
-            <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
               Email
             </TableHead>
-            <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
               Phone
             </TableHead>
-            <TableHead className="px-6 py-4  text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 text-xl text-dashboardTextBlack font-medium">
               NHS
             </TableHead>
-            <TableHead className="px-6 py-4  rounded-r-full text-xl text-dashboardTextBlack font-medium">
+            <TableHead className="px-6 py-4 rounded-r-full text-xl text-dashboardTextBlack font-medium">
               Actions
             </TableHead>
           </TableRow>
         </TableHeader>
-
         <TableBody>
           {entries.map((entry, index) => (
             <TableRow
@@ -78,20 +79,7 @@ export function PracticeDataTable({ entries }: RequestsDataTable) {
                 )}
               </TableCell>
               <TableCell className="px-6 py-4 rounded-r-full">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreVertical className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => push(`/clinic/practice/${entry.id}`)}
-                    >
-                      View
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <TableActionMenu options={getMenuOptions(entry.id)} />
               </TableCell>
             </TableRow>
           ))}

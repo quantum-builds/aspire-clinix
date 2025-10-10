@@ -25,8 +25,7 @@ export default async function PracticeDataTableWrapper({
   if (
     !response.status ||
     !response.data ||
-    !response.data.practices ||
-    response.data.practices.length === 0
+    !response.data.practices
   ) {
     return (
       // <NoContent title="Resources" placeholder="Enter Appointment Number" />
@@ -36,6 +35,11 @@ export default async function PracticeDataTableWrapper({
       </>
     );
   }
+
+  if (response.data.practices.length === 0) {
+    return (<NoContent1 text="No Practice registered yet!!!" />)
+  }
+  
   const practices = response.data.practices;
   const total = response.data.pagination.totalPages;
 

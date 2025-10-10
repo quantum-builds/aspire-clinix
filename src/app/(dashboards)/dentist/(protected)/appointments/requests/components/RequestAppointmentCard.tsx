@@ -131,8 +131,8 @@ export default function RequestAppointmentCard({
         onConfirm={() => handleStatusChange(AppointmentStatus.CANCELLED)}
         title="Cancel Appointment"
         description="Are you sure you want to cancel this appointment? This action cannot be undone."
-        cancelText="No, keep it PENDING"
-        confirmText="Yes, Cancel Appointment"
+        cancelText="No"
+        confirmText="Yes"
       />
 
       {/* Confirm Modal */}
@@ -143,8 +143,8 @@ export default function RequestAppointmentCard({
         onConfirm={() => handleStatusChange(AppointmentStatus.CONFIRMED)}
         title="Confirm Appointment"
         description="Do you want to confirm this appointment?"
-        cancelText="No, keep it PENDING"
-        confirmText="Yes, Confirm Appointment"
+        cancelText="No"
+        confirmText="Yes"
       />
     </div>
   );

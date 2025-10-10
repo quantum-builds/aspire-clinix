@@ -5,9 +5,6 @@ import { Suspense } from "react";
 import AppointmentRequestPageWrapper from "./components/AssignDentistFormWrapper";
 import AssignDentistFormSkeleton from "./components/skeleton/AssignedDentist";
 
-type PageProps = {
-
-};
 
 export default async function ReferralDetailsPage(props: {
   params: {

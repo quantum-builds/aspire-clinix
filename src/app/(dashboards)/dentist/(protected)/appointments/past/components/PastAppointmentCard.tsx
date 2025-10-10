@@ -169,8 +169,8 @@ export default function PastAppointmentCard({
         description={`Are you sure you want to set status to "${capitalize(
           selectedStatus || ""
         )}"?`}
-        cancelText="No, keep current"
-        confirmText="Yes, update status"
+        cancelText="No"
+        confirmText="Yes"
       />
     </div>
   );

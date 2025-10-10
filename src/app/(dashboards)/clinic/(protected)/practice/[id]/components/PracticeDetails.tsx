@@ -49,7 +49,7 @@ export default function PracticeDetails({ practice }: { practice: TPractice }) {
           <Dropdown
             options={DAYS}
             value={selectedDay}
-            onValueChange={setSelectedDay}
+            onValueChange={(day)=>day && setSelectedDay(day)}
             placeholder="Select Day"
           />
         )}

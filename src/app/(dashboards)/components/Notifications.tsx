@@ -1,6 +1,6 @@
 export default function Notifications() {
   return (
-    <div className="max-w-7xl  mx-auto bg-dashboardBarBackground border rounded-xl shadow-sm p-4 border-green">
+    <div className="w-full max-w-7xl  mx-auto bg-dashboardBarBackground border rounded-xl shadow-sm p-4 border-green">
       <h2 className="text-lg font-semibold mb-4">Notifications</h2>
 
       {/* Appointment */}

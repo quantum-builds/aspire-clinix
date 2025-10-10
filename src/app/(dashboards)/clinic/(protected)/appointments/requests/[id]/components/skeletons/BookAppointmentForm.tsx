@@ -4,7 +4,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function BookAppointmentFormSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen">
+      <div className="w-full flex justify-between items-center gap-3">
+        <Skeleton className="h-[60px] w-52 rounded-full" /> {/* Cancel */}
+        <Skeleton className="h-[60px] w-52 rounded-full" />{" "}
+        {/* Book Appointment */}
+      </div>
       {/* White box */}
       <div className="bg-dashboardBarBackground rounded-2xl p-6 space-y-10">
         {/* Title */}

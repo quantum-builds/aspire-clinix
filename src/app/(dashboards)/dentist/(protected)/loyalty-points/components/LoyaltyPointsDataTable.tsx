@@ -8,18 +8,12 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
 import { TLoyaltyPointsDataTable } from "@/types/common";
 import Image from "next/image";
 import { CalenderInputIcon } from "@/assets";
 import { useRouter } from "next/navigation";
+import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 
 interface LoyaltyPointsDataTableProps {
   entries: TLoyaltyPointsDataTable[];
@@ -32,9 +26,9 @@ export function LoyaltyPointsDataTable({
 
   return (
     <div className="w-full overflow-x-auto">
-      <Table className="table-auto border-separate border-spacing-y-3 min-w-max tracking-tightest">
+      <Table className="border-separate border-spacing-y-3 min-w-max">
         <TableHeader>
-          <TableRow>
+          <TableRow className="bg-dashboardBackground">
             <TableHead className="px-6 py-4 bg-dashboardBarBackground rounded-l-full text-xl text-dashboardTextBlack font-medium">
               Reference #
             </TableHead>
@@ -63,7 +57,7 @@ export function LoyaltyPointsDataTable({
           {entries.map((entry) => (
             <TableRow
               key={entry.referenceId}
-              className="bg-dashboardBackground text-lg text-dashboardTextBlack"
+              className="text-lg hover:bg-gray text-dashboardTextBlack cursor-pointer"
               onClick={() =>
                 router.push(`/dentist/loyalty-points/${entry.referenceId}`)
               }
@@ -84,32 +78,29 @@ export function LoyaltyPointsDataTable({
                 {entry.referralDate}
               </TableCell>
               <TableCell className="px-6 py-4 rounded-r-full">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreVertical className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => alert(`Viewing ${entry.referenceId}`)}
-                    >
-                      View
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => alert(`Editing ${entry.referenceId}`)}
-                    >
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="text-red-600"
-                      onClick={() => alert(`Deleting ${entry.referenceId}`)}
-                    >
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Dropdown
+                  options={[
+                    { value: "view", label: "View" },
+                    { value: "edit", label: "Edit" },
+                    { value: "delete", label: "Delete" },
+                  ]}
+                  value=""
+                  onValueChange={(action) => {
+                    if (!action) return
+                    if (action === "view") alert(`Viewing ${entry.referenceId}`)
+                    else if (action === "edit") alert(`Editing ${entry.referenceId}`)
+                    else if (action === "delete") alert(`Deleting ${entry.referenceId}`)
+                  }}
+                  placeholder=""
+                  showClearOption={false}
+                  customTrigger={
+                    <button className="p-2 rounded-full hover:bg-gray-100">
+                      <MoreVertical className="h-5 w-5 text-gray-600" />
+                    </button>
+                  }
+                />
               </TableCell>
+
             </TableRow>
           ))}
         </TableBody>

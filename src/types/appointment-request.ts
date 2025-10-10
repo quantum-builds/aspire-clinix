@@ -1,5 +1,5 @@
 import { AppointmentRequestStatus } from "@prisma/client";
-import { TAppointmentPagination } from "./appointment";
+import { TAppointment, TAppointmentPagination } from "./appointment";
 import { TPatient } from "./patient";
 
 export type TAppointmentRequestCreate = {
@@ -15,8 +15,10 @@ export type TAppointmentRequest = TAppointmentRequestCreate & {
   file?: string;
   createdAt: string;
   patientId: string;
+  appointmentId?:string
 
   patient?: TPatient;
+  appointment?:TAppointment
 };
 
 export type TAppointmentRequestResponse = {
