@@ -31,12 +31,12 @@ const practiceFormSchema = z.object({
   phoneNumber: z
     .string()
     .regex(
-      /^(\+44\s?\d{9,10}|0\d{9,10})$/,
+      /^(\+44\s?\d{2,4}\s?\d{3,4}\s?\d{3,4}|0\d{2,4}\s?\d{3,4}\s?\d{3,4})$/,
       "Please enter a valid UK phone number"
     )
     .refine(
       (val) => {
-        const digitsOnly = val.replace(/\s+/g, "");
+        const digitsOnly = val.replace(/\D/g, "");
         return digitsOnly.length >= 10 && digitsOnly.length <= 15;
       },
       { message: "Phone number must be between 10 and 15 digits" }
