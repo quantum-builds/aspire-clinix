@@ -2,7 +2,7 @@ import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { AppointmentDateType } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
-import { AppointmentStatus, Prisma } from "@prisma/client";
+import { AppointmentStatus, DentistRole, Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -173,7 +173,10 @@ export async function POST(req: NextRequest) {
         finishTime: new Date(appointment.finishTime),
       },
     });
-
+    const dentist=await prisma.dentist.findUnique({where:{id:appointment.dentistId}})
+    if(dentist?.role===TokenRoles.REFERRING_DENTIST){
+      await prisma.dentist.update({where:{id:dentist.id},data:{role:DentistRole.DENTIST}})
+    }
     return NextResponse.json(
       createResponse(true, "Appointment created successfully", newAppointment),
       { status: 201 }
