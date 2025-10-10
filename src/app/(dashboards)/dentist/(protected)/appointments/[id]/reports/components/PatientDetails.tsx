@@ -27,31 +27,35 @@ export default function DentistDetails({
                 Name:{" "}
                 <span className="font-medium">{patientDetails.fullName}</span>
               </p>
-              <p className="flex-[20%] text-xl">
-                Age:{" "}
-                <span className="font-medium">
-                  {calculateAge(patientDetails.dateOfBirth || new Date())}
-                </span>
-              </p>
-
               <div className="flex-[30%] text-xl text-left truncate">
                 Email:{" "}
                 <span className="font-medium">{patientDetails.email}</span>
               </div>
+              {patientDetails.dateOfBirth &&
+                <p className="flex-[20%] text-xl">
+                  Age:{" "}
+                  <span className="font-medium">
+                    {calculateAge(patientDetails.dateOfBirth || new Date())}
+                  </span>
+                </p>
+              }
             </div>
 
             {/* Second column - 3 items */}
             <div className="flex items-ceter gap-2">
-              <p className="flex-[25%] text-xl">
+              <p className="flex-[20%] text-xl">
                 Phone:{" "}
                 <span className="font-medium">
                   {patientDetails.phoneNumber}
                 </span>
               </p>
-              <p className="flex-[25%] text-xl">
-                Gender:{" "}
-                <span className="font-medium">{patientDetails.gender}</span>
-              </p>
+              {patientDetails.gender &&
+                <p className="flex-[30%] text-xl">
+                  Gender:{" "}
+                  <span className="font-medium">{patientDetails.gender}</span>
+                </p>
+              }
+              <p className="flex-[20%]"></p>
             </div>
           </div>
         </div>

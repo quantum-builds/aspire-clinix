@@ -21,7 +21,7 @@ export default function PatientDetailsModal({
         {trigger && trigger}
       </DialogTrigger>
       <DialogContent
-        className="w-[600px] rounded-2xl p-6 space-y-3  focus:outline-none"
+        className="w-[720px] rounded-2xl p-6 space-y-3  focus:outline-none"
         onInteractOutside={onClose}
       >
         <div className="flex items-center justify-between">
