@@ -50,8 +50,8 @@ export const ENDPOINTS = {
     // },
 
     createPatient: "/api/patient",
-    getPatient:(email?:string)=> `/api/patient?email=${email??null}`,
-    getById:(id:string)=>`/api/patient/${id}`,
+    getPatient: (email?: string) => `/api/patient?email=${email ?? null}`,
+    getById: (id: string) => `/api/patient/${id}`,
     editPatient: `/api/patient`,
   },
 
@@ -148,18 +148,17 @@ export const ENDPOINTS = {
 
   referralRequest: {
     get: (
-      statsOnly:boolean,
+      statsOnly: boolean,
       page?: number,
       search?: string,
       on?: string,
       before?: string,
       after?: string,
       status?: string,
-      pageType?:string,
+      pageType?: string,
     ) =>
-      `/api/referral-requests?page=${page ?? 1}&search=${search ?? ""}&on=${
-        on ?? ""
-      }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}&page-type=${pageType??""}&stats-only=${statsOnly}`,
+      `/api/referral-requests?page=${page ?? 1}&search=${search ?? ""}&on=${on ?? ""
+      }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}&page-type=${pageType ?? ""}&stats-only=${statsOnly}`,
     getById: (id: string) => `/api/referral-requests/${id}`,
     patch: (id: string) => `/api/referral-requests/${id}`,
     delete: (id: string) => `/api/referral-requests/${id}`,
@@ -194,14 +193,18 @@ export const ENDPOINTS = {
   },
 
   resources: {
-    getAll: (page?: number, fileType?: string, search?: string) =>
-      `/api/resources?page=${page}&fileType=${fileType}&search=${search}`,
+    getAll: (page?: number, fileType?: string, search?: string, on?: string,
+      before?: string,
+      after?: string,) =>
+      `/api/resources?page=${page}&fileType=${fileType}&search=${search}&on=${on ?? ""
+      }&before=${before ?? ""}&after=${after ?? ""}`,
+    create: "/api/resources",
+    delete:(id:string)=> `/api/resources/${id}`
   },
 
   practices: {
     getAll: (page?: number, search?: string, status?: string) =>
-      `/api/practices?page=${page ?? 1}&search=${search ?? ""}&status=${
-        status ?? ""
+      `/api/practices?page=${page ?? 1}&search=${search ?? ""}&status=${status ?? ""
       }`,
     getById: (id: string) => `/api/practices/${id}`,
     createPractice: "/api/practices",
@@ -217,10 +220,8 @@ export const ENDPOINTS = {
       dateType?: AppointmentDateType | null,
       status?: string
     ) =>
-      `/api/appointments?page=${page ?? 1}&search=${search ?? ""}&on=${
-        on ?? ""
-      }&before=${before ?? ""}&after=${after ?? ""}&dateType=${
-        dateType ?? ""
+      `/api/appointments?page=${page ?? 1}&search=${search ?? ""}&on=${on ?? ""
+      }&before=${before ?? ""}&after=${after ?? ""}&dateType=${dateType ?? ""
       }&status=${status ?? ""}`,
     post: "/api/appointments",
     patch: (id: string) =>
@@ -230,16 +231,13 @@ export const ENDPOINTS = {
 
   dentistToPractice: {
     get: (dentistId?: string, practiceId?: string, status?: string) =>
-      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
-        practiceId ?? ""
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${practiceId ?? ""
       }&status=${status ?? ""}`,
     create: (status: string, dentistId?: string, practiceId?: string) =>
-      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
-        practiceId ?? ""
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${practiceId ?? ""
       }&status=${status ?? ""}`,
     updatedStatus: (dentistId?: string, practiceId?: string, status?: string) =>
-      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
-        practiceId ?? ""
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${practiceId ?? ""
       }&status=${status ?? ""}`,
   },
 
@@ -251,8 +249,7 @@ export const ENDPOINTS = {
       before?: string,
       after?: string
     ) =>
-      `/api/reports?search=${search ?? ""}&appointmentId=${
-        appointmentId ?? ""
+      `/api/reports?search=${search ?? ""}&appointmentId=${appointmentId ?? ""
       }&on=${on ?? ""}&before=${before ?? ""}&after=${after ?? ""}`,
     create: "/api/reports",
   },
@@ -282,8 +279,7 @@ export const ENDPOINTS = {
       after?: string,
       status?: string
     ) =>
-      `/api/appointment-requests?page=${page ?? 1}&search=${search ?? ""}&on=${
-        on ?? ""
+      `/api/appointment-requests?page=${page ?? 1}&search=${search ?? ""}&on=${on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}`,
 
     getById: (id: string) => `/api/appointment-requests/${id}`,

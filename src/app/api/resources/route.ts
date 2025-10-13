@@ -1,3 +1,4 @@
+import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { TPaginationNumbers } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
@@ -86,26 +87,42 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    // if (!token || token.role !== "admin") {
-    //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
-    //     status: 401,
-    //   });
-    // }
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
 
-    const resource = await req.json();
+    if (token.role !== TokenRoles.ADMIN) {
+      return NextResponse.json(createResponse(false, "Forbidde", null), {
+        status: 403,
+      });
+    }
 
-    await prisma.resource.create({
-      data: resource,
+    const body = await req.json();
+
+    const resources = Array.isArray(body) ? body : [body];
+
+    if (!resources.length) {
+      return NextResponse.json(
+        createResponse(false, "No resources provided", null),
+        { status: 400 }
+      );
+    }
+
+
+    await prisma.resource.createMany({
+      data: resources,
     });
 
     return NextResponse.json(
-      createResponse(true, "Resource created successfully.", null),
+      createResponse(true, "Resources created successfully.", null),
       { status: 201 }
     );
   } catch (error) {
-    console.log("Error in creating resource ", error);
+    console.log("Error in creating resources ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

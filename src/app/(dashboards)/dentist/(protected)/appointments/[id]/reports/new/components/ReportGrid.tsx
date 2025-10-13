@@ -2,7 +2,7 @@
 import LetterReportGrid from "@/app/(dashboards)/components/LetterReportGrid";
 import VideoReportGrid from "@/app/(dashboards)/components/VideoReportGrid";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
-import { useCreateReport } from "@/services/reports/requestMutation";
+import { useCreateReport } from "@/services/reports/reportsMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { TAppointment } from "@/types/appointment";
 import { showToast } from "@/utils/defaultToastOptions";

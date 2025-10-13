@@ -11,6 +11,8 @@ export const useUploadFile = () => {
       selectedFile: File;
       fileType?: string;
     }) => {
+
+      console.log("in function ",fileType)
       if (!selectedFile) throw new Error("Please select a file first!");
 
       const response = await axiosInstance.get(ENDPOINTS.s3.getSignedUrl, {

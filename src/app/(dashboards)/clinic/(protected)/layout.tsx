@@ -43,6 +43,14 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
     name: "Resources",
     icon: ResourcesIcon,
     href: "/clinic/resources",
+    pages: [
+      {
+        name: "Videos",
+        icon: InActiveIcon,
+        href: "/clinic/resources/videos",
+      },
+      { name: "Letters", icon: InActiveIcon, href: "/clinic/resources/letters" },
+    ],
   },
   {
     name: "Plans & Packages",

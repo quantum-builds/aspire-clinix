@@ -12,6 +12,7 @@ interface SideBarProps {
   sideBarContnent: SidebarPage[];
 }
 export default function Sidebar({ sideBarContnent }: SideBarProps) {
+  console.log(sideBarContnent)
   const pathname = usePathname();
   const router = useRouter();
 
@@ -26,6 +27,9 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
       if (section.pages) {
         section.pages.forEach((page) => {
           if (page.href && pathname.startsWith(page.href)) {
+            console.log("page href ", page.href)
+            console.log("pathname ", pathname)
+
             setActiveSection(section.name);
             setOpenSection(section.name);
             setActivePage(page.name);
@@ -33,8 +37,13 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
           }
         });
 
+        console.log("section href ", section.href)
+        console.log("matched ", matched)
+        console.log("pathname ", pathname)
+
         // to show black bg when on reports page
-        if (section.href && !matched && !pathname.includes("/profile")) {
+        if (section.href && !matched && !pathname.includes("/profile") && pathname.includes(section.href)) {
+          console.log("path name include ", pathname.includes(section.href))
           setActiveSection(section.name);
           setOpenSection(null);
           setActivePage(null);
@@ -110,28 +119,25 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
                     }
                   }}
                   className={`w-full flex items-center justify-between px-4 py-3 border border-gray-200 rounded-2xl transition 
-                  ${
-                    isActiveSection
+                  ${isActiveSection
                       ? "bg-black text-white"
                       : "hover:bg-gray-50 text-dashboardTextBlack"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center">
                     <Image
                       src={section.icon}
                       alt={`${section.name} Icon`}
-                      className={`w-5 h-5 mr-2 ${
-                        isActiveSection ? "invert brightness-0" : ""
-                      }`}
+                      className={`w-5 h-5 mr-2 ${isActiveSection ? "invert brightness-0" : ""
+                        }`}
                     />
                     <span className="text-[17px]">{section.name}</span>
                   </div>
                 </button>
 
                 <div
-                  className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${
-                    openSection === section.name ? "max-h-40" : "max-h-0"
-                  }`}
+                  className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${openSection === section.name ? "max-h-40" : "max-h-0"
+                    }`}
                 >
                   {section.pages && (
                     <ul className="mt-2 pl-10 space-y-2">
@@ -139,11 +145,10 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
                         <li key={page.name}>
                           <Link
                             href={page.href ? page.href : "/"}
-                            className={`flex items-center transition ${
-                              activePage === page.name
+                            className={`flex items-center transition ${activePage === page.name
                                 ? "text-primary font-semibold"
                                 : "hover:text-primary"
-                            }`}
+                              }`}
                             onClick={() => {
                               setActivePage(page.name);
                             }}

@@ -2,8 +2,8 @@ import { VideoResourceGridSkeleton } from "../../../../patient/(protected)/resou
 import { Suspense } from "react";
 import PageTopBar from "../../../../components/custom-components/PageTopBar";
 import CustomButton from "../../../../components/custom-components/CustomButton";
+import ResourceWrapper from "./components/ResourceWrapper";
 import { ResoucrceType } from "@prisma/client";
-import ResourceWrapper from "@/app/(dashboards)/clinic/(protected)/resources/videos/components/ResourceWrapper";
 
 
 export default async function Resources(props: {
@@ -29,6 +29,9 @@ export default async function Resources(props: {
         showSearch={true}
         statusOptions={null}
         pageHeading="Resources"
+        extraBtns={
+          <CustomButton text="Add New Resource" href={`/clinic/resources/new?type=${ResoucrceType.PDF}`} />
+        }
       />
 
       <Suspense key={title + page} fallback={<VideoResourceGridSkeleton />}>

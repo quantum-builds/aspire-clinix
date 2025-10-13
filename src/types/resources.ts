@@ -1,11 +1,14 @@
 import { ResoucrceType } from "@prisma/client";
 import { TPaginationNumbers } from "./common";
 
-export type TResource = {
-  id: string;
+export type TResourceCreate = {
   title: string;
   fileUrl: string;
   fileType: ResoucrceType;
+}
+
+export type TResource =TResourceCreate & {
+  id: string;
   file?: string;
   createdAt: Date;
   updatedAt: Date;

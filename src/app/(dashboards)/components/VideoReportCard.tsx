@@ -13,20 +13,7 @@ interface VideoReportCardProps {
 export default function VideoReportCard({ report }: VideoReportCardProps) {
   return (
     <div className="flex flex-col gap-5 p-6 rounded-2xl bg-dashboardBackground">
-      <div className="flex gap-3 items-center justify-end">
-        <div className="flex gap-1 items-center">
-          <Image
-            src={CalenderInputIconV2}
-            alt="calender-icon"
-            className="w-5 h-5"
-          />
-          <p className="text-lg">{formatDate(report.createdAt)}</p>
-        </div>
-        <div className="flex gap-1 items-center">
-          <Image src={TimeIconV2} alt="time-icon" className="w-5 h-5" />
-          <p className="text-lg">{formatTime(report.createdAt)}</p>
-        </div>
-      </div>
+
 
       <div className="relative group w-full flex justify-center">
         <div className="w-full h-[200px] flex flex-col items-center justify-center rounded-2xl bg-white border-2 border-dashed border-gray-300">
@@ -55,6 +42,20 @@ export default function VideoReportCard({ report }: VideoReportCardProps) {
       </div>
 
       <p className="font-medium text-lg truncate w-full">{report.title}</p>
+      <div className="flex gap-3 items-center justify-start">
+        <div className="flex gap-1 items-center">
+          <Image
+            src={CalenderInputIconV2}
+            alt="calender-icon"
+            className="w-5 h-5"
+          />
+          <p className="text-lg">{formatDate(report.createdAt)}</p>
+        </div>
+        <div className="flex gap-1 items-center">
+          <Image src={TimeIconV2} alt="time-icon" className="w-5 h-5" />
+          <p className="text-lg">{formatTime(report.createdAt)}</p>
+        </div>
+      </div>
     </div>
   );
 }

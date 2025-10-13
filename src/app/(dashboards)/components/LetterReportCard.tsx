@@ -13,20 +13,7 @@ interface LetterReportCardProps {
 export default function LetterReportCard({ report }: LetterReportCardProps) {
   return (
     <div className="flex flex-col gap-5 p-6 rounded-2xl bg-dashboardBackground">
-      <div className="flex gap-3 items-center justify-end">
-        <div className="flex gap-1 items-center">
-          <Image
-            src={CalenderInputIconV2}
-            alt="calender-icon"
-            className="w-5 h-5"
-          />
-          <p className="text-lg">{formatDate(report.createdAt)}</p>
-        </div>
-        <div className="flex gap-1 items-center">
-          <Image src={TimeIconV2} alt="time-icon" className="w-5 h-5" />
-          <p className="text-lg">{formatDate(report.createdAt)}</p>
-        </div>
-      </div>
+
 
       <div className="relative group w-full flex justify-center">
         <Image src={PDFImage} alt="pdf-image" className="z-0" />
@@ -53,6 +40,20 @@ export default function LetterReportCard({ report }: LetterReportCardProps) {
       </div>
 
       <p className="font-medium text-lg truncate w-full">{report.title}</p>
+      <div className="flex gap-3 items-center justify-end">
+        <div className="flex gap-1 items-center">
+          <Image
+            src={CalenderInputIconV2}
+            alt="calender-icon"
+            className="w-5 h-5"
+          />
+          <p className="text-lg">{formatDate(report.createdAt)}</p>
+        </div>
+        <div className="flex gap-1 items-center">
+          <Image src={TimeIconV2} alt="time-icon" className="w-5 h-5" />
+          <p className="text-lg">{formatDate(report.createdAt)}</p>
+        </div>
+      </div>
     </div>
   );
 }

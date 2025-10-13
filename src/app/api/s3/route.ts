@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
     const fileName = searchParams.get("fileName");
     const fileType = searchParams.get("fileType"); // images, video, pdf
 
+    console.log("in api ",fileType)
     if (!fileName || !fileType) {
       return NextResponse.json(
         { success: false, message: "Missing file details" },
@@ -25,7 +26,7 @@ export async function GET(req: NextRequest) {
         folder = "uploads/aspire-clinic/videos";
         break;
       case "pdf":
-        folder = "uploads/aspire-clinic/pdfs";
+        folder = "uploads/aspire-clinic/letters";
         break;
       default:
         folder = "uploads/aspire-clinic/others"; // fallback

@@ -42,10 +42,8 @@ export default async function AppointmentGridWrapper({
     response.data.appointments.length === 0
   ) {
     return (
-      // <NoContent title="Resources" placeholder="Enter Appointment Number" />
       <>
         <NoContent1 />
-        {/* <Pagination page={page} isLast={true} /> */}
       </>
     );
   }

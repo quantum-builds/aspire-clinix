@@ -7,11 +7,14 @@ import axios from "axios";
 export async function getResources(
   page?: number,
   search?: string,
-  fileType?: string
+  fileType?: string,
+  on?:string,
+  before?:string,
+  after?:string
 ) {
   try {
     const response = await axiosInstance.get(
-      ENDPOINTS.resources.getAll(page, fileType, search)
+      ENDPOINTS.resources.getAll(page, fileType, search,on,before,after)
     );
     const responseData: Response<TResourceResponse> = response.data;
 

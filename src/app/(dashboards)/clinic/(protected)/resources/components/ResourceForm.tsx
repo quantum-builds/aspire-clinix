@@ -1,99 +1,167 @@
 "use client";
-import { CalenderInputIconV2, TimeIconV2, UploadVideoIconV2 } from "@/assets";
+import {
+  CalenderInputIconV2,
+  PDFImage,
+  TextIconV2,
+  TimeIconV2,
+  UploadImageSmalIcon,
+  UploadVideoSmallIcon,
+  VideoImage
+} from "@/assets";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import { useUploadFile } from "@/services/s3/s3Mutatin";
+import { useCreateResource } from "@/services/resources/resorurceMutation";
+import { useRouter } from "next/navigation";
+import { ResoucrceType } from "@prisma/client";
+import { showToast } from "@/utils/defaultToastOptions";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { X } from "lucide-react";
+import { VideoModal } from "@/app/(dashboards)/components/VideoModal";
+import PdfModal from "@/app/(dashboards)/components/ViewPdfModal";
 
-// ---------------- Schema ----------------
-const resourceFormSchema = z.object({
+interface AddResourceFormProps {
+  type?: ResoucrceType;
+}
+
+// Base schema for common fields
+const baseSchema = {
   resourceTitle: z.string().min(1, "Resource title is required"),
-  uploadedDate: z.string().min(1, "Uploaded date is required"),
-  uploadedTime: z.string().min(1, "Uploaded time is required"),
-  videoFile: z
-    .any()
-    .refine((file) => file instanceof File, {
-      message: "Please upload a video file",
-    })
-    .refine(
-      (file) =>
-        !file ||
-        (file.type.startsWith("video/") && file.size <= 50 * 1024 * 1024),
-      { message: "Only video files under 50MB are allowed" }
-    ),
-});
+  videoFile: z.instanceof(File).optional(),
+};
 
-type FormData = z.infer<typeof resourceFormSchema>;
+// Schema factory that validates based on type
+const getSchema = (type: ResoucrceType) => {
+  if (type === ResoucrceType.VIDEO) {
+    return z.object({
+      ...baseSchema,
+      videoFile: z
+        .instanceof(File)
+        .refine(
+          (file) =>
+            file.type.startsWith("video/") && file.size <= 50 * 1024 * 1024,
+          { message: "Only video files under 50MB are allowed" }
+        ),
+    });
+  }
 
-export default function AddResourceForm() {
-  const today = new Date();
-  const defaultDate = today.toISOString().split("T")[0];
-  const defaultTime = today.toTimeString().slice(0, 5);
+  if (type === ResoucrceType.PDF) {
+    return z.object({
+      ...baseSchema,
+      videoFile: z
+        .instanceof(File)
+        .refine(
+          (file) => file.type === "application/pdf" && file.size <= 10 * 1024 * 1024,
+          { message: "Only PDF files under 10MB are allowed" }
+        ),
+    });
+  }
+
+  return z.object(baseSchema);
+};
+
+export default function AddResourceForm({ type }: AddResourceFormProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [isDirty, setIsDirty] = useState(false);
+  const { replace } = useRouter();
+  const { mutate: createResource, isPending: createResourceLoader } = useCreateResource();
+  const { mutateAsync: uploadFile, isPending: uploadFileLoader } = useUploadFile();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const defaultValues = {
-    resourceTitle: "",
-    uploadedDate: defaultDate,
-    uploadedTime: defaultTime,
-    videoFile: undefined,
-  };
+  if (!type) {
+    showToast("error", "Invalid resource type");
+    return null;
+  }
+
+  const resourceFormSchema = getSchema(type);
+  type FormData = z.infer<typeof resourceFormSchema>;
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
     setValue,
     watch,
   } = useForm<FormData>({
     resolver: zodResolver(resourceFormSchema),
-    defaultValues: defaultValues,
+    defaultValues: { resourceTitle: "", videoFile: undefined },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log("Resource form submitted:", data);
+  const onSubmit = async (data: FormData) => {
+    if (!data.videoFile) {
+      showToast("error", "No file selected to upload");
+      return;
+    }
+
+    console.log("in component ", type)
+    const uploaded = await uploadFile({
+      selectedFile: data.videoFile,
+      fileType: type,
+    });
+
+    let fileUrl;
+    if (type === ResoucrceType.VIDEO)
+      fileUrl = `uploads/aspire-clinic/videos/${uploaded.name}`;
+    else if (type === ResoucrceType.PDF)
+      fileUrl = `uploads/aspire-clinic/letters/${uploaded.name}`;
+
+    if (!fileUrl) {
+      showToast("error", "Error uploading file");
+      return;
+    }
+
+    createResource(
+      {
+        resource: {
+          title: data.resourceTitle,
+          fileType: type,
+          fileUrl,
+        },
+      },
+      {
+        onSuccess: () => {
+          reset();
+          showToast("success", "Resource added successfully");
+          replace(
+            type === ResoucrceType.VIDEO
+              ? `/clinic/resources/videos?ts=${Date.now()}`
+              : `/clinic/resources/letters?ts=${Date.now()}`
+          );
+        },
+        onError: (error) => showToast("error", getAxiosErrorMessage(error)),
+      }
+    );
   };
 
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
+  const handleUploadClick = () => fileInputRef.current?.click();
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     onChange: (file: File | undefined) => void
   ) => {
     const file = e.target.files?.[0];
-    onChange(file);
-    setValue("videoFile", file!);
+    if (file) {
+      onChange(file);
+      setValue("videoFile", file);
+    }
   };
 
-  const values = watch();
-  useEffect(() => {
-    const hasChanges = Object.keys(values).some(
-      (key) =>
-        values[key as keyof FormData] !== defaultValues[key as keyof FormData]
-    );
-    setIsDirty(hasChanges);
-  }, [values, defaultValues]);
+  const selectedFile = watch("videoFile");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* White Card */}
       <div className="bg-white rounded-2xl px-8 py-8 space-y-5">
-        <div>
-          <p className="text-[22px] text-green font-semibold">Add Resource</p>
-        </div>
+        <p className="text-[22px] text-green font-semibold">Add Resource</p>
 
-        <div className="space-y-5">
-          <div className="grid grid-cols-2 gap-6">
-            {/* Resource Title */}
-            <div className="space-y-2">
-              <Label className="text-[17px]">Resource Title</Label>
+        <div className="grid grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label className="text-[17px]">Resource Title</Label>
+            <div className="relative">
               <Controller
                 name="resourceTitle"
                 control={control}
@@ -105,161 +173,149 @@ export default function AddResourceForm() {
                   />
                 )}
               />
-              {errors.resourceTitle && (
-                <p className="text-sm text-red-500">
-                  {errors.resourceTitle.message}
-                </p>
-              )}
+              <Image
+                src={TextIconV2}
+                alt="icon"
+                className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
+              />
             </div>
-
-            {/* Uploaded Date */}
-            <div className="space-y-2">
-              <Label className="text-[17px]">Uploaded Date</Label>
-              <div className="relative">
-                <Controller
-                  name="uploadedDate"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="date"
-                      className="bg-gray px-6 py-3 h-[52px] rounded-2xl pr-12 appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
-                    />
-                  )}
-                />
-                <Image
-                  src={CalenderInputIconV2}
-                  alt="calendar-icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none"
-                />
-              </div>
-              {errors.uploadedDate && (
-                <p className="text-sm text-red-500">
-                  {errors.uploadedDate.message}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label className="text-[17px]">Uploaded Time</Label>
-              <div className="relative">
-                <Controller
-                  name="uploadedTime"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="time"
-                      className="bg-gray px-6 py-3 h-[52px] rounded-2xl pr-12 appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
-                    />
-                  )}
-                />
-                <Image
-                  src={TimeIconV2}
-                  alt="time-icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none"
-                />
-              </div>
-              {errors.uploadedTime && (
-                <p className="text-sm text-red-500">
-                  {errors.uploadedTime.message}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="">
-          <div className="flex flex-col gap-3">
-            <Label className="text-[22px]  font-semibold text-green">
-              Upload Video
-            </Label>
-
-            <Controller
-              name="videoFile"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-5 p-6 rounded-2xl bg-dashboardBackground w-full max-w-[472px]">
-                  {/* Date + Time Row */}
-                  <div className="flex gap-3 items-center justify-end">
-                    <div className="flex gap-1 items-center">
-                      <Image
-                        src={CalenderInputIconV2}
-                        alt="calender-icon"
-                        className="w-5 h-5"
-                      />
-                      <p className="text-lg">
-                        {new Date().toLocaleDateString("en-US")}
-                      </p>
-                    </div>
-                    <div className="flex gap-1 items-center">
-                      <Image
-                        src={TimeIconV2}
-                        alt="time-icon"
-                        className="w-5 h-5"
-                      />
-                      <p className="text-lg">
-                        {new Date().toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Upload Box */}
-                  <div
-                    onClick={handleUploadClick}
-                    className="rounded-2xl w-full max-w-[420px] h-[240px] flex flex-col items-center justify-center gap-2 bg-white cursor-pointer"
-                  >
-                    <input
-                      type="file"
-                      accept="video/*"
-                      ref={fileInputRef}
-                      className="hidden"
-                      onChange={(e) => handleFileChange(e, field.onChange)}
-                    />
-                    <Image src={UploadVideoIconV2} alt="upload-video" />
-                    {field.value && (
-                      <p className="text-sm text-gray-600 text-center px-2 truncate w-[90%]">
-                        {(field.value as File).name}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Footer Label */}
-                  <p className="text-center text-green font-medium text-lg">
-                    Upload Video
-                  </p>
-                </div>
-              )}
-            />
-
-            {errors.videoFile && (
-              <p className="text-sm text-red-500">
-                {errors.videoFile.message as string}
-              </p>
+            {errors.resourceTitle && (
+              <p className="text-sm text-red-500">{errors.resourceTitle.message}</p>
             )}
           </div>
         </div>
+
+        <div className="flex flex-col gap-3">
+          <Controller
+            name="videoFile"
+            control={control}
+            render={({ field: { onChange } }) => (
+              <>
+                <div className="flex justify-between items-center">
+                  <Label className="text-[22px] font-semibold text-green">
+                    Upload {type === ResoucrceType.VIDEO ? "Video" : "PDF"}
+                  </Label>
+
+                  <button
+                    type="button"
+                    onClick={handleUploadClick}
+                    disabled={createResourceLoader || uploadFileLoader}
+                    className="px-5 text-base py-2 flex items-center justify-center gap-2 rounded-[100px] disabled:cursor-not-allowed disabled:opacity-75 transition-all bg-gray hover:bg-lightGray w-fit"
+                  >
+                    <p>Upload {type === ResoucrceType.VIDEO ? "Video" : "PDF"}</p>
+                    <div className="p-4 rounded-full bg-dashboardBarBackground">
+                      <Image
+                        src={
+                          type === ResoucrceType.VIDEO
+                            ? UploadVideoSmallIcon
+                            : UploadImageSmalIcon
+                        }
+                        alt="upload icon"
+                        className="w-5 h-5"
+                      />
+                    </div>
+                  </button>
+
+                  <input
+                    type="file"
+                    accept={type === ResoucrceType.VIDEO ? "video/*" : "application/pdf"}
+                    ref={fileInputRef}
+                    onChange={(e) => handleFileChange(e, onChange)}
+                    className="hidden"
+                  />
+                </div>
+
+                {selectedFile && (
+                  <div className="relative flex flex-col gap-5 p-6 rounded-2xl bg-dashboardBackground w-full max-w-[472px] mt-4">
+                    <button
+                      type="button"
+                      onClick={() => setValue("videoFile", undefined)}
+                      disabled={createResourceLoader || uploadFileLoader}
+                      className="absolute bg-red-500 rounded-full -top-2 -right-1 text-white p-1 z-20 disabled:cursor-not-allowed"
+                    >
+                      <X size={18} strokeWidth={2} />
+                    </button>
+
+                    <div className="flex gap-3 items-center justify-end">
+                      <div className="flex gap-1 items-center">
+                        <Image src={CalenderInputIconV2} alt="calendar-icon" className="w-5 h-5" />
+                        <p className="text-lg">{new Date().toLocaleDateString("en-US")}</p>
+                      </div>
+                      <div className="flex gap-1 items-center">
+                        <Image src={TimeIconV2} alt="time-icon" className="w-5 h-5" />
+                        <p className="text-lg">
+                          {new Date().toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+
+                    {type === ResoucrceType.VIDEO ? (
+                      <div className="relative group w-full flex justify-center">
+                        <div className="w-full h-[200px] flex flex-col items-center justify-center rounded-2xl bg-white border-2 border-dashed border-gray-300">
+                          <Image src={VideoImage} alt="upload-video" width={110} height={120} />
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity z-10 rounded-md">
+                          <VideoModal
+                            video={URL.createObjectURL(selectedFile)}
+                            trigger={
+                              <button className="bg-transparent text-white px-6 py-3 h-[60px] rounded-full border border-white shadow hover:bg-lightGray transition">
+                                View
+                              </button>
+                            }
+                          />
+                        </div>
+                      </div>
+                    ) : (
+
+                      <div className="relative group w-full flex justify-center">
+                        <div className="w-full h-[200px] flex flex-col items-center justify-center rounded-2xl bg-white border-2 border-dashed border-gray-300">
+                          <Image src={PDFImage} alt="upload-video" />
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity z-10 rounded-md">
+
+                          <PdfModal
+                            pdfUrl={URL.createObjectURL(selectedFile)}
+                            trigger={
+                              <button className="bg-transparent text-white px-6 py-3 h-[60px] rounded-full border border-white shadow hover:bg-lightGray transition">
+                                View
+                              </button>
+                            }
+                          />
+                        </div>
+                      </div>
+
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          />
+
+          {errors.videoFile && (
+            <p className="text-sm text-red-500">{errors.videoFile.message as string}</p>
+          )}
+        </div>
       </div>
 
-      {/* Buttons OUTSIDE */}
-      {isDirty && (
-        <div className="w-full flex justify-end items-center gap-3">
-          <CustomButton
-            text="Cancel"
-            className="text-[#A3A3A3] bg-transparent shadow-none hover:bg-transparent font-medium text-xl"
-          />
+      <div className="w-full flex justify-end items-center gap-3">
+        <CustomButton
+          text="Cancel"
+          handleOnClick={() => reset()}
+          disabled={createResourceLoader || uploadFileLoader}
+          className="text-[#A3A3A3] bg-gray shadow-none hover:bg-lightGray font-medium text-xl"
+        />
 
-          <CustomButton
-            text="Add Resource"
-            className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-green flex items-center justify-center gap-2 rounded-[100px]"
-          />
-        </div>
-      )}
+        <CustomButton
+          text="Add Resource"
+          type="submit"
+          loading={createResourceLoader || uploadFileLoader}
+          disabled={createResourceLoader || uploadFileLoader}
+          className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-greenHover flex items-center justify-center gap-2 rounded-[100px]"
+        />
+      </div>
     </form>
   );
 }
