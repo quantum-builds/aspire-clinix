@@ -29,6 +29,7 @@ export default async function Resources(props: {
         showSearch={true}
         statusOptions={null}
         pageHeading="Resources"
+        searchPlaceHolder="Enter Resource title"
         extraBtns={
           <CustomButton text="Add New Resource" href={`/clinic/resources/new?type=${ResoucrceType.PDF}`} />
         }

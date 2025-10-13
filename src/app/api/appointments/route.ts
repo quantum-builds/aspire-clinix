@@ -56,25 +56,7 @@ export async function GET(req: NextRequest) {
       ...(dentistId && { dentistId }),
       state: status, // always set, defaults to PENDING
     };
-
-    // // Date filters (on, before, after) have same precedence
-    // if (on || before || after) {
-    //   baseWhere.date = {
-    //     ...(on && {
-    //       gte: new Date(on),
-    //       lt: new Date(new Date(on).setDate(new Date(on).getDate() + 1)),
-    //     }),
-    //     ...(before && { lte: new Date(before) }),
-    //     ...(after && { gte: new Date(after) }),
-    //   };
-    // } else if (dateType === AppointmentDateType.PAST) {
-    //   baseWhere.date = { lt: new Date() };
-    //   // baseWhere.finishTime = { lt: new Date() };
-    // } else if (dateType === AppointmentDateType.UPCOMING) {
-    //   baseWhere.date = { gte: new Date() };
-    //   // baseWhere.startTime = { gte: new Date() };
-    // }
-
+    
     const now = new Date();
     const todayStart = new Date(now.setHours(0, 0, 0, 0));
     const todayEnd = new Date(now.setHours(23, 59, 59, 999));

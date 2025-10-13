@@ -12,6 +12,9 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const search = searchParams.get("search") || "";
     const filterType = searchParams.get("fileType") || null;
+    const on = searchParams.get("on") || "";
+    const before = searchParams.get("before") || "";
+    const after = searchParams.get("after") || "";
 
     const limitPerType = 5;
     const skip = (page - 1) * limitPerType;
@@ -19,6 +22,17 @@ export async function GET(req: NextRequest) {
     const baseWhere: Prisma.ResourceWhereInput = search
       ? { title: { contains: search, mode: "insensitive" as Prisma.QueryMode } }
       : {};
+
+    if (on || before || after) {
+      baseWhere.createdAt = {
+        ...(on && {
+          gte: new Date(on),
+          lt: new Date(new Date(on).setDate(new Date(on).getDate() + 1)),
+        }),
+        ...(before && { lte: new Date(before) }),
+        ...(after && { gte: new Date(after) }),
+      };
+    }
 
     let resources: { pdfs?: Resource[]; videos?: Resource[] } = {};
     let pagination: { pdf: TPaginationNumbers; video: TPaginationNumbers } = {

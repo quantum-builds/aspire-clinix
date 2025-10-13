@@ -29,6 +29,7 @@ export default async function Resources(props: {
         showSearch={true}
         statusOptions={null}
         pageHeading="Resources"
+        searchPlaceHolder="Enter Resource title"
       />
 
       <Suspense key={title + page} fallback={<VideoResourceGridSkeleton />}>

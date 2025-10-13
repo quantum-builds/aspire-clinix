@@ -78,19 +78,21 @@ export default function LetterResourceCard({ resource }: LetterResourceCardProps
                 </div>
             </div>
 
-            <p className="font-medium text-lg truncate w-full">{resource.title}</p>
-            <div className="flex gap-3 items-center justify-start">
-                <div className="flex gap-1 items-center">
-                    <Image
-                        src={CalenderInputIconV2}
-                        alt="calender-icon"
-                        className="w-5 h-5"
-                    />
-                    <p className="text-lg">{formatDate(resource.createdAt)}</p>
-                </div>
-                <div className="flex gap-1 items-center">
-                    <Image src={TimeIconV2} alt="time-icon" className="w-5 h-5" />
-                    <p className="text-lg">{formatTime(resource.createdAt)}</p>
+            <div className=" flex flex-col gap-3">
+                <p className="font-medium text-lg truncate w-full">{resource.title}</p>
+                <div className="flex gap-3 items-center justify-start">
+                    <div className="flex gap-1 items-center">
+                        <Image
+                            src={CalenderInputIconV2}
+                            alt="calender-icon"
+                            className="w-5 h-5"
+                        />
+                        <p className="text-lg">{formatDate(resource.createdAt)}</p>
+                    </div>
+                    <div className="flex gap-1 items-center">
+                        <Image src={TimeIconV2} alt="time-icon" className="w-5 h-5" />
+                        <p className="text-lg">{formatTime(resource.createdAt)}</p>
+                    </div>
                 </div>
             </div>
 
