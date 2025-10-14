@@ -35,6 +35,8 @@ import CustomButton from "@/app/(dashboards)/components/custom-components/Custom
 import { TPractice } from "@/types/practice";
 import { Input } from "./ui/input";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import CustomPopover from "@/app/(dashboards)/components/custom-components/Popover";
+import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 
 export const referralSchema = z.object({
   patientName: z
@@ -409,7 +411,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
             <Label className="w-1/3 text-[18px] md:text-[28px] font-normal font-opus text-nowrap pb-3">
               Date Of Birth
             </Label>
-            <Controller
+            {/* <Controller
               name="patientDateOfBirth"
               control={control}
               render={({ field }) => (
@@ -454,6 +456,68 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
             />
             {errors.patientDateOfBirth && (
               <p className=" text-red-500 text-lg">
+                {errors.patientDateOfBirth.message}
+              </p>
+            )} */}
+            <Controller
+              name="patientDateOfBirth"
+              control={control}
+              render={({ field }) => (
+                <CustomPopover
+                  parentClassName="w-full"
+                  trigger={
+                    <button
+                      type="button"
+                      onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+                      className={cn(
+                        "relative w-full text-left font-normal bg-transparent p-3  rounded-[10px] border border-solid border-black",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        <span className="mr-auto text-[28px] ">
+                          {field.value.toLocaleDateString()}
+                        </span>
+                      ) : (
+                        <span className="mr-auto">Select date</span>
+                      )}
+                      <Image
+                        src={CalenderInputIconV2}
+                        alt="calendar-input"
+                        className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2"
+                      />
+                    </button>
+                  }
+                >
+                  <div className="w-full p-3">
+                    <div className="border-b border-gray-200 pb-2 mb-3 text-right">
+                      <button
+                        type="button"
+                        className="text-sm hover:text-green"
+                        onClick={() => {
+                          field.onChange(null);
+                          setIsCalendarOpen(false);
+                        }}
+                      >
+                        Clear selection
+                      </button>
+                    </div>
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={(date) => date && field.onChange(date)}
+                      captionLayout="dropdown"
+                      showOutsideDays={false}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
+                    />
+                  </div>
+                </CustomPopover>
+              )}
+            />
+            {errors.patientDateOfBirth && (
+              <p className="text-sm text-red-500">
                 {errors.patientDateOfBirth.message}
               </p>
             )}
@@ -639,88 +703,23 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
             />
             <FormInput
               type="text"
-              name="referralGDC"
-              label="GDC Number"
+              name="referralEmail"
+              label="Email Address"
               control={control}
-              errorMessage={errors.referralGDC?.message}
+              errorMessage={errors.referralEmail?.message}
+              className="flex-1"
               backgroundColor="#ECE8E3"
               marginTop="50px"
               padding="13px"
             />
-
-            <div className="mt-[50px] flex flex-col gap-2">
-              <Label className="w-1/3 text-[18px] md:text-[28px] font-normal font-opus text-nowrap pb-3">
-                Practice Address
-              </Label>
-
-              {practices && practices.length > 0 ? (
-                <Select
-                  onValueChange={(val) => {
-                    setValue("referralPracticeId", val, { shouldValidate: true });
-                  }}
-                  value={watch("referralPracticeId")}
-                >
-                  <SelectTrigger className="w-full p-[13px] text-left font-opus outline-none flex-1 text-[28px] bg-[#ECE8E36] border border-solid border-[#000000] rounded-[10px]">
-                    {(() => {
-                      const selectedPractice = practices.find(
-                        (p) => p.id === watch("referralPracticeId")
-                      );
-                      if (!selectedPractice) {
-                        return (
-                          <SelectValue
-                            placeholder="Select practice address"
-                            className="font-semibold"
-                          />
-                        );
-                      }
-                      return (
-                        <div className="flex flex-col">
-                          <span className="text-[22px] font-semibold leading-tight">
-                            {selectedPractice.name}
-                          </span>
-                          <span className="text-[16px] text-muted-foreground leading-snug">
-                            {selectedPractice.addressLine1}, {selectedPractice.town},{" "}
-                            {selectedPractice.postcode}
-                          </span>
-                        </div>
-                      );
-                    })()}
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    {practices.map((practice) => (
-                      <SelectItem key={practice.id} value={practice.id}>
-                        <div className="flex flex-col">
-                          <span className="text-lg font-medium">{practice.name}</span>
-                          <span className="text-md text-muted-foreground">
-                            {practice.addressLine1}, {practice.town}, {practice.postcode}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Input
-                  disabled
-                  value="No practice registered yet"
-                  className="bg-gray px-6 py-3 h-[52px] rounded-2xl text-muted-foreground"
-                />
-              )}
-
-              {errors.referralPracticeId && (
-                <p className="text-lg text-red-500">
-                  {errors.referralPracticeId.message}
-                </p>
-              )}
-            </div>
 
             <div className="flex flex-wrap justify-between gap-16">
               <div className="flex flex-1 items-center">
                 <FormInput
                   type="text"
                   name="referralPhoneNumber"
-                  label="Practice Phone Number"
+                  placeholder="e.g. +44 7123 456 789"
+                  label="Phone Number"
                   control={control}
                   errorMessage={errors.referralPhoneNumber?.message}
                   className="flex-1"
@@ -731,16 +730,57 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
               </div>
               <FormInput
                 type="text"
-                name="referralEmail"
-                label="Practice Email Address"
+                name="referralGDC"
+                label="GDC Number"
                 control={control}
-                errorMessage={errors.referralEmail?.message}
-                className="flex-1"
+                errorMessage={errors.referralGDC?.message}
                 backgroundColor="#ECE8E3"
+                className="flex-1"
                 marginTop="50px"
                 padding="13px"
               />
+
+
             </div>
+
+            <div className="mt-[50px] flex flex-col gap-2">
+              <Label className="w-1/3 text-[18px] md:text-[28px] font-normal font-opus text-nowrap pb-3">
+                Practice Address
+              </Label>
+              <Controller
+                name="referralPracticeId"
+                control={control}
+                render={({ field }) => (
+                  <Dropdown
+                    value={field.value}
+                    onValueChange={(val) => {
+                      setValue("referralPracticeId", val||"", { shouldValidate: true });
+                      field.onChange(val || "");
+                    }}
+                    options={
+                      practices.map((b) => ({
+                        value: b.id,
+                        label: `${b.name}, ${b.addressLine1}, ${b.town}, ${b.postcode}`,
+                      })) || []
+                    }
+                    placeholder="Select Branch"
+                    placeholderClassName="text-[28px] text-muted-foreground"
+                    triggerClassName="w-full bg-transparent p-3 rounded-[10px] text-left border border-solid border-black"
+                    contentClassName="w-full "
+                    className="w-full shadow-sm border rounded-2xl"
+                    showClearOption={true}
+                    emptyText="No Practice Found"
+                  />
+                )}
+              />
+
+              {errors.referralPracticeId && (
+                <p className="text-lg text-red-500">
+                  {errors.referralPracticeId.message}
+                </p>
+              )}
+            </div>
+
             <div className="mt-16">
               <p className="text-[18px] md:text-[25px] font-normal font-opus mb-4">
                 Would you like to attend the treatment appointment with the

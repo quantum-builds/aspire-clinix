@@ -231,34 +231,27 @@ export default function AssignDentistForm({ practiceId, practices, dentists, pat
             <Controller
               name="practicAddress"
               control={control}
-              render={() => (
-                <Controller
-                  name="practicAddress"
-                  control={control}
-                  render={({ field }) => (
-                    <Dropdown
-                      value={field.value}
-                      onValueChange={(val) => {
-                        handlePracticeChange(val || "");
-                        field.onChange(val || "");
-                      }}
-                      options={
-                        practices.map((b) => ({
-                          value: b.id,
-                          label: `${b.name}, ${b.addressLine1}, ${b.town}, ${b.postcode}`,
-                        })) || []
-                      }
-                      placeholder="Select Branch"
-                      placeholderClassName="text-sm text-muted-foreground"
-                      triggerClassName="w-full bg-gray px-6 py-3 h-[52px] rounded-2xl text-left"
-                      contentClassName="w-full "
-                      className="w-full shadow-sm border rounded-2xl"
-                      showClearOption={true}
-                      emptyText="No Practice Found"
-                    />
-                  )}
+              render={({ field }) => (
+                <Dropdown
+                  value={field.value}
+                  onValueChange={(val) => {
+                    handlePracticeChange(val || "");
+                    field.onChange(val || "");
+                  }}
+                  options={
+                    practices.map((b) => ({
+                      value: b.id,
+                      label: `${b.name}, ${b.addressLine1}, ${b.town}, ${b.postcode}`,
+                    })) || []
+                  }
+                  placeholder="Select Branch"
+                  placeholderClassName="text-sm text-muted-foreground"
+                  triggerClassName="w-full bg-gray px-6 py-3 h-[52px] rounded-2xl text-left"
+                  contentClassName="w-full "
+                  className="w-full shadow-sm border rounded-2xl"
+                  showClearOption={true}
+                  emptyText="No Practice Found"
                 />
-
               )}
             />
           </div>
