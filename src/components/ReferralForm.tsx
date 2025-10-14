@@ -806,12 +806,12 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
               text="Cancel"
               disabled={creatingReferralFormLoader || uplaodFileLoader}
               handleOnClick={() => reset()}
-              className="text-[#A3A3A3] bg-gray  shadow-none hover:bg-lightGray font-medium text-2xl "
+              className="text-[#A3A3A3] bg-gray  shadow-none hover:bg-lightGray font-medium text-2xl  h-14"
             />
             <CustomButton
               text={"Submit Form"}
               type="submit"
-              className="text-2xl font-medium "
+              className="text-2xl font-medium h-14"
               disabled={creatingReferralFormLoader || uplaodFileLoader}
               loading={creatingReferralFormLoader || uplaodFileLoader}
             />
