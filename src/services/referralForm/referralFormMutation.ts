@@ -1,5 +1,5 @@
 import { axiosInstance, ENDPOINTS } from "@/config/api-config";
-import { TCreateReferralForm } from "@/types/referral-form";
+import { TCreateReferralForm, TReferralForm } from "@/types/referral-form";
 import { useMutation } from "@tanstack/react-query";
 
 export const useCreateReferralForm = () => {
@@ -13,7 +13,8 @@ export const useCreateReferralForm = () => {
         ENDPOINTS.referralForm.create,
         referralForm
       );
-      return response.data.data;
+      const data:TReferralForm=response.data.data
+      return data;
     },
   });
 };

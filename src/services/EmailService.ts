@@ -1,5 +1,5 @@
 import { axiosInstance, ENDPOINTS } from "@/config/api-config";
-import { Response } from "@/types/common";
+import { Response, UserRoles } from "@/types/common";
 import { useMutation } from "@tanstack/react-query";
 
 export const useSendEmail = () => {
@@ -8,6 +8,8 @@ export const useSendEmail = () => {
       subject,
       html,
       attachment,
+      userType,
+      recieverMail
     }: {
       subject: string;
       html: string;
@@ -17,6 +19,8 @@ export const useSendEmail = () => {
         type: string;
         disposition: string;
       } | null;
+      userType: UserRoles,
+      recieverMail?: string
     }) => {
       const response: Response<null> = await axiosInstance.post(
         ENDPOINTS.email.sendEmail, // You'll need to add this endpoint
@@ -24,6 +28,8 @@ export const useSendEmail = () => {
           subject,
           html,
           attachment,
+          userType,
+          recieverMail
         }
       );
       return response;

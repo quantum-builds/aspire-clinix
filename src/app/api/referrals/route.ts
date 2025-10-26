@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     });
 
     console.log("patient", patient)
-    
+
 
     const referralEmail = referralForm.referralEmail;
     console.log("referral email", referralEmail)
@@ -42,10 +42,14 @@ export async function POST(req: NextRequest) {
       referralForm.patientId = patient.id;
     }
 
-    console.log("Referral form is ",referralForm)
+    console.log("Referral form is ", referralForm)
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({
         data: referralForm,
+        include: {
+          referralDentist: true,
+          patient: true
+        }
       });
 
       await tx.referralRequest.create({

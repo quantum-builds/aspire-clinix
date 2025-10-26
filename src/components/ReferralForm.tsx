@@ -7,36 +7,25 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckboxInput } from "@/components/ui/CheckboxInput";
 import { showToast } from "@/utils/defaultToastOptions";
-import { useState, ChangeEvent, useRef } from "react";
+import { useState,  useRef } from "react";
 import Image from "next/image";
 import { CalenderInputIconV2, UploadPDFIcon } from "@/assets";
-import { CreateReferralForm, TCreateReferralForm } from "@/types/referral-form";
+import { TCreateReferralForm } from "@/types/referral-form";
 import { useCreateReferralForm } from "@/services/referralForm/referralFormMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import PdfModal from "@/app/(dashboards)/components/ViewPdfModal";
 import { ResoucrceType } from "@prisma/client";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { TPractice } from "@/types/practice";
-import { Input } from "./ui/input";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import CustomPopover from "@/app/(dashboards)/components/custom-components/Popover";
 import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
+import { useSendEmail } from "@/services/EmailService";
+import { referralAdminEmail, referralRegisteredDentistEmail, referralRegisteredPatientEmail, referralUnregisteredDentistEmail, referralUnRegisteredPatientEmail } from "@/constants/EmailTemplates";
+import { UserRoles } from "@/types/common";
 
 export const referralSchema = z.object({
   patientName: z
@@ -131,7 +120,7 @@ export const referralSchema = z.object({
     .optional(),
 });
 
-type FormData = z.infer<typeof referralSchema>;
+export type FormData = z.infer<typeof referralSchema>;
 
 const REFERRAL_DETAIL = {
   name: "referralDetails",
@@ -200,31 +189,33 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
 
   const handleUploadClick = () => fileInputRef.current?.click();
 
-  const onSubmit = async (data: FormData) => {
-    console.log(data);
+  const { mutate: sendEmailWithAttachment, isPending } = useSendEmail()
+
+  const onSubmit = async (formData: FormData) => {
+    console.log(formData);
     let fileUrl = undefined;
-    if (data.medicalHistoryPdfUrl) {
+    if (formData.medicalHistoryPdfUrl) {
       const imageUploaded = await uploadFile({
-        selectedFile: data.medicalHistoryPdfUrl,
+        selectedFile: formData.medicalHistoryPdfUrl,
         fileType: ResoucrceType.PDF,
       });
 
       fileUrl = `uploads/aspire-clinic/pdfs/${imageUploaded.name}`;
     }
     const referralDetail: TCreateReferralForm = {
-      patientName: data.patientName,
-      patientDateOfBirth: data.patientDateOfBirth,
-      patientEmail: data.patientEmail,
-      patientPhoneNumber: data.patientPhoneNumber,
-      patientAddress: data.patientAddress,
-      referralName: data.referralName,
-      referralGDC: data.referralGDC,
-      referralPracticeId: data.referralPracticeId,
-      referralPhoneNumber: data.referralPhoneNumber,
-      referralEmail: data.referralEmail,
-      referralDetails: data.referralDetails,
-      attendTreatment: data.attendTreatment,
-      treatmentDetails: data.treatmentDetails,
+      patientName: formData.patientName,
+      patientDateOfBirth: formData.patientDateOfBirth,
+      patientEmail: formData.patientEmail,
+      patientPhoneNumber: formData.patientPhoneNumber,
+      patientAddress: formData.patientAddress,
+      referralName: formData.referralName,
+      referralGDC: formData.referralGDC,
+      referralPracticeId: formData.referralPracticeId,
+      referralPhoneNumber: formData.referralPhoneNumber,
+      referralEmail: formData.referralEmail,
+      referralDetails: formData.referralDetails,
+      attendTreatment: formData.attendTreatment,
+      treatmentDetails: formData.treatmentDetails,
       medicalHistoryPdfUrl: fileUrl,
     };
 
@@ -233,157 +224,101 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
         referralForm: referralDetail,
       },
       {
-        onSuccess: () => {
-          reset();
-          showToast("success", "Referral Form Successfully Send");
-        },
         onError: (error) => {
           const err = getAxiosErrorMessage(error);
           showToast("error", err);
         },
+        onSuccess: async (data) => {
+          const adminEmailHtml = referralAdminEmail(formData);
+          let patientEmailHtml = ""
+          let referralDentistEmailHtml = ""
+
+          if (data.patientId && data.patient) {
+            patientEmailHtml = referralRegisteredPatientEmail(formData, process.env.NEXT_PUBLIC_API_BASE_URL || "")
+          } else {
+            patientEmailHtml = referralUnRegisteredPatientEmail(formData, process.env.NEXT_PUBLIC_API_BASE_URL || "")
+          }
+
+          if (data.referralDentistId && data.referralDentist) {
+            referralDentistEmailHtml = referralRegisteredDentistEmail(formData, process.env.NEXT_PUBLIC_API_BASE_URL || "")
+          } else {
+            referralDentistEmailHtml = referralUnregisteredDentistEmail(formData, process.env.NEXT_PUBLIC_API_BASE_URL || "")
+          }
+
+          // Convert PDF to base64 if it exists
+          let pdfBase64 = null;
+          let pdfFileName = null;
+
+          if (formData.medicalHistoryPdfUrl) {
+            try {
+              const arrayBuffer = await formData.medicalHistoryPdfUrl.arrayBuffer();
+              pdfBase64 = Buffer.from(arrayBuffer).toString("base64");
+              pdfFileName = formData.medicalHistoryPdfUrl.name;
+            } catch (error) {
+              console.error("Error converting PDF to base64:", error);
+              showToast("error", "Error processing PDF file");
+              return;
+            }
+          }
+
+          // Send email to admin with attachment
+          sendEmailWithAttachment(
+            {
+              subject: "New Referral Form",
+              html: adminEmailHtml,
+              attachment: pdfBase64
+                ? {
+                  content: pdfBase64,
+                  filename: pdfFileName!,
+                  type: "application/pdf",
+                  disposition: "attachment",
+                }
+                : null,
+              userType: UserRoles.ADMIN
+            }
+          );
+
+          // Send email to patient with attachment
+          sendEmailWithAttachment(
+            {
+              subject: "New Referral Form",
+              html: patientEmailHtml,
+              attachment: pdfBase64
+                ? {
+                  content: pdfBase64,
+                  filename: pdfFileName!,
+                  type: "application/pdf",
+                  disposition: "attachment",
+                }
+                : null,
+              userType: UserRoles.PATIENT,
+              recieverMail: formData.patientEmail
+            }
+          );
+
+          // Send email to dentist with attachment
+          sendEmailWithAttachment(
+            {
+              subject: "New Referral Form",
+              html: referralDentistEmailHtml,
+              attachment: pdfBase64
+                ? {
+                  content: pdfBase64,
+                  filename: pdfFileName!,
+                  type: "application/pdf",
+                  disposition: "attachment",
+                }
+                : null,
+              userType: UserRoles.DENTIST,
+              recieverMail: formData.referralEmail
+            }
+          );
+
+          showToast("success", "Referral submitted successfully");
+          reset();
+        },
       }
     );
-    // EMAIL SENDING ONE
-    //     createReferral(
-    //       { form: referralDetail },
-    //       {
-    //         onError: (error) => {
-    //           const message =
-    //             error instanceof Error ? error.message : "Something went wrong";
-    //           showToast("error", message);
-    //         },
-    //         onSuccess: async () => {
-    //           const emailHtml = `
-    // <!DOCTYPE html>
-    // <html>
-    //   <head>
-    //     <meta charset="UTF-8" />
-    //     <title>Referral Details</title>
-    //   </head>
-    //   <body style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f7; margin: 0; padding: 20px; color: #333;">
-    //     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 650px; margin: auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
-    //       <tr>
-    //         <td style="background: #2a9d8f; padding: 20px; text-align: center; color: #fff;">
-    //           <h1 style="margin: 0; font-size: 22px; font-weight: 600;">Referral Form Summary</h1>
-    //         </td>
-    //       </tr>
-    //       <tr>
-    //         <td style="padding: 25px;">
-
-    //           <h2 style="font-size: 18px; color: #264653; margin-bottom: 10px;">Patient Details</h2>
-    //           <table style="width: 100%; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-    //             <tr><td><strong>Name:</strong></td><td>${data.name}</td></tr>
-    //             <tr><td><strong>Date of Birth:</strong></td><td>${
-    //               data.patientDateOfBirth
-    //             }</td></tr>
-    //             <tr><td><strong>Address:</strong></td><td>${data.address}</td></tr>
-    //             <tr><td><strong>Mobile Number:</strong></td><td>${
-    //               data.mobileNumber
-    //             }</td></tr>
-    //             <tr><td><strong>Email:</strong></td><td>${data.email}</td></tr>
-    //             <tr><td><strong>Medical History:</strong></td><td>${
-    //               data.medicalHistory || "N/A"
-    //             }</td></tr>
-    //           </table>
-
-    //           <h2 style="font-size: 18px; color: #264653; margin-bottom: 10px;">Referral Details</h2>
-    //           <table style="width: 100%; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-    //             <tr><td><strong>Details:</strong></td><td>${
-    //               data.referralDetails?.length
-    //                 ? data.referralDetails.join(", ")
-    //                 : "None"
-    //             }</td></tr>
-    //             <tr><td><strong>Other:</strong></td><td>${
-    //               data.other || "N/A"
-    //             }</td></tr>
-    //             <tr><td><strong>Treatment Details:</strong></td><td>${
-    //               data.treatmentDetails || "N/A"
-    //             }</td></tr>
-    //           </table>
-
-    //           <h2 style="font-size: 18px; color: #264653; margin-bottom: 10px;">Referring Dentist</h2>
-    //           <table style="width: 100%; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-    //             <tr><td><strong>Name:</strong></td><td>${
-    //               data.referralName
-    //             }</td></tr>
-    //             <tr><td><strong>GDC Number:</strong></td><td>${
-    //               data.referralGDC
-    //             }</td></tr>
-    //             <tr><td><strong>Practice Address:</strong></td><td>${
-    //               data.referralAddress
-    //             }</td></tr>
-    //             <tr><td><strong>Practice Phone:</strong></td><td>${
-    //               data.referralMobileNumber
-    //             }</td></tr>
-    //             <tr><td><strong>Practice Email:</strong></td><td>${
-    //               data.referralEmail
-    //             }</td></tr>
-    //           </table>
-
-    //           <h2 style="font-size: 18px; color: #264653; margin-bottom: 10px;">Treatment Appointment</h2>
-    //           <p style="font-size: 14px; line-height: 1.6; margin: 0;">
-    //             <strong>Attend Appointment:</strong> ${
-    //               data.treatMeantAppointment || "Not specified"
-    //             }
-    //           </p>
-
-    //         </td>
-    //       </tr>
-    //       <tr>
-    //         <td style="background: #f1f1f1; text-align: center; padding: 15px; font-size: 12px; color: #777;">
-    //           Aspire Clinic • Confidential Referral Information
-    //         </td>
-    //       </tr>
-    //     </table>
-    //   </body>
-    // </html>
-    // `;
-
-    //           // Convert PDF to base64 if it exists
-    //           let pdfBase64 = null;
-    //           let pdfFileName = null;
-
-    //           if (medicalHistoryPdf) {
-    //             try {
-    //               const arrayBuffer = await medicalHistoryPdf.arrayBuffer();
-    //               pdfBase64 = Buffer.from(arrayBuffer).toString("base64");
-    //               pdfFileName = medicalHistoryPdf.name;
-    //             } catch (error) {
-    //               console.error("Error converting PDF to base64:", error);
-    //               showToast("error", "Error processing PDF file");
-    //               return;
-    //             }
-    //           }
-
-    //           // Send email with attachment
-    //           sendEmailWithAttachment(
-    //             {
-    //               subject: "New Referral Form",
-    //               html: emailHtml,
-    //               attachment: pdfBase64
-    //                 ? {
-    //                     content: pdfBase64,
-    //                     filename: pdfFileName!,
-    //                     type: "application/pdf",
-    //                     disposition: "attachment",
-    //                   }
-    //                 : null,
-    //             },
-    //             {
-    //               onSuccess: () => {
-    //                 showToast("success", "Referral submitted successfully");
-    //                 setTimeout(() => {
-    //                   router.replace("/");
-    //                 }, 1000);
-    //               },
-    //               onError: () => {
-    //                 showToast("error", "Error in sending email");
-    //               },
-    //             }
-    //           );
-    //         },
-    //       }
-    //     );
   };
 
   return (
@@ -754,7 +689,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
                   <Dropdown
                     value={field.value}
                     onValueChange={(val) => {
-                      setValue("referralPracticeId", val||"", { shouldValidate: true });
+                      setValue("referralPracticeId", val || "", { shouldValidate: true });
                       field.onChange(val || "");
                     }}
                     options={
@@ -804,7 +739,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
           <div className=" my-20 flex md:justify-end justify-center items-center md:items-start gap-2">
             <CustomButton
               text="Cancel"
-              disabled={creatingReferralFormLoader || uplaodFileLoader}
+              disabled={creatingReferralFormLoader || uplaodFileLoader || isPending}
               handleOnClick={() => reset()}
               className="text-[#A3A3A3] bg-gray  shadow-none hover:bg-lightGray font-medium text-2xl  h-14"
             />
@@ -812,8 +747,8 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
               text={"Submit Form"}
               type="submit"
               className="text-2xl font-medium h-14"
-              disabled={creatingReferralFormLoader || uplaodFileLoader}
-              loading={creatingReferralFormLoader || uplaodFileLoader}
+              disabled={creatingReferralFormLoader || uplaodFileLoader || isPending}
+              loading={creatingReferralFormLoader || uplaodFileLoader || isPending}
             />
           </div>
         </form>

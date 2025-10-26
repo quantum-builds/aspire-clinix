@@ -49,10 +49,11 @@
 
 import sendgrid from "@/config/sendgrid-config";
 import { createResponse } from "@/utils/createResponse";
+import { UserRoles } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { subject, html, attachment } = await req.json();
+  const { subject, html, attachment, userType, recieverMail } = await req.json();
 
   if (!subject || !html) {
     return NextResponse.json(
@@ -74,10 +75,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  console.log("to ", process.env.EMAIL_TO)
+  console.log("to ", process.env.EMAIL_FROM)
+
+  let emailTo = ""
+  if (userType === UserRoles.ADMIN) {
+    emailTo = process.env.EMAIL_TO || ""
+  } else {
+    emailTo = recieverMail
+  }
   try {
     const emailData: any = {
       from: process.env.EMAIL_FROM,
-      to: process.env.EMAIL_TO,
+      to: emailTo,
       subject,
       html,
       text: undefined,
