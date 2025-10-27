@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
       ];
     }
 
-    await sendgrid.send(emailData);
+    await sendgrid.send(emailData,attachment);
 
     return NextResponse.json(
       createResponse(true, "Email sent successfully!", null),
