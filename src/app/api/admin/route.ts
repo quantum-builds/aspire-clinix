@@ -4,6 +4,7 @@ import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
+import { getPatient } from "@/dentallyHelpers/patient";
 
 export async function GET(req: NextRequest) {
   try {
@@ -63,11 +64,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const existingPatient = await prisma.patient.findFirst({
-      where: {
-        OR: [{ email: admin.email }, { phoneNumber: admin.phoneNumber }],
-      },
-    });
+    const respose = await getPatient({ emailAddress: email, mobilePhone: phoneNumber })
+    if (respose.isError) {
+      return respose.response
+    }
+    const existingPatient = respose.response
     // if (existingDentist || existingPatient) {
     //   return NextResponse.json(
     //     createResponse(false, "User data already exists", null),
@@ -84,7 +85,7 @@ export async function POST(req: NextRequest) {
 
     if (existingPatient) {
       if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingPatient.mobilePhone === phoneNumber) conflicts.push("phone number");
     }
 
     const uniqueConflicts = Array.from(new Set(conflicts));
@@ -160,11 +161,11 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    const existingPatient = await prisma.patient.findFirst({
-      where: {
-        OR: [{ email: email }, { phoneNumber: phoneNumber }],
-      },
-    });
+    const respose = await getPatient({ emailAddress: email, mobilePhone: phoneNumber })
+    if (respose.isError) {
+      return respose.response
+    }
+    const existingPatient = respose.response
 
     // if (existingDentist || existingPatient) {
     //   return NextResponse.json(
@@ -182,7 +183,7 @@ export async function PATCH(req: NextRequest) {
 
     if (existingPatient) {
       if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingPatient.mobilePhone === phoneNumber) conflicts.push("phone number");
     }
 
     const uniqueConflicts = Array.from(new Set(conflicts));

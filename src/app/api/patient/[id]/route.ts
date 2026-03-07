@@ -1,5 +1,5 @@
 import { TokenRoles } from "@/constants/UserRoles";
-import prisma from "@/lib/db";
+import { deletePatientById, getPatientById, patchPatientById } from "@/dentallyHelpers/patient";
 import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
@@ -24,10 +24,9 @@ export async function GET(req: NextRequest) {
     const patientId = req.nextUrl.pathname.split("/").pop();
 
     if (!patientId || !isValidCuid(patientId)) {
-      return NextResponse.json(
-        { message: "Invalid Patient Id." },
-        { status: 400 }
-      );
+      return NextResponse.json(createResponse(false, "Invalid Patient Id", null), {
+        status: 400,
+      });
     }
 
     if (token.role === TokenRoles.PATIENT && patientId !== token.sub) {
@@ -35,22 +34,12 @@ export async function GET(req: NextRequest) {
         status: 403,
       });
     }
-    
-    const patient = await prisma.patient.findUnique({
-      where: { id: patientId },
-      select: {
-        id: true,
-        email: true,
-        fullName: true,
-        phoneNumber: true,
-        fileUrl: true,
-        country: true,
-        dateOfBirth: true,
-        gender: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+
+    const getPatientRespose = await getPatientById(patientId)
+    if (getPatientRespose.isError) {
+      return getPatientRespose.response
+    }
+    const patient = getPatientRespose.response
 
     if (!patient) {
       return NextResponse.json(
@@ -73,30 +62,37 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const token = await getToken({ req });
 
-  // if (!token || token.role !== "patient") {
-  //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
-  //     status: 401,
-  //   });
-  // }
+  if (!token) {
+    return NextResponse.json(createResponse(false, "Unauthorized", null), {
+      status: 401,
+    });
+  }
+
+  if (token.role === TokenRoles.PATIENT || token.role === TokenRoles.ADMIN) {
+    return NextResponse.json(createResponse(false, "Forbidden", null), {
+      status: 403,
+    });
+  }
 
   // get id from the token but for now will be getting in search params
   try {
     const patientId = req.nextUrl.pathname.split("/").pop();
 
     if (!patientId || !isValidCuid(patientId)) {
-      return NextResponse.json(
-        { message: "Invalid Patient Id." },
-        { status: 400 }
-      );
+      return NextResponse.json(createResponse(false, "Invalid Patient Id", null), {
+        status: 400,
+      });
     }
 
-    const patients = await prisma.patient.findUnique({
-      where: { id: patientId },
-    });
+    const respose = await getPatientById(patientId)
+    if (respose.isError) {
+      return respose.response
+    }
+    const patient = respose.response
 
-    if (!patients) {
+    if (!patient) {
       return NextResponse.json(
         createResponse(false, "No Patient found", null),
         { status: 404 }
@@ -105,17 +101,17 @@ export async function PATCH(req: NextRequest) {
 
     const partialPatient = await req.json();
 
-    const updatedPatient = await prisma.patient.update({
-      where: { id: patientId },
-      data: partialPatient,
-    });
+    const patchPatientRespose = await patchPatientById(patientId, partialPatient)
+    if (patchPatientRespose.isError) {
+      return patchPatientRespose.response
+    }
+    const updatedPatient = patchPatientRespose.response
 
     return NextResponse.json(
       createResponse(true, "Patient is updated successfully", updatedPatient),
       { status: 200 }
     );
   } catch (error) {
-    console.log("Error in updated patient", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,
@@ -124,44 +120,53 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const token = await getToken({ req });
 
-  // if (!token || token.role !== "patient") {
-  //   return NextResponse.json(createResponse(false, "Unauthorized", null), {
-  //     status: 401,
-  //   });
-  // }
+  if (!token) {
+    return NextResponse.json(createResponse(false, "Unauthorized", null), {
+      status: 401,
+    });
+  }
+
+  if (token.role === TokenRoles.PATIENT || token.role === TokenRoles.ADMIN) {
+    return NextResponse.json(createResponse(false, "Forbidden", null), {
+      status: 403,
+    });
+  }
 
   // get id from the token but for now will be getting in search params
   try {
     const patientId = req.nextUrl.pathname.split("/").pop();
 
     if (!patientId || !isValidCuid(patientId)) {
-      return NextResponse.json(
-        { message: "Invalid Patient Id." },
-        { status: 400 }
-      );
+      return NextResponse.json(createResponse(false, "Invalid Patient Id", null), {
+        status: 400,
+      });
     }
 
-    const patients = await prisma.patient.findUnique({
-      where: { id: patientId },
-    });
+    const getPatientRespose = await getPatientById(patientId)
+    if (getPatientRespose.isError) {
+      return getPatientRespose.response
+    }
+    const patient = getPatientRespose.response
 
-    if (!patients) {
+    if (!patient) {
       return NextResponse.json(
         createResponse(false, "No Patient found", null),
         { status: 404 }
       );
     }
 
-    await prisma.patient.delete({ where: { id: patientId } });
+    const deletePatientRespose = await deletePatientById(patientId)
+    if (deletePatientRespose.isError) {
+      return deletePatientRespose.response
+    }
 
     return NextResponse.json(
       createResponse(true, "Patient is deleted successfully", null),
-      { status: 201 }
+      { status: 204 }
     );
   } catch (error) {
-    console.log("Error in deleting patient", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

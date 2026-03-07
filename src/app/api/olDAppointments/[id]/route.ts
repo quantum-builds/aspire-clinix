@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
 
     const appoitnment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
-      include: { patient: true, dentist: true },
+      include: {  dentist: true },
     });
 
     return NextResponse.json(

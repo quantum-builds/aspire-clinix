@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
         skip,
         take: limit,
         orderBy: { createdAt: "desc" },
-        include: { patient: true,appointment:{include:{dentist:true,patient:true}} },
+        include: { appointment:{include:{dentist:true}} },
       }),
       prisma.appointmentRequests.count({ where: baseWhere }),
     ]);

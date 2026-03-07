@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckboxInput } from "@/components/ui/CheckboxInput";
 import { showToast } from "@/utils/defaultToastOptions";
-import { useState,  useRef } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import { CalenderInputIconV2, UploadPDFIcon } from "@/assets";
 import { TCreateReferralForm } from "@/types/referral-form";
@@ -79,7 +79,7 @@ export const referralSchema = z.object({
     .string()
     .min(4, "GDC number must be at least 4 characters")
     .max(20, "GDC number must be less than 20 characters"),
-  referralPracticeId: z
+  referralPracticeNameAddress: z
     .string()
     .min(5, "Practice address must be at least 5 characters")
     .max(200, "Practice address must be less than 200 characters"),
@@ -178,7 +178,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
       patientEmail: "",
       referralName: "",
       referralGDC: "",
-      referralPracticeId: "",
+      referralPracticeNameAddress: "",
       referralPhoneNumber: "",
       referralEmail: "",
       referralDetails: [],
@@ -210,7 +210,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
       patientAddress: formData.patientAddress,
       referralName: formData.referralName,
       referralGDC: formData.referralGDC,
-      referralPracticeId: formData.referralPracticeId,
+      referralPracticeNameAddress: formData.referralPracticeNameAddress,
       referralPhoneNumber: formData.referralPhoneNumber,
       referralEmail: formData.referralEmail,
       referralDetails: formData.referralDetails,
@@ -261,58 +261,58 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
             }
           }
 
-          // Send email to admin with attachment
-          sendEmailWithAttachment(
-            {
-              subject: "New Referral Form",
-              html: adminEmailHtml,
-              attachment: pdfBase64
-                ? {
-                  content: pdfBase64,
-                  filename: pdfFileName!,
-                  type: "application/pdf",
-                  disposition: "attachment",
-                }
-                : null,
-              userType: UserRoles.ADMIN
-            }
-          );
+          // // Send email to admin with attachment
+          // sendEmailWithAttachment(
+          //   {
+          //     subject: "New Referral Form",
+          //     html: adminEmailHtml,
+          //     attachment: pdfBase64
+          //       ? {
+          //         content: pdfBase64,
+          //         filename: pdfFileName!,
+          //         type: "application/pdf",
+          //         disposition: "attachment",
+          //       }
+          //       : null,
+          //     userType: UserRoles.ADMIN
+          //   }
+          // );
 
-          // Send email to patient with attachment
-          sendEmailWithAttachment(
-            {
-              subject: "New Referral Form",
-              html: patientEmailHtml,
-              attachment: pdfBase64
-                ? {
-                  content: pdfBase64,
-                  filename: pdfFileName!,
-                  type: "application/pdf",
-                  disposition: "attachment",
-                }
-                : null,
-              userType: UserRoles.PATIENT,
-              recieverMail: formData.patientEmail
-            }
-          );
+          // // Send email to patient with attachment
+          // sendEmailWithAttachment(
+          //   {
+          //     subject: "New Referral Form",
+          //     html: patientEmailHtml,
+          //     attachment: pdfBase64
+          //       ? {
+          //         content: pdfBase64,
+          //         filename: pdfFileName!,
+          //         type: "application/pdf",
+          //         disposition: "attachment",
+          //       }
+          //       : null,
+          //     userType: UserRoles.PATIENT,
+          //     recieverMail: formData.patientEmail
+          //   }
+          // );
 
-          // Send email to dentist with attachment
-          sendEmailWithAttachment(
-            {
-              subject: "New Referral Form",
-              html: referralDentistEmailHtml,
-              attachment: pdfBase64
-                ? {
-                  content: pdfBase64,
-                  filename: pdfFileName!,
-                  type: "application/pdf",
-                  disposition: "attachment",
-                }
-                : null,
-              userType: UserRoles.DENTIST,
-              recieverMail: formData.referralEmail
-            }
-          );
+          // // Send email to dentist with attachment
+          // sendEmailWithAttachment(
+          //   {
+          //     subject: "New Referral Form",
+          //     html: referralDentistEmailHtml,
+          //     attachment: pdfBase64
+          //       ? {
+          //         content: pdfBase64,
+          //         filename: pdfFileName!,
+          //         type: "application/pdf",
+          //         disposition: "attachment",
+          //       }
+          //       : null,
+          //     userType: UserRoles.DENTIST,
+          //     recieverMail: formData.referralEmail
+          //   }
+          // );
 
           showToast("success", "Referral submitted successfully");
           reset();
@@ -678,18 +678,18 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
 
             </div>
 
-            <div className="mt-[50px] flex flex-col gap-2">
+            {/* <div className="mt-[50px] flex flex-col gap-2">
               <Label className="w-1/3 text-[18px] md:text-[28px] font-normal font-opus text-nowrap pb-3">
                 Practice Address
               </Label>
               <Controller
-                name="referralPracticeId"
+                name="referralPracticeNameAddress"
                 control={control}
                 render={({ field }) => (
                   <Dropdown
                     value={field.value}
                     onValueChange={(val) => {
-                      setValue("referralPracticeId", val || "", { shouldValidate: true });
+                      setValue("referralPracticeNameAddress", val || "", { shouldValidate: true });
                       field.onChange(val || "");
                     }}
                     options={
@@ -709,12 +709,24 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
                 )}
               />
 
-              {errors.referralPracticeId && (
+              {errors.referralPracticeNameAddress && (
                 <p className="text-lg text-red-500">
-                  {errors.referralPracticeId.message}
+                  {errors.referralPracticeNameAddress.message}
                 </p>
               )}
-            </div>
+            </div> */}
+
+            <FormInput
+              type="text"
+              name="referralPracticeNameAddress"
+              label=" Practice Address"
+              control={control}
+              errorMessage={errors.referralPracticeNameAddress?.message}
+              backgroundColor="#ECE8E3"
+              className="flex-1"
+              marginTop="50px"
+              padding="13px"
+            />
 
             <div className="mt-16">
               <p className="text-[18px] md:text-[25px] font-normal font-opus mb-4">

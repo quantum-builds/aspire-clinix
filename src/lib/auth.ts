@@ -3,6 +3,7 @@ import { AuthOptions } from "next-auth";
 import prisma from "@/lib/db";
 import { verifyPassword } from "@/utils/passwordUtils";
 import { UserRoles } from "@/types/common";
+import { getPatient } from "@/dentallyHelpers/patient";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -38,7 +39,9 @@ export const authOptions: AuthOptions = {
         }
 
         if (role === UserRoles.PATIENT) {
-          user = await prisma.patient.findUnique({ where: { email } });
+          const response = await getPatient({ emailAddress: email })
+          if (!response.isError)
+            user = response.response
           if (!user) throw new Error("No account found");
 
           const isValid = await verifyPassword(password, user.password);

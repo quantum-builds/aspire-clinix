@@ -4,6 +4,7 @@ import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
 import { createResponse } from "@/utils/createResponse";
 import { TokenRoles } from "@/constants/UserRoles";
+import { getPatientById } from "@/dentallyHelpers/patient";
 
 export async function GET(req: NextRequest) {
   const referralFormId = req.nextUrl.pathname.split("/").pop();
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest) {
 
     const referralForm = await prisma.referralForm.findUnique({
       where: { id: referralFormId },
-      include: { patient: true, referralDentist: true, referralRequest: true },
+      include: { referralDentist: true, referralRequest: true },
     });
 
     if (!referralForm) {
@@ -49,12 +50,20 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    let patient = null
+    if (referralForm.patientId) {
+      const respose = await getPatientById(referralForm?.patientId)
+      if (respose.isError) {
+        return respose.response
+      }
+      patient = respose.response
+    }
+
     return NextResponse.json(
-      createResponse(true, "Referral form fetched successfully.", referralForm),
+      createResponse(true, "Referral form fetched successfully.", { referralForm, patient }),
       { status: 200 }
     );
   } catch (error) {
-    console.log("Error in fetching referral form ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,
@@ -66,7 +75,10 @@ export async function PUT(req: NextRequest) {
   const referralFormId = req.nextUrl.pathname.split("/").pop();
 
   if (!referralFormId || !isValidCuid(referralFormId)) {
-    return NextResponse.json({ message: "Invalid Form Id." }, { status: 400 });
+    return NextResponse.json(
+      createResponse(false, "Invalid Form Id.", null),
+      { status: 400 }
+    );
   }
 
   try {
@@ -78,14 +90,14 @@ export async function PUT(req: NextRequest) {
     });
 
     return NextResponse.json(
-      { message: "Referral form updated successfully." },
+      createResponse(true, "Referral form updated successfully..", null),
       { status: 200 }
     );
   } catch (error) {
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 }
-    );
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(createResponse(false, errorMessage, null), {
+      status: 500,
+    });
   }
 }
 
@@ -95,7 +107,7 @@ export async function DELETE(req: NextRequest) {
   try {
     if (!referralFormId || !isValidCuid(referralFormId)) {
       return NextResponse.json(
-        { message: "Invalid Form Id." },
+        createResponse(false, "Invalid Form Id.", null),
         { status: 400 }
       );
     }
@@ -106,7 +118,7 @@ export async function DELETE(req: NextRequest) {
 
     if (!referralForm) {
       return NextResponse.json(
-        { message: "Referral form with this Id does not exists." },
+        createResponse(false, "Referral form with this Id does not exists.", null),
         { status: 404 }
       );
     }
@@ -116,13 +128,13 @@ export async function DELETE(req: NextRequest) {
     });
 
     return NextResponse.json(
-      { message: "Referral deleted successfully." },
+      createResponse(true, "Referral deleted successfully.", null),
       { status: 200 }
     );
-  } catch (err) {
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 }
-    );
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(createResponse(false, errorMessage, null), {
+      status: 500,
+    });
   }
 }

@@ -1,9 +1,9 @@
+import { buildAppointmentQuery } from "@/dentallyHelpers/appointment";
+import { ListAppointment } from "@/types/appointment";
 import { AppointmentDateType } from "@/types/common";
-import { convertCamelCaseToSnakeCase } from "@/utils/typeConventionConvertor";
-import { ReferralRequestStatus } from "@prisma/client";
+import { toCamel, toSnake } from "@/utils/typeConventionConvertor";
 import axios from "axios";
 
-const DENTALLY_BASE_URL = "https://api.dentally.co";
 
 export const ENDPOINTS = {
   auth: {
@@ -13,42 +13,6 @@ export const ENDPOINTS = {
   },
 
   patient: {
-    // create: `/v1/patients`,
-    // get: (id: string) => `/v1/patients/${id}`,
-    // put: (id: string) => `/v1/patients/${id}`,
-    // delete: (id: string) => `/v1/patients/${id}`,
-    // list: (queryParams: ListPatient) => {
-    //   const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
-
-    //   const queryString = new URLSearchParams(
-    //     Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
-    //       if (value !== undefined && value !== null) {
-    //         acc[key] =
-    //           value instanceof Date ? value.toISOString() : value.toString();
-    //       }
-    //       return acc;
-    //     }, {} as Record<string, string>)
-    //   ).toString();
-
-    //   return `/v1/patients?${queryString}`;
-    // },
-    // getStats: (id: string) => `v1/patients/${id}/stats`,
-    // listStats: (queryParams: ListPatientStats) => {
-    //   const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
-
-    //   const queryString = new URLSearchParams(
-    //     Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
-    //       if (value !== undefined && value !== null) {
-    //         acc[key] =
-    //           value instanceof Date ? value.toISOString() : value.toString();
-    //       }
-    //       return acc;
-    //     }, {} as Record<string, string>)
-    //   ).toString();
-
-    //   return `/v1/patient_stats?${queryString}`;
-    // },
-
     createPatient: "/api/patient",
     getPatient: (email?: string) => `/api/patient?email=${email ?? null}`,
     getById: (id: string) => `/api/patient/${id}`,
@@ -56,26 +20,9 @@ export const ENDPOINTS = {
   },
 
   dentist: {
-    // get: (id: string) => `/v1/practitioners/${id}`,
-    // put: (id: string) => `/v1/practitioners/${id}`,
-    // list: (queryParams: ListDentist) => {
-    //   const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
-
-    //   const queryString = new URLSearchParams(
-    //     Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
-    //       if (value !== undefined && value !== null) {
-    //         acc[key] =
-    //           value instanceof Date ? value.toISOString() : value.toString();
-    //       }
-    //       return acc;
-    //     }, {} as Record<string, string>)
-    //   ).toString();
-
-    //   return `/v1/practitioners?${queryString}`;
-    // },
-    createDentist: "/api/dentist",
-    getDentist: `/api/dentist`,
-    editDentist: `/api/dentist`,
+    createDentist: "/api/referral-dentist",
+    getDentist: `/api/referral-dentist`,
+    editDentist: `/api/referral-dentist`,
   },
 
   admin: {
@@ -83,44 +30,6 @@ export const ENDPOINTS = {
     getAdmin: "/api/admin",
     editAdmin: "/api/admin",
   },
-
-  // appointment: {
-  //   create: "/v1/appointments",
-  //   get: (id: number) => `/v1/appointments/${id}`,
-  //   put: (id: number) => `/v1/appointments/${id}`,
-  //   delete: (id: number) => `/v1/appointments/${id}`,
-  //   reason: (deleted: boolean) => `/v1/appointment_reasons/${deleted}`,
-  //   list: (queryParams: ListAppointment) => {
-  //     const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
-
-  //     const queryString = new URLSearchParams(
-  //       Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
-  //         if (value !== undefined && value !== null) {
-  //           acc[key] =
-  //             value instanceof Date ? value.toISOString() : value.toString();
-  //         }
-  //         return acc;
-  //       }, {} as Record<string, string>)
-  //     ).toString();
-
-  //     return `/v1/appointments?${queryString}`;
-  //   },
-  //   available: (queryParams: ListAppointment) => {
-  //     const snakeCaseParams = convertCamelCaseToSnakeCase(queryParams);
-
-  //     const queryString = new URLSearchParams(
-  //       Object.entries(snakeCaseParams).reduce((acc, [key, value]) => {
-  //         if (value !== undefined && value !== null) {
-  //           acc[key] =
-  //             value instanceof Date ? value.toISOString() : value.toString();
-  //         }
-  //         return acc;
-  //       }, {} as Record<string, string>)
-  //     ).toString();
-
-  //     return `/v1/appointments/availability?${queryString}`;
-  //   },
-  // },
 
   plan: {
     getAll: "/api/plans",
@@ -199,7 +108,7 @@ export const ENDPOINTS = {
       `/api/resources?page=${page}&fileType=${fileType}&search=${search}&on=${on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}`,
     create: "/api/resources",
-    delete:(id:string)=> `/api/resources/${id}`
+    delete: (id: string) => `/api/resources/${id}`
   },
 
   practices: {
@@ -298,9 +207,54 @@ export const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+export const DENTALLY_ENDPOINTS = {
+  patient: {
+    create: `patients`,
+    get: (patientId: string) => `patients/${patientId}`,
+    edit: (patientId: string) => `patients/${patientId}`,
+    delete: (patientId: string) => `patients/${patientId}`,
+    list: (query?: string) =>
+      query ? `patients?query=${encodeURIComponent(query)}` : `patients`,
+  },
+  practitioner: {
+    get: (practitionerId: string) => `practitioners/${practitionerId}`,
+    edit: (practitionerId: string) => `practitioners/${practitionerId}`,
+    list: (dentallyParams: URLSearchParams) => `practitioners?${dentallyParams.toString()}`
+  },
+  appointment: {
+    create: "appointments",
+    list: (params?: ListAppointment): string => {
+      return `appointments${buildAppointmentQuery(params)}`;
+    },
+  }
+};
+
+const DENTALLY_BASE_URL = process.env.DENTALLY_ENDPOINT;
+const DENTALLY_TOKEN = process.env.DENTALLY_TOKEN
+
 export const axiosDentallyInstance = axios.create({
   baseURL: DENTALLY_BASE_URL,
   headers: {
     "Content-Type": "application/json",
+    "Authorization": `Bearer ${DENTALLY_TOKEN}`,
+    "User-Agent": "MyApp/1.0"
   },
+});
+
+
+axiosDentallyInstance.interceptors.request.use(async (config) => {
+  if (config.data) {
+    config.data = toSnake(config.data);
+  }
+  if (config.params) {
+    config.params = toSnake(config.params);
+  }
+  return config;
+});
+
+axiosInstance.interceptors.response.use((response) => {
+  if (response.data) {
+    response.data = toCamel(response.data);
+  }
+  return response;
 });

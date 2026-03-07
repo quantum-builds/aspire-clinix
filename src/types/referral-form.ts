@@ -50,7 +50,7 @@ export type TCreateReferralForm = {
   other?: string;
   treatmentDetails?: string;
 
-  referralPracticeId: string;
+  referralPracticeNameAddress: string;
   referralEmail: string;
   referralGDC: string;
   referralPhoneNumber: string;

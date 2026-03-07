@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { DentistRole } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
+import { getPatient } from "@/dentallyHelpers/patient";
 
 export async function GET(req: NextRequest) {
   try {
@@ -85,9 +86,11 @@ export async function POST(req: NextRequest) {
       where: { OR: [{ email }, { phoneNumber }] },
     });
 
-    const existingPatient = await prisma.patient.findFirst({
-      where: { OR: [{ email }, { phoneNumber }] },
-    });
+    const respose = await getPatient({ emailAddress: email, mobilePhone: phoneNumber })
+    if (respose.isError) {
+      return respose.response
+    }
+    const existingPatient = respose.response
 
     const existingAdmin = await prisma.admin.findFirst({
       where: { OR: [{ email }, { phoneNumber }] },
@@ -103,7 +106,7 @@ export async function POST(req: NextRequest) {
 
     if (existingPatient) {
       if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingPatient.mobilePhone === phoneNumber) conflicts.push("phone number");
     }
 
     if (existingAdmin) {
@@ -211,11 +214,11 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    const existingPatient = await prisma.patient.findFirst({
-      where: {
-        OR: [{ email: email }, { phoneNumber: phoneNumber }],
-      },
-    });
+    const respose = await getPatient({ emailAddress: email, mobilePhone: phoneNumber })
+    if (respose.isError) {
+      return respose.response
+    }
+    const existingPatient = respose.response
 
     const existingAdmin = await prisma.admin.findFirst({
       where: {
@@ -240,7 +243,7 @@ export async function PATCH(req: NextRequest) {
 
     if (existingPatient) {
       if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingPatient.mobilePhone === phoneNumber) conflicts.push("phone number");
     }
 
     if (existingAdmin) {

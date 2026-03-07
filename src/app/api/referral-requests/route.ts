@@ -189,7 +189,6 @@ export async function GET(req: NextRequest) {
             OR: [
               { referralForm: { patientName: { contains: search, mode: "insensitive" } } },
               { referralForm: { referralName: { contains: search, mode: "insensitive" } } },
-              { assignedDentist: { fullName: { contains: search, mode: "insensitive" } } },
             ],
           }),
         },
@@ -207,7 +206,7 @@ export async function GET(req: NextRequest) {
         skip,
         take: limit,
         orderBy: { createdAt: "desc" },
-        include: { referralForm: true, assignedDentist: true },
+        include: { referralForm: true },
       }),
       prisma.referralRequest.count({ where: baseWhere }),
     ]);
@@ -231,7 +230,6 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.log("Error in fetching referral request ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

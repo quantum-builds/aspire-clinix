@@ -4,6 +4,7 @@ import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
+import { createPatient, getPatient, getPatientById, getPatients, patchPatientById } from "@/dentallyHelpers/patient";
 
 export async function GET(req: NextRequest) {
   try {
@@ -16,10 +17,14 @@ export async function GET(req: NextRequest) {
     }
 
     if (token.role === TokenRoles.PATIENT) {
-      const patientId = token.sub;
-      const patient = await prisma.patient.findUnique({
-        where: { id: patientId },
-      });
+      const patientId = token.sub ?? "";
+
+      const respose = await getPatientById(patientId)
+      if (respose.isError) {
+        return respose.response
+      }
+      const patient = respose.response
+
       if (!patient) {
         return NextResponse.json(
           createResponse(false, "No Patient found", patient),
@@ -39,7 +44,13 @@ export async function GET(req: NextRequest) {
       const email = decodeURIComponent(emailParam);
       console.log("email is ", email)
       if (email.trim().length > 0) {
-        const patient = await prisma.patient.findUnique({ where: { email: email } })
+
+        const respose = await getPatient({ emailAddress: email })
+        if (respose.isError) {
+          return respose.response
+        }
+        const patient = respose.response
+
         if (!patient) {
           return NextResponse.json(
             createResponse(false, "No Patient found", patient),
@@ -52,7 +63,11 @@ export async function GET(req: NextRequest) {
           { status: 200 }
         );
       } else {
-        const patients = await prisma.patient.findMany({});
+        const respose = await getPatients()
+        if (respose.isError) {
+          return respose.response
+        }
+        const patients = respose.response
 
         if (patients.length < 1) {
           return NextResponse.json(
@@ -84,17 +99,20 @@ export async function POST(req: NextRequest) {
     const email = patient.email;
     const phoneNumber = patient.phoneNumber;
 
+    const { searchParams } = new URL(req.url);
+    const shouldConnectReferralsParam = searchParams.get("shouldConnectReferrals") || "";
+
     const existingDentist = await prisma.dentist.findFirst({
       where: {
         OR: [{ email: patient.email }, { phoneNumber: patient.phoneNumber }],
       },
     });
 
-    const existingPatient = await prisma.patient.findFirst({
-      where: {
-        OR: [{ email: patient.email }, { phoneNumber: patient.phoneNumber }],
-      },
-    });
+    const respose = await getPatient({ emailAddress: email, mobilePhone: phoneNumber })
+    if (respose.isError) {
+      return respose.response
+    }
+    const existingPatient = respose.response
 
     const existingAdmin = await prisma.admin.findFirst({
       where: {
@@ -117,7 +135,7 @@ export async function POST(req: NextRequest) {
 
     if (existingPatient) {
       if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingPatient.mobilePhone === phoneNumber) conflicts.push("phone number");
     }
 
     if (existingAdmin) {
@@ -138,20 +156,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const referralForms = await prisma.referralForm.findMany({
-      where: { patientEmail: patient.email },
-      select: { id: true },
-    });
+    const createPatientRespose = await createPatient(patient)
+    if (createPatientRespose.isError) {
+      return createPatientRespose.response
+    }
+    const newPatient = createPatientRespose.response
 
-    const hashedPassword = await bcrypt.hash(patient.password, 10);
-
-    const newPatient = await prisma.patient.create({
-      data: {
-        ...patient,
-        password: hashedPassword,
-        referralForms: { connect: referralForms.map((r) => ({ id: r.id })) },
-      },
-    });
+    if (shouldConnectReferralsParam) {
+      if (shouldConnectReferralsParam) {
+        await prisma.referralForm.updateMany({
+          where: {
+            patientEmail: patient.email,
+            patientId: null, 
+          },
+          data: {
+            patientId: newPatient.id,
+          },
+        })
+      }
+    }
 
     return NextResponse.json(
       createResponse(true, "Patient registered successfully", newPatient),
@@ -182,12 +205,15 @@ export async function PATCH(req: NextRequest) {
       });
     }
 
-    const patientId = token.sub;
-    const patients = await prisma.patient.findUnique({
-      where: { id: patientId },
-    });
+    const patientId = token.sub ?? "";
 
-    if (!patients) {
+    const patientByIdRespose = await getPatientById(patientId)
+    if (patientByIdRespose.isError) {
+      return patientByIdRespose.response
+    }
+    const patient = patientByIdRespose.response
+
+    if (!patient) {
       return NextResponse.json(
         createResponse(false, "No Patient found", null),
         { status: 404 }
@@ -204,11 +230,11 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    const existingPatient = await prisma.patient.findFirst({
-      where: {
-        OR: [{ email: email }, { phoneNumber: phoneNumber }],
-      },
-    });
+    const patientRespose = await getPatient({ emailAddress: email, mobilePhone: phoneNumber })
+    if (patientRespose.isError) {
+      return patientRespose.response
+    }
+    const existingPatient = patientRespose.response
 
     const existingAdmin = await prisma.admin.findFirst({
       where: {
@@ -232,7 +258,7 @@ export async function PATCH(req: NextRequest) {
 
     if (existingPatient) {
       if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingPatient.mobilePhone === phoneNumber) conflicts.push("phone number");
     }
 
     if (existingAdmin) {
@@ -253,10 +279,11 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const updatedPatient = await prisma.patient.update({
-      where: { id: patientId },
-      data: partialPatient,
-    });
+    const respose = await patchPatientById(patientId, partialPatient)
+    if (respose.isError) {
+      return respose.response
+    }
+    const updatedPatient = respose.response
 
     return NextResponse.json(
       createResponse(true, "Patient is updated successfully", updatedPatient),

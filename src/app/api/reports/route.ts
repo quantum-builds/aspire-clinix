@@ -36,14 +36,14 @@ export async function GET(req: NextRequest) {
     const videos = await prisma.report.findMany({
       where: { ...baseWhere, fileType: "VIDEO" },
       orderBy: { createdAt: "desc" },
-      include: { patient: true, dentist: true },
+      include: { dentist: true },
     });
 
     // fetch pdfs
     const pdfs = await prisma.report.findMany({
       where: { ...baseWhere, fileType: "PDF" },
       orderBy: { createdAt: "desc" },
-      include: { patient: true, dentist: true },
+      include: { dentist: true },
     });
 
     if (!videos.length && !pdfs.length) {

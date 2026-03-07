@@ -1,55 +1,42 @@
 import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { createResponse } from "@/utils/createResponse";
-import { DentistRole, ReferralRequestStatus } from "@prisma/client";
+import { ReferralRequestStatus } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
+import { getPatient } from "@/dentallyHelpers/patient";
 
 export async function POST(req: NextRequest) {
 
   const referralForm = await req.json();
   try {
     const patientEmail = referralForm.patientEmail;
-    console.log("patient email", patientEmail)
-    const patient = await prisma.patient.findUnique({
-      where: { email: patientEmail },
-    });
 
-    console.log("patient", patient)
-
+    const respose = await getPatient({ emailAddress: patientEmail })
+    
+    let patient = null
+    if (!respose.isError) {
+      patient = respose.response
+    }
+    if (patient) {
+      referralForm.patientId = patient.id;
+    }
 
     const referralEmail = referralForm.referralEmail;
-    console.log("referral email", referralEmail)
 
     const referralDentist = await prisma.dentist.findUnique({
       where: { email: referralEmail },
     });
 
-    console.log("referral ", referralDentist)
-
-
     if (referralDentist) {
-      if (referralDentist.role === DentistRole.RECIEVING_DENTIST) {
-        await prisma.dentist.update({
-          where: { id: referralDentist.id },
-          data: { role: DentistRole.DENTIST },
-        });
-      }
       referralForm.referralDentistId = referralDentist.id;
     }
 
-    if (patient) {
-      referralForm.patientId = patient.id;
-    }
 
-    console.log("Referral form is ", referralForm)
+
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({
         data: referralForm,
-        include: {
-          referralDentist: true,
-          patient: true
-        }
       });
 
       await tx.referralRequest.create({
@@ -66,7 +53,6 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.log("Error in creating referral form ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,
@@ -121,7 +107,6 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.log("Error in fetching referral forms ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,
