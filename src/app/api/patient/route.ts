@@ -4,16 +4,21 @@ import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
-import { createPatient, getPatient, getPatientById, getPatients, patchPatientById } from "@/dentallyHelpers/patient";
+import {
+  getPatient,
+  getPatientById,
+  getPatients,
+  patchPatientById,
+} from "@/dentallyHelpers/patient";
 
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
 
     if (!token) {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
+        return NextResponse.json(createResponse(false, "Unauthorized", null), {
+          status: 401,
+        });
     }
 
     if (token.role === TokenRoles.PATIENT) {
@@ -93,102 +98,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const patient = await req.json();
-    const email = patient.email;
-    const phoneNumber = patient.phoneNumber;
-
-    const { searchParams } = new URL(req.url);
-    const shouldConnectReferralsParam = searchParams.get("shouldConnectReferrals") || "";
-
-    const existingDentist = await prisma.dentist.findFirst({
-      where: {
-        OR: [{ email: patient.email }, { phoneNumber: patient.phoneNumber }],
-      },
-    });
-
-    const respose = await getPatient({ emailAddress: email, mobilePhone: phoneNumber })
-    if (respose.isError) {
-      return respose.response
-    }
-    const existingPatient = respose.response
-
-    const existingAdmin = await prisma.admin.findFirst({
-      where: {
-        OR: [{ email: patient.email }, { phoneNumber: patient.phoneNumber }],
-      },
-    });
-
-    // if (existingDentist || existingPatient || existingAdmin) {
-    //   return NextResponse.json(
-    //     createResponse(false, "User data already exists", null),
-    //     { status: 400 }
-    //   );
-    // }
-    const conflicts: string[] = [];
-
-    if (existingDentist) {
-      if (existingDentist.email === email) conflicts.push("email");
-      if (existingDentist.phoneNumber === phoneNumber) conflicts.push("phone number");
-    }
-
-    if (existingPatient) {
-      if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.mobilePhone === phoneNumber) conflicts.push("phone number");
-    }
-
-    if (existingAdmin) {
-      if (existingAdmin.email === email) conflicts.push("email");
-      if (existingAdmin.phoneNumber === phoneNumber) conflicts.push("phone number");
-    }
-
-    const uniqueConflicts = Array.from(new Set(conflicts));
-
-    if (uniqueConflicts.length > 0) {
-      return NextResponse.json(
-        createResponse(
-          false,
-          `These fields are already in use: ${uniqueConflicts.join(", ")}`,
-          null
-        ),
-        { status: 400 }
-      );
-    }
-
-    const createPatientRespose = await createPatient(patient)
-    if (createPatientRespose.isError) {
-      return createPatientRespose.response
-    }
-    const newPatient = createPatientRespose.response
-
-    if (shouldConnectReferralsParam) {
-      if (shouldConnectReferralsParam) {
-        await prisma.referralForm.updateMany({
-          where: {
-            patientEmail: patient.email,
-            patientId: null, 
-          },
-          data: {
-            patientId: newPatient.id,
-          },
-        })
-      }
-    }
-
-    return NextResponse.json(
-      createResponse(true, "Patient registered successfully", newPatient),
-      { status: 201 }
-    );
-  } catch (error) {
-    console.log("Error in creating patient ", error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(createResponse(false, errorMessage, null), {
-      status: 500,
-    });
-  }
-}
-
 export async function PATCH(req: NextRequest) {
   try {
     const token = await getToken({ req });
@@ -207,16 +116,16 @@ export async function PATCH(req: NextRequest) {
 
     const patientId = token.sub ?? "";
 
-    const patientByIdRespose = await getPatientById(patientId)
+    const patientByIdRespose = await getPatientById(patientId);
     if (patientByIdRespose.isError) {
-      return patientByIdRespose.response
+      return patientByIdRespose.response;
     }
-    const patient = patientByIdRespose.response
+    const patient = patientByIdRespose.response;
 
     if (!patient) {
       return NextResponse.json(
         createResponse(false, "No Patient found", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -230,11 +139,14 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    const patientRespose = await getPatient({ emailAddress: email, mobilePhone: phoneNumber })
+    const patientRespose = await getPatient({
+      emailAddress: email,
+      mobilePhone: phoneNumber,
+    });
     if (patientRespose.isError) {
-      return patientRespose.response
+      return patientRespose.response;
     }
-    const existingPatient = patientRespose.response
+    const existingPatient = patientRespose.response;
 
     const existingAdmin = await prisma.admin.findFirst({
       where: {
@@ -253,17 +165,20 @@ export async function PATCH(req: NextRequest) {
 
     if (existingDentist) {
       if (existingDentist.email === email) conflicts.push("email");
-      if (existingDentist.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingDentist.phoneNumber === phoneNumber)
+        conflicts.push("phone number");
     }
 
     if (existingPatient) {
       if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.mobilePhone === phoneNumber) conflicts.push("phone number");
+      if (existingPatient.mobilePhone === phoneNumber)
+        conflicts.push("phone number");
     }
 
     if (existingAdmin) {
       if (existingAdmin.email === email) conflicts.push("email");
-      if (existingAdmin.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingAdmin.phoneNumber === phoneNumber)
+        conflicts.push("phone number");
     }
 
     const uniqueConflicts = Array.from(new Set(conflicts));
@@ -273,21 +188,21 @@ export async function PATCH(req: NextRequest) {
         createResponse(
           false,
           `These fields are already in use: ${uniqueConflicts.join(", ")}`,
-          null
+          null,
         ),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const respose = await patchPatientById(patientId, partialPatient)
+    const respose = await patchPatientById(patientId, partialPatient);
     if (respose.isError) {
-      return respose.response
+      return respose.response;
     }
-    const updatedPatient = respose.response
+    const updatedPatient = respose.response;
 
     return NextResponse.json(
       createResponse(true, "Patient is updated successfully", updatedPatient),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in updated patient", error);

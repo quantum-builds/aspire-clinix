@@ -17,10 +17,10 @@ export default async function UpcomingAppointments(props: {
 }) {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
-  const status = searchParams?.status || "";
+  const status = searchParams?.status || AppointmentStatus.CONFIRMED;
   const on = searchParams?.on || "";
   const before = searchParams?.before || "";
-  const after = searchParams?.after || "";
+  const after = searchParams?.after || (new Date()).toISOString();
 
   return (
     <div className="min-h-[103vh] flex flex-col gap-5">

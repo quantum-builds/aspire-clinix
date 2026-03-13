@@ -16,7 +16,9 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email) throw new Error("Email is required");
-        if (!credentials?.password || !credentials?.role)
+        if (!credentials?.role)
+          throw new Error("Password and role are required");
+        if (!credentials.password && credentials.role !== UserRoles.PATIENT)
           throw new Error("Password and role are required");
 
         const { email, password, role } = credentials;
@@ -39,13 +41,12 @@ export const authOptions: AuthOptions = {
         }
 
         if (role === UserRoles.PATIENT) {
-          const response = await getPatient({ emailAddress: email })
-          if (!response.isError)
-            user = response.response
+          console.log("1")
+          const response = await getPatient({ emailAddress: email });
+          console.log("2")
+          if (!response.isError) user = response.response[0]; //TODO : UNIQUENCE CHECK IS PENDING
+          console.log("USER",user)
           if (!user) throw new Error("No account found");
-
-          const isValid = await verifyPassword(password, user.password);
-          if (!isValid) throw new Error("Invalid credentials");
 
           return {
             id: user.id,

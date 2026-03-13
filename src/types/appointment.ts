@@ -26,6 +26,7 @@ export type TAppointmentPagination = {
 };
 
 export type TAppointmentResponse = {
+  appointmentRequests: any;
   appointments: TAppointment[];
   pagination: TAppointmentPagination;
 };
@@ -129,7 +130,7 @@ enum AppointmentReason {
   OTHER = "Other",
 }
 
-enum AppointmentState {
+export enum AppointmentState {
   PENDING = "Pending",
   CONFIRMED = "Confirmed",
   ARRIVED = "Arrived",

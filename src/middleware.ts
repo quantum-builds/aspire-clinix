@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   console.log("pathname ", pathname)
   // Define public routes
-  const patientPublic = ["/patient/login", "/patient/register"];
+  const patientPublic = ["/patient/login"];
   const dentistPublic = ["/dentist/login", "/dentist/register"];
   const clinicPublic = ["/clinic/login", "/clinic/register"];
 

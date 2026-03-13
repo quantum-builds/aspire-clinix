@@ -63,10 +63,10 @@ export default function MediaUploadPage() {
           setMediaFiles(data.url);
         }
       } else {
-        console.error("Failed to fetch files");
+        // console.error("Failed to fetch files");
       }
     } catch (error) {
-      console.error("Fetch error:", error);
+      // console.error("Fetch error:", error);
     }
   };
 

@@ -10,7 +10,7 @@ export const loginMutation = () => {
       role,
     }: {
       email: string;
-      password: string;
+      password?: string;
       role: UserRoles;
     }) => {
       const result = await signIn("credentials", {

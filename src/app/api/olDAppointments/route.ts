@@ -36,8 +36,8 @@ export async function GET(req: NextRequest) {
     const after = searchParams.get("after") || "";
     const updatedAfter = searchParams.get("updated_after") || "";
     const practitionerId = searchParams.get("practitioner_id") || "";
-
     const page = parseInt(searchParams.get("page") || "1", 10);
+
     const search = searchParams.get("search") || "";
     const dateType = searchParams.get("dateType") as AppointmentDateType | null;
     const statusParam = searchParams.get("status") || "";

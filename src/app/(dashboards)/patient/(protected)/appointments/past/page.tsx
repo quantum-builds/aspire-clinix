@@ -19,7 +19,7 @@ export default async function PastAppointments(props: {
   const query = searchParams?.query || "";
   const status = searchParams?.status || "";
   const on = searchParams?.on || "";
-  const before = searchParams?.before || "";
+  const before = searchParams?.before || (new Date()).toISOString();
   const after = searchParams?.after || "";
   const page = Number(searchParams?.page) || 1;
 
