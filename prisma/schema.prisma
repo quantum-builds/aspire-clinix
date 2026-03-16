@@ -115,6 +115,19 @@ model Admin {
   updatedAt DateTime @updatedAt
 }
 
+model OtpToken {
+  id         Int      @id @default(autoincrement())
+  patientId  String?  
+  dentistId  String?  
+  otp        String   @db.VarChar(6)
+  expiresAt  DateTime
+  used       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([patientId])
+  @@index([dentistId])
+}
+
 model Practice {
   id           String  @id @default(cuid())
   email        String  @unique

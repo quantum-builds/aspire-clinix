@@ -21,20 +21,4 @@ export const usePatchPatient = () => {
   });
 };
 
-export const useCreatePatient = () => {
-  return useMutation({
-    mutationFn: async ({
-      patientCreate,
-    }: {
-      patientCreate: TPatientCreate;
-    }) => {
-      const response = await axiosInstance.post(
-        ENDPOINTS.patient.createPatient,
-        patientCreate
-      );
 
-      const patient: TPatient = response.data.data;
-      return patient;
-    },
-  });
-};
