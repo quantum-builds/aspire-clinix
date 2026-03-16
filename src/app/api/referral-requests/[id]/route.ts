@@ -4,6 +4,7 @@ import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import { tuple } from "zod";
 
 export async function GET(req: NextRequest) {
   try {
@@ -29,19 +30,22 @@ export async function GET(req: NextRequest) {
     if (!referralRequestId || !isValidCuid(referralRequestId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Referral Request.", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const existingRequest = await prisma.referralRequest.findUnique({
       where: { id: referralRequestId },
-      include: { referralForm: true, appointments: { include: { dentist: true } } },
+      include: {
+        referralForm: true,
+        appointments: { include: { dentist: true } },
+      },
     });
 
     if (!existingRequest) {
       return NextResponse.json(
         createResponse(false, "Referral Request does not exist.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -49,9 +53,9 @@ export async function GET(req: NextRequest) {
       createResponse(
         true,
         "Referral request fetched successfully.",
-        existingRequest
+        existingRequest,
       ),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -60,7 +64,6 @@ export async function GET(req: NextRequest) {
     });
   }
 }
-
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -83,7 +86,7 @@ export async function PATCH(req: NextRequest) {
     if (!referralRequestId || !isValidCuid(referralRequestId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Referral Request id.", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -94,7 +97,7 @@ export async function PATCH(req: NextRequest) {
     if (!referral) {
       return NextResponse.json(
         createResponse(false, "Referral request does not exist.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -107,9 +110,9 @@ export async function PATCH(req: NextRequest) {
       createResponse(
         true,
         "Referral request Updated successfully.",
-        updatedReferralRequest
+        updatedReferralRequest,
       ),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -131,30 +134,47 @@ export async function DELETE(req: NextRequest) {
       });
     }
 
-    if (token.role !== TokenRoles.ADMIN && token.role !== TokenRoles.DENTIST && token.role !== TokenRoles.REFERRING_DENTIST) {
+    if (
+      token.role !== TokenRoles.ADMIN &&
+      token.role !== TokenRoles.DENTIST &&
+      token.role !== TokenRoles.REFERRING_DENTIST
+    ) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
     }
 
     if (!referralRequestId || !isValidCuid(referralRequestId)) {
-      return NextResponse.json(createResponse(false, "Invalid Request Id.", null), {
-        status: 400,
-      });
+      return NextResponse.json(
+        createResponse(false, "Invalid Request Id.", null),
+        {
+          status: 400,
+        },
+      );
     }
 
     const referralRequest = await prisma.referralRequest.findUnique({
       where: { id: referralRequestId },
-      include: { referralForm: true }
+      include: { referralForm: true },
     });
 
     if (!referralRequest) {
-      return NextResponse.json(createResponse(false, "Referral request with this Id does not exists.", null), {
-        status: 404,
-      });
+      return NextResponse.json(
+        createResponse(
+          false,
+          "Referral request with this Id does not exists.",
+          null,
+        ),
+        {
+          status: 404,
+        },
+      );
     }
 
-    if (token.role !== TokenRoles.ADMIN && referralRequest.referralForm.referralDentistId != token.sub) {
+    if (
+      token.role !== TokenRoles.ADMIN &&
+      referralRequest.referralForm.referralDentistId != token.sub
+    ) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
@@ -175,9 +195,12 @@ export async function DELETE(req: NextRequest) {
       }
     });
 
-    return NextResponse.json(createResponse(false, "Referral deleted successfully.", null), {
-      status: 403,
-    });
+    return NextResponse.json(
+      createResponse(true, "Referral deleted successfully.", null),
+      {
+        status: 200,
+      },
+    );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
