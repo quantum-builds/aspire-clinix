@@ -196,7 +196,7 @@ export async function DELETE(req: NextRequest) {
     });
 
     return NextResponse.json(
-      createResponse(true,"Referral deleted successfully.", null),
+      createResponse(true,"Referral deleted successfully.",null),
       {
         status: 200,
       },
