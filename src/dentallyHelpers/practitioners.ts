@@ -8,7 +8,7 @@ export async function gettPractitionerById(practitionerId: string) {
   return dentallyErrorHelper(response, DATA_TYPE.PRACTITIONER);
 }
 
-export async function getPractitioners(email: string, gdcNumber: string) {
+export async function getPractitioners() {
   const siteId = process.env.DENTALLY_SITE_ID;
 
   if (!siteId) {

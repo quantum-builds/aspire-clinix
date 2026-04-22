@@ -84,6 +84,9 @@ model Dentist {
   email String @unique
 
   gdcNo               String    @unique
+  dentallyId          String    @unique
+  firstName           String
+  lastName            String
   otp                 String?
   otpInvalidationTime DateTime?
 
@@ -97,11 +100,6 @@ model Dentist {
   referralForms ReferralForm[]
 }
 
-/**
- * Use Random UUID stored in metadata as a thing to get the id and uuid.
- * Always make a new patient from Aspire Portal not from dentally.
- * Generate a RandomUUID and store that in the dentally to.
- */
 model Patient {
   id           String  @id
   uuid         String  @unique

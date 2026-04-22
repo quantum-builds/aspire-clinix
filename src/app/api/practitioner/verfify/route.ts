@@ -17,7 +17,7 @@ export default async function POST(req: NextRequest) {
       );
     }
 
-    const response = await getPractitioners(email, gdcNumber);
+    const response = await getPractitioners();
 
     if (response.isError) {
       return NextResponse.json(
@@ -32,9 +32,9 @@ export default async function POST(req: NextRequest) {
     const filteredPractitioners = (response.response ?? []).filter(
       (practitioner: any) =>
         practitioner?.user?.email?.trim?.().toLowerCase?.() ===
-          normalizedEmail &&
+        normalizedEmail &&
         practitioner?.gdc_Number?.trim?.().toLowerCase?.() ===
-          normalizedGdcNumber,
+        normalizedGdcNumber,
     );
 
     if (filteredPractitioners.length === 0) {
@@ -74,6 +74,9 @@ export default async function POST(req: NextRequest) {
         data: {
           email: normalizedEmail,
           gdcNo: normalizedGdcNumber,
+          dentallyId: matchedPractitioner.id,
+          firstName: matchedPractitioner.user.first_name,
+          lastName: matchedPractitioner.use.last_name,
           otp,
           otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
         },

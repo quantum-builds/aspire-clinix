@@ -4,10 +4,6 @@ import prisma from "@/lib/db";
 import { verifyPassword } from "@/utils/passwordUtils";
 import { UserRoles } from "@/types/common";
 import { getPatient } from "@/dentallyHelpers/patient";
-import { getPractitioners } from "@/dentallyHelpers/practitioners";
-import sendgrid from "@/config/sendgrid-config";
-
-import { generateOtp } from "@/utils/generateOtp";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -16,7 +12,7 @@ export const authOptions: AuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        gdcNumber: { label: "GdcNumber", type: "gdcNumber" },
+        otp: { label: "Otp", type: "otp" },
         firstName: { label: "FirstName", type: "firstName" },
         lastName: { label: "LastName", type: "lastName" },
         mobilePhone: { label: "MobilePhone", type: "mobilePhone" },
@@ -38,8 +34,8 @@ export const authOptions: AuthOptions = {
             throw new Error("Date Of Birth is required");
           }
         } else if (credentials.role === UserRoles.DENTIST) {
-          if (!credentials?.gdcNumber) {
-            throw new Error("GDC number is required for dentist login");
+          if (!credentials?.otp) {
+            throw new Error("Otp is required for dentist login");
           }
           if (!credentials?.email) {
             throw new Error("Email is required for dentist login");
@@ -102,93 +98,26 @@ export const authOptions: AuthOptions = {
         }
 
         if (role === UserRoles.DENTIST) {
-          const { email, gdcNumber } = credentials;
-          const response = await getPractitioners(email, gdcNumber);
+          const { email, otp } = credentials;
 
-          if (response.isError) {
+          let dentist = null
+          try {
+            dentist = await prisma.dentist.findUnique({ where: { email } })
+          } catch (error) {
+            throw new Error(`Error in getting dentist with email ${email}`);
+          }
+          if (!dentist) {
             throw new Error("No account found");
           }
 
-          const normalizedEmail = email.trim().toLowerCase();
-          const normalizedGdcNumber = gdcNumber.trim().toLowerCase();
-
-          const filteredPractitioners = (response.response ?? []).filter(
-            (practitioner: any) =>
-              practitioner?.user?.email?.trim?.().toLowerCase?.() ===
-                normalizedEmail &&
-              practitioner?.gdc_Number?.trim?.().toLowerCase?.() ===
-                normalizedGdcNumber,
-          );
-
-          if (filteredPractitioners.length === 0) {
-            throw new Error("No account found with these details");
+          if (dentist.otp !== otp || !dentist.otpInvalidationTime || dentist.otpInvalidationTime < new Date()) {
+            throw new Error("Invalid Otp")
           }
 
-          if (filteredPractitioners.length > 1) {
-            throw new Error(
-              "Multiple accounts found. Please contact Aspire support.",
-            );
-          }
-
-          const matchedPractitioner = filteredPractitioners[0];
-          const firstName =
-            matchedPractitioner?.user?.first_name?.trim?.() ?? "";
-          const lastName = matchedPractitioner?.user?.last_name?.trim?.() ?? "";
-          const fullName = `${firstName} ${lastName}`.trim() || normalizedEmail;
-          const otp = generateOtp();
-
-          const existingDentist = await prisma.dentist.findFirst({
-            where: {
-              email: normalizedEmail,
-              gdcNo: normalizedGdcNumber,
-            },
-          });
-
-          if (!existingDentist) {
-            user = await prisma.dentist.create({
-              data: {
-                email: normalizedEmail,
-                gdcNo: normalizedGdcNumber,
-                otp,
-                otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
-              },
-            });
-          } else {
-            user = await prisma.dentist.update({
-              where: { id: existingDentist.id },
-              data: {
-                otp,
-                otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
-              },
-            });
-          }
-
-          const html = `
-            <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
-              <p>Hi ${fullName},</p>
-              <p>Your one-time password is:</p>
-              <div style="font-size: 24px; font-weight: 700; letter-spacing: 4px; margin: 16px 0;">
-                ${otp}
-              </div>
-              <p>This code expires in 15 minutes.</p>
-            </div>
-          `;
-
-          if (!process.env.EMAIL_FROM) {
-            throw new Error("EMAIL_FROM environment variable is not set");
-          }
-
-          await sendgrid.send({
-            from: process.env.EMAIL_FROM,
-            to: normalizedEmail,
-            subject: "Your Aspire OTP code",
-            html,
-            text: undefined,
-          });
-
+          const fullName = `${dentist.firstName} ${dentist.lastName}`.trim()
           return {
-            id: user.id,
-            email: user.email,
+            id: dentist.id,
+            email: dentist.email,
             role: UserRoles.DENTIST,
             name: fullName,
             image: null,

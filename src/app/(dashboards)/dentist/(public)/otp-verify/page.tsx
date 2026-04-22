@@ -8,7 +8,11 @@ import Image from "next/image";
 import { TextIconV2 } from "@/assets";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { z } from "zod";
-import { useVerifyDentist } from "@/services/dentist/dentistMutation";
+import { loginMutation } from "@/services/LoginMutation";
+import { UserRoles } from "@/types/common";
+import { useSearchParams, useRouter } from "next/navigation";
+import { showToast } from "@/utils/defaultToastOptions";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 export const dentistsSchema = z.object({
   otp: z.string().min(1, "OTP is required"),
@@ -16,9 +20,13 @@ export const dentistsSchema = z.object({
 
 type FormData = z.infer<typeof dentistsSchema>;
 
-export default function DentistLoginForm() {
-  const { mutate: verifyDentist, isPending: verifyDentistLoader } =
-    useVerifyDentist();
+export default function DentsitOtpVerfiy() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const email = searchParams.get("email") || "";
+
+  const { mutate: dentistLogin, isPending: dentistLoginLoader } =
+    loginMutation();
 
   const {
     register,
@@ -31,11 +39,27 @@ export default function DentistLoginForm() {
     },
   });
 
-  const onSubmit = async (data: FormData) => {
-    console.log(data);
+ const onSubmit = async (data: FormData) => {
+    dentistLogin(
+      {
+        email: email,
+        otp: data.otp,
+        role: UserRoles.DENTIST,
+      },
+      {
+        onSuccess: () => {
+          showToast("success", "Dentist Logged in Successfully");
+          router.replace(`/dentist`);
+        },
+        onError: (error) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
+        },
+      },
+    );
   };
 
-  const isSubmitting = verifyDentistLoader;
+  const isSubmitting = dentistLoginLoader;
 
   return (
     <form

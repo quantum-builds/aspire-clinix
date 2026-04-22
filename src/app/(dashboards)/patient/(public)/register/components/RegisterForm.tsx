@@ -79,17 +79,6 @@ export const patientSchema = z.object({
   marketing: z.number().default(0),
 });
 
-const roles = [
-  {
-    value: DentistRole.RECIEVING_DENTIST,
-    label: toTitleCase(DentistRole.RECIEVING_DENTIST),
-  },
-  {
-    value: DentistRole.REFERRING_DENTIST,
-    label: toTitleCase(DentistRole.REFERRING_DENTIST),
-  },
-  { value: DentistRole.DENTIST, label: toTitleCase(DentistRole.DENTIST) },
-];
 
 type FormData = z.infer<typeof patientSchema>;
 
