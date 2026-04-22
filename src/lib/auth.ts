@@ -4,6 +4,10 @@ import prisma from "@/lib/db";
 import { verifyPassword } from "@/utils/passwordUtils";
 import { UserRoles } from "@/types/common";
 import { getPatient } from "@/dentallyHelpers/patient";
+import { getPractitioners } from "@/dentallyHelpers/practitioners";
+import sendgrid from "@/config/sendgrid-config";
+
+import { generateOtp } from "@/utils/generateOtp";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -12,32 +16,42 @@ export const authOptions: AuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        firstName: { label: "FirstName", type: 'firstName' },
+        gdcNumber: { label: "GdcNumber", type: "gdcNumber" },
+        firstName: { label: "FirstName", type: "firstName" },
         lastName: { label: "LastName", type: "lastName" },
         mobilePhone: { label: "MobilePhone", type: "mobilePhone" },
         dateOfBirth: { label: "DateOfBirth", type: "dateOfBirth" },
         role: { label: "Role", type: "role" },
       },
       async authorize(credentials) {
-
         if (!credentials?.role)
           throw new Error("Password and role are required");
 
         if (credentials.role === UserRoles.PATIENT) {
           if (!credentials.firstName || !credentials.lastName) {
-            throw new Error("FirstName and LastName is required")
+            throw new Error("FirstName and LastName is required");
           }
           if (!credentials.mobilePhone) {
-            throw new Error("Mobile Phone is required")
+            throw new Error("Mobile Phone is required");
           }
           if (!credentials.dateOfBirth) {
-            throw new Error("Date Of Birth is required")
+            throw new Error("Date Of Birth is required");
+          }
+        } else if (credentials.role === UserRoles.DENTIST) {
+          if (!credentials?.gdcNumber) {
+            throw new Error("GDC number is required for dentist login");
+          }
+          if (!credentials?.email) {
+            throw new Error("Email is required for dentist login");
+          }
+        } else if (credentials.role === UserRoles.ADMIN) {
+          if (!credentials?.email) {
+            throw new Error("Email is required");
+          }
+          if (!credentials.password) {
+            throw new Error("Password and role are required");
           }
         }
-
-        if (!credentials?.email) throw new Error("Email is required");
-        if (!credentials.password && credentials.role !== UserRoles.PATIENT)
-          throw new Error("Password and role are required");
 
         const { email, password, role } = credentials;
         let user = null;
@@ -59,13 +73,18 @@ export const authOptions: AuthOptions = {
         }
 
         if (role === UserRoles.PATIENT) {
-          const { firstName, lastName, mobilePhone, dateOfBirth } = credentials
+          const { firstName, lastName, mobilePhone, dateOfBirth } = credentials;
 
-          const response = await getPatient({ firstName, lastName, mobilePhone, dateOfBirth });
+          const response = await getPatient({
+            firstName,
+            lastName,
+            mobilePhone,
+            dateOfBirth,
+          });
           if (response.isError) throw new Error("No account found");
 
           const activePatients = response.response.filter(
-            (res: any) => res.active && !res.archived_reason
+            (res: any) => res.active && !res.archived_reason,
           );
 
           if (activePatients.length === 0 || activePatients.length > 1)
@@ -83,38 +102,96 @@ export const authOptions: AuthOptions = {
         }
 
         if (role === UserRoles.DENTIST) {
+          const { email, gdcNumber } = credentials;
+          const response = await getPractitioners(email, gdcNumber);
 
-          // site_id can be single OR array
-          const siteIds = searchParams.getAll("site_id[]")
-          const singleSiteId = searchParams.get("site_id")
-
-          const createdAfter = searchParams.get("created_after")
-          const updatedAfter = searchParams.get("updated_after")
-
-
-          const respose = await getPractitioners(siteIds, singleSiteId, createdAfter, updatedAfter)
-          if (respose.isError) {
-              return respose.response
-          }
-          const practitioners = respose.response
-
-          if (!practitioners || practitioners.length < 1) {
-              return NextResponse.json(
-                  createResponse(false, "No Practitioner found", practitioners),
-                  { status: 404 }
-              );
+          if (response.isError) {
+            throw new Error("No account found");
           }
 
-          return NextResponse.json(
-              createResponse(true, "Practitioners fetched successfully", practitioners),
-              { status: 200 }
+          const normalizedEmail = email.trim().toLowerCase();
+          const normalizedGdcNumber = gdcNumber.trim().toLowerCase();
+
+          const filteredPractitioners = (response.response ?? []).filter(
+            (practitioner: any) =>
+              practitioner?.user?.email?.trim?.().toLowerCase?.() ===
+                normalizedEmail &&
+              practitioner?.gdc_Number?.trim?.().toLowerCase?.() ===
+                normalizedGdcNumber,
           );
+
+          if (filteredPractitioners.length === 0) {
+            throw new Error("No account found with these details");
+          }
+
+          if (filteredPractitioners.length > 1) {
+            throw new Error(
+              "Multiple accounts found. Please contact Aspire support.",
+            );
+          }
+
+          const matchedPractitioner = filteredPractitioners[0];
+          const firstName =
+            matchedPractitioner?.user?.first_name?.trim?.() ?? "";
+          const lastName = matchedPractitioner?.user?.last_name?.trim?.() ?? "";
+          const fullName = `${firstName} ${lastName}`.trim() || normalizedEmail;
+          const otp = generateOtp();
+
+          const existingDentist = await prisma.dentist.findFirst({
+            where: {
+              email: normalizedEmail,
+              gdcNo: normalizedGdcNumber,
+            },
+          });
+
+          if (!existingDentist) {
+            user = await prisma.dentist.create({
+              data: {
+                email: normalizedEmail,
+                gdcNo: normalizedGdcNumber,
+                otp,
+                otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
+              },
+            });
+          } else {
+            user = await prisma.dentist.update({
+              where: { id: existingDentist.id },
+              data: {
+                otp,
+                otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
+              },
+            });
+          }
+
+          const html = `
+            <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
+              <p>Hi ${fullName},</p>
+              <p>Your one-time password is:</p>
+              <div style="font-size: 24px; font-weight: 700; letter-spacing: 4px; margin: 16px 0;">
+                ${otp}
+              </div>
+              <p>This code expires in 15 minutes.</p>
+            </div>
+          `;
+
+          if (!process.env.EMAIL_FROM) {
+            throw new Error("EMAIL_FROM environment variable is not set");
+          }
+
+          await sendgrid.send({
+            from: process.env.EMAIL_FROM,
+            to: normalizedEmail,
+            subject: "Your Aspire OTP code",
+            html,
+            text: undefined,
+          });
+
           return {
             id: user.id,
             email: user.email,
-            role: user.role,
-            name: user.fullName,
-            image: user.fileUrl,
+            role: UserRoles.DENTIST,
+            name: fullName,
+            image: null,
           };
         }
 

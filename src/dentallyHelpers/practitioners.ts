@@ -1,33 +1,39 @@
-import { axiosDentallyInstance, DENTALLY_ENDPOINTS } from "@/config/api-config"
-import { DATA_TYPE, dentallyErrorHelper } from "./errorHelpers"
+import { axiosDentallyInstance, DENTALLY_ENDPOINTS } from "@/config/api-config";
+import { DATA_TYPE, dentallyErrorHelper } from "./errorHelpers";
 
 export async function gettPractitionerById(practitionerId: string) {
-    const response = await axiosDentallyInstance.get(DENTALLY_ENDPOINTS.practitioner.get(practitionerId))
-    return dentallyErrorHelper(response, DATA_TYPE.PRACTITIONER)
+  const response = await axiosDentallyInstance.get(
+    DENTALLY_ENDPOINTS.practitioner.get(practitionerId),
+  );
+  return dentallyErrorHelper(response, DATA_TYPE.PRACTITIONER);
 }
 
-export async function getPractitioners(siteIds: string[], singleSiteId: string | null, createdAfter: string | null, updatedAfter: string | null) {
-    const dentallyParams = new URLSearchParams()
+export async function getPractitioners(email: string, gdcNumber: string) {
+  const siteId = process.env.DENTALLY_SITE_ID;
 
-    if (siteIds.length > 0) {
-        siteIds.forEach(id => dentallyParams.append("site_id[]", id))
-    } else if (singleSiteId) {
-        dentallyParams.append("site_id", singleSiteId)
-    }
+  if (!siteId) {
+    throw new Error("DENTALLY_SITE_ID is not defined in environment variables");
+  }
 
-    if (createdAfter) {
-        dentallyParams.append("created_after", createdAfter)
-    }
+  const response = await axiosDentallyInstance.get(
+    DENTALLY_ENDPOINTS.practitioner.list(siteId),
+  );
 
-    if (updatedAfter) {
-        dentallyParams.append("updated_after", updatedAfter)
-    }
+  const practitionersResponse = dentallyErrorHelper(
+    response.data,
+    DATA_TYPE.PRACTITIONERS,
+  );
 
-    const response = await axiosDentallyInstance.get(DENTALLY_ENDPOINTS.practitioner.list(dentallyParams))
-    return dentallyErrorHelper(response, DATA_TYPE.PRACTITIONERS)
+  return practitionersResponse;
 }
 
-export async function patchPractitionerById(practitionerId: string,partialPractitioner:any) {
-    const response = await axiosDentallyInstance.patch(DENTALLY_ENDPOINTS.practitioner.edit(practitionerId),partialPractitioner)
-    return dentallyErrorHelper(response, DATA_TYPE.PRACTITIONER)
+export async function patchPractitionerById(
+  practitionerId: string,
+  partialPractitioner: any,
+) {
+  const response = await axiosDentallyInstance.patch(
+    DENTALLY_ENDPOINTS.practitioner.edit(practitionerId),
+    partialPractitioner,
+  );
+  return dentallyErrorHelper(response, DATA_TYPE.PRACTITIONER);
 }

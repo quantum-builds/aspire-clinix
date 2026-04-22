@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { AspireDarkLogo } from "@/assets";
-import PatientLoginForm from "./components/LoginForm";
 import BackButton from "@/app/(dashboards)/components/BackButton";
+import DentistLoginForm from "./components/LoginForm";
 
 export default function LoginPage() {
   return (
@@ -32,7 +32,7 @@ export default function LoginPage() {
         </header>
 
         <section className="w-full max-w-lg ">
-          <PatientLoginForm />
+          <DentistLoginForm />
         </section>
       </div>
     </main>

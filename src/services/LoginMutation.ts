@@ -6,17 +6,17 @@ export const loginMutation = () => {
   return useMutation({
     mutationFn: async ({
       email,
-      password,
+      GdcNumber,
       role,
     }: {
       email: string;
-      password?: string;
+      GdcNumber: string;
       role: UserRoles;
     }) => {
       const result = await signIn("credentials", {
         redirect: false,
         email,
-        password,
+        GdcNumber,
         role,
       });
 
