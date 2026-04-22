@@ -134,7 +134,7 @@ export const ENDPOINTS = {
     ) =>
       `/api/appointments?page=${page ?? 1}&search=${search ?? ""}&on=${on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}&dateType=${dateType ?? ""
-      }&status=${status ?? ""}&practitionerId=${practitionerId?? ""}&siteId=${siteId}
+      }&status=${status ?? ""}&practitionerId=${practitionerId ?? ""}&siteId=${siteId}
       &state${state}&updatedAfte${updatedAfte}`,
     post: "/api/appointments",
     patch: (id: string) =>
@@ -213,6 +213,7 @@ export const axiosInstance = axios.create({
 
 export const DENTALLY_ENDPOINTS = {
   patient: {
+    create: `/v1/patients`,
     get: (patientId: string) => `patients/${patientId}`,
     edit: (patientId: string) => `patients/${patientId}`,
     delete: (patientId: string) => `patients/${patientId}`,

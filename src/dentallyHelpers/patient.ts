@@ -5,7 +5,7 @@ import {
 } from "@/config/api-config";
 import { DATA_TYPE, dentallyErrorHelper } from "./errorHelpers";
 import { normalize } from "@/utils/formatWords";
-import { patientQuery } from "@/types/patient";
+import { patientQuery,TPatientCreate } from "@/types/patient";
 import { NextResponse } from "next/server";
 import { createResponse } from "@/utils/createResponse";
 
@@ -66,6 +66,11 @@ export async function getPatients() {
     DENTALLY_ENDPOINTS.patient.list(),
   );
   return dentallyErrorHelper(response, DATA_TYPE.PATIENTS);
+}
+
+export async function createPatient(patientData: TPatientCreate) {
+  const response = await axiosDentallyInstance.post(DENTALLY_ENDPOINTS.patient.create, patientData)
+  return dentallyErrorHelper(response, DATA_TYPE.PATIENT)
 }
 
 export async function patchPatientById(patientId: string, partialPatient: any) {

@@ -1,9 +1,7 @@
 import { ApiMethods } from "@/constants/ApiMethods";
-import prisma from "@/lib/db";
-import { hashPassword } from "@/utils/passwordUtils";
 import { UserRoles } from "@/constants/UserRoles";
 import { NextResponse, NextRequest } from "next/server";
-import { Prisma } from "@prisma/client";
+import { createPatient, getPatient } from "@/dentallyHelpers/patient";
 
 export async function POST(req: NextRequest) {
   if (req.method !== ApiMethods.POST) {
@@ -72,6 +70,41 @@ export async function POST(req: NextRequest) {
     //     },
     //   });
     // }
+
+    if (role === UserRoles.PATIENT) {
+      const { title, firstName, lastName, mobilePhone, email, addressLine1, postCode, dateOfBirth } = await req.json();
+
+      const response = await getPatient({ firstName, lastName, mobilePhone, dateOfBirth });
+      if (response.isError)
+         return NextResponse.json(
+          { message: "Failed to get patient" },
+          { status: 400 }
+        );
+      const activePatients = response.response.filter(
+        (res: any) => res.active && !res.archived_reason
+      );
+
+      if (activePatients.length === 0)
+        return NextResponse.json(
+          { message: "No Account Found" },
+          { status: 404 }
+        );
+
+      if (activePatients.length > 1)
+        return NextResponse.json(
+          { message: "No Account Found" },
+          { status: 409 }
+        );
+
+      const createRes = await createPatient({ title, firstName, lastName, mobilePhone, email, addressLine1, postCode, dateOfBirth })
+      if (createRes.isError)
+        return NextResponse.json(
+          { message: "Failed to create patient" },
+          { status: 400 }
+        );
+    }else{
+
+    }
 
     return NextResponse.json(
       { message: "User registered successfully" },

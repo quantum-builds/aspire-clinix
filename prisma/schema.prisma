@@ -103,6 +103,22 @@ model Dentist {
   referralForms ReferralForm[]
 }
 
+/**
+ * Use Random UUID stored in metadata as a thing to get the id and uuid.
+ * Always make a new patient from Aspire Portal not from dentally.
+ * Generate a RandomUUID and store that in the dentally to.
+ */
+model Patient {
+  id           String  @id
+  uuid         String  @unique
+  mobileNumber String?
+  firstName    String?
+  lastName     String?
+  dateOfBirth  String?
+
+  @@unique([mobileNumber,firstName,lastName,dateOfBirth])
+}
+
 model Admin {
   id          String  @id @default(cuid())
   fullName    String
@@ -116,13 +132,13 @@ model Admin {
 }
 
 model OtpToken {
-  id         Int      @id @default(autoincrement())
-  patientId  String?  
-  dentistId  String?  
-  otp        String   @db.VarChar(6)
-  expiresAt  DateTime
-  used       Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  patientId String?
+  dentistId String?
+  otp       String   @db.VarChar(6)
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
 
   @@index([patientId])
   @@index([dentistId])

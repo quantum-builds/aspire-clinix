@@ -35,33 +35,33 @@ export async function GET(req: NextRequest) {
                 { status: 200 }
             );
         } else if (token.role === TokenRoles.ADMIN) {
-            const { searchParams } = new URL(req.url)
+            // const { searchParams } = new URL(req.url)
 
-            // site_id can be single OR array
-            const siteIds = searchParams.getAll("site_id[]")
-            const singleSiteId = searchParams.get("site_id")
+            // // site_id can be single OR array
+            // const siteIds = searchParams.getAll("site_id[]")
+            // const singleSiteId = searchParams.get("site_id")
 
-            const createdAfter = searchParams.get("created_after")
-            const updatedAfter = searchParams.get("updated_after")
+            // const createdAfter = searchParams.get("created_after")
+            // const updatedAfter = searchParams.get("updated_after")
 
 
-            const respose = await getPractitioners(siteIds, singleSiteId, createdAfter, updatedAfter)
-            if (respose.isError) {
-                return respose.response
-            }
-            const practitioners = respose.response
+            // const respose = await getPractitioners(siteIds, singleSiteId, createdAfter, updatedAfter)
+            // if (respose.isError) {
+            //     return respose.response
+            // }
+            // const practitioners = respose.response
 
-            if (!practitioners || practitioners.length < 1) {
-                return NextResponse.json(
-                    createResponse(false, "No Practitioner found", practitioners),
-                    { status: 404 }
-                );
-            }
+            // if (!practitioners || practitioners.length < 1) {
+            //     return NextResponse.json(
+            //         createResponse(false, "No Practitioner found", practitioners),
+            //         { status: 404 }
+            //     );
+            // }
 
-            return NextResponse.json(
-                createResponse(true, "Practitioners fetched successfully", practitioners),
-                { status: 200 }
-            );
+            // return NextResponse.json(
+            //     createResponse(true, "Practitioners fetched successfully", practitioners),
+            //     { status: 200 }
+            // );
         } else {
             return NextResponse.json(createResponse(false, "Forbidden", null), {
                 status: 403,
