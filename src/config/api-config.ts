@@ -15,13 +15,15 @@ export const ENDPOINTS = {
     getPatient: (email?: string) => `/api/patient?email=${email ?? null}`,
     getById: (id: string) => `/api/patient/${id}`,
     editPatient: `/api/patient`,
+    Verification: "/api/patient/verify",
   },
 
   dentist: {
     createDentist: "/api/referral-dentist",
     getDentist: `/api/referral-dentist`,
     editDentist: `/api/referral-dentist`,
-    verification: "/api/practitioner/verfify",
+    verification: "/api/practitioner/verify",
+    
   },
 
   admin: {
@@ -231,8 +233,10 @@ export const DENTALLY_ENDPOINTS = {
     get: (patientId: string) => `patients/${patientId}`,
     edit: (patientId: string) => `patients/${patientId}`,
     delete: (patientId: string) => `patients/${patientId}`,
-    list: (query?: string) =>
-      query ? `patients?query=${encodeURIComponent(query)}` : `patients`,
+    // list: (query?: string) =>
+    //   query ? `patients?query=${encodeURIComponent(query)}` : `patients`,
+    list: (site_id: string) => `patients?siteId=${site_id.toString()}`,
+    
   },
   practitioner: {
     get: (practitionerId: string) => `practitioners/${practitionerId}`,

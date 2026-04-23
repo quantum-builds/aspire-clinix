@@ -69,40 +69,42 @@ export const authOptions: AuthOptions = {
         }
 
         if (role === UserRoles.PATIENT) {
-          const { firstName, lastName, mobilePhone, dateOfBirth } = credentials;
+          const { email, otp } = credentials;
 
-          const response = await getPatient({
-            firstName,
-            lastName,
-            mobilePhone,
-            dateOfBirth,
-          });
-          if (response.isError) throw new Error("No account found");
-
-          const activePatients = response.response.filter(
-            (res: any) => res.active && !res.archived_reason,
-          );
-
-          if (activePatients.length === 0 || activePatients.length > 1)
+          let patient = null;
+          try {
+            patient = await prisma.patient.findUnique({ where: { email } });
+          } catch (error) {
+            throw new Error(`Error in getting patient with email ${email}`);
+          }
+          if (!patient) {
             throw new Error("No account found");
+          }
 
-          user = activePatients[0];
+          if (
+            patient.otp !== otp ||
+            !patient.otpInvalidationTime ||
+            patient.otpInvalidationTime < new Date()
+          ) {
+            throw new Error("Invalid Otp");
+          }
 
+          const fullName = `${patient.firstName} ${patient.lastName}`.trim();
           return {
-            id: user.id,
-            email: user.email,
+            id: patient.id,
+            email: patient.email,
             role: UserRoles.PATIENT,
-            name: user.fullName,
-            image: user.fileUrl,
+            name: fullName,
+            image: null,
           };
         }
 
         if (role === UserRoles.DENTIST) {
           const { email, otp } = credentials;
 
-          let dentist = null
+          let dentist = null;
           try {
-            dentist = await prisma.dentist.findUnique({ where: { email } })
+            dentist = await prisma.dentist.findUnique({ where: { email } });
           } catch (error) {
             throw new Error(`Error in getting dentist with email ${email}`);
           }
@@ -110,11 +112,15 @@ export const authOptions: AuthOptions = {
             throw new Error("No account found");
           }
 
-          if (dentist.otp !== otp || !dentist.otpInvalidationTime || dentist.otpInvalidationTime < new Date()) {
-            throw new Error("Invalid Otp")
+          if (
+            dentist.otp !== otp ||
+            !dentist.otpInvalidationTime ||
+            dentist.otpInvalidationTime < new Date()
+          ) {
+            throw new Error("Invalid Otp");
           }
 
-          const fullName = `${dentist.firstName} ${dentist.lastName}`.trim()
+          const fullName = `${dentist.firstName} ${dentist.lastName}`.trim();
           return {
             id: dentist.id,
             email: dentist.email,

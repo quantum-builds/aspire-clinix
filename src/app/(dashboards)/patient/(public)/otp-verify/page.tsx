@@ -20,12 +20,12 @@ export const dentistsSchema = z.object({
 
 type FormData = z.infer<typeof dentistsSchema>;
 
-export default function DentsitOtpVerfiy() {
+export default function PatientOtpVerify() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const email = searchParams.get("email") || "";
+  const id = searchParams.get("id") || "";
 
-  const { mutate: dentistLogin, isPending: dentistLoginLoader } =
+  const { mutate: patientLogin, isPending: patientLoginLoader } =
     loginMutation();
 
   const {
@@ -40,16 +40,16 @@ export default function DentsitOtpVerfiy() {
   });
 
   const onSubmit = async (data: FormData) => {
-    dentistLogin(
+    patientLogin(
       {
-        email: email,
+        patientId: id,
         otp: data.otp,
-        role: UserRoles.DENTIST,
+        role: UserRoles.PATIENT,
       },
       {
         onSuccess: () => {
-          showToast("success", "Dentist Logged in Successfully");
-          router.replace(`/dentist`);
+          showToast("success", "Patient Logged in Successfully");
+          router.replace(`/patient`);
         },
         onError: (error) => {
           const msg = getAxiosErrorMessage(error);
@@ -59,7 +59,7 @@ export default function DentsitOtpVerfiy() {
     );
   };
 
-  const isSubmitting = dentistLoginLoader;
+  const isSubmitting = patientLoginLoader;
 
   return (
     <form

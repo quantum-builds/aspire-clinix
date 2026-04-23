@@ -40,4 +40,35 @@ export const usePatchPatient = () => {
   });
 };
 
+type VerifyPatientPayload = {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  phoneNumber: string;
+  email: string;
+};
 
+export const useVerifyPatient = () => {
+  return useMutation({
+    mutationFn: async ({
+      firstName,
+      lastName,
+      dateOfBirth,
+      phoneNumber,
+      email,
+    }: VerifyPatientPayload) => {
+      const response = await axiosInstance.post(
+        ENDPOINTS.patient.Verification,
+        {
+          firstName,
+          lastName,
+          dateOfBirth,
+          phoneNumber,
+          email,
+        },
+      );
+
+      return response.data.data;
+    },
+  });
+};

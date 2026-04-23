@@ -101,14 +101,20 @@ model Dentist {
 }
 
 model Patient {
-  id           String  @id
-  uuid         String  @unique
-  mobileNumber String?
-  firstName    String?
-  lastName     String?
-  dateOfBirth  String?
+  id                  String    @id
+  uuid                String    @unique
+  dentallyId          String    @unique
+  mobileNumber        String?
+  email               String?   
+  firstName           String?
+  lastName            String?
+  dateOfBirth         String?
+  otp                 String?
+  otpInvalidationTime DateTime?
+  familyId            String?
 
   @@unique([mobileNumber, firstName, lastName, dateOfBirth])
+  @@index([familyId])
 }
 
 model Admin {

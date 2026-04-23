@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 export const loginMutation = () => {
   return useMutation({
     mutationFn: async ({
+      patientId,
       email,
       otp,
       password,
@@ -14,6 +15,7 @@ export const loginMutation = () => {
       dateOfBirth,
       role,
     }: {
+      patientId?: string;
       email?: string;
       otp?: string;
       password?: string
@@ -25,6 +27,7 @@ export const loginMutation = () => {
     }) => {
       const result = await signIn("credentials", {
         redirect: false,
+        patientId,
         email,
         otp,
         password,

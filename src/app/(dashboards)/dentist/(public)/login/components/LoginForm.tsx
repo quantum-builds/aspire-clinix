@@ -11,7 +11,7 @@ import { z } from "zod";
 import { useVerifyDentist } from "@/services/dentist/dentistMutation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export const dentistsSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -23,7 +23,7 @@ type FormData = z.infer<typeof dentistsSchema>;
 export default function DentistLoginForm() {
   const { mutate: verifyDentist, isPending: verifyDentistLoader } =
     useVerifyDentist();
-  const router = useRouter()
+  const router = useRouter();
 
   const {
     register,
@@ -45,9 +45,9 @@ export default function DentistLoginForm() {
         gdcNumber: data.GdcNumber,
       },
       {
-        onSuccess: () => {
+        onSuccess: (resData) => {
           showToast("success", "OTP sent successfully");
-          router.replace(`/otp-verfiy?email=${data.email}`)
+          router.replace(`dentist/otp-verify?email=${resData.email}`);
         },
         onError: (error) => {
           const msg = getAxiosErrorMessage(error);
@@ -57,7 +57,7 @@ export default function DentistLoginForm() {
     );
   };
 
-  const isSubmitting = verifyDentistLoader
+  const isSubmitting = verifyDentistLoader;
 
   return (
     <form

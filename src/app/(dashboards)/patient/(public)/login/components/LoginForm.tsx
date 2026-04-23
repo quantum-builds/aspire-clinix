@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -20,8 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/utils/formatDateTime";
-import { loginMutation } from "@/services/LoginMutation";
-import { UserRoles } from "@/types/common";
+import { useVerifyPatient } from "@/services/patient/patientMutation";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import Link from "next/link";
 
@@ -34,6 +33,10 @@ export const patientSchema = z.object({
     .string()
     .min(2, "Last name must be at least 2 characters")
     .max(100, "Last name must be less than 100 characters"),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address"),
   dateOfBirth: z.date({
     required_error: "Date of birth is required",
     invalid_type_error: "Please select a valid date",
@@ -42,14 +45,14 @@ export const patientSchema = z.object({
     .string()
     .regex(
       /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
-      "Please enter a valid UK mobile phone number"
+      "Please enter a valid UK mobile phone number",
     )
     .refine(
       (val) => {
         const digitsOnly = val.replace(/\s+/g, "");
         return digitsOnly.length >= 10 && digitsOnly.length <= 15;
       },
-      { message: "Phone number must be between 10 and 15 digits" }
+      { message: "Phone number must be between 10 and 15 digits" },
     )
     .transform((val) => val.replace(/\s+/g, "")),
 });
@@ -57,8 +60,8 @@ export const patientSchema = z.object({
 type FormData = z.infer<typeof patientSchema>;
 
 export default function PatientLoginForm() {
-  const { mutate: patientLogin, isPending: patientLoginLoader } =
-    loginMutation();
+  const { mutate: verifyPatient, isPending: verifyPatientLoader } =
+    useVerifyPatient();
   const router = useRouter();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
@@ -73,6 +76,7 @@ export default function PatientLoginForm() {
     defaultValues: {
       firstName: "",
       lastName: "",
+      email: "",
       dateOfBirth: undefined,
       phoneNumber: "",
     },
@@ -90,16 +94,18 @@ export default function PatientLoginForm() {
   const dateOfBirth = watch("dateOfBirth");
 
   const onSubmit = async (data: FormData) => {
-    patientLogin(
+    verifyPatient(
       {
-        email: "",
-        password: undefined,
-        role: UserRoles.PATIENT,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        dateOfBirth: data.dateOfBirth.toISOString().split("T")[0],
+        phoneNumber: data.phoneNumber,
+        email: data.email,
       },
       {
-        onSuccess: () => {
-          showToast("success", "Patient Logged in Successfully");
-          router.replace(`/patient`);
+        onSuccess: (resData) => {
+          showToast("success", "OTP sent successfully");
+          router.replace(`/patient/otp-verify?id=${resData.id}`);  
         },
         onError: (error) => {
           const msg = getAxiosErrorMessage(error);
@@ -161,6 +167,30 @@ export default function PatientLoginForm() {
           )}
         </div>
 
+        {/* Email */}
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-lg font-medium">
+            Email<span className="text-red-500">*</span>
+          </Label>
+          <div className="relative">
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              {...register("email")}
+              className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+            />
+            <Image
+              src={TextIconV2}
+              alt="icon"
+              className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
+            />
+          </div>
+          {errors.email && (
+            <p className="text-sm text-red-500">{errors.email.message}</p>
+          )}
+        </div>
+
         {/* Date of Birth */}
         <div className="space-y-2 ">
           <Label className="text-lg font-medium">
@@ -173,7 +203,7 @@ export default function PatientLoginForm() {
                 type="button"
                 className={cn(
                   "relative w-full text-left font-normal bg-gray px-6 py-3 h-[52px] rounded-2xl",
-                  !dateOfBirth && "text-muted-foreground"
+                  !dateOfBirth && "text-muted-foreground",
                 )}
               >
                 {dateOfBirth ? (
@@ -202,12 +232,9 @@ export default function PatientLoginForm() {
             </PopoverContent>
           </Popover>
           {errors.dateOfBirth && (
-            <p className="text-sm text-red-500">
-              {errors.dateOfBirth.message}
-            </p>
+            <p className="text-sm text-red-500">{errors.dateOfBirth.message}</p>
           )}
         </div>
-        <div className="md:col-span-1" />
 
         {/* Phone Number */}
         <div className="space-y-2">
@@ -229,9 +256,7 @@ export default function PatientLoginForm() {
             />
           </div>
           {errors.phoneNumber && (
-            <p className="text-sm text-red-500">
-              {errors.phoneNumber.message}
-            </p>
+            <p className="text-sm text-red-500">{errors.phoneNumber.message}</p>
           )}
         </div>
       </div>
@@ -240,10 +265,10 @@ export default function PatientLoginForm() {
       <div className="w-full flex flex-col justify-center items-center ">
         <CustomButton
           style="primary"
-          text={patientLoginLoader ? "Logging In..." : "Login"}
+          text={verifyPatientLoader ? "Logging In..." : "Login"}
           type="submit"
-          loading={patientLoginLoader}
-           className="w-fit py-4 px-20"
+          loading={verifyPatientLoader}
+          className="w-fit py-4 px-20"
         />
         <p className="text-sm text-muted-foreground mt-4">
           Don't have an account?{" "}
