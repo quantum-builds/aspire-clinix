@@ -7,9 +7,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    // const token = await getToken({
-    //   req,
-    // });
+    const token = await getToken({
+      req,
+    });
+    const dentistId =
+      token?.role === TokenRoles.DENTIST ? token.sub : undefined;
+    const patientId =
+      token?.role === TokenRoles.PATIENT ? token.sub : undefined;
 
     const { searchParams } = new URL(req.url);
 
@@ -27,8 +31,8 @@ export async function GET(req: NextRequest) {
             },
           }
         : {}),
-      // ...(dentistId ? { dentistId } : {}),
-      // ...(patientId ? { patientId } : {}),
+      ...(dentistId ? { dentistId } : {}),
+      ...(patientId ? { patientId } : {}),
       ...(appointmentId ? { appointmentId } : {}),
     };
 
@@ -119,6 +123,27 @@ export async function POST(req: NextRequest) {
 
     const reports = Array.isArray(body) ? body : [body];
 
+    // define a set for appointmentIds to check if the appointmentId in each report belongs to the dentist
+    const appointmentIdsSet = new Set<string>();
+    reports.forEach((report) => {
+      if (report.appointmentId) {
+        appointmentIdsSet.add(report.appointmentId);
+      }
+    });
+
+    if (appointmentIdsSet.size === 0 || appointmentIdsSet.size > 1) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "Each report must include the same appointmentId that belongs to the dentist.",
+          null,
+        ),
+        { status: 400 },
+      );
+    }
+
+    const appointmentId = Array.from(appointmentIdsSet)[0];
+
     if (!dentistId) {
       return NextResponse.json(
         createResponse(false, "Dentist id is required", null),
@@ -153,10 +178,25 @@ export async function POST(req: NextRequest) {
       dentistId,
     }));
 
+    const isExistingAppointment = await prisma.dentist.findFirst({
+      where: {
+        id: dentistId,
+        appointmentIds: {
+          has: appointmentId,
+        },
+      },
+    });
+
+    if (!isExistingAppointment) {
+      return NextResponse.json(
+        createResponse(false, "Appointment not found for the dentist.", null),
+        { status: 404 },
+      );
+    }
+
     await prisma.report.createMany({
       data: reportsToCreate,
     });
-
     return NextResponse.json(
       createResponse(true, "Reports created successfully.", null),
       { status: 201 },
