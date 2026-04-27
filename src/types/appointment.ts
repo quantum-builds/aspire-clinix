@@ -31,7 +31,7 @@ export type TAppointmentResponse = {
   pagination: TAppointmentPagination;
 };
 
-// DENTALLY
+// DENTALLY TYPES
 
 export interface CreateAppointment {
   startTime: Date;
@@ -64,7 +64,7 @@ export interface Appointment {
   paymentPlanId?: number;
 
   // Assignment
-  practitionerId: number;
+  practitionerwId: number;
   roomId?: string;
   createdByUserId: number;
 

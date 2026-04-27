@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
     if (!videos.length && !pdfs.length) {
       return NextResponse.json(
         createResponse(false, "No reports found.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -89,7 +89,7 @@ export async function GET(req: NextRequest) {
       createResponse(true, "Reports fetched successfully.", {
         reports: { videos, pdfs },
       }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error in fetching reports", error);
@@ -119,10 +119,32 @@ export async function POST(req: NextRequest) {
 
     const reports = Array.isArray(body) ? body : [body];
 
+    if (!dentistId) {
+      return NextResponse.json(
+        createResponse(false, "Dentist id is required", null),
+        { status: 400 },
+      );
+    }
+
     if (!reports.length) {
       return NextResponse.json(
         createResponse(false, "No reports provided", null),
-        { status: 400 }
+        { status: 400 },
+      );
+    }
+
+    const invalidReportIndex = reports.findIndex(
+      (report) => !report?.patientId || !report?.appointmentId,
+    );
+
+    if (invalidReportIndex !== -1) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          `Each report must include patientId and appointmentId.`,
+          null,
+        ),
+        { status: 400 },
       );
     }
 
@@ -137,7 +159,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Reports created successfully.", null),
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error in creating report ", error);

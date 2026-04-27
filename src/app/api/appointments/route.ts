@@ -1,6 +1,7 @@
 import { TokenRoles } from "@/constants/UserRoles";
 import { createAppointment } from "@/dentallyHelpers/appointment";
 import { createResponse } from "@/utils/createResponse";
+import prisma from "@/lib/db";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { AppointmentDateType } from "@/types/common";
@@ -74,14 +75,63 @@ export async function GET(req: NextRequest) {
       state: state ? (state as AppointmentState) : undefined,
     };
     const response = await listAppointment(appointmentParams);
-    if (response.isError)
-        return response.response
-    
+    if (response.isError) return response.response;
+
     let appointments: Appointment[] = [];
     appointments = response.response as Appointment[];
 
+    const appointmentIdsByDentallyPatientId = appointments.reduce(
+      (acc, appointment) => {
+        const dentallyPatientId = String(appointment.patientId);
+
+        if (!acc[dentallyPatientId]) {
+          acc[dentallyPatientId] = [];
+        }
+
+        acc[dentallyPatientId].push(String(appointment.id));
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    );
+
+    const dentallyPatientIds = Object.keys(appointmentIdsByDentallyPatientId);
+
+    if (dentallyPatientIds.length) {
+      const patients = await prisma.patient.findMany({
+        where: {
+          dentallyId: {
+            in: dentallyPatientIds,
+          },
+        },
+        select: {
+          id: true,
+          dentallyId: true,
+          appointmentIds: true,
+        },
+      });
+
+      await Promise.all(
+        patients.map(async (patient) => {
+          const incomingAppointmentIds =
+            appointmentIdsByDentallyPatientId[patient.dentallyId] ?? [];
+          const mergedAppointmentIds = Array.from(
+            new Set([
+              ...(patient.appointmentIds ?? []),
+              ...incomingAppointmentIds,
+            ]),
+          );
+
+          await prisma.patient.update({
+            where: { id: patient.id },
+            data: { appointmentIds: mergedAppointmentIds },
+          });
+        }),
+      );
+    }
+
     return NextResponse.json(
-      createResponse(true, "Appointments fetched successfully", appointments),{status:200},
+      createResponse(true, "Appointments fetched successfully", appointments),
+      { status: 200 },
     );
 
     // const page = parseInt(searchParams.get("page") || "1", 10);

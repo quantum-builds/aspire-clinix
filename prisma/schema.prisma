@@ -89,11 +89,11 @@ model Dentist {
   lastName            String
   otp                 String?
   otpInvalidationTime DateTime?
+  appointmentIds      String[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  appointments Appointment[]
   reports      Report[]
   practices    DentistOnPractice[]
 
@@ -105,13 +105,16 @@ model Patient {
   uuid                String    @unique
   dentallyId          String    @unique
   mobileNumber        String?
-  email               String?   
+  email               String?
   firstName           String?
   lastName            String?
   dateOfBirth         String?
   otp                 String?
   otpInvalidationTime DateTime?
   familyId            String?
+  appointmentIds      String[]
+  
+  reports Report[]
 
   @@unique([mobileNumber, firstName, lastName, dateOfBirth])
   @@index([familyId])
@@ -224,10 +227,11 @@ model Report {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  // patient     Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient     Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
   dentist     Dentist     @relation(fields: [dentistId], references: [id], onDelete: Cascade)
-  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  Appointment Appointment @relation(fields: [appointmentId], references: [id])
 
+  @@index([appointmentId])
   @@index([fileType])
 }
 

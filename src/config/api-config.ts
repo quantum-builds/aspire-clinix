@@ -23,7 +23,6 @@ export const ENDPOINTS = {
     getDentist: `/api/referral-dentist`,
     editDentist: `/api/referral-dentist`,
     verification: "/api/practitioner/verify",
-    
   },
 
   admin: {
@@ -236,7 +235,6 @@ export const DENTALLY_ENDPOINTS = {
     // list: (query?: string) =>
     //   query ? `patients?query=${encodeURIComponent(query)}` : `patients`,
     list: (site_id: string) => `patients?siteId=${site_id.toString()}`,
-    
   },
   practitioner: {
     get: (practitionerId: string) => `practitioners/${practitionerId}`,
@@ -248,6 +246,9 @@ export const DENTALLY_ENDPOINTS = {
     list: (params?: ListAppointment): string => {
       return `appointments${buildAppointmentQuery(params)}`;
     },
+    get: (id: string) => `appointments/${id}`,
+    delete: (id: string) => `appointments/${id}`,
+    edit : (id: string) => `appointments/${id}`,
   },
 };
 
