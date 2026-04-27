@@ -61,7 +61,6 @@ export async function GET(req: NextRequest) {
     const before = searchParams.get("before") || "";
     const after = searchParams.get("after") || "";
     const updatedAfter = searchParams.get("updated_after") || "";
-    const practitionerId = searchParams.get("practitioner_id") || "";
     const siteId = searchParams.get("site_id") || "";
     const state = searchParams.get("state") || "";
 
@@ -70,7 +69,8 @@ export async function GET(req: NextRequest) {
       before: before ? new Date(before) : undefined,
       after: after ? new Date(after) : undefined,
       updatedAfter: updatedAfter ? new Date(updatedAfter) : undefined,
-      practitionerId: practitionerId || undefined,
+      practitionerId: dentistId || undefined,
+      patientId: patiendId || undefined,
       siteId: siteId || undefined,
       state: state ? (state as AppointmentState) : undefined,
     };
@@ -123,6 +123,57 @@ export async function GET(req: NextRequest) {
 
           await prisma.patient.update({
             where: { id: patient.id },
+            data: { appointmentIds: mergedAppointmentIds },
+          });
+        }),
+      );
+    }
+
+    const appointmentIdsByDentallyPractitionerId = appointments.reduce(
+      (acc, appointment) => {
+        const dentallyPractitionerId = String(appointment.practitionerwId);
+
+        if (!acc[dentallyPractitionerId]) {
+          acc[dentallyPractitionerId] = [];
+        }
+
+        acc[dentallyPractitionerId].push(String(appointment.id));
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    );
+
+    const dentallyPractitionerIds = Object.keys(
+      appointmentIdsByDentallyPractitionerId,
+    );
+
+    if (dentallyPractitionerIds.length) {
+      const dentists = await prisma.dentist.findMany({
+        where: {
+          dentallyId: {
+            in: dentallyPractitionerIds,
+          },
+        },
+        select: {
+          id: true,
+          dentallyId: true,
+          appointmentIds: true,
+        },
+      });
+
+      await Promise.all(
+        dentists.map(async (dentist) => {
+          const incomingAppointmentIds =
+            appointmentIdsByDentallyPractitionerId[dentist.dentallyId] ?? [];
+          const mergedAppointmentIds = Array.from(
+            new Set([
+              ...(dentist.appointmentIds ?? []),
+              ...incomingAppointmentIds,
+            ]),
+          );
+
+          await prisma.dentist.update({
+            where: { id: dentist.id },
             data: { appointmentIds: mergedAppointmentIds },
           });
         }),

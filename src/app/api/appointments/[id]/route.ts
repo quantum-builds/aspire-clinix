@@ -42,9 +42,37 @@ export async function GET(req: NextRequest) {
         { status: 400 },
       );
     }
+    let appointmentOwner = null;
+
+    if (patiendId) {
+      appointmentOwner = await prisma.patient.findUnique({
+        where: { id: patiendId },
+        select: { id: true, appointmentIds: true },
+      });
+    }
+    if (dentistId) {
+      appointmentOwner = await prisma.dentist.findUnique({
+        where: { id: dentistId },
+        select: { id: true, appointmentIds: true },
+      });
+    }
+
+    const currentAppointmentIds: string[] = Array.isArray(
+      appointmentOwner?.appointmentIds,
+    )
+      ? (appointmentOwner.appointmentIds as string[])
+      : [];
+
+    const isExist = currentAppointmentIds.includes(appointmentId);
+
+    if (!isExist) {
+      return NextResponse.json(
+        createResponse(false, "Appointment not found for the user.", null),
+        { status: 404 },
+      );
+    }
 
     const response = await getAppointment(appointmentId);
-    if (response.isError) return response.response;
 
     let appointment: Appointment | null = null;
     appointment = response.response as Appointment;
@@ -56,7 +84,6 @@ export async function GET(req: NextRequest) {
       );
     } // fetch videos
 
-    
     const videos = await prisma.report.findMany({
       where: { appointmentId, fileType: "VIDEO" },
       orderBy: { createdAt: "desc" },
@@ -133,6 +160,49 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
+    let appointment = null;
+
+    if (patiendId) {
+      appointment = await prisma.patient.findUnique({
+        where: { id: patiendId },
+        select: { id: true, appointmentIds: true },
+      });
+    }
+    if (dentistId) {
+      appointment = await prisma.patient.findUnique({
+        where: { id: dentistId },
+        select: { id: true, appointmentIds: true },
+      });
+    }
+
+    const currentAppointmentIds: string[] = Array.isArray(
+      appointment?.appointmentIds,
+    )
+      ? (appointment.appointmentIds as string[])
+      : [];
+
+    if (appointment && currentAppointmentIds.includes(appointmentId)) {
+      if (patiendId) {
+        await prisma.patient.update({
+          where: { id: appointment.id },
+          data: {
+            appointmentIds: currentAppointmentIds.filter(
+              (id: string) => id !== appointmentId,
+            ),
+          },
+        });
+      } else if (dentistId) {
+        await prisma.dentist.update({
+          where: { id: appointment.id },
+          data: {
+            appointmentIds: currentAppointmentIds.filter(
+              (id: string) => id !== appointmentId,
+            ),
+          },
+        });
+      }
+    }
+
     return NextResponse.json(
       createResponse(true, "Appointment deleted successfully", null),
       { status: 204 },
@@ -186,12 +256,37 @@ export async function PATCH(req: NextRequest) {
         { status: 400 },
       );
     }
+    let appointmentOwner = null;
+
+    if (patiendId) {
+      appointmentOwner = await prisma.patient.findUnique({
+        where: { id: patiendId },
+        select: { id: true, appointmentIds: true },
+      });
+    }
+    if (dentistId) {
+      appointmentOwner = await prisma.dentist.findUnique({
+        where: { id: dentistId },
+        select: { id: true, appointmentIds: true },
+      });
+    }
+
+    const currentAppointmentIds: string[] = Array.isArray(
+      appointmentOwner?.appointmentIds,
+    )
+      ? (appointmentOwner.appointmentIds as string[])
+      : [];
+
+    const isExist = currentAppointmentIds.includes(appointmentId);
+
+    if (!isExist) {
+      return NextResponse.json(
+        createResponse(false, "Appointment not found for the user.", null),
+        { status: 404 },
+      );
+    }
 
     const response = await editAppointment(appointmentId, partialAppointment);
-
-    if (response.isError) {
-      return response.response;
-    }
 
     return NextResponse.json(
       createResponse(
