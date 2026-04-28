@@ -6,6 +6,77 @@ import { createResponse } from "@/utils/createResponse";
 import { TokenRoles } from "@/constants/UserRoles";
 import { getPatientById } from "@/dentallyHelpers/patient";
 
+/**
+ * @swagger
+ * /api/referrals/{id}:
+ *   get:
+ *     summary: Get a referral form by ID
+ *     tags: [Referrals]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Referral form ID (CUID)
+ *     responses:
+ *       200:
+ *         description: Referral form fetched successfully
+ *       400:
+ *         description: Invalid Form Id
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Referral form does not exist
+ *       500:
+ *         description: Internal Server Error
+ *   put:
+ *     summary: Update a referral form by ID
+ *     tags: [Referrals]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Referral form ID (CUID)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Referral form updated successfully
+ *       400:
+ *         description: Invalid Form Id
+ *       500:
+ *         description: Internal Server Error
+ *   delete:
+ *     summary: Delete a referral form by ID
+ *     tags: [Referrals]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Referral form ID (CUID)
+ *     responses:
+ *       200:
+ *         description: Referral deleted successfully
+ *       400:
+ *         description: Invalid Form Id
+ *       404:
+ *         description: Referral form does not exist
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   const referralFormId = req.nextUrl.pathname.split("/").pop();
 
@@ -30,7 +101,7 @@ export async function GET(req: NextRequest) {
     if (!referralFormId || !isValidCuid(referralFormId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Form Id.", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,24 +115,27 @@ export async function GET(req: NextRequest) {
         createResponse(
           false,
           "Referral form with this Id does not exists.",
-          null
+          null,
         ),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    let patient = null
+    let patient = null;
     if (referralForm.patientId) {
-      const respose = await getPatientById(referralForm?.patientId)
+      const respose = await getPatientById(referralForm?.patientId);
       if (respose.isError) {
-        return respose.response
+        return respose.response;
       }
-      patient = respose.response
+      patient = respose.response;
     }
 
     return NextResponse.json(
-      createResponse(true, "Referral form fetched successfully.", { referralForm, patient }),
-      { status: 200 }
+      createResponse(true, "Referral form fetched successfully.", {
+        referralForm,
+        patient,
+      }),
+      { status: 200 },
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -75,10 +149,9 @@ export async function PUT(req: NextRequest) {
   const referralFormId = req.nextUrl.pathname.split("/").pop();
 
   if (!referralFormId || !isValidCuid(referralFormId)) {
-    return NextResponse.json(
-      createResponse(false, "Invalid Form Id.", null),
-      { status: 400 }
-    );
+    return NextResponse.json(createResponse(false, "Invalid Form Id.", null), {
+      status: 400,
+    });
   }
 
   try {
@@ -91,7 +164,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Referral form updated successfully..", null),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -108,7 +181,7 @@ export async function DELETE(req: NextRequest) {
     if (!referralFormId || !isValidCuid(referralFormId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Form Id.", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -118,8 +191,12 @@ export async function DELETE(req: NextRequest) {
 
     if (!referralForm) {
       return NextResponse.json(
-        createResponse(false, "Referral form with this Id does not exists.", null),
-        { status: 404 }
+        createResponse(
+          false,
+          "Referral form with this Id does not exists.",
+          null,
+        ),
+        { status: 404 },
       );
     }
 
@@ -129,7 +206,7 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Referral deleted successfully.", null),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

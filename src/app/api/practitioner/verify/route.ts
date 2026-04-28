@@ -6,6 +6,39 @@ import { createResponse } from "@/utils/createResponse";
 import { generateOtp } from "@/utils/generateOtp";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/practitioner/verify:
+ *   post:
+ *     summary: Verify practitioner details and send OTP
+ *     tags: [Practitioner]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - gdcNumber
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               gdcNumber:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: OTP code sent successfully
+ *       400:
+ *         description: Email and GDC Number are required
+ *       404:
+ *         description: No account found
+ *       409:
+ *         description: Multiple accounts found
+ *       500:
+ *         description: Internal Server Error
+ */
 export default async function POST(req: NextRequest) {
   try {
     const { email, gdcNumber } = await req.json();
@@ -32,9 +65,9 @@ export default async function POST(req: NextRequest) {
     const filteredPractitioners = (response.response ?? []).filter(
       (practitioner: any) =>
         practitioner?.user?.email?.trim?.().toLowerCase?.() ===
-        normalizedEmail &&
+          normalizedEmail &&
         practitioner?.gdc_Number?.trim?.().toLowerCase?.() ===
-        normalizedGdcNumber,
+          normalizedGdcNumber,
     );
 
     if (filteredPractitioners.length === 0) {

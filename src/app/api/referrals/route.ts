@@ -6,17 +6,102 @@ import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
 import { getPatient } from "@/dentallyHelpers/patient";
 
+/**
+ * @swagger
+ * /api/referrals:
+ *   post:
+ *     summary: Create a referral form and request
+ *     tags: [Referrals]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               medicalHistoryPdfUrl:
+ *                 type: string
+ *               referralDetails:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               treatmentDetails:
+ *                 type: string
+ *               patientDateOfBirth:
+ *                 type: string
+ *                 format: date-time
+ *               patientAddress:
+ *                 type: string
+ *               patientEmail:
+ *                 type: string
+ *               patientPhoneNumber:
+ *                 type: string
+ *               patientName:
+ *                 type: string
+ *               other:
+ *                 type: string
+ *               referralPracticeNameAddress:
+ *                 type: string
+ *               referralEmail:
+ *                 type: string
+ *               referralGDC:
+ *                 type: string
+ *               referralPhoneNumber:
+ *                 type: string
+ *               referralName:
+ *                 type: string
+ *               attendTreatment:
+ *                 type: string
+ *             example:
+ *               patientName: John Doe
+ *               patientEmail: john.doe@example.com
+ *               patientPhoneNumber: "+44 7700 900123"
+ *               patientAddress: 10 High Street, London, SW1A 1AA
+ *               patientDateOfBirth: "1990-04-15T00:00:00Z"
+ *               referralName: Dr Jane Smith
+ *               referralEmail: jane.smith@practice.example.com
+ *               referralPhoneNumber: "+44 20 7946 0999"
+ *               referralGDC: "123456"
+ *               referralPracticeNameAddress: "Smile Dental, 22 King Road, London"
+ *               attendTreatment: "Yes"
+ *               referralDetails:
+ *                 - "Lower left molar pain"
+ *                 - "Requires endodontic assessment"
+ *               treatmentDetails: "Suspected caries on 36"
+ *               medicalHistoryPdfUrl: "https://example.com/medical-history/john-doe.pdf"
+ *               other: "Patient prefers morning appointments"
+ *     responses:
+ *       201:
+ *         description: Form created successfully
+ *       500:
+ *         description: Internal Server Error
+ *   get:
+ *     summary: Get referral forms for the authenticated dentist
+ *     tags: [Referrals]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Referral forms fetched successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Dentist doesn't have any referral form
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function POST(req: NextRequest) {
-
   const referralForm = await req.json();
   try {
     const patientEmail = referralForm.patientEmail;
 
-    const respose = await getPatient({ emailAddress: patientEmail })
-    
-    let patient = null
+    const respose = await getPatient({ emailAddress: patientEmail });
+
+    let patient = null;
     if (!respose.isError) {
-      patient = respose.response
+      patient = respose.response;
     }
     if (patient) {
       referralForm.patientId = patient.id;
@@ -31,8 +116,6 @@ export async function POST(req: NextRequest) {
     if (referralDentist) {
       referralForm.referralDentistId = referralDentist.id;
     }
-
-
 
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({
@@ -50,7 +133,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Form created successfully.", referral),
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -94,7 +177,7 @@ export async function GET(req: NextRequest) {
     if (referralForms.length === 0) {
       return NextResponse.json(
         createResponse(false, "Dentist don't have any referrel form", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -102,9 +185,9 @@ export async function GET(req: NextRequest) {
       createResponse(
         true,
         "Referral forms fetched successfully.",
-        referralForms
+        referralForms,
       ),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

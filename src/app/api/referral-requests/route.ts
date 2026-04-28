@@ -7,6 +7,54 @@ import { Prisma, ReferralRequestStatus } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/referral-requests:
+ *   get:
+ *     summary: Get referral requests
+ *     tags: [Referral Requests]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by patient or referral name
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [ASSIGNED, UNASSIGNED]
+ *         description: Filter by request status
+ *       - in: query
+ *         name: page-type
+ *         schema:
+ *           type: string
+ *         description: Filter by referral page type
+ *       - in: query
+ *         name: stats-only
+ *         schema:
+ *           type: boolean
+ *         description: Return only referral stats
+ *     responses:
+ *       200:
+ *         description: Referral requests fetched successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: No referral request found
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
@@ -57,49 +105,51 @@ export async function GET(req: NextRequest) {
       if (
         (token.role === TokenRoles.DENTIST ||
           token.role === TokenRoles.REFERRING_DENTIST) &&
-        (searchParams.get("page-type") === DentistReferralPageTYpe.HISTORY)
+        searchParams.get("page-type") === DentistReferralPageTYpe.HISTORY
       ) {
         (baseWhere.referralForm ??= {}).referralDentistId = token.sub;
       }
 
-      const [thisWeekTotal, thisWeekAssigned, thisWeekUnassigned] = await Promise.all([
-        prisma.referralRequest.count({ where: baseWhere }),
-        prisma.referralRequest.count({
-          where: {
-            ...baseWhere,
-            requestStatus: ReferralRequestStatus.ASSIGNED,
-          },
-        }),
-        prisma.referralRequest.count({
-          where: {
-            ...baseWhere,
-            requestStatus: ReferralRequestStatus.UNASSIGNED,
-          },
-        }),
-      ]);
+      const [thisWeekTotal, thisWeekAssigned, thisWeekUnassigned] =
+        await Promise.all([
+          prisma.referralRequest.count({ where: baseWhere }),
+          prisma.referralRequest.count({
+            where: {
+              ...baseWhere,
+              requestStatus: ReferralRequestStatus.ASSIGNED,
+            },
+          }),
+          prisma.referralRequest.count({
+            where: {
+              ...baseWhere,
+              requestStatus: ReferralRequestStatus.UNASSIGNED,
+            },
+          }),
+        ]);
 
-      const [lastWeekTotal, lastWeekAssigned, lastWeekUnassigned] = await Promise.all([
-        prisma.referralRequest.count({
-          where: {
-            ...baseWhere,
-            createdAt: { gte: lastWeekStart, lte: lastWeekEnd },
-          },
-        }),
-        prisma.referralRequest.count({
-          where: {
-            ...baseWhere,
-            requestStatus: ReferralRequestStatus.ASSIGNED,
-            createdAt: { gte: lastWeekStart, lte: lastWeekEnd },
-          },
-        }),
-        prisma.referralRequest.count({
-          where: {
-            ...baseWhere,
-            requestStatus: ReferralRequestStatus.UNASSIGNED,
-            createdAt: { gte: lastWeekStart, lte: lastWeekEnd },
-          },
-        }),
-      ]);
+      const [lastWeekTotal, lastWeekAssigned, lastWeekUnassigned] =
+        await Promise.all([
+          prisma.referralRequest.count({
+            where: {
+              ...baseWhere,
+              createdAt: { gte: lastWeekStart, lte: lastWeekEnd },
+            },
+          }),
+          prisma.referralRequest.count({
+            where: {
+              ...baseWhere,
+              requestStatus: ReferralRequestStatus.ASSIGNED,
+              createdAt: { gte: lastWeekStart, lte: lastWeekEnd },
+            },
+          }),
+          prisma.referralRequest.count({
+            where: {
+              ...baseWhere,
+              requestStatus: ReferralRequestStatus.UNASSIGNED,
+              createdAt: { gte: lastWeekStart, lte: lastWeekEnd },
+            },
+          }),
+        ]);
 
       const averageReferrals =
         thisWeekTotal === 0
@@ -118,14 +168,17 @@ export async function GET(req: NextRequest) {
           },
           unassignedReferrals: {
             count: thisWeekUnassigned,
-            percentageChange: calcChange(thisWeekUnassigned, lastWeekUnassigned),
+            percentageChange: calcChange(
+              thisWeekUnassigned,
+              lastWeekUnassigned,
+            ),
           },
           averageReferrals: {
             count: averageReferrals,
             percentageChange: calcChange(thisWeekAssigned, lastWeekAssigned),
           },
         }),
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -134,14 +187,15 @@ export async function GET(req: NextRequest) {
 
     const status =
       statusParam &&
-        Object.values(ReferralRequestStatus).includes(
-          statusParam as ReferralRequestStatus
-        )
+      Object.values(ReferralRequestStatus).includes(
+        statusParam as ReferralRequestStatus,
+      )
         ? (statusParam as ReferralRequestStatus)
         : undefined;
     let referringDentist = null;
     if (
-      (pageType === DentistReferralPageTYpe.HISTORY && token.role === TokenRoles.DENTIST) ||
+      (pageType === DentistReferralPageTYpe.HISTORY &&
+        token.role === TokenRoles.DENTIST) ||
       token.role === TokenRoles.REFERRING_DENTIST
     ) {
       referringDentist = token.sub;
@@ -149,7 +203,8 @@ export async function GET(req: NextRequest) {
 
     let recievingDentist = null;
     if (
-      (pageType === DentistReferralPageTYpe.REQUEST && token.role === TokenRoles.DENTIST) ||
+      (pageType === DentistReferralPageTYpe.REQUEST &&
+        token.role === TokenRoles.DENTIST) ||
       token.role === TokenRoles.RECIEVING_DENTIST
     ) {
       recievingDentist = token.sub;
@@ -159,14 +214,16 @@ export async function GET(req: NextRequest) {
 
     if (before) {
       dateFilter.createdAt = {
-        ...(dateFilter.createdAt as Prisma.DateTimeFilter<'ReferralForm'> ?? {}),
+        ...((dateFilter.createdAt as Prisma.DateTimeFilter<"ReferralForm">) ??
+          {}),
         lte: new Date(before),
       };
     }
 
     if (after) {
       dateFilter.createdAt = {
-        ...(dateFilter.createdAt as Prisma.DateTimeFilter<'ReferralForm'> ?? {}),
+        ...((dateFilter.createdAt as Prisma.DateTimeFilter<"ReferralForm">) ??
+          {}),
         gte: new Date(after),
       };
     }
@@ -187,18 +244,29 @@ export async function GET(req: NextRequest) {
         {
           ...(search && {
             OR: [
-              { referralForm: { patientName: { contains: search, mode: "insensitive" } } },
-              { referralForm: { referralName: { contains: search, mode: "insensitive" } } },
+              {
+                referralForm: {
+                  patientName: { contains: search, mode: "insensitive" },
+                },
+              },
+              {
+                referralForm: {
+                  referralName: { contains: search, mode: "insensitive" },
+                },
+              },
             ],
           }),
         },
-        ...(referringDentist ? [{ referralForm: { referralDentistId: referringDentist } }] : []),
+        ...(referringDentist
+          ? [{ referralForm: { referralDentistId: referringDentist } }]
+          : []),
         ...(recievingDentist ? [{ assignedDentistId: recievingDentist }] : []),
         ...(status ? [{ requestStatus: status }] : []),
-        ...(Object.keys(dateFilter).length ? [{ referralForm: dateFilter }] : []),
+        ...(Object.keys(dateFilter).length
+          ? [{ referralForm: dateFilter }]
+          : []),
       ],
     };
-
 
     const [referralRequests, totalCount] = await Promise.all([
       prisma.referralRequest.findMany({
@@ -214,7 +282,7 @@ export async function GET(req: NextRequest) {
     if (referralRequests.length === 0) {
       return NextResponse.json(
         createResponse(false, "No referral request found", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -227,7 +295,7 @@ export async function GET(req: NextRequest) {
           totalPages: Math.ceil(totalCount / limit),
         },
       }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

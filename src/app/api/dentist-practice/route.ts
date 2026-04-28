@@ -3,6 +3,91 @@ import { createResponse } from "@/utils/createResponse";
 import { PracticeApprovalStatus, Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/dentist-practice:
+ *   post:
+ *     summary: Create a dentist-practice relation
+ *     tags: [Dentist Practice]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - practiceId
+ *               - dentistId
+ *             properties:
+ *               practiceId:
+ *                 type: string
+ *               dentistId:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *                 enum: [PENDING, APPROVED, REJECTED]
+ *     responses:
+ *       200:
+ *         description: Data created successfully
+ *       400:
+ *         description: Missing required fields
+ *       404:
+ *         description: Practice, dentist, or relation not found
+ *       500:
+ *         description: Internal Server Error
+ *   get:
+ *     summary: Get dentist-practice relations
+ *     tags: [Dentist Practice]
+ *     parameters:
+ *       - in: query
+ *         name: practiceId
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: dentistId
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [PENDING, APPROVED, REJECTED]
+ *     responses:
+ *       200:
+ *         description: Data fetched successfully
+ *       404:
+ *         description: No Data Found
+ *       500:
+ *         description: Internal Server Error
+ *   patch:
+ *     summary: Update a dentist-practice relation
+ *     tags: [Dentist Practice]
+ *     parameters:
+ *       - in: query
+ *         name: practiceId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: dentistId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [PENDING, APPROVED, REJECTED]
+ *     responses:
+ *       200:
+ *         description: Data updated successfully
+ *       400:
+ *         description: Practice and Dentist Id is required
+ *       404:
+ *         description: No Data Found
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function POST(req: NextRequest) {
   try {
     const { practiceId, dentistId, status } = await req.json();

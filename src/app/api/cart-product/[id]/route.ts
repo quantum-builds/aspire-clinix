@@ -4,6 +4,37 @@ import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/cart-product/{id}:
+ *   delete:
+ *     summary: Remove a cart product by ID
+ *     tags: [Cart Product]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Cart product ID (CUID)
+ *       - in: query
+ *         name: patientId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Patient ID used to authorize deletion
+ *     responses:
+ *       200:
+ *         description: Cart product deleted successfully
+ *       400:
+ *         description: Invalid Cart Product Id
+ *       403:
+ *         description: Unauthorized to delete this cart product
+ *       404:
+ *         description: Cart product with this ID does not exist
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function DELETE(req: NextRequest) {
   try {
     // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -21,7 +52,7 @@ export async function DELETE(req: NextRequest) {
     if (!productId || !isValidCuid(productId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Cart Product Id.", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -36,9 +67,9 @@ export async function DELETE(req: NextRequest) {
         createResponse(
           false,
           "Cart Product with this Id does not exist.",
-          null
+          null,
         ),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -47,9 +78,9 @@ export async function DELETE(req: NextRequest) {
         createResponse(
           false,
           "You are not authorized to delete this cart product.",
-          null
+          null,
         ),
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -59,7 +90,7 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Cart Product deleted successfully.", null),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in deleting cart product ", error);

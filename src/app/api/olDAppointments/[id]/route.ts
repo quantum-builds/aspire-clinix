@@ -6,6 +6,119 @@ import { ReferralRequestStatus } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/olDAppointments/{id}:
+ *   get:
+ *     summary: Get an old appointment by ID
+ *     tags: [Old Appointments]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Appointment ID (CUID)
+ *     responses:
+ *       200:
+ *         description: Appointment fetched successfully
+ *       400:
+ *         description: Invalid Appointment
+ *       403:
+ *         description: You are forbidden to view this data
+ *       404:
+ *         description: Appointment does not exist
+ *       500:
+ *         description: Internal Server Error
+ *   patch:
+ *     summary: Update an old appointment by ID
+ *     tags: [Old Appointments]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Appointment ID (CUID)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               practiceId:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *               startTime:
+ *                 type: string
+ *                 format: date-time
+ *               finishTime:
+ *                 type: string
+ *                 format: date-time
+ *               patientId:
+ *                 type: string
+ *               dentistId:
+ *                 type: string
+ *               reason:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *                 enum: [PENDING, CONFIRMED, CANCELLED, COMPLETED]
+ *             example:
+ *               reason: Follow-up appointment
+ *               state: CONFIRMED
+ *               date: '2026-05-15T10:30:00Z'
+ *               startTime: '2026-05-15T10:30:00Z'
+ *               finishTime: '2026-05-15T11:00:00Z'
+ *     responses:
+ *       200:
+ *         description: Appointment updated successfully
+ *       400:
+ *         description: Invalid Appointment
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: You are not authorized to update this appointment
+ *       404:
+ *         description: Appointment does not exist
+ *       500:
+ *         description: Internal Server Error
+ *   delete:
+ *     summary: Delete an old appointment by ID
+ *     tags: [Old Appointments]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Appointment ID (CUID)
+ *       - in: query
+ *         name: patientId
+ *         schema:
+ *           type: string
+ *         description: Patient ID used for delete authorization
+ *     responses:
+ *       200:
+ *         description: Appointment deleted successfully
+ *       400:
+ *         description: Invalid Appointment
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: You are not authorized to delete this appointment
+ *       404:
+ *         description: Appointment does not exist
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
@@ -29,7 +142,7 @@ export async function GET(req: NextRequest) {
         createResponse(false, "You are forbidden to view this data", null),
         {
           status: 403,
-        }
+        },
       );
     }
 
@@ -38,7 +151,7 @@ export async function GET(req: NextRequest) {
     if (!appointmentId || !isValidCuid(appointmentId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Appointment.", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -49,7 +162,7 @@ export async function GET(req: NextRequest) {
     if (!existingAppointment) {
       return NextResponse.json(
         createResponse(false, "Apppointmet does not exist.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
     if (
@@ -60,18 +173,18 @@ export async function GET(req: NextRequest) {
         createResponse(false, "You are forbidden to view this data", null),
         {
           status: 403,
-        }
+        },
       );
     }
 
     const appoitnment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
-      include: {  dentist: true },
+      include: { dentist: true },
     });
 
     return NextResponse.json(
       createResponse(true, "Appointment fetched successfully.", appoitnment),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in fetched appointment ", error);
@@ -94,7 +207,7 @@ export async function PATCH(req: NextRequest) {
 
     const appointmentId = req.nextUrl.pathname.split("/").pop();
     const partialAppointment = await req.json();
-    
+
     let patientId = undefined;
     let dentistId = undefined;
     if (token.role === TokenRoles.PATIENT) {
@@ -109,14 +222,14 @@ export async function PATCH(req: NextRequest) {
         createResponse(false, "You are forbidden to view this data", null),
         {
           status: 403,
-        }
+        },
       );
     }
 
     if (!appointmentId || !isValidCuid(appointmentId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Appointment.", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -127,22 +240,26 @@ export async function PATCH(req: NextRequest) {
     if (!appointment) {
       return NextResponse.json(
         createResponse(false, "Apppointmet does not exist.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (token.role !== TokenRoles.ADMIN) {
       if (
-        (patientId && patientId.trim().length > 0 && appointment.patientId !== patientId) ||
-        (dentistId && dentistId.trim().length > 0 && appointment.dentistId !== dentistId)
+        (patientId &&
+          patientId.trim().length > 0 &&
+          appointment.patientId !== patientId) ||
+        (dentistId &&
+          dentistId.trim().length > 0 &&
+          appointment.dentistId !== dentistId)
       ) {
         return NextResponse.json(
           createResponse(
             false,
             "You are not authorized to update this appointment.",
-            null
+            null,
           ),
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -153,7 +270,9 @@ export async function PATCH(req: NextRequest) {
     });
 
     if (updatedAppointment.state === "CANCELLED") {
-      const referralRequest = await prisma.referralRequest.findUnique({ where: { appointmentId: appointmentId } })
+      const referralRequest = await prisma.referralRequest.findUnique({
+        where: { appointmentId: appointmentId },
+      });
 
       // If this appointment has a linked referral request, unassign it
       if (referralRequest) {
@@ -172,9 +291,9 @@ export async function PATCH(req: NextRequest) {
       createResponse(
         true,
         "Appointment Updated successfully.",
-        updatedAppointment
+        updatedAppointment,
       ),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in updating appointment ", error);
@@ -208,7 +327,7 @@ export async function DELETE(req: NextRequest) {
     if (!appointmentId || !isValidCuid(appointmentId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Appointment.", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -219,7 +338,7 @@ export async function DELETE(req: NextRequest) {
     if (!appointment) {
       return NextResponse.json(
         createResponse(false, "Apppointmet does not exist.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -228,9 +347,9 @@ export async function DELETE(req: NextRequest) {
         createResponse(
           false,
           "You are not authorized to delete this appointment.",
-          null
+          null,
         ),
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -240,7 +359,7 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Appointment deleted successfully.", null),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in deleting appointment ", error);

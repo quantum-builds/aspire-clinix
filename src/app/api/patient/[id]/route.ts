@@ -1,10 +1,126 @@
 import { TokenRoles } from "@/constants/UserRoles";
-import { deletePatientById, getPatientById, patchPatientById } from "@/dentallyHelpers/patient";
+import {
+  deletePatientById,
+  getPatientById,
+  patchPatientById,
+} from "@/dentallyHelpers/patient";
 import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/patient/{id}:
+ *   get:
+ *     summary: Get a patient by ID
+ *     tags: [Patient]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Patient ID (CUID)
+ *     responses:
+ *       200:
+ *         description: Patient fetched successfully
+ *       400:
+ *         description: Invalid Patient Id
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: No patient found
+ *       500:
+ *         description: Internal Server Error
+ *   patch:
+ *     summary: Update a patient by ID
+ *     tags: [Patient]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Patient ID (CUID)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               mobilePhone:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               addressLine1:
+ *                 type: string
+ *               postCode:
+ *                 type: string
+ *               dateOfBirth:
+ *                 type: string
+ *                 format: date
+ *             example:
+ *               title: Mr
+ *               firstName: John
+ *               lastName: Doe
+ *               mobilePhone: '+447700900123'
+ *               email: john.doe@example.com
+ *               addressLine1: 10 High Street
+ *               postCode: SW1A 1AA
+ *               dateOfBirth: '1990-01-01'
+ *     responses:
+ *       200:
+ *         description: Patient updated successfully
+ *       400:
+ *         description: Invalid Patient Id
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: No patient found
+ *       500:
+ *         description: Internal Server Error
+ *   delete:
+ *     summary: Delete a patient by ID
+ *     tags: [Patient]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Patient ID (CUID)
+ *     responses:
+ *       204:
+ *         description: Patient deleted successfully
+ *       400:
+ *         description: Invalid Patient Id
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: No patient found
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   const token = await getToken({ req });
 
@@ -24,9 +140,12 @@ export async function GET(req: NextRequest) {
     const patientId = req.nextUrl.pathname.split("/").pop();
 
     if (!patientId || !isValidCuid(patientId)) {
-      return NextResponse.json(createResponse(false, "Invalid Patient Id", null), {
-        status: 400,
-      });
+      return NextResponse.json(
+        createResponse(false, "Invalid Patient Id", null),
+        {
+          status: 400,
+        },
+      );
     }
 
     if (token.role === TokenRoles.PATIENT && patientId !== token.sub) {
@@ -35,22 +154,22 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const getPatientRespose = await getPatientById(patientId)
+    const getPatientRespose = await getPatientById(patientId);
     if (getPatientRespose.isError) {
-      return getPatientRespose.response
+      return getPatientRespose.response;
     }
-    const patient = getPatientRespose.response
+    const patient = getPatientRespose.response;
 
     if (!patient) {
       return NextResponse.json(
         createResponse(false, "No Patient found", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json(
       createResponse(true, "Patienst fetched successfully", patient),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in fetching patient", error);
@@ -81,35 +200,41 @@ export async function PATCH(req: NextRequest) {
     const patientId = req.nextUrl.pathname.split("/").pop();
 
     if (!patientId || !isValidCuid(patientId)) {
-      return NextResponse.json(createResponse(false, "Invalid Patient Id", null), {
-        status: 400,
-      });
+      return NextResponse.json(
+        createResponse(false, "Invalid Patient Id", null),
+        {
+          status: 400,
+        },
+      );
     }
 
-    const respose = await getPatientById(patientId)
+    const respose = await getPatientById(patientId);
     if (respose.isError) {
-      return respose.response
+      return respose.response;
     }
-    const patient = respose.response
+    const patient = respose.response;
 
     if (!patient) {
       return NextResponse.json(
         createResponse(false, "No Patient found", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     const partialPatient = await req.json();
 
-    const patchPatientRespose = await patchPatientById(patientId, partialPatient)
+    const patchPatientRespose = await patchPatientById(
+      patientId,
+      partialPatient,
+    );
     if (patchPatientRespose.isError) {
-      return patchPatientRespose.response
+      return patchPatientRespose.response;
     }
-    const updatedPatient = patchPatientRespose.response
+    const updatedPatient = patchPatientRespose.response;
 
     return NextResponse.json(
       createResponse(true, "Patient is updated successfully", updatedPatient),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -139,32 +264,35 @@ export async function DELETE(req: NextRequest) {
     const patientId = req.nextUrl.pathname.split("/").pop();
 
     if (!patientId || !isValidCuid(patientId)) {
-      return NextResponse.json(createResponse(false, "Invalid Patient Id", null), {
-        status: 400,
-      });
+      return NextResponse.json(
+        createResponse(false, "Invalid Patient Id", null),
+        {
+          status: 400,
+        },
+      );
     }
 
-    const getPatientRespose = await getPatientById(patientId)
+    const getPatientRespose = await getPatientById(patientId);
     if (getPatientRespose.isError) {
-      return getPatientRespose.response
+      return getPatientRespose.response;
     }
-    const patient = getPatientRespose.response
+    const patient = getPatientRespose.response;
 
     if (!patient) {
       return NextResponse.json(
         createResponse(false, "No Patient found", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    const deletePatientRespose = await deletePatientById(patientId)
+    const deletePatientRespose = await deletePatientById(patientId);
     if (deletePatientRespose.isError) {
-      return deletePatientRespose.response
+      return deletePatientRespose.response;
     }
 
     return NextResponse.json(
       createResponse(true, "Patient is deleted successfully", null),
-      { status: 204 }
+      { status: 204 },
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

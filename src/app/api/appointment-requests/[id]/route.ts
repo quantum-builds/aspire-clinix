@@ -3,6 +3,95 @@ import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/appointment-requests/{id}:
+ *   get:
+ *     summary: Get an appointment request by ID
+ *     tags: [Appointment Requests]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Appointment request ID (CUID)
+ *     responses:
+ *       200:
+ *         description: Appointment request fetched successfully
+ *       400:
+ *         description: Invalid Appointment Request Id
+ *       404:
+ *         description: No appointment request found
+ *       500:
+ *         description: Internal Server Error
+ *   delete:
+ *     summary: Delete an appointment request by ID
+ *     tags: [Appointment Requests]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Appointment request ID (CUID)
+ *       - in: query
+ *         name: patientId
+ *         schema:
+ *           type: string
+ *         description: Patient ID used to authorize deletion
+ *     responses:
+ *       200:
+ *         description: Appointment request deleted successfully
+ *       400:
+ *         description: Invalid Appointment
+ *       403:
+ *         description: Unauthorized to delete this appointment request
+ *       404:
+ *         description: Appointment request does not exist
+ *       500:
+ *         description: Internal Server Error
+ *   patch:
+ *     summary: Update an appointment request by ID
+ *     tags: [Appointment Requests]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Appointment request ID (CUID)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 description: Status of the appointment request
+ *               notes:
+ *                 type: string
+ *                 description: Notes for the appointment request
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Appointment date and time
+ *             example:
+ *               status: CONFIRMED
+ *               notes: Updated appointment details
+ *               date: '2026-05-15T10:30:00Z'
+ *     responses:
+ *       200:
+ *         description: Appointment request updated successfully
+ *       400:
+ *         description: Invalid Appointment Request id
+ *       404:
+ *         description: Appointment request does not exist
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
@@ -19,7 +108,7 @@ export async function GET(req: NextRequest) {
     if (!appointmentRequestId || !isValidCuid(appointmentRequestId)) {
       return NextResponse.json(
         { message: "Invalid Appointment Request Id." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -31,7 +120,7 @@ export async function GET(req: NextRequest) {
     if (!appointmentRequest) {
       return NextResponse.json(
         createResponse(false, "No Appointment Request found", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -39,9 +128,9 @@ export async function GET(req: NextRequest) {
       createResponse(
         true,
         "Appointment Request fetched successfully",
-        appointmentRequest
+        appointmentRequest,
       ),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in fetching appointment request", error);
@@ -69,7 +158,7 @@ export async function DELETE(req: NextRequest) {
     if (!appointmentRequestId || !isValidCuid(appointmentRequestId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Appointment.", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -80,7 +169,7 @@ export async function DELETE(req: NextRequest) {
     if (!appointmentRequest) {
       return NextResponse.json(
         createResponse(false, "Apppointmet request does not exist.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -89,9 +178,9 @@ export async function DELETE(req: NextRequest) {
         createResponse(
           false,
           "You are not authorized to delete this appointment request.",
-          null
+          null,
         ),
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -101,7 +190,7 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Appointment request  deleted successfully.", null),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in deleting appointment request ", error);
@@ -130,7 +219,7 @@ export async function PATCH(req: NextRequest) {
     if (!appointmentRequestId || !isValidCuid(appointmentRequestId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Appointment Request id.", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -141,7 +230,7 @@ export async function PATCH(req: NextRequest) {
     if (!appointment) {
       return NextResponse.json(
         createResponse(false, "Apppointmet request does not exist.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -165,9 +254,9 @@ export async function PATCH(req: NextRequest) {
       createResponse(
         true,
         "Appointment request Updated successfully.",
-        updatedAppointment
+        updatedAppointment,
       ),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in updating appointment request", error);

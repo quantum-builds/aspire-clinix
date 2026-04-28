@@ -7,6 +7,109 @@ import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
 import { getPatient } from "@/dentallyHelpers/patient";
 
+/**
+ * @swagger
+ * /api/referral-dentist:
+ *   get:
+ *     summary: Get referral dentist profile or all dentists for admin
+ *     tags: [Referral Dentist]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Dentist record fetched successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: No dentist found
+ *       500:
+ *         description: Internal Server Error
+ *   post:
+ *     summary: Register a referral dentist
+ *     tags: [Referral Dentist]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - phoneNumber
+ *               - gdcNo
+ *               - role
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               phoneNumber:
+ *                 type: string
+ *               gdcNo:
+ *                 type: string
+ *               practiceId:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Dentist registered successfully
+ *       400:
+ *         description: Validation failed or fields already in use
+ *       500:
+ *         description: Internal Server Error
+ *   patch:
+ *     summary: Update the authenticated referral dentist
+ *     tags: [Referral Dentist]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               gdcNo:
+ *                 type: string
+ *               dentallyId:
+ *                 type: string
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               appointmentIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *             example:
+ *               email: sarah.ahmed@clinic.com
+ *               gdcNo: GDC123456
+ *               dentallyId: DENTALLY-001
+ *               firstName: Sarah
+ *               lastName: Ahmed
+ *               appointmentIds:
+ *                 - appt_01HZYABC123
+ *                 - appt_01HZYABC456
+ *     responses:
+ *       200:
+ *         description: Dentist updated successfully
+ *       400:
+ *         description: Validation failed or fields already in use
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: No dentist found
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
@@ -29,7 +132,7 @@ export async function GET(req: NextRequest) {
       if (!dentist) {
         return NextResponse.json(
           createResponse(false, "No Dentist found", dentist),
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -46,21 +149,21 @@ export async function GET(req: NextRequest) {
           {
             dentist,
             request,
-          }
+          },
         ),
-        { status: 200 }
+        { status: 200 },
       );
     } else if (token.role === TokenRoles.ADMIN) {
       const dentists = await prisma.dentist.findMany({});
 
       if (dentists.length < 1) {
         return NextResponse.json(
-          createResponse(false, "No Dentist found", null)
+          createResponse(false, "No Dentist found", null),
         );
       }
 
       return NextResponse.json(
-        createResponse(true, "Dentists fetched successfully", dentists)
+        createResponse(true, "Dentists fetched successfully", dentists),
       );
     } else {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
@@ -86,11 +189,14 @@ export async function POST(req: NextRequest) {
       where: { OR: [{ email }, { phoneNumber }] },
     });
 
-    const respose = await getPatient({ emailAddress: email, mobilePhone: phoneNumber })
+    const respose = await getPatient({
+      emailAddress: email,
+      mobilePhone: phoneNumber,
+    });
     if (respose.isError) {
-      return respose.response
+      return respose.response;
     }
-    const existingPatient = respose.response
+    const existingPatient = respose.response;
 
     const existingAdmin = await prisma.admin.findFirst({
       where: { OR: [{ email }, { phoneNumber }] },
@@ -100,32 +206,48 @@ export async function POST(req: NextRequest) {
 
     if (existingDentist) {
       if (existingDentist.email === email) conflicts.push("email");
-      if (existingDentist.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingDentist.phoneNumber === phoneNumber)
+        conflicts.push("phone number");
       if (existingDentist.gdcNo === gdcNo) conflicts.push("GDC number");
     }
 
     if (existingPatient) {
       if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.mobilePhone === phoneNumber) conflicts.push("phone number");
+      if (existingPatient.mobilePhone === phoneNumber)
+        conflicts.push("phone number");
     }
 
     if (existingAdmin) {
       if (existingAdmin.email === email) conflicts.push("email");
-      if (existingAdmin.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingAdmin.phoneNumber === phoneNumber)
+        conflicts.push("phone number");
     }
 
     const uniqueConflicts = Array.from(new Set(conflicts));
 
     if (uniqueConflicts.length > 0) {
       return NextResponse.json(
-        createResponse(false, `These fields are already in use: ${uniqueConflicts.join(", ")}`, null),
-        { status: 400 }
+        createResponse(
+          false,
+          `These fields are already in use: ${uniqueConflicts.join(", ")}`,
+          null,
+        ),
+        { status: 400 },
       );
     }
 
     // Validate role
-    if (![DentistRole.RECIEVING_DENTIST, DentistRole.REFERRING_DENTIST, DentistRole.DENTIST].includes(dentist.role)) {
-      return NextResponse.json(createResponse(false, "Invalid Dentist role", null), { status: 400 });
+    if (
+      ![
+        DentistRole.RECIEVING_DENTIST,
+        DentistRole.REFERRING_DENTIST,
+        DentistRole.DENTIST,
+      ].includes(dentist.role)
+    ) {
+      return NextResponse.json(
+        createResponse(false, "Invalid Dentist role", null),
+        { status: 400 },
+      );
     }
 
     // Check referral forms
@@ -166,14 +288,18 @@ export async function POST(req: NextRequest) {
       return newDentist;
     });
 
-    return NextResponse.json(createResponse(true, "Dentist registered successfully", result), { status: 201 });
+    return NextResponse.json(
+      createResponse(true, "Dentist registered successfully", result),
+      { status: 201 },
+    );
   } catch (error) {
     console.error("Error in creating dentist:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(createResponse(false, errorMessage, null), { status: 500 });
+    return NextResponse.json(createResponse(false, errorMessage, null), {
+      status: 500,
+    });
   }
 }
-
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -199,7 +325,7 @@ export async function PATCH(req: NextRequest) {
     if (!dentist) {
       return NextResponse.json(
         createResponse(false, "No Dentist found", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -214,11 +340,14 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    const respose = await getPatient({ emailAddress: email, mobilePhone: phoneNumber })
+    const respose = await getPatient({
+      emailAddress: email,
+      mobilePhone: phoneNumber,
+    });
     if (respose.isError) {
-      return respose.response
+      return respose.response;
     }
-    const existingPatient = respose.response
+    const existingPatient = respose.response;
 
     const existingAdmin = await prisma.admin.findFirst({
       where: {
@@ -237,18 +366,21 @@ export async function PATCH(req: NextRequest) {
 
     if (existingDentist) {
       if (existingDentist.email === email) conflicts.push("email");
-      if (existingDentist.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingDentist.phoneNumber === phoneNumber)
+        conflicts.push("phone number");
       if (existingDentist.gdcNo === gdc) conflicts.push("GDC number");
     }
 
     if (existingPatient) {
       if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.mobilePhone === phoneNumber) conflicts.push("phone number");
+      if (existingPatient.mobilePhone === phoneNumber)
+        conflicts.push("phone number");
     }
 
     if (existingAdmin) {
       if (existingAdmin.email === email) conflicts.push("email");
-      if (existingAdmin.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingAdmin.phoneNumber === phoneNumber)
+        conflicts.push("phone number");
     }
 
     const uniqueConflicts = Array.from(new Set(conflicts));
@@ -258,9 +390,9 @@ export async function PATCH(req: NextRequest) {
         createResponse(
           false,
           `These fields are already in use: ${uniqueConflicts.join(", ")}`,
-          null
+          null,
         ),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -271,7 +403,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Dentist is updated successfully", updatedDentist),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in updated dentist", error);

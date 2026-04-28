@@ -5,6 +5,46 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
+/**
+ * @swagger
+ * /api/stripe/product/checkout:
+ *   post:
+ *     summary: Create a Stripe checkout session for products
+ *     tags: [Stripe]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - products
+ *             properties:
+ *               products:
+ *                 type: array
+ *                 description: Array of products to checkout
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     productId:
+ *                       type: string
+ *                       description: Stripe product ID
+ *                     quantity:
+ *                       type: integer
+ *                       description: Product quantity
+ *               cartId:
+ *                 type: string
+ *                 description: Cart ID (required)
+ *     responses:
+ *       200:
+ *         description: Checkout session created successfully
+ *       400:
+ *         description: No products in cart or invalid cart item
+ *       404:
+ *         description: No price found for product
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function POST(req: NextRequest) {
   try {
     // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -26,7 +66,7 @@ export async function POST(req: NextRequest) {
     ) {
       return NextResponse.json(
         createResponse(false, "No Product in the cart", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
@@ -38,7 +78,7 @@ export async function POST(req: NextRequest) {
       if (!productId || typeof quantity !== "number" || quantity <= 0) {
         return NextResponse.json(
           createResponse(false, "Invalid cart item", null),
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -52,9 +92,9 @@ export async function POST(req: NextRequest) {
           createResponse(
             false,
             `No price found for product ${productId}`,
-            null
+            null,
           ),
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -80,7 +120,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Checkout session created", checkoutSession),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log(error);

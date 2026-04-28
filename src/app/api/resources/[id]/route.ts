@@ -5,6 +5,77 @@ import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/resources/{id}:
+ *   patch:
+ *     summary: Update a resource
+ *     tags: [Resources]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Resource ID (CUID)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Resource title
+ *               fileUrl:
+ *                 type: string
+ *                 description: Public URL for the resource file
+ *               fileType:
+ *                 type: string
+ *                 enum: [PDF, VIDEO]
+ *                 description: Type of the resource
+ *             example:
+ *               title: "Root Canal Guide"
+ *               fileUrl: "https://example.com/resources/root-canal-guide.pdf"
+ *               fileType: PDF
+ *     responses:
+ *       200:
+ *         description: Resource updated successfully
+ *       400:
+ *         description: Invalid Resource Id
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ *   delete:
+ *     summary: Delete a resource
+ *     tags: [Resources]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Resource ID (CUID)
+ *     responses:
+ *       200:
+ *         description: Resource deleted successfully
+ *       400:
+ *         description: Invalid Resource Id
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - admin role required
+ *       404:
+ *         description: Resource does not exist
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function PATCH(req: NextRequest) {
   try {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -20,7 +91,7 @@ export async function PATCH(req: NextRequest) {
     if (!resourceId || !isValidCuid(resourceId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Resource Id.", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -33,7 +104,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Resource updated successfully.", null),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in updating resource ", error);
@@ -65,7 +136,7 @@ export async function DELETE(req: NextRequest) {
     if (!resourceId || !isValidCuid(resourceId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Resource Id.", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -76,7 +147,7 @@ export async function DELETE(req: NextRequest) {
     if (!resource) {
       return NextResponse.json(
         createResponse(false, "Resource with this Id does not exist.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -86,7 +157,7 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Resource deleted successfully.", null),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in deleting resource ", error);

@@ -2,6 +2,52 @@ import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/cart-product:
+ *   get:
+ *     summary: Get cart products for a patient
+ *     tags: [Cart Product]
+ *     parameters:
+ *       - in: query
+ *         name: patientId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Patient ID used to fetch the cart
+ *     responses:
+ *       200:
+ *         description: Cart items fetched successfully
+ *       500:
+ *         description: Internal Server Error
+ *   post:
+ *     summary: Add or update a cart product
+ *     tags: [Cart Product]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productId
+ *               - quantity
+ *               - patientId
+ *             properties:
+ *               productId:
+ *                 type: string
+ *               quantity:
+ *                 type: integer
+ *               patientId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Cart updated successfully
+ *       400:
+ *         description: Invalid product data
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   try {
     // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -31,7 +77,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Cart items fetched successfully.", carttProducts),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in fetching cart items", error);
@@ -58,7 +104,7 @@ export async function POST(req: NextRequest) {
   if (!productId || !quantity || !patientId) {
     return NextResponse.json(
       createResponse(false, "Invalid product data", null),
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -123,7 +169,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Cart updated successfully", newQuantity),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error in updating cart:", error);

@@ -4,6 +4,61 @@ import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     summary: Get products
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of products per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search products by name
+ *     responses:
+ *       200:
+ *         description: Products fetched successfully
+ *       404:
+ *         description: No products found
+ *       500:
+ *         description: Internal Server Error
+ *   post:
+ *     summary: Create a product
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Product created successfully
+ *       400:
+ *         description: Product already exist
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -31,7 +86,7 @@ export async function GET(req: Request) {
     if (!products || !total) {
       return NextResponse.json(
         createResponse(false, "No products found.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -45,7 +100,7 @@ export async function GET(req: Request) {
           totalPages: Math.ceil(total / limit),
         },
       }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error in fetching products", error);
@@ -76,7 +131,7 @@ export async function POST(req: NextRequest) {
         createResponse(false, "Product already exist", null),
         {
           status: 400,
-        }
+        },
       );
     }
 
@@ -86,7 +141,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Product created successfully.", null),
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.log("Error in creating product ", error);

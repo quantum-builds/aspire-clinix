@@ -4,6 +4,58 @@ import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/reports/{id}:
+ *   patch:
+ *     summary: Update a report by ID
+ *     tags: [Reports]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Report ID (CUID)
+ *     responses:
+ *       200:
+ *         description: Report updated successfully
+ *       400:
+ *         description: Invalid Report Id
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Unauthorized to update this report
+ *       500:
+ *         description: Internal Server Error
+ *   delete:
+ *     summary: Delete a report by ID
+ *     tags: [Reports]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Report ID (CUID)
+ *     responses:
+ *       200:
+ *         description: Report deleted successfully
+ *       400:
+ *         description: Invalid Report Id
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Unauthorized to delete this report
+ *       404:
+ *         description: Report not found
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function PATCH(req: NextRequest) {
   try {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });

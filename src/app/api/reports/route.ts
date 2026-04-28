@@ -5,6 +5,64 @@ import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/reports:
+ *   get:
+ *     summary: Get reports
+ *     tags: [Reports]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search reports by title
+ *       - in: query
+ *         name: appointmentId
+ *         schema:
+ *           type: string
+ *         description: Filter reports by appointment ID
+ *     responses:
+ *       200:
+ *         description: Reports fetched successfully
+ *       404:
+ *         description: No reports found
+ *       500:
+ *         description: Internal Server Error
+ *   post:
+ *     summary: Create report(s)
+ *     tags: [Reports]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - type: object
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *             example:
+ *               appointmentId: clx123abc
+ *               patientId: clx456def
+ *               title: X-Ray Report
+ *               fileType: PDF
+ *     responses:
+ *       201:
+ *         description: Reports created successfully
+ *       400:
+ *         description: Validation failed
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Appointment not found for the dentist
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({

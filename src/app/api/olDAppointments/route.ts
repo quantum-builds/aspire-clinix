@@ -6,6 +6,103 @@ import { AppointmentStatus, DentistRole, Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/olDAppointments:
+ *   get:
+ *     summary: Get old appointments
+ *     tags: [Old Appointments]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: on
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: before
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: after
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: updated_after
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: practitioner_id
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: dateType
+ *         schema:
+ *           type: string
+ *           enum: [PAST, UPCOMING]
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [PENDING, CONFIRMED, CANCELLED, COMPLETED]
+ *     responses:
+ *       200:
+ *         description: Appointments fetched successfully
+ *       403:
+ *         description: Unauthorized
+ *       404:
+ *         description: No appointments found
+ *       500:
+ *         description: Internal Server Error
+ *   post:
+ *     summary: Create an old appointment
+ *     tags: [Old Appointments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dentistId:
+ *                 type: string
+ *               practiceId:
+ *                 type: string
+ *               patientId:
+ *                 type: string
+ *               reason:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *                 enum: [PENDING, CONFIRMED, CANCELLED, COMPLETED]
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *               startTime:
+ *                 type: string
+ *                 format: date-time
+ *               finishTime:
+ *                 type: string
+ *                 format: date-time
+ *     responses:
+ *       201:
+ *         description: Appointment created successfully
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({
@@ -47,9 +144,9 @@ export async function GET(req: NextRequest) {
 
     const status =
       statusParam &&
-        Object.values(AppointmentStatus).includes(
-          statusParam as AppointmentStatus
-        )
+      Object.values(AppointmentStatus).includes(
+        statusParam as AppointmentStatus,
+      )
         ? (statusParam as AppointmentStatus)
         : undefined;
 
@@ -59,7 +156,7 @@ export async function GET(req: NextRequest) {
       ...(dentistId && { dentistId }),
       state: status, // always set, defaults to PENDING
     };
-    
+
     const now = new Date();
     const todayStart = new Date(now.setHours(0, 0, 0, 0));
     const todayEnd = new Date(now.setHours(23, 59, 59, 999));
@@ -101,7 +198,6 @@ export async function GET(req: NextRequest) {
       };
     }
 
-
     const [appointments, totalCount] = await Promise.all([
       prisma.appointment.findMany({
         where: baseWhere,
@@ -118,7 +214,7 @@ export async function GET(req: NextRequest) {
     if (!appointments.length) {
       return NextResponse.json(
         createResponse(false, "No appointments found.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -131,7 +227,7 @@ export async function GET(req: NextRequest) {
           totalPages: Math.ceil(totalCount / limit),
         },
       }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error fetching appointments", error);
@@ -157,13 +253,18 @@ export async function POST(req: NextRequest) {
         finishTime: new Date(appointment.finishTime),
       },
     });
-    const dentist=await prisma.dentist.findUnique({where:{id:appointment.dentistId}})
-    if(dentist?.role===TokenRoles.REFERRING_DENTIST){
-      await prisma.dentist.update({where:{id:dentist.id},data:{role:DentistRole.DENTIST}})
+    const dentist = await prisma.dentist.findUnique({
+      where: { id: appointment.dentistId },
+    });
+    if (dentist?.role === TokenRoles.REFERRING_DENTIST) {
+      await prisma.dentist.update({
+        where: { id: dentist.id },
+        data: { role: DentistRole.DENTIST },
+      });
     }
     return NextResponse.json(
       createResponse(true, "Appointment created successfully", newAppointment),
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.log("Error in creating appointment ", error);

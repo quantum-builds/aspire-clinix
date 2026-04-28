@@ -12,6 +12,107 @@ import {
   ListAppointment,
 } from "@/types/appointment";
 
+/**
+ * @swagger
+ * /api/appointments:
+ *   post:
+ *     summary: Book an appointment
+ *     tags: [Appointments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               patientId:
+ *                 type: string
+ *               practitionerId:
+ *                 type: string
+ *               siteId:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *     responses:
+ *       201:
+ *         description: Appointment Booked Successfully
+ *       500:
+ *         description: Internal Server Error
+ *   get:
+ *     summary: Get list of appointments
+ *     tags: [Appointments]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: on
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter appointments on this date
+ *       - in: query
+ *         name: before
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter appointments before this date
+ *       - in: query
+ *         name: after
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter appointments after this date
+ *       - in: query
+ *         name: updated_after
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter appointments updated after this date
+ *       - in: query
+ *         name: site_id
+ *         schema:
+ *           type: string
+ *         description: Filter by site ID
+ *       - in: query
+ *         name: state
+ *         schema:
+ *           type: string
+ *           enum: [pending, confirmed, cancelled, completed]
+ *         description: Filter by appointment state
+ *     responses:
+ *       200:
+ *         description: Appointments fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       patientId:
+ *                         type: string
+ *                       practitionerwId:
+ *                         type: string
+ *                       siteId:
+ *                         type: string
+ *                       state:
+ *                         type: string
+ *       403:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 export async function POST(req: NextRequest) {
   try {
     const appointment = await req.json();

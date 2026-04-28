@@ -3,6 +3,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { getPatient } from "@/dentallyHelpers/patient";
 import prisma from "@/lib/db";
 
+/**
+ * @swagger
+ * /api/patient/family-member:
+ *   get:
+ *     summary: Get family members for a patient family ID
+ *     tags: [Patient]
+ *     parameters:
+ *       - in: query
+ *         name: familyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Family ID used to fetch linked patients
+ *     responses:
+ *       200:
+ *         description: Family members fetched successfully
+ *       400:
+ *         description: FamilyId is required
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -50,7 +71,7 @@ export async function GET(req: NextRequest) {
               familyId,
             },
           });
-        } 
+        }
       }),
     );
 

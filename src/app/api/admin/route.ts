@@ -6,6 +6,84 @@ import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
 import { getPatient } from "@/dentallyHelpers/patient";
 
+/**
+ * @swagger
+ * /api/admin:
+ *   get:
+ *     summary: Get the authenticated admin profile
+ *     tags: [Admin]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Admin record successfully fetched
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: No admin found
+ *       500:
+ *         description: Internal Server Error
+ *   post:
+ *     summary: Create the admin account
+ *     tags: [Admin]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - phoneNumber
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               phoneNumber:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Admin registered successfully
+ *       400:
+ *         description: Admin already exist or fields already in use
+ *       500:
+ *         description: Internal Server Error
+ *   patch:
+ *     summary: Update the authenticated admin profile
+ *     tags: [Admin]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               phoneNumber:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Admin is updated successfully
+ *       400:
+ *         description: Validation failed or fields already in use
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: No admin found
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
@@ -33,7 +111,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Admin record successfully fetched", admin),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in fetching admin ", error);
@@ -55,7 +133,7 @@ export async function POST(req: NextRequest) {
     if (anyAdmin.length > 0) {
       return NextResponse.json(
         createResponse(false, "Admin already exist", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
     const existingDentist = await prisma.dentist.findFirst({
@@ -64,11 +142,14 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const respose = await getPatient({ emailAddress: email, mobilePhone: phoneNumber })
+    const respose = await getPatient({
+      emailAddress: email,
+      mobilePhone: phoneNumber,
+    });
     if (respose.isError) {
-      return respose.response
+      return respose.response;
     }
-    const existingPatient = respose.response
+    const existingPatient = respose.response;
     // if (existingDentist || existingPatient) {
     //   return NextResponse.json(
     //     createResponse(false, "User data already exists", null),
@@ -80,12 +161,14 @@ export async function POST(req: NextRequest) {
 
     if (existingDentist) {
       if (existingDentist.email === email) conflicts.push("email");
-      if (existingDentist.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingDentist.phoneNumber === phoneNumber)
+        conflicts.push("phone number");
     }
 
     if (existingPatient) {
       if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.mobilePhone === phoneNumber) conflicts.push("phone number");
+      if (existingPatient.mobilePhone === phoneNumber)
+        conflicts.push("phone number");
     }
 
     const uniqueConflicts = Array.from(new Set(conflicts));
@@ -95,9 +178,9 @@ export async function POST(req: NextRequest) {
         createResponse(
           false,
           `These fields are already in use: ${uniqueConflicts.join(", ")}`,
-          null
+          null,
         ),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -112,7 +195,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Admin registered successfully", newPatient),
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.log("Error in creating admin ", error);
@@ -161,11 +244,14 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    const respose = await getPatient({ emailAddress: email, mobilePhone: phoneNumber })
+    const respose = await getPatient({
+      emailAddress: email,
+      mobilePhone: phoneNumber,
+    });
     if (respose.isError) {
-      return respose.response
+      return respose.response;
     }
-    const existingPatient = respose.response
+    const existingPatient = respose.response;
 
     // if (existingDentist || existingPatient) {
     //   return NextResponse.json(
@@ -178,12 +264,14 @@ export async function PATCH(req: NextRequest) {
 
     if (existingDentist) {
       if (existingDentist.email === email) conflicts.push("email");
-      if (existingDentist.phoneNumber === phoneNumber) conflicts.push("phone number");
+      if (existingDentist.phoneNumber === phoneNumber)
+        conflicts.push("phone number");
     }
 
     if (existingPatient) {
       if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.mobilePhone === phoneNumber) conflicts.push("phone number");
+      if (existingPatient.mobilePhone === phoneNumber)
+        conflicts.push("phone number");
     }
 
     const uniqueConflicts = Array.from(new Set(conflicts));
@@ -193,9 +281,9 @@ export async function PATCH(req: NextRequest) {
         createResponse(
           false,
           `These fields are already in use: ${uniqueConflicts.join(", ")}`,
-          null
+          null,
         ),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -206,7 +294,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Admin is updated successfully", updatedAdmin),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in updated Admin", error);

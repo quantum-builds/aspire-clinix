@@ -3,6 +3,26 @@ import { GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/uploads:
+ *   get:
+ *     summary: Get signed URLs for media files or list all media
+ *     tags: [Uploads]
+ *     parameters:
+ *       - in: query
+ *         name: fileName
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description: File names to generate signed URLs for (optional, supports multiple values)
+ *     responses:
+ *       200:
+ *         description: Media URLs retrieved successfully
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
 
@@ -20,12 +40,12 @@ export async function GET(req: NextRequest) {
           });
           const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
           return { url, fileName };
-        })
+        }),
       );
 
       return NextResponse.json(
         { success: true, media: mediaUrls },
-        { status: 200 }
+        { status: 200 },
       );
     } else {
       // List all media files
@@ -63,7 +83,7 @@ export async function GET(req: NextRequest) {
 
       // Filter files by allowed extensions
       const mediaFiles = Contents.filter((file) =>
-        allExtensions.some((ext) => file.Key?.toLowerCase().endsWith(ext))
+        allExtensions.some((ext) => file.Key?.toLowerCase().endsWith(ext)),
       );
 
       // Generate signed URLs
@@ -76,7 +96,7 @@ export async function GET(req: NextRequest) {
               Bucket: process.env.AWS_BUCKET_NAME!,
               Key: file.Key!,
             }),
-            { expiresIn: 3600 }
+            { expiresIn: 3600 },
           );
 
           let type = "other";
@@ -102,20 +122,20 @@ export async function GET(req: NextRequest) {
             url: signedUrl,
             type,
           };
-        })
+        }),
       );
 
       console.log("Media file URLs generated.");
       return NextResponse.json(
         { success: true, media: mediaUrls },
-        { status: 200 }
+        { status: 200 },
       );
     }
   } catch (error) {
     console.error("Error fetching media:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch media" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

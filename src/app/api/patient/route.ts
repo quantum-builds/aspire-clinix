@@ -11,35 +11,91 @@ import {
   patchPatientById,
 } from "@/dentallyHelpers/patient";
 
+/**
+ * @swagger
+ * /api/patient:
+ *   get:
+ *     summary: Get patient data
+ *     tags: [Patient]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         schema:
+ *           type: string
+ *         description: Admin-only filter to fetch a patient by email
+ *     responses:
+ *       200:
+ *         description: Patient or patients fetched successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: No patient found
+ *       500:
+ *         description: Internal Server Error
+ *   patch:
+ *     summary: Update the authenticated patient
+ *     tags: [Patient]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               phoneNumber:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Patient updated successfully
+ *       400:
+ *         description: Validation failed or fields already in use
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: No patient found
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
 
     if (!token) {
-        return NextResponse.json(createResponse(false, "Unauthorized", null), {
-          status: 401,
-        });
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
     }
 
     if (token.role === TokenRoles.PATIENT) {
       const patientId = token.sub ?? "";
 
-      const respose = await getPatientById(patientId)
+      const respose = await getPatientById(patientId);
       if (respose.isError) {
-        return respose.response
+        return respose.response;
       }
-      const patient = respose.response
+      const patient = respose.response;
 
       if (!patient) {
         return NextResponse.json(
           createResponse(false, "No Patient found", patient),
-          { status: 404 }
+          { status: 404 },
         );
       }
 
       return NextResponse.json(
         createResponse(true, "Patient record successfully fetched", patient),
-        { status: 200 }
+        { status: 200 },
       );
     } else if (token.role === TokenRoles.ADMIN) {
       const { searchParams } = new URL(req.url);
@@ -47,41 +103,42 @@ export async function GET(req: NextRequest) {
 
       // decode URL-encoded email
       const email = decodeURIComponent(emailParam);
-      console.log("email is ", email)
+      console.log("email is ", email);
       if (email.trim().length > 0) {
-
-        const respose = await getPatient({ emailAddress: email })
+        const respose = await getPatient({ emailAddress: email });
         if (respose.isError) {
-          return respose.response
+          return respose.response;
         }
-        const patient = respose.response
+        const patient = respose.response;
 
         if (!patient) {
           return NextResponse.json(
             createResponse(false, "No Patient found", patient),
-            { status: 404 }
+            { status: 404 },
           );
         }
 
         return NextResponse.json(
           createResponse(true, "Patiensts fetched successfully", patient),
-          { status: 200 }
+          { status: 200 },
         );
       } else {
-        const respose = await getPatients()
+        const respose = await getPatients();
         if (respose.isError) {
-          return respose.response
+          return respose.response;
         }
-        const patients = respose.response
+        const patients = respose.response;
 
         if (patients.length < 1) {
           return NextResponse.json(
-            createResponse(false, "No Patient found", null), { status: 404 }
+            createResponse(false, "No Patient found", null),
+            { status: 404 },
           );
         }
 
         return NextResponse.json(
-          createResponse(true, "Patiensts fetched successfully", patients), { status: 200 }
+          createResponse(true, "Patiensts fetched successfully", patients),
+          { status: 200 },
         );
       }
     } else {

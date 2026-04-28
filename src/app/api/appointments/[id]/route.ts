@@ -11,6 +11,148 @@ import { Appointment } from "@/types/appointment";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import prisma from "@/lib/db";
 
+
+/**
+ * @swagger
+ * /api/appointments/{id}:
+ *   get:
+ *     summary: Get a single appointment by ID
+ *     tags: [Appointments]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Appointment ID (CUID)
+ *     responses:
+ *       200:
+ *         description: Appointment fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     appointment:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         patientId:
+ *                           type: string
+ *                         practitionerwId:
+ *                           type: string
+ *                         siteId:
+ *                           type: string
+ *                         state:
+ *                           type: string
+ *                     reports:
+ *                       type: object
+ *                       properties:
+ *                         videos:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                         pdfs:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *       400:
+ *         description: Invalid Appointment ID
+ *       403:
+ *         description: Unauthorized
+ *       404:
+ *         description: Appointment not found
+ *       500:
+ *         description: Internal Server Error
+ *   delete:
+ *     summary: Delete an appointment by ID
+ *     tags: [Appointments]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Appointment ID to delete
+ *     responses:
+ *       204:
+ *         description: Appointment deleted successfully
+ *       400:
+ *         description: Invalid Appointment ID
+ *       403:
+ *         description: Unauthorized
+ *       404:
+ *         description: Appointment not found
+ *       500:
+ *         description: Internal Server Error
+ *   patch:
+ *     summary: Update an appointment by ID
+ *     tags: [Appointments]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Appointment ID to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               patientId:
+ *                 type: string
+ *               practitionerId:
+ *                 type: string
+ *               siteId:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *               state:
+ *                 type: string
+ *                 enum: [pending, confirmed, cancelled, completed]
+ *     responses:
+ *       200:
+ *         description: Appointment updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *       400:
+ *         description: Invalid Appointment ID or no data provided
+ *       403:
+ *         description: Unauthorized
+ *       404:
+ *         description: Appointment not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({

@@ -7,6 +7,49 @@ import { generateOtp } from "@/utils/generateOtp";
 import { NextRequest, NextResponse } from "next/server";
 import { act } from "react";
 
+/**
+ * @swagger
+ * /api/patient/verify:
+ *   post:
+ *     summary: Verify patient details and send OTP
+ *     tags: [Patient]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - mobilePhone
+ *               - dateOfBirth
+ *               - email
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               mobilePhone:
+ *                 type: string
+ *               dateOfBirth:
+ *                 type: string
+ *                 format: date
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: OTP code sent successfully
+ *       400:
+ *         description: Missing required fields
+ *       404:
+ *         description: No account found
+ *       409:
+ *         description: Multiple accounts found
+ *       500:
+ *         description: Internal Server Error
+ */
 export default async function POST(req: NextRequest) {
   try {
     const { firstName, lastName, mobilePhone, dateOfBirth, email } =

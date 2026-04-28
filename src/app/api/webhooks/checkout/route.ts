@@ -5,6 +5,40 @@ import { stripe } from "@/config/stripe-config";
 import { TPurchasedProduct } from "@/types/common";
 import { PaymentStatus } from "@prisma/client";
 
+/**
+ * @swagger
+ * /api/webhooks/checkout:
+ *   post:
+ *     summary: Handle Stripe webhook events for payment processing
+ *     tags: [Webhooks]
+ *     parameters:
+ *       - in: header
+ *         name: stripe-signature
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Stripe webhook signature for verification
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Webhook processed successfully
+ *       400:
+ *         description: Webhook signature verification failed or invalid event
+ *       500:
+ *         description: Internal error processing webhook event
+ *     description: |
+ *       Handles the following Stripe events:
+ *       - checkout.session.completed
+ *       - checkout.session.async_payment_succeeded
+ *       - payment_intent.payment_failed
+ *       - charge.refund.updated
+ */
 export async function POST(request: NextRequest) {
   const body = await request.text();
   const sig = request.headers.get("stripe-signature");
@@ -28,14 +62,14 @@ export async function POST(request: NextRequest) {
       case "checkout.session.async_payment_succeeded":
         console.log("Handling successful payment");
         await handleItemPaymentSuccess(
-          event.data.object as Stripe.Checkout.Session
+          event.data.object as Stripe.Checkout.Session,
         );
         break;
 
       case "payment_intent.payment_failed":
         console.log("Handling failed payment");
         await handleItemPaymentFailure(
-          event.data.object as Stripe.PaymentIntent
+          event.data.object as Stripe.PaymentIntent,
         );
         break;
 
@@ -49,7 +83,7 @@ export async function POST(request: NextRequest) {
     console.error("Error processing event:", err);
     return NextResponse.json(
       { error: "Internal error handling event" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -57,7 +91,7 @@ export async function POST(request: NextRequest) {
 }
 
 const handleItemPaymentSuccess = async (
-  eventObject: Stripe.Checkout.Session
+  eventObject: Stripe.Checkout.Session,
 ) => {
   try {
     console.log("checkout session is ", eventObject);
@@ -118,7 +152,7 @@ const handleItemPaymentSuccess = async (
 
         if (dbItem.stock < product.quantity) {
           throw new Error(
-            `Not enough stock for item ${product.productId}. Available: ${dbItem.stock}, requested: ${product.quantity}`
+            `Not enough stock for item ${product.productId}. Available: ${dbItem.stock}, requested: ${product.quantity}`,
           );
         }
 
@@ -292,7 +326,7 @@ const handleItemRefundUpdated = async (refund: Stripe.Refund) => {
     console.log(
       `Refund status '${refund.status}' handled. Updated status to '${
         PaymentStatus[newStatus!]
-      }'`
+      }'`,
     );
   } catch (err) {
     console.error("Error handling refund update:", err);

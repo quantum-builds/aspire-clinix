@@ -5,6 +5,94 @@ import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/practices:
+ *   post:
+ *     summary: Create a practice
+ *     tags: [Practices]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               phoneNumber:
+ *                 type: string
+ *               postcode:
+ *                 type: string
+ *               timeZone:
+ *                 type: string
+ *               town:
+ *                 type: string
+ *               nhs:
+ *                 type: boolean
+ *               openingHours:
+ *                 type: object
+ *               addressLine1:
+ *                 type: string
+ *               addressLine2:
+ *                 type: string
+ *               logoUrl:
+ *                 type: string
+ *                 nullable: true
+ *             example:
+ *               email: clinic@example.com
+ *               name: Aspire Clinic
+ *               phoneNumber: '+441234567890'
+ *               postcode: SW1A 1AA
+ *               timeZone: Europe/London
+ *               town: London
+ *               nhs: false
+ *               openingHours:
+ *                 monday:
+ *                   open: '09:00'
+ *                   close: '17:30'
+ *                 tuesday:
+ *                   open: '09:00'
+ *                   close: '17:30'
+ *               addressLine1: 10 High Street
+ *               addressLine2: Westminster
+ *               logoUrl: null
+ *     responses:
+ *       201:
+ *         description: Practices created successfully
+ *       500:
+ *         description: Internal Server Error
+ *   get:
+ *     summary: Get practices
+ *     tags: [Practices]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search practices by ID
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [true, false]
+ *         description: Filter by NHS status
+ *     responses:
+ *       200:
+ *         description: Practices fetched successfully
+ *       404:
+ *         description: No practice found
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function POST(req: NextRequest) {
   try {
     // const token = await getToken({ req });
@@ -25,7 +113,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Practices created successfully", newPractce),
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.log("Error in creating appointment ", error);
@@ -81,7 +169,7 @@ export async function GET(req: NextRequest) {
         createResponse(false, "No practice found", null),
         {
           status: 404,
-        }
+        },
       );
     }
     return NextResponse.json(
@@ -95,7 +183,7 @@ export async function GET(req: NextRequest) {
       }),
       {
         status: 200,
-      }
+      },
     );
   } catch (error) {
     console.log("Error in fetching practices ", error);

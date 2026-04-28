@@ -5,6 +5,33 @@ import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/practices/{id}:
+ *   get:
+ *     summary: Get a practice by ID with approved dentists
+ *     tags: [Practices]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Practice ID (CUID)
+ *     responses:
+ *       200:
+ *         description: Practice fetched successfully
+ *       400:
+ *         description: Invalid Practice Id
+ *       403:
+ *         description: Forbidden to perform this action
+ *       404:
+ *         description: No practice found
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
@@ -14,7 +41,7 @@ export async function GET(req: NextRequest) {
         createResponse(false, "Forbidden to perform this action", null),
         {
           status: 403,
-        }
+        },
       );
     }
 
@@ -22,7 +49,7 @@ export async function GET(req: NextRequest) {
     if (!practiceId || !isValidCuid(practiceId)) {
       return NextResponse.json(
         { message: "Invalid Practice Id." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -43,14 +70,14 @@ export async function GET(req: NextRequest) {
         createResponse(false, "No practice found", null),
         {
           status: 404,
-        }
+        },
       );
     }
     return NextResponse.json(
       createResponse(true, "Practice fetched successfully", practice),
       {
         status: 200,
-      }
+      },
     );
   } catch (error) {
     console.log("Error in fetching practice", error);

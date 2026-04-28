@@ -6,6 +6,56 @@ import { Prisma, Resource } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/resources:
+ *   get:
+ *     summary: Get resources with pagination and filters
+ *     tags: [Resources]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search resources by title
+ *       - in: query
+ *         name: fileType
+ *         schema:
+ *           type: string
+ *           enum: [PDF, VIDEO]
+ *         description: Filter by file type
+ *       - in: query
+ *         name: on
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter resources created on this date
+ *       - in: query
+ *         name: before
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter resources created before this date
+ *       - in: query
+ *         name: after
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter resources created after this date
+ *     responses:
+ *       200:
+ *         description: Resources fetched successfully
+ *       404:
+ *         description: No resources found
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -79,7 +129,7 @@ export async function GET(req: NextRequest) {
     if (!resources.pdfs && !resources.videos) {
       return NextResponse.json(
         createResponse(false, "No resources found.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -88,7 +138,7 @@ export async function GET(req: NextRequest) {
         resources,
         pagination: { page, ...pagination },
       }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error in fetching resources", error);
@@ -122,10 +172,9 @@ export async function POST(req: NextRequest) {
     if (!resources.length) {
       return NextResponse.json(
         createResponse(false, "No resources provided", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
-
 
     await prisma.resource.createMany({
       data: resources,
@@ -133,7 +182,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Resources created successfully.", null),
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.log("Error in creating resources ", error);

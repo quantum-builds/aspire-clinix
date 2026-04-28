@@ -4,11 +4,40 @@ import { NextRequest, NextResponse } from "next/server";
 
 // TODO : only admin can access
 
+/**
+ * @swagger
+ * /api/discounts:
+ *   get:
+ *     summary: Get all discounts
+ *     tags: [Discounts]
+ *     responses:
+ *       200:
+ *         description: Discount fetched successfully
+ *       404:
+ *         description: No discounts exist yet
+ *       500:
+ *         description: Internal Server Error
+ *   post:
+ *     summary: Create a discount
+ *     tags: [Discounts]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       201:
+ *         description: Discount created successfully
+ *       500:
+ *         description: Internal Server Error
+ */
+
 export async function GET(req: NextRequest) {
   if (req.method !== ApiMethods.GET) {
     return NextResponse.json(
       { message: "Methond not allowed." },
-      { status: 405 }
+      { status: 405 },
     );
   }
 
@@ -18,7 +47,7 @@ export async function GET(req: NextRequest) {
     if (discounts.length === 0) {
       return NextResponse.json(
         { message: "No discounts exist yet" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -27,12 +56,12 @@ export async function GET(req: NextRequest) {
         message: "Discount fetched successfully.",
         data: discounts,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -43,7 +72,7 @@ export async function POST(req: NextRequest) {
   if (req.method !== ApiMethods.POST) {
     return NextResponse.json(
       { message: "Methond not allowed." },
-      { status: 405 }
+      { status: 405 },
     );
   }
 
@@ -56,12 +85,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       { message: "Discount created successfully. " },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
+

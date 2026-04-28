@@ -5,6 +5,97 @@ import { AppointmentRequestStatus, Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/appointment-requests:
+ *   get:
+ *     summary: Get appointment requests
+ *     tags: [Appointment Requests]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search requests by ID
+ *       - in: query
+ *         name: on
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter requests on this date
+ *       - in: query
+ *         name: before
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter requests before this date
+ *       - in: query
+ *         name: after
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter requests after this date
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [PENDING, APPROVED, REJECTED]
+ *         description: Filter by appointment request status
+ *     responses:
+ *       200:
+ *         description: Appointment requests fetched successfully
+ *       403:
+ *         description: Unauthorized
+ *       404:
+ *         description: No appointment request found
+ *       500:
+ *         description: Internal Server Error
+ *   post:
+ *     summary: Create an appointment request
+ *     tags: [Appointment Requests]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               appointmentId:
+ *                 type: string
+ *                 description: ID of the appointment
+ *               dentistId:
+ *                 type: string
+ *                 description: ID of the dentist
+ *               notes:
+ *                 type: string
+ *                 description: Additional notes for the appointment request
+ *               requestedDate:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Requested appointment date and time
+ *             example:
+ *               appointmentId: clx1234567890abcdefgh
+ *               dentistId: clx0987654321abcdefgh
+ *               notes: Please schedule at your earliest convenience
+ *               requestedDate: '2026-05-15T14:00:00Z'
+ *     responses:
+ *       201:
+ *         description: Appointment request created successfully
+ *       403:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({
@@ -41,7 +132,7 @@ export async function GET(req: NextRequest) {
     const status =
       statusParam &&
       Object.values(AppointmentRequestStatus).includes(
-        statusParam as AppointmentRequestStatus
+        statusParam as AppointmentRequestStatus,
       )
         ? (statusParam as AppointmentRequestStatus)
         : undefined;
@@ -70,7 +161,7 @@ export async function GET(req: NextRequest) {
         skip,
         take: limit,
         orderBy: { createdAt: "desc" },
-        include: { appointment:{include:{dentist:true}} },
+        include: { appointment: { include: { dentist: true } } },
       }),
       prisma.appointmentRequests.count({ where: baseWhere }),
     ]);
@@ -78,7 +169,7 @@ export async function GET(req: NextRequest) {
     if (!appointmentRequests.length) {
       return NextResponse.json(
         createResponse(false, "No appointment request found.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -91,7 +182,7 @@ export async function GET(req: NextRequest) {
           totalPages: Math.ceil(totalCount / limit),
         },
       }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error fetching appointment requests", error);
@@ -126,9 +217,9 @@ export async function POST(req: NextRequest) {
       createResponse(
         true,
         "Appointment Request created successfully",
-        newAppointment
+        newAppointment,
       ),
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.log("Error in creating appointment request", error);
