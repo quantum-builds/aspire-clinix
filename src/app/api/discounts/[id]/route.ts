@@ -21,12 +21,33 @@ import { isValidCuid } from "@/utils/typeValidUtils";
  *     responses:
  *       200:
  *         description: Discount fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Discount fetched successfully."
+ *               data:
+ *                 id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                 type: "PERCENTAGE"
+ *                 value: 10
+ *                 expiresAt: "2026-12-31T00:00:00.000Z"
  *       400:
  *         description: Invalid Discount Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invalid Discount Id."
  *       404:
  *         description: Discount not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "discount with this Id does not exists."
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
  *   put:
  *     summary: Update a discount by ID
  *     tags: [Discounts]
@@ -43,15 +64,35 @@ import { isValidCuid } from "@/utils/typeValidUtils";
  *         application/json:
  *           schema:
  *             type: object
+ *           example:
+ *             type: "PERCENTAGE"
+ *             value: 15
+ *             expiresAt: "2026-12-31T00:00:00.000Z"
  *     responses:
  *       200:
  *         description: Discount updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Discount updated successfully."
  *       400:
  *         description: Invalid Discount Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invalid Discount Id."
  *       404:
  *         description: Discount not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Discount with this Id does not exists."
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
  *   delete:
  *     summary: Delete a discount by ID
  *     tags: [Discounts]
@@ -65,12 +106,28 @@ import { isValidCuid } from "@/utils/typeValidUtils";
  *     responses:
  *       200:
  *         description: Discount deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Discount deleted successfully."
  *       400:
  *         description: Invalid Discount Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invalid Discount Id."
  *       404:
  *         description: Discount not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Discount with this Id does not exist."
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
  */
 
 export async function GET(req: NextRequest) {

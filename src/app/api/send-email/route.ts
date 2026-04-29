@@ -90,10 +90,28 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Email sent successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Email sent successfully!"
+ *               data: null
  *       400:
  *         description: Missing required fields (subject and html)
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "subject and html are required"
+ *               data: null
  *       500:
  *         description: Internal Server Error or EMAIL_FROM not configured
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "EMAIL_FROM environment variable is not set. Please configure it in your environment file."
+ *               data: null
  */
 export async function POST(req: NextRequest) {
   const { subject, html, attachment, userType, recieverMail } =

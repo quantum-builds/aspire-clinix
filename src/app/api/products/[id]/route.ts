@@ -46,10 +46,28 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Product updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Product updated successfully."
+ *               data: null
  *       400:
  *         description: Invalid Product Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Product Id."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   delete:
  *     summary: Delete a product by ID
  *     tags: [Products]
@@ -65,14 +83,44 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Product deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Product deleted successfully."
+ *               data: null
  *       400:
  *         description: Invalid Product Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Product Id."
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       404:
  *         description: Product not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Product with this Id does not exist."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function PATCH(req: NextRequest) {
   try {

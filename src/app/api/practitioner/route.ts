@@ -18,14 +18,50 @@ import {
  *     responses:
  *       200:
  *         description: Practitioner fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Practitioner fetched successfully"
+ *               data:
+ *                 id: "prac_01HXYZ1234ABCDE"
+ *                 dentallyId: "dent_01HXYZ1234ABCDE"
+ *                 email: "dentist@example.com"
+ *                 gdcNo: "GDC123456"
+ *                 firstName: "Sarah"
+ *                 lastName: "Ahmed"
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: No practitioner found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No Practitioner found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

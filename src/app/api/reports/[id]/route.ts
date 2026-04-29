@@ -22,14 +22,44 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Report updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Report updated successfully."
+ *               data: null
  *       400:
  *         description: Invalid Report Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Report Id."
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Unauthorized to update this report
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized to update this report."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   delete:
  *     summary: Delete a report by ID
  *     tags: [Reports]
@@ -45,16 +75,52 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Report deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Report deleted successfully."
+ *               data: null
  *       400:
  *         description: Invalid Report Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Report Id."
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Unauthorized to delete this report
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized to delete this report."
+ *               data: null
  *       404:
  *         description: Report not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Report with this Id does not exist."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function PATCH(req: NextRequest) {
   try {

@@ -56,14 +56,40 @@ import { createPatient, getPatient } from "@/dentallyHelpers/patient";
  *     responses:
  *       201:
  *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "User registered successfully"
  *       400:
  *         description: Validation failed or patient lookup/create failed
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Email, password and role are required"
  *       404:
  *         description: No account found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "No Account Found"
  *       409:
  *         description: Multiple matching accounts found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "No Account Found"
+ *       405:
+ *         description: Method not allowed
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Method not allowed"
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
  */
 export async function POST(req: NextRequest) {
   if (req.method !== ApiMethods.POST) {

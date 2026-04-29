@@ -62,8 +62,37 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       201:
  *         description: Practices created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Practices created successfully"
+ *               data:
+ *                 id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                 email: "clinic@example.com"
+ *                 name: "Aspire Clinic"
+ *                 phoneNumber: "+441234567890"
+ *                 postcode: "SW1A 1AA"
+ *                 timeZone: "Europe/London"
+ *                 town: "London"
+ *                 nhs: false
+ *                 openingHours:
+ *                   monday:
+ *                     open: "09:00"
+ *                     close: "17:30"
+ *                 addressLine1: "10 High Street"
+ *                 addressLine2: "Westminster"
+ *                 logoUrl: null
+ *                 createdAt: "2026-04-29T10:00:00.000Z"
+ *                 updatedAt: "2026-04-29T10:00:00.000Z"
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   get:
  *     summary: Get practices
  *     tags: [Practices]
@@ -88,10 +117,39 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Practices fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Practices fetched successfully"
+ *               data:
+ *                 practices:
+ *                   - id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                     name: "Aspire Clinic"
+ *                     nhs: false
+ *                     town: "London"
+ *                     createdAt: "2026-04-29T10:00:00.000Z"
+ *                     updatedAt: "2026-04-29T10:00:00.000Z"
+ *                 pagination:
+ *                   page: 1
+ *                   total: 12
+ *                   totalPages: 2
  *       404:
  *         description: No practice found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No practice found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function POST(req: NextRequest) {
   try {

@@ -37,8 +37,28 @@ import {
  *     responses:
  *       201:
  *         description: Appointment Booked Successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Appointment Booked Successfully"
+ *               data:
+ *                 id: "apt_01HXYZ1234ABCDE"
+ *                 patientId: "pat_01HXYZ1234ABCDE"
+ *                 practitionerwId: "prac_01HXYZ1234ABCDE"
+ *                 siteId: "site_01HXYZ1234ABCDE"
+ *                 state: "confirmed"
+ *                 date: "2026-05-15T10:30:00.000Z"
+ *                 startTime: "2026-05-15T10:30:00.000Z"
+ *                 finishTime: "2026-05-15T11:00:00.000Z"
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   get:
  *     summary: Get list of appointments
  *     tags: [Appointments]
@@ -107,10 +127,34 @@ import {
  *                         type: string
  *                       state:
  *                         type: string
+ *             example:
+ *               status: true
+ *               message: "Appointments fetched successfully."
+ *               data:
+ *                 - id: "apt_01HXYZ1234ABCDE"
+ *                   patientId: "pat_01HXYZ1234ABCDE"
+ *                   practitionerwId: "prac_01HXYZ1234ABCDE"
+ *                   siteId: "site_01HXYZ1234ABCDE"
+ *                   state: "confirmed"
+ *                   date: "2026-05-15T10:30:00.000Z"
+ *                   startTime: "2026-05-15T10:30:00.000Z"
+ *                   finishTime: "2026-05-15T11:00:00.000Z"
  *       403:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 
 export async function POST(req: NextRequest) {

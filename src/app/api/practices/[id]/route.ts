@@ -23,14 +23,53 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Practice fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Practice fetched successfully"
+ *               data:
+ *                 id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                 name: "Aspire Clinic"
+ *                 nhs: false
+ *                 town: "London"
+ *                 dentists:
+ *                   - dentistId: "ckx1r2a3b0002s2v1b1b2c3d4"
+ *                     status: "APPROVED"
+ *                     dentist:
+ *                       id: "ckx1r2a3b0002s2v1b1b2c3d4"
+ *                       firstName: "Alex"
+ *                       lastName: "Carter"
  *       400:
  *         description: Invalid Practice Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invalid Practice Id."
  *       403:
  *         description: Forbidden to perform this action
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden to perform this action"
+ *               data: null
  *       404:
  *         description: No practice found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No practice found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

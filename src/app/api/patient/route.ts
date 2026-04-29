@@ -28,14 +28,53 @@ import {
  *     responses:
  *       200:
  *         description: Patient or patients fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Patient record successfully fetched"
+ *               data:
+ *                 id: "pat_01HXYZ1234ABCDE"
+ *                 uuid: "f7b8c9d0-1234-5678-90ab-cdef12345678"
+ *                 dentallyId: "dent_01HXYZ1234ABCDE"
+ *                 email: "john.doe@example.com"
+ *                 mobileNumber: "+447700900123"
+ *                 firstName: "John"
+ *                 lastName: "Doe"
+ *                 dateOfBirth: "1990-01-01"
+ *                 familyId: "fam_01HXYZ1234ABCDE"
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: No patient found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No Patient found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   patch:
  *     summary: Update the authenticated patient
  *     tags: [Patient]
@@ -56,16 +95,55 @@ import {
  *     responses:
  *       200:
  *         description: Patient updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Patient updated successfully"
+ *               data:
+ *                 id: "pat_01HXYZ1234ABCDE"
+ *                 email: "john.doe@example.com"
+ *                 mobileNumber: "+447700900123"
  *       400:
  *         description: Validation failed or fields already in use
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "These fields are already in use: email"
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: No patient found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No Patient found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

@@ -41,14 +41,50 @@ import { act } from "react";
  *     responses:
  *       200:
  *         description: OTP code sent successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "OTP code send successfully"
+ *               data:
+ *                 id: "pat_01HXYZ1234ABCDE"
+ *                 email: "john.doe@example.com"
+ *                 role: "PATIENT"
+ *                 name: "John Doe"
+ *                 familyId: "fam_01HXYZ1234ABCDE"
+ *                 image: null
  *       400:
  *         description: Missing required fields
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "All fields are required"
+ *               data: null
  *       404:
  *         description: No account found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No account found"
+ *               data: null
  *       409:
  *         description: Multiple accounts found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Multiple accounts found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export default async function POST(req: NextRequest) {
   try {

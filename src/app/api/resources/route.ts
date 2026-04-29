@@ -51,10 +51,47 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Resources fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Resources fetched successfully."
+ *               data:
+ *                 resources:
+ *                   pdfs:
+ *                     - id: "res_01HXYZ1234ABCDE"
+ *                       title: "Root Canal Guide"
+ *                       fileUrl: "https://example.com/resources/root-canal-guide.pdf"
+ *                       fileType: "PDF"
+ *                   videos:
+ *                     - id: "res_01HXYZ1234ABCDF"
+ *                       title: "Implant Procedure"
+ *                       fileUrl: "https://example.com/resources/implant-procedure.mp4"
+ *                       fileType: "VIDEO"
+ *                 pagination:
+ *                   page: 1
+ *                   pdf:
+ *                     total: 12
+ *                     totalPages: 3
+ *                   video:
+ *                     total: 8
+ *                     totalPages: 2
  *       404:
  *         description: No resources found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No resources found."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

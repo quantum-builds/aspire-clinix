@@ -20,8 +20,21 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Media URLs retrieved successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               media:
+ *                 - fileName: "uploads/aspire-clinic/images/sample.jpg"
+ *                   url: "https://bucket.s3.amazonaws.com/uploads/aspire-clinic/images/sample.jpg?X-Amz-Signature=..."
+ *                   type: "image"
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: "Failed to fetch media"
  */
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;

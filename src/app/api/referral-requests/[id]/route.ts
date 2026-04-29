@@ -23,16 +23,57 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Referral request fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Referral request fetched successfully."
+ *               data:
+ *                 id: "ref_01HXYZ1234ABCDE"
+ *                 referralFormId: "form_01HXYZ1234ABCDE"
+ *                 requestStatus: "ASSIGNED"
+ *                 assignedDentistId: "dent_01HXYZ1234ABCDE"
+ *                 appointments: []
  *       400:
  *         description: Invalid Referral Request
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Referral Request."
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: Referral request does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Referral Request does not exist."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   patch:
  *     summary: Update a referral request by ID
  *     tags: [Referral Requests]
@@ -68,16 +109,55 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Referral request updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Referral request Updated successfully."
+ *               data:
+ *                 id: "ref_01HXYZ1234ABCDE"
+ *                 requestStatus: "ASSIGNED"
+ *                 assignedDentistId: "dent_01HXYZ1234ABCDE"
  *       400:
  *         description: Invalid Referral Request id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Referral Request id."
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "FOrbidden"
+ *               data: null
  *       404:
  *         description: Referral request does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Referral request does not exist."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   delete:
  *     summary: Delete a referral request by ID
  *     tags: [Referral Requests]
@@ -93,16 +173,52 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Referral deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Referral deleted successfully."
+ *               data: null
  *       400:
  *         description: Invalid Request Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Request Id."
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: Referral request not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Referral request with this Id does not exists."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

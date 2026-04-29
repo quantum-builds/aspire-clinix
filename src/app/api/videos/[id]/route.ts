@@ -18,8 +18,20 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Video retrieved successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               videos:
+ *                 - public_id: "aspire_dental_videos/sample"
+ *                   secure_url: "https://res.cloudinary.com/demo/video/upload/sample.mp4"
+ *               status: 200
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
+ *               status: 500
  *   delete:
  *     summary: Delete a video from Cloudinary and database
  *     tags: [Videos]
@@ -33,12 +45,30 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Video deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Video deleted successfully."
  *       400:
  *         description: Invalid video ID
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invalid video ID."
  *       404:
  *         description: Video not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Video not found."
+ *               status: 404
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error."
+ *               status: 500
  */
 export async function GET(request: NextRequest) {
   const videoId = request.nextUrl.pathname.split("/").pop();

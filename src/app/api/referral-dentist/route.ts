@@ -18,14 +18,55 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *     responses:
  *       200:
  *         description: Dentist record fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Dentist record successfully fetched"
+ *               data:
+ *                 dentist:
+ *                   id: "dent_01HXYZ1234ABCDE"
+ *                   email: "sarah.ahmed@clinic.com"
+ *                   phoneNumber: "+447700900123"
+ *                   gdcNo: "GDC123456"
+ *                   firstName: "Sarah"
+ *                   lastName: "Ahmed"
+ *                 request:
+ *                   dentistId: "dent_01HXYZ1234ABCDE"
+ *                   practiceId: "prac_01HXYZ1234ABCDE"
+ *                   status: "PENDING"
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: No dentist found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No Dentist found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   post:
  *     summary: Register a referral dentist
  *     tags: [Referral Dentist]
@@ -57,10 +98,33 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *     responses:
  *       201:
  *         description: Dentist registered successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Dentist registered successfully"
+ *               data:
+ *                 id: "dent_01HXYZ1234ABCDE"
+ *                 email: "sarah.ahmed@clinic.com"
+ *                 phoneNumber: "+447700900123"
+ *                 gdcNo: "GDC123456"
+ *                 role: "REFERRING_DENTIST"
  *       400:
  *         description: Validation failed or fields already in use
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "These fields are already in use: email"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   patch:
  *     summary: Update the authenticated referral dentist
  *     tags: [Referral Dentist]
@@ -99,16 +163,52 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *     responses:
  *       200:
  *         description: Dentist updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Dentist updated successfully."
+ *               data: null
  *       400:
  *         description: Validation failed or fields already in use
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "These fields are already in use: email"
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: No dentist found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No Dentist found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

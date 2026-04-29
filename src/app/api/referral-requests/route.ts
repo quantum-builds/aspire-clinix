@@ -46,14 +46,56 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Referral requests fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Referral requests fetched successfully."
+ *               data:
+ *                 referralRequests:
+ *                   - id: "ref_01HXYZ1234ABCDE"
+ *                     referralFormId: "form_01HXYZ1234ABCDE"
+ *                     requestStatus: "UNASSIGNED"
+ *                     createdAt: "2026-04-29T10:00:00.000Z"
+ *                     referralForm:
+ *                       patientName: "John Doe"
+ *                       referralName: "Dr Smith"
+ *                 pagination:
+ *                   page: 1
+ *                   total: 12
+ *                   totalPages: 2
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: No referral request found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No referral request found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

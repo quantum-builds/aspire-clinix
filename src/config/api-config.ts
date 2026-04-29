@@ -16,6 +16,8 @@ export const ENDPOINTS = {
     getById: (id: string) => `/api/patient/${id}`,
     editPatient: `/api/patient`,
     Verification: "/api/patient/verify",
+    familyMember: (familyId: string) =>
+      `/api/patient/family-member?familyId=${familyId}`,
   },
 
   dentist: {
@@ -248,7 +250,7 @@ export const DENTALLY_ENDPOINTS = {
     },
     get: (id: string) => `appointments/${id}`,
     delete: (id: string) => `appointments/${id}`,
-    edit : (id: string) => `appointments/${id}`,
+    edit: (id: string) => `appointments/${id}`,
   },
 };
 

@@ -20,16 +20,52 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Payment successful
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Payment successful"
+ *               data: null
  *       204:
  *         description: No payment required
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "No payment required"
+ *               data: null
  *       400:
  *         description: Session ID is required
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Session ID is required."
+ *               data: null
  *       402:
  *         description: Payment unpaid or pending
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Payment unpaid or pending"
+ *               data: null
  *       404:
  *         description: Session not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Session not found."
+ *               data: null
  *       500:
  *         description: Internal Server Error or Unknown payment status
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unknown payment status"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

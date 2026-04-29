@@ -19,12 +19,42 @@ import { isValidCuid } from "@/utils/typeValidUtils";
  *     responses:
  *       200:
  *         description: Plan fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Plan fetched successfully."
+ *               data:
+ *                 id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                 name: "Silver Care Plan"
+ *                 description: "Routine preventive dental coverage for adults"
+ *                 price: 79.99
+ *                 validity: 12
+ *                 includedTreatments:
+ *                   - "Checkup"
+ *                   - "Scale and polish"
+ *                   - "X-ray review"
+ *                 discountId: null
+ *                 status: "ACTIVE"
+ *                 createdAt: "2026-04-29T10:00:00.000Z"
+ *                 updatedAt: "2026-04-29T10:00:00.000Z"
  *       400:
  *         description: Invalid Plan Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invalid Plan Id."
  *       404:
  *         description: Plan does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Plan with this Id does not exists."
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
  *   put:
  *     summary: Update a plan by ID
  *     tags: [Plans]
@@ -41,15 +71,42 @@ import { isValidCuid } from "@/utils/typeValidUtils";
  *         application/json:
  *           schema:
  *             type: object
+ *           example:
+ *             name: "Silver Care Plan"
+ *             description: "Routine preventive dental coverage for adults"
+ *             price: 89.99
+ *             validity: 12
+ *             includedTreatments:
+ *               - "Checkup"
+ *               - "Scale and polish"
+ *               - "X-ray review"
+ *             discountId: null
+ *             status: "ACTIVE"
  *     responses:
  *       200:
  *         description: Plan updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Plan updated successfully."
  *       400:
  *         description: Invalid Plan Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invalid Plan Id."
  *       404:
  *         description: Plan does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Plan with this Id does not exist."
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
  *   delete:
  *     summary: Delete a plan by ID
  *     tags: [Plans]
@@ -63,12 +120,28 @@ import { isValidCuid } from "@/utils/typeValidUtils";
  *     responses:
  *       200:
  *         description: Plan deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Plan deleted successfully."
  *       400:
  *         description: Invalid Plan Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invalid Plan Id."
  *       404:
  *         description: Plan does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Plan with this Id does not exist."
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
  */
 export async function GET(req: NextRequest) {
   if (req.method !== ApiMethods.GET) {

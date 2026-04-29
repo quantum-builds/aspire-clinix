@@ -17,14 +17,52 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *     responses:
  *       200:
  *         description: Admin record successfully fetched
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Admin record successfully fetched"
+ *               data:
+ *                 id: "ckv9qk2xw0001s2v1b1b2c3d4"
+ *                 fullName: "Jane Doe"
+ *                 password: "$2a$10$kGk3g6n9vH9G2s6r9qg0cO8pYxL7N5rO1aX3r2s4f5g6h7i8j9k0"
+ *                 email: "admin@example.com"
+ *                 phoneNumber: "+447700900123"
+ *                 fileUrl: "https://example.com/admins/jane.png"
+ *                 createdAt: "2026-04-29T10:00:00.000Z"
+ *                 updatedAt: "2026-04-29T10:00:00.000Z"
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: No admin found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No Admin found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   post:
  *     summary: Create the admin account
  *     tags: [Admin]
@@ -49,10 +87,36 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *     responses:
  *       201:
  *         description: Admin registered successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Admin registered successfully"
+ *               data:
+ *                 id: "ckv9qk2xw0001s2v1b1b2c3d4"
+ *                 fullName: "Jane Doe"
+ *                 password: "$2a$10$kGk3g6n9vH9G2s6r9qg0cO8pYxL7N5rO1aX3r2s4f5g6h7i8j9k0"
+ *                 email: "admin@example.com"
+ *                 phoneNumber: "+447700900123"
+ *                 fileUrl: "https://example.com/admins/jane.png"
+ *                 createdAt: "2026-04-29T10:00:00.000Z"
+ *                 updatedAt: "2026-04-29T10:00:00.000Z"
  *       400:
  *         description: Admin already exist or fields already in use
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "These fields are already in use: email, phone number"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   patch:
  *     summary: Update the authenticated admin profile
  *     tags: [Admin]
@@ -73,16 +137,60 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *     responses:
  *       200:
  *         description: Admin is updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Admin is updated successfully"
+ *               data:
+ *                 id: "ckv9qk2xw0001s2v1b1b2c3d4"
+ *                 fullName: "Jane Doe"
+ *                 password: "$2a$10$kGk3g6n9vH9G2s6r9qg0cO8pYxL7N5rO1aX3r2s4f5g6h7i8j9k0"
+ *                 email: "admin@example.com"
+ *                 phoneNumber: "+447700900123"
+ *                 fileUrl: "https://example.com/admins/jane.png"
+ *                 createdAt: "2026-04-29T10:00:00.000Z"
+ *                 updatedAt: "2026-04-29T10:00:00.000Z"
  *       400:
  *         description: Validation failed or fields already in use
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "These fields are already in use: email"
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: No admin found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No Admin found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

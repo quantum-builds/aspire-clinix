@@ -19,10 +19,33 @@ import prisma from "@/lib/db";
  *     responses:
  *       200:
  *         description: Family members fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Family members fetched successfully"
+ *               data:
+ *                 - id: "pat_01HXYZ1234ABCDE"
+ *                   dentallyId: "dent_01HXYZ1234ABCDE"
+ *                   firstName: "John"
+ *                   lastName: "Doe"
+ *                   familyId: "fam_01HXYZ1234ABCDE"
  *       400:
  *         description: FamilyId is required
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "FamilyId is required"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

@@ -28,10 +28,22 @@ import { PaymentStatus } from "@prisma/client";
  *     responses:
  *       200:
  *         description: Webhook processed successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               received: true
  *       400:
  *         description: Webhook signature verification failed or invalid event
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Webhook Error"
  *       500:
  *         description: Internal error processing webhook event
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Internal error handling event"
  *     description: |
  *       Handles the following Stripe events:
  *       - checkout.session.completed

@@ -26,10 +26,25 @@ import s3 from "@/config/s3-config";
  *     responses:
  *       200:
  *         description: Signed URL generated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               url: "https://bucket.s3.amazonaws.com/uploads/aspire-clinic/images/file.png?X-Amz-Signature=..."
  *       400:
  *         description: Missing file details (fileName or fileType)
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: "Missing file details"
  *       500:
  *         description: Failed to generate signed URL
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: "Failed to generate URL"
  */
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;

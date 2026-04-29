@@ -73,8 +73,27 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *     responses:
  *       201:
  *         description: Form created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Form created successfully."
+ *               data:
+ *                 id: "ref_01HXYZ1234ABCDE"
+ *                 patientName: "John Doe"
+ *                 patientEmail: "john.doe@example.com"
+ *                 referralName: "Dr Jane Smith"
+ *                 referralEmail: "jane.smith@practice.example.com"
+ *                 referralGDC: "123456"
+ *                 referralDentistId: "dent_01HXYZ1234ABCDE"
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   get:
  *     summary: Get referral forms for the authenticated dentist
  *     tags: [Referrals]
@@ -83,14 +102,49 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *     responses:
  *       200:
  *         description: Referral forms fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Referral forms fetched successfully."
+ *               data:
+ *                 - id: "ref_01HXYZ1234ABCDE"
+ *                   patientName: "John Doe"
+ *                   referralName: "Dr Jane Smith"
+ *                   referralEmail: "jane.smith@practice.example.com"
+ *                   referralGDC: "123456"
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: Dentist doesn't have any referral form
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Dentist don't have any referrel form"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function POST(req: NextRequest) {
   const referralForm = await req.json();

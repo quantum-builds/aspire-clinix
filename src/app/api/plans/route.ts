@@ -11,10 +11,42 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Plan fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Plan fetched successfully."
+ *               data:
+ *                 - id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                   name: "Silver Care Plan"
+ *                   description: "Routine preventive dental coverage for adults"
+ *                   price: 79.99
+ *                   validity: 12
+ *                   includedTreatments:
+ *                     - "Checkup"
+ *                     - "Scale and polish"
+ *                     - "X-ray review"
+ *                   discountId: null
+ *                   status: "ACTIVE"
+ *                   createdAt: "2026-04-29T10:00:00.000Z"
+ *                   updatedAt: "2026-04-29T10:00:00.000Z"
  *       404:
  *         description: No plan exist yet
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "No plan exist yet"
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
+ *       405:
+ *         description: Method not allowed
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Methond not allowed."
  *   post:
  *     summary: Create a plan
  *     tags: [Plans]
@@ -56,8 +88,22 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       201:
  *         description: Plan created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Plan created successfully. "
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
+ *       405:
+ *         description: Method not allowed
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Methond not allowed."
  */
 export async function GET(req: NextRequest) {
   if (req.method !== ApiMethods.GET) {

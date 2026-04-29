@@ -24,16 +24,60 @@ import { getPatientById } from "@/dentallyHelpers/patient";
  *     responses:
  *       200:
  *         description: Referral form fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Referral form fetched successfully."
+ *               data:
+ *                 referralForm:
+ *                   id: "ref_01HXYZ1234ABCDE"
+ *                   patientName: "John Doe"
+ *                   referralName: "Dr Jane Smith"
+ *                   referralEmail: "jane.smith@practice.example.com"
+ *                 patient:
+ *                   id: "pat_01HXYZ1234ABCDE"
+ *                   email: "john.doe@example.com"
  *       400:
  *         description: Invalid Form Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Form Id."
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: Referral form does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Referral form with this Id does not exists."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   put:
  *     summary: Update a referral form by ID
  *     tags: [Referrals]
@@ -50,13 +94,49 @@ import { getPatientById } from "@/dentallyHelpers/patient";
  *         application/json:
  *           schema:
  *             type: object
+ *           example:
+ *             patientName: "John Doe"
+ *             patientEmail: "john.doe@example.com"
+ *             patientPhoneNumber: "+44 7700 900123"
+ *             patientAddress: "10 High Street, London, SW1A 1AA"
+ *             patientDateOfBirth: "1990-04-15T00:00:00Z"
+ *             referralName: "Dr Jane Smith"
+ *             referralEmail: "jane.smith@practice.example.com"
+ *             referralPhoneNumber: "+44 20 7946 0999"
+ *             referralGDC: "123456"
+ *             referralPracticeNameAddress: "Smile Dental, 22 King Road, London"
+ *             attendTreatment: "Yes"
+ *             referralDetails:
+ *               - "Lower left molar pain"
+ *               - "Requires endodontic assessment"
+ *             treatmentDetails: "Suspected caries on 36"
+ *             medicalHistoryPdfUrl: "https://example.com/medical-history/john-doe.pdf"
+ *             other: "Patient prefers morning appointments"
  *     responses:
  *       200:
  *         description: Referral form updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Referral form updated successfully.."
+ *               data: null
  *       400:
  *         description: Invalid Form Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Form Id."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   delete:
  *     summary: Delete a referral form by ID
  *     tags: [Referrals]
@@ -70,12 +150,36 @@ import { getPatientById } from "@/dentallyHelpers/patient";
  *     responses:
  *       200:
  *         description: Referral deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Referral deleted successfully."
+ *               data: null
  *       400:
  *         description: Invalid Form Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Form Id."
+ *               data: null
  *       404:
  *         description: Referral form does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Referral form with this Id does not exists."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   const referralFormId = req.nextUrl.pathname.split("/").pop();

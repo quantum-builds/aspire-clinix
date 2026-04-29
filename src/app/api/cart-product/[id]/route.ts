@@ -26,14 +26,44 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Cart product deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Cart Product deleted successfully."
+ *               data: null
  *       400:
  *         description: Invalid Cart Product Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Cart Product Id."
+ *               data: null
  *       403:
  *         description: Unauthorized to delete this cart product
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "You are not authorized to delete this cart product."
+ *               data: null
  *       404:
  *         description: Cart product with this ID does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Cart Product with this Id does not exist."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function DELETE(req: NextRequest) {
   try {

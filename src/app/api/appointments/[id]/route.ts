@@ -11,7 +11,6 @@ import { Appointment } from "@/types/appointment";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import prisma from "@/lib/db";
 
-
 /**
  * @swagger
  * /api/appointments/{id}:
@@ -66,14 +65,59 @@ import prisma from "@/lib/db";
  *                           type: array
  *                           items:
  *                             type: object
+ *             example:
+ *               status: true
+ *               message: "Appointment fetched successfully"
+ *               data:
+ *                 appointment:
+ *                   id: "apt_01HXYZ1234ABCDE"
+ *                   patientId: "pat_01HXYZ1234ABCDE"
+ *                   practitionerwId: "prac_01HXYZ1234ABCDE"
+ *                   siteId: "site_01HXYZ1234ABCDE"
+ *                   state: "confirmed"
+ *                 reports:
+ *                   videos:
+ *                     - id: "rep_01HXYZ1234ABCDE"
+ *                       title: "Post-op Video"
+ *                       fileUrl: "https://example.com/reports/post-op.mp4"
+ *                       fileType: "VIDEO"
+ *                   pdfs:
+ *                     - id: "rep_01HXYZ1234ABCDF"
+ *                       title: "Treatment Summary"
+ *                       fileUrl: "https://example.com/reports/summary.pdf"
+ *                       fileType: "PDF"
  *       400:
  *         description: Invalid Appointment ID
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Appointment."
+ *               data: null
  *       403:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       404:
  *         description: Appointment not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Appointment not found for the user."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   delete:
  *     summary: Delete an appointment by ID
  *     tags: [Appointments]
@@ -89,14 +133,44 @@ import prisma from "@/lib/db";
  *     responses:
  *       204:
  *         description: Appointment deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Appointment deleted successfully"
+ *               data: null
  *       400:
  *         description: Invalid Appointment ID
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Appointment."
+ *               data: null
  *       403:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       404:
  *         description: Appointment not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Failed to delete appointment"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   patch:
  *     summary: Update an appointment by ID
  *     tags: [Appointments]
@@ -142,16 +216,49 @@ import prisma from "@/lib/db";
  *                   type: string
  *                 data:
  *                   type: object
+ *             example:
+ *               status: true
+ *               message: "Appointment updated successfully"
+ *               data:
+ *                 id: "apt_01HXYZ1234ABCDE"
+ *                 patientId: "pat_01HXYZ1234ABCDE"
+ *                 practitionerwId: "prac_01HXYZ1234ABCDE"
+ *                 siteId: "site_01HXYZ1234ABCDE"
+ *                 state: "confirmed"
+ *                 date: "2026-05-15T10:30:00.000Z"
  *       400:
  *         description: Invalid Appointment ID or no data provided
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No appointment data provided."
+ *               data: null
  *       403:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       404:
  *         description: Appointment not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Appointment not found for the user."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
-
 
 export async function GET(req: NextRequest) {
   try {

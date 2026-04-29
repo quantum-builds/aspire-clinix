@@ -18,8 +18,29 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Cart items fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Cart items fetched successfully."
+ *               data:
+ *                 - id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                   cartId: "ckx1r2a3b0002s2v1b1b2c3d4"
+ *                   productId: "ckx1r2a3b0003s2v1b1b2c3d4"
+ *                   quantity: 2
+ *                   price: 49.99
+ *                   total: 99.98
+ *                   fileName: "treatment-guide.pdf"
+ *                   fileUrl: "https://example.com/files/treatment-guide.pdf"
+ *                   title: "Treatment Guide"
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   post:
  *     summary: Add or update a cart product
  *     tags: [Cart Product]
@@ -43,10 +64,28 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Cart updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Cart updated successfully"
+ *               data: 3
  *       400:
  *         description: Invalid product data
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid product data"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

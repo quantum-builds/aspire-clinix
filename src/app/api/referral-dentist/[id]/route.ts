@@ -49,10 +49,28 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Dentist updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Dentist updated successfully."
+ *               data: null
  *       400:
  *         description: Invalid Dentist Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Dentist Id."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function PATCH(req: NextRequest) {
   try {

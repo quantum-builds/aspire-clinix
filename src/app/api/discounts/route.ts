@@ -13,10 +13,27 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Discount fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Discount fetched successfully."
+ *               data:
+ *                 - id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                   type: "PERCENTAGE"
+ *                   value: 10
+ *                   expiresAt: "2026-12-31T00:00:00.000Z"
  *       404:
  *         description: No discounts exist yet
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "No discounts exist yet"
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
  *   post:
  *     summary: Create a discount
  *     tags: [Discounts]
@@ -26,11 +43,23 @@ import { NextRequest, NextResponse } from "next/server";
  *         application/json:
  *           schema:
  *             type: object
+ *           example:
+ *             type: "PERCENTAGE"
+ *             value: 10
+ *             expiresAt: "2026-12-31T00:00:00.000Z"
  *     responses:
  *       201:
  *         description: Discount created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Discount created successfully. "
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
  */
 
 export async function GET(req: NextRequest) {
@@ -94,4 +123,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

@@ -27,10 +27,39 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Reports fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Reports fetched successfully."
+ *               data:
+ *                 reports:
+ *                   videos:
+ *                     - id: "rep_01HXYZ1234ABCDE"
+ *                       title: "Post-op Video"
+ *                       fileType: "VIDEO"
+ *                       fileUrl: "https://example.com/reports/post-op.mp4"
+ *                   pdfs:
+ *                     - id: "rep_01HXYZ1234ABCDF"
+ *                       title: "X-Ray Report"
+ *                       fileType: "PDF"
+ *                       fileUrl: "https://example.com/reports/xray.pdf"
  *       404:
  *         description: No reports found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No reports found."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   post:
  *     summary: Create report(s)
  *     tags: [Reports]
@@ -54,14 +83,44 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       201:
  *         description: Reports created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Reports created successfully."
+ *               data: null
  *       400:
  *         description: Validation failed
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Each report must include patientId and appointmentId."
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       404:
  *         description: Appointment not found for the dentist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Appointment not found for the dentist."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

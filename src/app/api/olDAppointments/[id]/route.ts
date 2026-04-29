@@ -22,14 +22,59 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Appointment fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Appointment fetched successfully."
+ *               data:
+ *                 id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                 practiceId: "ckx1r2a3b0002s2v1b1b2c3d4"
+ *                 patientId: "ckx1r2a3b0003s2v1b1b2c3d4"
+ *                 dentistId: "ckx1r2a3b0004s2v1b1b2c3d4"
+ *                 reason: "Follow-up appointment"
+ *                 state: "PENDING"
+ *                 date: "2026-05-15T10:30:00.000Z"
+ *                 startTime: "2026-05-15T10:30:00.000Z"
+ *                 finishTime: "2026-05-15T11:00:00.000Z"
+ *                 createdAt: "2026-04-29T10:00:00.000Z"
+ *                 updatedAt: "2026-04-29T10:00:00.000Z"
+ *                 dentist:
+ *                   id: "ckx1r2a3b0004s2v1b1b2c3d4"
+ *                   firstName: "Alex"
+ *                   lastName: "Carter"
  *       400:
  *         description: Invalid Appointment
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Appointment."
+ *               data: null
  *       403:
  *         description: You are forbidden to view this data
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "You are forbidden to view this data"
+ *               data: null
  *       404:
  *         description: Appointment does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Apppointmet does not exist."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   patch:
  *     summary: Update an old appointment by ID
  *     tags: [Old Appointments]
@@ -78,16 +123,63 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Appointment updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Appointment Updated successfully."
+ *               data:
+ *                 id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                 practiceId: "ckx1r2a3b0002s2v1b1b2c3d4"
+ *                 patientId: "ckx1r2a3b0003s2v1b1b2c3d4"
+ *                 dentistId: "ckx1r2a3b0004s2v1b1b2c3d4"
+ *                 reason: "Follow-up appointment"
+ *                 state: "CONFIRMED"
+ *                 date: "2026-05-15T10:30:00.000Z"
+ *                 startTime: "2026-05-15T10:30:00.000Z"
+ *                 finishTime: "2026-05-15T11:00:00.000Z"
+ *                 createdAt: "2026-04-29T10:00:00.000Z"
+ *                 updatedAt: "2026-04-29T10:30:00.000Z"
  *       400:
  *         description: Invalid Appointment
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Appointment."
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: You are not authorized to update this appointment
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "You are not authorized to update this appointment."
+ *               data: null
  *       404:
  *         description: Appointment does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Apppointmet does not exist."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   delete:
  *     summary: Delete an old appointment by ID
  *     tags: [Old Appointments]
@@ -108,16 +200,52 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Appointment deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Appointment deleted successfully."
+ *               data: null
  *       400:
  *         description: Invalid Appointment
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Appointment."
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: You are not authorized to delete this appointment
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "You are not authorized to delete this appointment."
+ *               data: null
  *       404:
  *         description: Appointment does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Apppointmet does not exist."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

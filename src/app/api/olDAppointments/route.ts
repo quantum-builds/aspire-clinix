@@ -61,12 +61,56 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Appointments fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Appointments fetched successfully."
+ *               data:
+ *                 appointments:
+ *                   - id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                     practiceId: "ckx1r2a3b0002s2v1b1b2c3d4"
+ *                     patientId: "ckx1r2a3b0003s2v1b1b2c3d4"
+ *                     dentistId: "ckx1r2a3b0004s2v1b1b2c3d4"
+ *                     reason: "Follow-up appointment"
+ *                     state: "PENDING"
+ *                     date: "2026-05-15T10:30:00.000Z"
+ *                     startTime: "2026-05-15T10:30:00.000Z"
+ *                     finishTime: "2026-05-15T11:00:00.000Z"
+ *                     createdAt: "2026-04-29T10:00:00.000Z"
+ *                     updatedAt: "2026-04-29T10:00:00.000Z"
+ *                     dentist:
+ *                       id: "ckx1r2a3b0004s2v1b1b2c3d4"
+ *                       firstName: "Alex"
+ *                       lastName: "Carter"
+ *                 pagination:
+ *                   page: 1
+ *                   total: 12
+ *                   totalPages: 2
  *       403:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthrized."
+ *               data: null
  *       404:
  *         description: No appointments found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No appointments found."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   post:
  *     summary: Create an old appointment
  *     tags: [Old Appointments]
@@ -100,8 +144,31 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       201:
  *         description: Appointment created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Appointment created successfully"
+ *               data:
+ *                 id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                 practiceId: "ckx1r2a3b0002s2v1b1b2c3d4"
+ *                 patientId: "ckx1r2a3b0003s2v1b1b2c3d4"
+ *                 dentistId: "ckx1r2a3b0004s2v1b1b2c3d4"
+ *                 reason: "Follow-up appointment"
+ *                 state: "PENDING"
+ *                 date: "2026-05-15T10:30:00.000Z"
+ *                 startTime: "2026-05-15T10:30:00.000Z"
+ *                 finishTime: "2026-05-15T11:00:00.000Z"
+ *                 createdAt: "2026-04-29T10:00:00.000Z"
+ *                 updatedAt: "2026-04-29T10:00:00.000Z"
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

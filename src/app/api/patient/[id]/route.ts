@@ -27,16 +27,61 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Patient fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Patienst fetched successfully"
+ *               data:
+ *                 id: "pat_01HXYZ1234ABCDE"
+ *                 uuid: "f7b8c9d0-1234-5678-90ab-cdef12345678"
+ *                 dentallyId: "dent_01HXYZ1234ABCDE"
+ *                 email: "john.doe@example.com"
+ *                 mobileNumber: "+447700900123"
+ *                 firstName: "John"
+ *                 lastName: "Doe"
+ *                 dateOfBirth: "1990-01-01"
+ *                 familyId: "fam_01HXYZ1234ABCDE"
  *       400:
  *         description: Invalid Patient Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Patient Id"
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: No patient found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No Patient found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   patch:
  *     summary: Update a patient by ID
  *     tags: [Patient]
@@ -85,16 +130,57 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Patient updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Patient is updated successfully"
+ *               data:
+ *                 id: "pat_01HXYZ1234ABCDE"
+ *                 firstName: "John"
+ *                 lastName: "Doe"
+ *                 mobileNumber: "+447700900123"
+ *                 email: "john.doe@example.com"
  *       400:
  *         description: Invalid Patient Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Patient Id"
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: No patient found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No Patient found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   delete:
  *     summary: Delete a patient by ID
  *     tags: [Patient]
@@ -110,16 +196,52 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       204:
  *         description: Patient deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Patient deleted successfully"
+ *               data: null
  *       400:
  *         description: Invalid Patient Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Patient Id"
+ *               data: null
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
  *       403:
  *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Forbidden"
+ *               data: null
  *       404:
  *         description: No patient found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No Patient found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   const token = await getToken({ req });

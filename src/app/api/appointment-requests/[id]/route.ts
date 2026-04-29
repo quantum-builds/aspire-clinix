@@ -19,12 +19,44 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Appointment request fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Appointment Request fetched successfully"
+ *               data:
+ *                 id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                 appointmentId: "ckx1r2a3b0002s2v1b1b2c3d4"
+ *                 patientId: "ckx1r2a3b0003s2v1b1b2c3d4"
+ *                 requestedDate: "2026-05-15T14:00:00.000Z"
+ *                 reason: "Tooth pain"
+ *                 status: "PENDING"
+ *                 note: "Please schedule at your earliest convenience"
+ *                 fileUrl: null
+ *                 createdAt: "2026-04-29T10:00:00.000Z"
+ *                 updatedAt: "2026-04-29T10:00:00.000Z"
  *       400:
  *         description: Invalid Appointment Request Id
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invalid Appointment Request Id."
  *       404:
  *         description: No appointment request found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No Appointment Request found"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   delete:
  *     summary: Delete an appointment request by ID
  *     tags: [Appointment Requests]
@@ -43,14 +75,44 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Appointment request deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Appointment request  deleted successfully."
+ *               data: null
  *       400:
  *         description: Invalid Appointment
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Appointment."
+ *               data: null
  *       403:
  *         description: Unauthorized to delete this appointment request
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "You are not authorized to delete this appointment request."
+ *               data: null
  *       404:
  *         description: Appointment request does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Apppointmet request does not exist."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   patch:
  *     summary: Update an appointment request by ID
  *     tags: [Appointment Requests]
@@ -85,12 +147,46 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Appointment request updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Appointment request Updated successfully."
+ *               data:
+ *                 id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                 appointmentId: "ckx1r2a3b0002s2v1b1b2c3d4"
+ *                 patientId: "ckx1r2a3b0003s2v1b1b2c3d4"
+ *                 requestedDate: "2026-05-15T14:00:00.000Z"
+ *                 reason: "Tooth pain"
+ *                 status: "APPROVED"
+ *                 note: "Updated appointment details"
+ *                 fileUrl: null
+ *                 createdAt: "2026-04-29T10:00:00.000Z"
+ *                 updatedAt: "2026-04-29T10:30:00.000Z"
  *       400:
  *         description: Invalid Appointment Request id
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid Appointment Request id."
+ *               data: null
  *       404:
  *         description: Appointment request does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Apppointmet request does not exist."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });

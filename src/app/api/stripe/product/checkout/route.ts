@@ -38,12 +38,38 @@ import Stripe from "stripe";
  *     responses:
  *       200:
  *         description: Checkout session created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Checkout session created"
+ *               data:
+ *                 id: "cs_test_123"
+ *                 url: "https://checkout.stripe.com/pay/cs_test_123"
  *       400:
  *         description: No products in cart or invalid cart item
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Invalid cart item"
+ *               data: null
  *       404:
  *         description: No price found for product
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No price found for product prod_123"
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function POST(req: NextRequest) {
   try {

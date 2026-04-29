@@ -17,8 +17,20 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Videos retrieved successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               videos:
+ *                 - public_id: "aspire_dental_videos/sample"
+ *                   secure_url: "https://res.cloudinary.com/demo/video/upload/sample.mp4"
+ *               status: 200
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
+ *               status: 500
  *   post:
  *     summary: Upload a video to Cloudinary and save to database
  *     tags: [Videos]
@@ -50,8 +62,18 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Video uploaded successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               url: "https://res.cloudinary.com/demo/video/upload/sample.mp4"
+ *               status: 200
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
+ *               status: 500
  */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;

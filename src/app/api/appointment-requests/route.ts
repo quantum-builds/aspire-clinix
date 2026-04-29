@@ -52,12 +52,57 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       200:
  *         description: Appointment requests fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Appointments request fetched successfully."
+ *               data:
+ *                 appointmentRequests:
+ *                   - id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                     appointmentId: "ckx1r2a3b0002s2v1b1b2c3d4"
+ *                     patientId: "ckx1r2a3b0003s2v1b1b2c3d4"
+ *                     requestedDate: "2026-05-15T14:00:00.000Z"
+ *                     reason: "Tooth pain"
+ *                     status: "PENDING"
+ *                     note: "Please schedule at your earliest convenience"
+ *                     fileUrl: null
+ *                     createdAt: "2026-04-29T10:00:00.000Z"
+ *                     updatedAt: "2026-04-29T10:00:00.000Z"
+ *                     appointment:
+ *                       id: "ckx1r2a3b0002s2v1b1b2c3d4"
+ *                       dentist:
+ *                         id: "ckx1r2a3b0004s2v1b1b2c3d4"
+ *                         firstName: "Alex"
+ *                         lastName: "Carter"
+ *                 pagination:
+ *                   page: 1
+ *                   total: 12
+ *                   totalPages: 3
  *       403:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthrized."
+ *               data: null
  *       404:
  *         description: No appointment request found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No appointment request found."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  *   post:
  *     summary: Create an appointment request
  *     tags: [Appointment Requests]
@@ -91,10 +136,38 @@ import { NextRequest, NextResponse } from "next/server";
  *     responses:
  *       201:
  *         description: Appointment request created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Appointment Request created successfully"
+ *               data:
+ *                 id: "ckx1r2a3b0005s2v1b1b2c3d4"
+ *                 appointmentId: "ckx1r2a3b0002s2v1b1b2c3d4"
+ *                 patientId: "ckx1r2a3b0003s2v1b1b2c3d4"
+ *                 requestedDate: "2026-05-15T14:00:00.000Z"
+ *                 reason: "Tooth pain"
+ *                 status: "PENDING"
+ *                 note: "Please schedule at your earliest convenience"
+ *                 fileUrl: null
+ *                 createdAt: "2026-04-29T10:00:00.000Z"
+ *                 updatedAt: "2026-04-29T10:00:00.000Z"
  *       403:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthrized."
+ *               data: null
  *       500:
  *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
  */
 export async function GET(req: NextRequest) {
   try {

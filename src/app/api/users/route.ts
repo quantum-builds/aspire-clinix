@@ -26,6 +26,10 @@ import prisma from "@/lib/db";
  *                     type: string
  *                   name:
  *                     type: string
+ *             example:
+ *               - id: "usr_01HXYZ1234ABCDE"
+ *                 email: "user@example.com"
+ *                 name: "John Doe"
  */
 export async function GET() {
   const users = await prisma.user.findMany();
@@ -56,8 +60,18 @@ export async function GET() {
  *     responses:
  *       201:
  *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: "usr_01HXYZ1234ABCDE"
+ *               email: "user@example.com"
+ *               name: "John Doe"
  *       400:
  *         description: Bad request
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Bad request"
  */
 export async function POST(request: Request) {
   const body = await request.json();
