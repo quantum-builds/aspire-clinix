@@ -11,32 +11,19 @@ import {
   HarryKaneImage,
 } from "@/assets";
 import { useGetFamilyMembers } from "@/services/patient/patientMutation";
-  const searchParams = useSearchParams();
 
 interface UserMenuProps {
   profileLink: string;
   onLogout: () => void;
+ 
 }
-const users = [
-  {
-    name: "John Doe",
-    image: HarryKaneImage,
-  },
-  {
-    name: "Jane Smith",
-    image: HarryKaneImage,
-  },
-  {
-    name: "Alice Johnson",
-    image: HarryKaneImage,
-  },
-];
+const users: { name: string; image: any }[] = [];
 
-export function UserMenu({ profileLink, onLogout }: UserMenuProps) {
+export function UserMenu({ profileLink, onLogout  }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-
+  const searchParams = useSearchParams();
   const familyId = searchParams.get("familyId")?.trim() || "";
   const { mutateAsync: fetchFamilyMembers, data: familyMembers } =
     useGetFamilyMembers();
@@ -56,7 +43,7 @@ export function UserMenu({ profileLink, onLogout }: UserMenuProps) {
     void fetchFamilyMembers({ familyId });
   }, [familyId, fetchFamilyMembers]);
 
-  const displayedUsers =
+  const displayedFamilyMember =
     familyMembers && familyMembers.length > 0
       ? familyMembers.map((member) => {
           const fullName = `${member.firstName ?? ""} ${member.lastName ?? ""}`
@@ -64,7 +51,7 @@ export function UserMenu({ profileLink, onLogout }: UserMenuProps) {
             .replace(/\s+/g, " ");
 
           return {
-            name: fullName || "Family Member",
+            name: fullName,
             image: HarryKaneImage,
           };
         })
@@ -90,7 +77,7 @@ export function UserMenu({ profileLink, onLogout }: UserMenuProps) {
           <ul className="flex flex-col py-1">
             <li className="px-3 py-2">
               <div className="flex flex-col gap-2">
-                {displayedUsers.map((user) => (
+                {displayedFamilyMember.map((user) => (
                   <div key={user.name} className="flex items-center gap-2">
                     <Image
                       src={user.image}

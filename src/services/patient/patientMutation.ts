@@ -6,12 +6,13 @@ import { useMutation } from "@tanstack/react-query";
 export const useCreatePatient = () => {
   return useMutation({
     mutationFn: async ({ patientData }: { patientData: TPatientCreate }) => {
-      // const response = await axiosInstance.patch(
-      //   ENDPOINTS.patient.editPatient,
-      //   patientData
-      // );
-      // const patient: TPatient = response.data.data;
-      // return patient;
+      const response = await axiosInstance.post(
+        ENDPOINTS.auth.register,
+        patientData
+
+      );
+      const patient: TPatient = response.data.data;
+      return patient;
     },
   });
 };

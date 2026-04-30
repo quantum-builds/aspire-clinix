@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 
 export const dentistsSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  GdcNumber: z.string().min(1, "Gdc Number is required"),
+  gdcNumber: z.string().min(1, "Gdc Number is required"),
 });
 
 type FormData = z.infer<typeof dentistsSchema>;
@@ -34,7 +34,7 @@ export default function DentistLoginForm() {
     resolver: zodResolver(dentistsSchema),
     defaultValues: {
       email: "",
-      GdcNumber: "",
+      gdcNumber: "",
     },
   });
 
@@ -42,11 +42,11 @@ export default function DentistLoginForm() {
     verifyDentist(
       {
         email: data.email,
-        gdcNumber: data.GdcNumber,
+        gdcNumber: data.gdcNumber,
       },
       {
         onSuccess: (resData) => {
-          showToast("success", "OTP sent successfully");
+          showToast("success", "OTP sent successfully to your email");
           router.replace(`dentist/otp-verify?email=${resData.email}`);
         },
         onError: (error) => {
@@ -100,7 +100,7 @@ export default function DentistLoginForm() {
                 id="GdcNumber"
                 type={"text"}
                 placeholder="Enter Gdc Number"
-                {...register("GdcNumber")}
+                {...register("gdcNumber")}
                 className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
               />
               <Image
@@ -109,8 +109,8 @@ export default function DentistLoginForm() {
                 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
             </div>
-            {errors.GdcNumber && (
-              <p className="text-sm text-red-500">{errors.GdcNumber.message}</p>
+            {errors.gdcNumber && (
+              <p className="text-sm text-red-500">{errors.gdcNumber.message}</p>
             )}
           </div>
         </div>
