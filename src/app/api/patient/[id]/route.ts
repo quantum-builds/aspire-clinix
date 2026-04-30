@@ -4,6 +4,7 @@ import {
   getPatientById,
   patchPatientById,
 } from "@/dentallyHelpers/patient";
+import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
@@ -270,13 +271,21 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    if (token.role === TokenRoles.PATIENT && patientId !== token.sub) {
+    if (token.role === TokenRoles.PATIENT) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
     }
 
-    const getPatientRespose = await getPatientById(patientId);
+    const existingPatient = await prisma.patient.findUnique({ where: { id: patientId, dentallyId: token.sub } })
+    if (!existingPatient) {
+      return NextResponse.json(
+        createResponse(false, "No Patient found", null),
+        { status: 404 },
+      );
+    }
+
+    const getPatientRespose = await getPatientById(existingPatient.dentallyId);
     if (getPatientRespose.isError) {
       return getPatientRespose.response;
     }
@@ -330,7 +339,20 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const respose = await getPatientById(patientId);
+    let existingPatient = null
+    if (token.role == TokenRoles.PATIENT) {
+      existingPatient = await prisma.patient.findUnique({ where: { id: patientId, dentallyId: token.sub } })
+    } else {
+      existingPatient = await prisma.patient.findUnique({ where: { id: patientId } })
+    }
+    if (!existingPatient) {
+      return NextResponse.json(
+        createResponse(false, "No Patient found", null),
+        { status: 404 },
+      );
+    }
+
+    const respose = await getPatientById(existingPatient.dentallyId);
     if (respose.isError) {
       return respose.response;
     }
@@ -346,7 +368,7 @@ export async function PATCH(req: NextRequest) {
     const partialPatient = await req.json();
 
     const patchPatientRespose = await patchPatientById(
-      patientId,
+      existingPatient.dentallyId,
       partialPatient,
     );
     if (patchPatientRespose.isError) {
@@ -394,7 +416,21 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    const getPatientRespose = await getPatientById(patientId);
+    let existingPatient = null
+    if (token.role == TokenRoles.PATIENT) {
+      existingPatient = await prisma.patient.findUnique({ where: { id: patientId, dentallyId: token.sub } })
+    } else {
+      existingPatient = await prisma.patient.findUnique({ where: { id: patientId } })
+    }
+    if (!existingPatient) {
+      return NextResponse.json(
+        createResponse(false, "No Patient found", null),
+        { status: 404 },
+      );
+    }
+
+    const getPatientRespose = await getPatientById(existingPatient.dentallyId);
+
     if (getPatientRespose.isError) {
       return getPatientRespose.response;
     }
@@ -407,7 +443,7 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    const deletePatientRespose = await deletePatientById(patientId);
+    const deletePatientRespose = await deletePatientById(existingPatient.dentallyId);
     if (deletePatientRespose.isError) {
       return deletePatientRespose.response;
     }

@@ -1,7 +1,10 @@
-import { ApiMethods } from "@/constants/ApiMethods";
-import { UserRoles } from "@/constants/UserRoles";
+import { TokenRoles } from "@/constants/UserRoles";
 import { NextResponse, NextRequest } from "next/server";
 import { createPatient, getPatient } from "@/dentallyHelpers/patient";
+import prisma from "@/lib/db";
+import { DentistRole } from "@prisma/client";
+import { getPractitioners } from "@/dentallyHelpers/practitioners";
+import { createResponse } from "@/utils/createResponse";
 
 /**
  * @swagger
@@ -92,74 +95,21 @@ import { createPatient, getPatient } from "@/dentallyHelpers/patient";
  *               message: "Internal server error"
  */
 export async function POST(req: NextRequest) {
-  if (req.method !== ApiMethods.POST) {
-    return NextResponse.json(
-      { message: "Method not allowed" },
-      { status: 405 },
-    );
-  }
+  const { role } = await req.json();
 
-  const { email, password, role } = await req.json();
-
-  if (!email || !password || !role) {
+  if (!role) {
     return NextResponse.json(
-      { message: "Email, password and role are required" },
+      { message: "Role are required" },
       { status: 400 },
     );
   }
 
-  // console.log(role);
-  if (role !== UserRoles.DENTIST && role !== UserRoles.PATIENT) {
+  if (role !== TokenRoles.REFERRING_DENTIST && role !== TokenRoles.PATIENT) {
     return NextResponse.json({ messsage: "Role is invalid" }, { status: 400 });
   }
 
   try {
-    // const existingUser = await prisma.user.findUnique({
-    //   where: { email: email },
-    // });
-
-    // if (existingUser) {
-    //   return NextResponse.json(
-    //     { message: "Email is already in use" },
-    //     { status: 400 }
-    //   );
-    // }
-
-    // const hashedPassword = await hashPassword(password);
-
-    // const newUser = await prisma.user.create({
-    //   data: {
-    //     email: email,
-    //     password: hashedPassword,
-    //     role: role,
-    //   },
-    // });
-
-    // // console.log(newUser);
-    // if (newUser.role === UserRoles.DENTIST) {
-    //   await prisma.dentist.create({
-    //     data: {
-    //       userId: newUser.id,
-    //       email: newUser.email,
-    //     },
-    //   });
-    // } else if (newUser.role === UserRoles.PATIENT) {
-    //   await prisma.patient.create({
-    //     data: {
-    //       userId: newUser.id,
-    //       email: newUser.email,
-    //     },
-    //   });
-    // } else if (newUser.role === UserRoles.ADMIN) {
-    //   await prisma.admin.create({
-    //     data: {
-    //       userId: newUser.id,
-    //       email: newUser.email,
-    //     },
-    //   });
-    // }
-
-    if (role === UserRoles.PATIENT) {
+    if (role === TokenRoles.PATIENT) {
       const {
         title,
         firstName,
@@ -174,27 +124,17 @@ export async function POST(req: NextRequest) {
       const response = await getPatient({
         firstName,
         lastName,
-        mobilePhone,
-        dateOfBirth,
       });
+
       if (response.isError)
         return NextResponse.json(
           { message: "Failed to get patient" },
           { status: 400 },
         );
-      const activePatients = response.response.filter(
-        (res: any) => res.active && !res.archived_reason,
-      );
 
-      if (activePatients.length === 0)
+      if (Array.isArray(response.response) && response.response.length > 0)
         return NextResponse.json(
-          { message: "No Account Found" },
-          { status: 404 },
-        );
-
-      if (activePatients.length > 1)
-        return NextResponse.json(
-          { message: "No Account Found" },
+          { message: "Account with these names already exist" },
           { status: 409 },
         );
 
@@ -208,12 +148,80 @@ export async function POST(req: NextRequest) {
         postCode,
         dateOfBirth,
       });
+
       if (createRes.isError)
         return NextResponse.json(
           { message: "Failed to create patient" },
           { status: 400 },
         );
-    } else {
+
+      const patientData = createRes.response;
+      const fullName = `${firstName} ${lastName}`
+
+      await prisma.patient.create({
+        data: {
+          uuid: patientData.uuid,
+          dentallyId: patientData.id,
+          mobileNumber: mobilePhone,
+          email: email,
+          name: fullName,
+          dateOfBirth: dateOfBirth,
+          familyId: patientData.familyId,
+        },
+      });
+    } else if (role === TokenRoles.REFERRING_DENTIST) {
+      const {
+        gdcNo,
+        firstName,
+        lastName,
+        email,
+      } = await req.json();
+
+      const practitionersResponse = await getPractitioners();
+
+      if (practitionersResponse.isError) {
+        return NextResponse.json(
+          createResponse(false, "Failed to verify practitioner", null),
+          { status: 400 },
+        );
+      }
+
+      // Check if email or GDC number exists in Dentally practitioners
+      const practitioners = practitionersResponse.response || [];
+      const existingPractitioner = practitioners.find(
+        (p: any) => p.user.email === email || p.gdc_number === gdcNo
+      );
+
+      if (!existingPractitioner) {
+        return NextResponse.json(
+          { message: "No practitioner found with this email or GDC number" },
+          { status: 404 },
+        );
+      }
+
+      // Check if dentist already registered in our system
+      const existingDentist = await prisma.dentist.findFirst({
+        where: {
+          OR: [{ email }, { gdcNo }],
+        },
+      });
+
+      if (existingDentist) {
+        return NextResponse.json(
+          { message: "Account with this info already exist" },
+          { status: 409 },
+        );
+      }
+
+      await prisma.dentist.create({
+        data: {
+          email,
+          gdcNo,
+          firstName,
+          lastName,
+          role: DentistRole.REFERRING_DENTIST,
+        },
+      });
     }
 
     return NextResponse.json(

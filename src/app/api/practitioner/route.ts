@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
 import {
-  getPractitioners,
   gettPractitionerById,
 } from "@/dentallyHelpers/practitioners";
+import prisma from "@/lib/db";
 
 /**
  * @swagger
@@ -73,10 +73,10 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    if (token.role === TokenRoles.PRACTITIONER) {
-      const practitionerId = token.sub ?? "";
+    if (token.role === TokenRoles.DENTALLY_PRACTITIONER) {
+      const dentistDentallyId = token.sub ?? "";
 
-      const respose = await gettPractitionerById(practitionerId);
+      const respose = await gettPractitionerById(dentistDentallyId);
       if (respose.isError) {
         return respose.response;
       }
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
 
       if (!practitioner) {
         return NextResponse.json(
-          createResponse(false, "No Practitioner found", null),
+          createResponse(false, "Practitioner not found", null),
           { status: 404 },
         );
       }
@@ -93,28 +93,34 @@ export async function GET(req: NextRequest) {
         createResponse(true, "Practitioner fetched successfully", practitioner),
         { status: 200 },
       );
+    } else if (token.role === TokenRoles.REFERRING_DENTIST) {
+      const dentistId = token.sub ?? ""
+
+      const referralDentist = await prisma.dentist.findUnique({ where: { id: dentistId } })
+      if (!referralDentist) {
+        return NextResponse.json(
+          createResponse(false, "Practitioner not found", null),
+          { status: 404 },
+        );
+      }
+
+      return NextResponse.json(
+        createResponse(true, "Practitioner fetched successfully", referralDentist),
+        { status: 200 },
+      );
     } else if (token.role === TokenRoles.ADMIN) {
-      // const { searchParams } = new URL(req.url)
-      // // site_id can be single OR array
-      // const siteIds = searchParams.getAll("site_id[]")
-      // const singleSiteId = searchParams.get("site_id")
-      // const createdAfter = searchParams.get("created_after")
-      // const updatedAfter = searchParams.get("updated_after")
-      // const respose = await getPractitioners(siteIds, singleSiteId, createdAfter, updatedAfter)
-      // if (respose.isError) {
-      //     return respose.response
-      // }
-      // const practitioners = respose.response
-      // if (!practitioners || practitioners.length < 1) {
-      //     return NextResponse.json(
-      //         createResponse(false, "No Practitioner found", practitioners),
-      //         { status: 404 }
-      //     );
-      // }
-      // return NextResponse.json(
-      //     createResponse(true, "Practitioners fetched successfully", practitioners),
-      //     { status: 200 }
-      // );
+      const dentists = await prisma.dentist.findMany({})
+      if (!dentists || dentists.length === 0) {
+        return NextResponse.json(
+          createResponse(false, "Practitioners not found", null),
+          { status: 404 },
+        );
+      }
+
+      return NextResponse.json(
+        createResponse(true, "Practitioners fetched successfully", dentists),
+        { status: 200 },
+      );
     } else {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,

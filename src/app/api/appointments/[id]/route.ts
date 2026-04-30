@@ -266,21 +266,26 @@ export async function GET(req: NextRequest) {
       req,
     });
 
-    if (token && token.role === TokenRoles.REFERRING_DENTIST) {
+    if (!token) {
       return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
+    if (token.role === TokenRoles.REFERRING_DENTIST) {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
     }
-    let patiendId = "";
-    let dentistId = "";
+
+    let patiendDentallyId = "";
+    let dentistDentallyId = "";
     if (token && token.role === TokenRoles.PATIENT) {
-      patiendId = token.sub || "";
+      patiendDentallyId = token.sub || "";
     } else if (
       token &&
-      (token.role == TokenRoles.DENTIST ||
-        token.role === TokenRoles.RECIEVING_DENTIST)
-    ) {
-      dentistId = token.sub || "";
+      token.role === TokenRoles.DENTALLY_PRACTITIONER) {
+      dentistDentallyId = token.sub || "";
     }
 
     const appointmentId = req.nextUrl.pathname.split("/").pop();
@@ -293,15 +298,15 @@ export async function GET(req: NextRequest) {
     }
     let appointmentOwner = null;
 
-    if (patiendId) {
+    if (patiendDentallyId) {
       appointmentOwner = await prisma.patient.findUnique({
-        where: { id: patiendId },
+        where: { dentallyId: patiendDentallyId },
         select: { id: true, appointmentIds: true },
       });
     }
-    if (dentistId) {
-      appointmentOwner = await prisma.dentist.findUnique({
-        where: { id: dentistId },
+    if (dentistDentallyId) {
+      appointmentOwner = await prisma.dentist.findFirst({
+        where: { dentallyId: dentistDentallyId },
         select: { id: true, appointmentIds: true },
       });
     }
@@ -373,23 +378,28 @@ export async function DELETE(req: NextRequest) {
     const token = await getToken({
       req,
     });
-    if (token && token.role === TokenRoles.REFERRING_DENTIST) {
+
+    if (!token) {
       return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
+    if (token.role === TokenRoles.REFERRING_DENTIST) {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
     }
 
-    let patiendId = "";
-    let dentistId = "";
+    let patiendDentallyId = "";
+    let dentistDentallyId = "";
 
     if (token && token.role === TokenRoles.PATIENT) {
-      patiendId = token.sub || "";
+      patiendDentallyId = token.sub || "";
     } else if (
       token &&
-      (token.role == TokenRoles.DENTIST ||
-        token.role === TokenRoles.RECIEVING_DENTIST)
-    ) {
-      dentistId = token.sub || "";
+      token.role === TokenRoles.DENTALLY_PRACTITIONER) {
+      dentistDentallyId = token.sub || "";
     }
 
     const appointmentId = req.nextUrl.pathname.split("/").pop();
@@ -411,15 +421,15 @@ export async function DELETE(req: NextRequest) {
 
     let appointment = null;
 
-    if (patiendId) {
+    if (patiendDentallyId) {
       appointment = await prisma.patient.findUnique({
-        where: { id: patiendId },
+        where: { dentallyId: patiendDentallyId },
         select: { id: true, appointmentIds: true },
       });
     }
-    if (dentistId) {
-      appointment = await prisma.patient.findUnique({
-        where: { id: dentistId },
+    if (dentistDentallyId) {
+      appointment = await prisma.patient.findFirst({
+        where: { dentallyId: dentistDentallyId },
         select: { id: true, appointmentIds: true },
       });
     }
@@ -431,7 +441,7 @@ export async function DELETE(req: NextRequest) {
       : [];
 
     if (appointment && currentAppointmentIds.includes(appointmentId)) {
-      if (patiendId) {
+      if (patiendDentallyId) {
         await prisma.patient.update({
           where: { id: appointment.id },
           data: {
@@ -440,7 +450,7 @@ export async function DELETE(req: NextRequest) {
             ),
           },
         });
-      } else if (dentistId) {
+      } else if (dentistDentallyId) {
         await prisma.dentist.update({
           where: { id: appointment.id },
           data: {
@@ -464,6 +474,7 @@ export async function DELETE(req: NextRequest) {
     });
   }
 }
+
 export async function PATCH(req: NextRequest) {
   try {
     const partialAppointment = await req.json();
@@ -471,23 +482,27 @@ export async function PATCH(req: NextRequest) {
       req,
     });
 
-    if (token && token.role === TokenRoles.REFERRING_DENTIST) {
+    if (!token) {
       return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
+    if (token.role === TokenRoles.REFERRING_DENTIST) {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
     }
 
-    let patiendId = "";
-    let dentistId = "";
+    let patiendDentallyId = "";
+    let dentistDentallyId = "";
 
     if (token && token.role === TokenRoles.PATIENT) {
-      patiendId = token.sub || "";
+      patiendDentallyId = token.sub || "";
     } else if (
       token &&
-      (token.role == TokenRoles.DENTIST ||
-        token.role === TokenRoles.RECIEVING_DENTIST)
-    ) {
-      dentistId = token.sub || "";
+      token.role === TokenRoles.DENTALLY_PRACTITIONER) {
+      dentistDentallyId = token.sub || "";
     }
 
     const appointmentId = req.nextUrl.pathname.split("/").pop();
@@ -507,15 +522,15 @@ export async function PATCH(req: NextRequest) {
     }
     let appointmentOwner = null;
 
-    if (patiendId) {
+    if (patiendDentallyId) {
       appointmentOwner = await prisma.patient.findUnique({
-        where: { id: patiendId },
+        where: { dentallyId: patiendDentallyId },
         select: { id: true, appointmentIds: true },
       });
     }
-    if (dentistId) {
-      appointmentOwner = await prisma.dentist.findUnique({
-        where: { id: dentistId },
+    if (dentistDentallyId) {
+      appointmentOwner = await prisma.dentist.findFirst({
+        where: { dentallyId: dentistDentallyId },
         select: { id: true, appointmentIds: true },
       });
     }

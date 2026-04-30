@@ -1,11 +1,10 @@
 import sendgrid from "@/config/sendgrid-config";
+import { TokenRoles } from "@/constants/UserRoles";
 import { getPatient } from "@/dentallyHelpers/patient";
 import prisma from "@/lib/db";
-import { UserRoles } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
 import { generateOtp } from "@/utils/generateOtp";
 import { NextRequest, NextResponse } from "next/server";
-import { act } from "react";
 
 /**
  * @swagger
@@ -120,7 +119,7 @@ export default async function POST(req: NextRequest) {
       `${active?.firstName ?? firstName} ${active?.lastName ?? lastName}`.trim();
     let patient = null;
 
-    const existingPatient = await prisma.patient.findFirst({
+    const existingPatient = await prisma.patient.findUnique({
       where: {
         dentallyId: active?.dentallyId,
       },
@@ -129,12 +128,10 @@ export default async function POST(req: NextRequest) {
     if (!existingPatient) {
       patient = await prisma.patient.create({
         data: {
-          id: active?.id,
           uuid: String(active?.uuid),
           dentallyId: active?.dentallyId,
           mobileNumber: mobilePhone,
-          firstName: firstName,
-          lastName: lastName,
+          name: fullName,
           dateOfBirth: dateOfBirth,
           email: email,
           familyId: active?.familyId,
@@ -147,10 +144,10 @@ export default async function POST(req: NextRequest) {
         where: { id: active?.id },
         data: {
           mobileNumber: mobilePhone,
-          firstName: firstName,
-          lastName: lastName,
+          name: fullName,
           dateOfBirth: dateOfBirth,
           email: email,
+          familyId: active?.familyId,
           otp: generateOtp(),
           otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
         },
@@ -190,8 +187,9 @@ export default async function POST(req: NextRequest) {
     return NextResponse.json(
       createResponse(true, "OTP code send successfully", {
         id: patient.id,
+        dentallyId: patient.dentallyId,
         email: email,
-        role: UserRoles.PATIENT,
+        role: TokenRoles.PATIENT,
         name: fullName,
         familyId: patient.familyId,
         image: null,

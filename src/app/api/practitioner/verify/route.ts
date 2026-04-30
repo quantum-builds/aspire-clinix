@@ -1,4 +1,5 @@
 import sendgrid from "@/config/sendgrid-config";
+import { TokenRoles } from "@/constants/UserRoles";
 import { getPractitioners } from "@/dentallyHelpers/practitioners";
 import prisma from "@/lib/db";
 import { UserRoles } from "@/types/common";
@@ -93,78 +94,93 @@ export default async function POST(req: NextRequest) {
         { status: 404 },
       );
     }
-
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedGdcNumber = gdcNumber.trim().toLowerCase();
 
     const filteredPractitioners = (response.response ?? []).filter(
       (practitioner: any) =>
         practitioner?.user?.email?.trim?.().toLowerCase?.() ===
-          normalizedEmail &&
+        normalizedEmail &&
         practitioner?.gdc_Number?.trim?.().toLowerCase?.() ===
-          normalizedGdcNumber,
+        normalizedGdcNumber,
     );
 
+    let dbDentist = null;
+
+    // check if the dentist is REFERRAL_DENTIST
     if (filteredPractitioners.length === 0) {
-      return NextResponse.json(
-        createResponse(false, "No account found with these details", null),
-        { status: 404 },
-      );
-    }
+      dbDentist = await prisma.dentist.findUnique({ where: { email: email, gdcNo: gdcNumber } })
 
-    if (filteredPractitioners.length > 1) {
-      return NextResponse.json(
-        createResponse(
-          false,
-          "Multiple accounts found. Please contact Aspire support.",
-          null,
-        ),
-        { status: 409 },
-      );
-    }
+      if (!dbDentist) {
+        return NextResponse.json(
+          createResponse(false, "No account found with these details", null),
+          { status: 404 },
+        );
+      }
 
-    const matchedPractitioner = filteredPractitioners[0];
-    const firstName = matchedPractitioner?.user?.first_name?.trim?.() ?? "";
-    const lastName = matchedPractitioner?.user?.last_name?.trim?.() ?? "";
-    const fullName = `${firstName} ${lastName}`.trim() || normalizedEmail;
-    const otp = generateOtp();
-
-    const existingDentist = await prisma.dentist.findFirst({
-      where: {
-        email: normalizedEmail,
-        gdcNo: normalizedGdcNumber,
-      },
-    });
-
-    let user = null;
-    if (!existingDentist) {
-      user = await prisma.dentist.create({
+      const otp = generateOtp();
+      await prisma.dentist.update({
+        where: { id: dbDentist.id },
         data: {
-          email: normalizedEmail,
-          gdcNo: normalizedGdcNumber,
-          dentallyId: matchedPractitioner.id,
-          firstName: matchedPractitioner.user.first_name,
-          lastName: matchedPractitioner.use.last_name,
           otp,
           otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
         },
       });
     } else {
-      user = await prisma.dentist.update({
-        where: { id: existingDentist.id },
-        data: {
-          otp,
-          otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
+      // is DENTALLY_PRACTITIONER
+      if (filteredPractitioners.length > 1) {
+        return NextResponse.json(
+          createResponse(
+            false,
+            "Multiple accounts found. Please contact Aspire support.",
+            null,
+          ),
+          { status: 409 },
+        );
+      }
+
+      const matchedPractitioner = filteredPractitioners[0];
+      const otp = generateOtp();
+
+      const existingDentist = await prisma.dentist.findUnique({
+        where: {
+          email: normalizedEmail,
+          gdcNo: normalizedGdcNumber,
         },
       });
+
+      if (!existingDentist) {
+        dbDentist = await prisma.dentist.create({
+          data: {
+            email: normalizedEmail,
+            gdcNo: normalizedGdcNumber,
+            dentallyId: matchedPractitioner.id,
+            firstName: matchedPractitioner.user.first_name,
+            lastName: matchedPractitioner.use.last_name,
+            role: TokenRoles.DENTALLY_PRACTITIONER,
+            otp,
+            otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
+          },
+        });
+      } else {
+        dbDentist = await prisma.dentist.update({
+          where: { id: existingDentist.id },
+          data: {
+            otp,
+            otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
+          },
+        });
+      }
     }
+
+    const fullName = `${dbDentist.firstName} ${dbDentist.lastName}`
 
     const html = `
             <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
               <p>Hi ${fullName},</p>
               <p>Your one-time password is:</p>
               <div style="font-size: 24px; font-weight: 700; letter-spacing: 4px; margin: 16px 0;">
-                ${otp}
+                ${dbDentist.otp}
               </div>
               <p>This code expires in 15 minutes.</p>
             </div>
@@ -183,16 +199,16 @@ export default async function POST(req: NextRequest) {
 
     await sendgrid.send({
       from: process.env.EMAIL_FROM,
-      to: normalizedEmail,
+      to: dbDentist.email,
       subject: "Your Aspire OTP code",
       html,
       text: undefined,
     });
 
     const data = {
-      id: user.id,
-      email: user.email,
-      role: UserRoles.DENTIST,
+      id: dbDentist.id,
+      email: dbDentist.email,
+      role: dbDentist.role,
       name: fullName,
       image: null,
     };

@@ -1,7 +1,7 @@
 import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { createResponse } from "@/utils/createResponse";
-import { ReferralRequestStatus } from "@prisma/client";
+import { DentistRole, ReferralRequestStatus } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
 import { getPatient } from "@/dentallyHelpers/patient";
@@ -151,31 +151,44 @@ export async function POST(req: NextRequest) {
   try {
     const patientEmail = referralForm.patientEmail;
 
-    const respose = await getPatient({ emailAddress: patientEmail });
+    const response = await getPatient({ emailAddress: patientEmail });
 
     let patient = null;
-    if (!respose.isError) {
-      patient = respose.response;
+    if (!response.isError) {
+      patient = response.response;
     }
+    const fullName=`${patient.firstName} ${patient.lastName}`
+    
+    let dbPatient = await prisma.patient.findUnique({ where: { dentallyId: patient.id } })
+    if (!dbPatient) {
+      dbPatient=await prisma.patient.create({
+        data: {
+          uuid: patient.uuid,
+          dentallyId: patient.id,
+          mobileNumber: patient.mobilePhone,
+          email: patient.emailAddress,
+          name: fullName,
+          dateOfBirth: patient.dateOfBirth,
+          familyId: patient.familyId,
+        },
+      });
+    }
+
     if (patient) {
-      referralForm.patientId = patient.id;
+      referralForm.patientId = dbPatient.id;
     }
 
     const referralEmail = referralForm.referralEmail;
-
     const referralDentist = await prisma.dentist.findUnique({
-      where: { email: referralEmail },
+      where: { email: referralEmail, role: DentistRole.REFERRING_DENTIST },
     });
-
     if (referralDentist) {
       referralForm.referralDentistId = referralDentist.id;
     }
-
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({
         data: referralForm,
       });
-
       await tx.referralRequest.create({
         data: {
           referralFormId: newReferral.id,
@@ -209,7 +222,7 @@ export async function GET(req: NextRequest) {
 
     if (
       token.role === TokenRoles.PATIENT ||
-      token.role === TokenRoles.RECIEVING_DENTIST
+      token.role === TokenRoles.DENTALLY_PRACTITIONER
     ) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
@@ -218,7 +231,6 @@ export async function GET(req: NextRequest) {
 
     let dentistId = null;
     if (
-      token.role === TokenRoles.DENTIST ||
       token.role === TokenRoles.REFERRING_DENTIST
     ) {
       dentistId = token.sub;

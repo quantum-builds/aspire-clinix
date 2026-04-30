@@ -234,9 +234,8 @@ export const DENTALLY_ENDPOINTS = {
     get: (patientId: string) => `patients/${patientId}`,
     edit: (patientId: string) => `patients/${patientId}`,
     delete: (patientId: string) => `patients/${patientId}`,
-    // list: (query?: string) =>
-    //   query ? `patients?query=${encodeURIComponent(query)}` : `patients`,
-    list: (site_id: string) => `patients?siteId=${site_id.toString()}`,
+    list: (query?: string) =>
+      query ? `patients?query=${encodeURIComponent(query)}` : `patients`,
   },
   practitioner: {
     get: (practitionerId: string) => `practitioners/${practitionerId}`,

@@ -184,7 +184,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (
-    token.role !== TokenRoles.PRACTITIONER &&
+    token.role !== TokenRoles.DENTALLY_PRACTITIONER && token.role !== TokenRoles.REFERRING_DENTIST &&
     token.role !== TokenRoles.ADMIN
   ) {
     return NextResponse.json(createResponse(false, "Forbidden", null), {
@@ -238,7 +238,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   if (
-    token.role !== TokenRoles.PRACTITIONER &&
+    token.role !== TokenRoles.DENTALLY_PRACTITIONER && token.role !== TokenRoles.REFERRING_DENTIST &&
     token.role !== TokenRoles.ADMIN
   ) {
     return NextResponse.json(createResponse(false, "Forbidden", null), {

@@ -1,5 +1,3 @@
-import prisma from "@/lib/db";
-import bcrypt from "bcryptjs";
 import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
@@ -8,7 +6,6 @@ import {
   getPatient,
   getPatientById,
   getPatients,
-  patchPatientById,
 } from "@/dentallyHelpers/patient";
 
 /**
@@ -75,75 +72,6 @@ import {
  *               status: false
  *               message: "Internal Server Error"
  *               data: null
- *   patch:
- *     summary: Update the authenticated patient
- *     tags: [Patient]
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *               phoneNumber:
- *                 type: string
- *     responses:
- *       200:
- *         description: Patient updated successfully
- *         content:
- *           application/json:
- *             example:
- *               status: true
- *               message: "Patient updated successfully"
- *               data:
- *                 id: "pat_01HXYZ1234ABCDE"
- *                 email: "john.doe@example.com"
- *                 mobileNumber: "+447700900123"
- *       400:
- *         description: Validation failed or fields already in use
- *         content:
- *           application/json:
- *             example:
- *               status: false
- *               message: "These fields are already in use: email"
- *               data: null
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             example:
- *               status: false
- *               message: "Unauthorized"
- *               data: null
- *       403:
- *         description: Forbidden
- *         content:
- *           application/json:
- *             example:
- *               status: false
- *               message: "Forbidden"
- *               data: null
- *       404:
- *         description: No patient found
- *         content:
- *           application/json:
- *             example:
- *               status: false
- *               message: "No Patient found"
- *               data: null
- *       500:
- *         description: Internal Server Error
- *         content:
- *           application/json:
- *             example:
- *               status: false
- *               message: "Internal Server Error"
- *               data: null
  */
 export async function GET(req: NextRequest) {
   try {
@@ -156,9 +84,9 @@ export async function GET(req: NextRequest) {
     }
 
     if (token.role === TokenRoles.PATIENT) {
-      const patientId = token.sub ?? "";
+      const patientDentallyId = token.sub ?? "";
 
-      const respose = await getPatientById(patientId);
+      const respose = await getPatientById(patientDentallyId);
       if (respose.isError) {
         return respose.response;
       }
@@ -226,121 +154,6 @@ export async function GET(req: NextRequest) {
     }
   } catch (error) {
     console.log("Error in fetching patients ", error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(createResponse(false, errorMessage, null), {
-      status: 500,
-    });
-  }
-}
-
-export async function PATCH(req: NextRequest) {
-  try {
-    const token = await getToken({ req });
-
-    if (!token) {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
-    }
-
-    if (token.role !== TokenRoles.PATIENT) {
-      return NextResponse.json(createResponse(false, "Forbidden", null), {
-        status: 403,
-      });
-    }
-
-    const patientId = token.sub ?? "";
-
-    const patientByIdRespose = await getPatientById(patientId);
-    if (patientByIdRespose.isError) {
-      return patientByIdRespose.response;
-    }
-    const patient = patientByIdRespose.response;
-
-    if (!patient) {
-      return NextResponse.json(
-        createResponse(false, "No Patient found", null),
-        { status: 404 },
-      );
-    }
-
-    const partialPatient = await req.json();
-    const email = partialPatient.email;
-    const phoneNumber = partialPatient.phoneNumber;
-
-    const existingDentist = await prisma.dentist.findFirst({
-      where: {
-        OR: [{ email: email }, { phoneNumber: phoneNumber }],
-      },
-    });
-
-    const patientRespose = await getPatient({
-      emailAddress: email,
-      mobilePhone: phoneNumber,
-    });
-    if (patientRespose.isError) {
-      return patientRespose.response;
-    }
-    const existingPatient = patientRespose.response;
-
-    const existingAdmin = await prisma.admin.findFirst({
-      where: {
-        OR: [{ email: email }, { phoneNumber: phoneNumber }],
-      },
-    });
-
-    // if (existingDentist || existingPatient || existingAdmin) {
-    //   return NextResponse.json(
-    //     createResponse(false, "User data already exists", null),
-    //     { status: 400 }
-    //   );
-    // }
-
-    const conflicts: string[] = [];
-
-    if (existingDentist) {
-      if (existingDentist.email === email) conflicts.push("email");
-      if (existingDentist.phoneNumber === phoneNumber)
-        conflicts.push("phone number");
-    }
-
-    if (existingPatient) {
-      if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.mobilePhone === phoneNumber)
-        conflicts.push("phone number");
-    }
-
-    if (existingAdmin) {
-      if (existingAdmin.email === email) conflicts.push("email");
-      if (existingAdmin.phoneNumber === phoneNumber)
-        conflicts.push("phone number");
-    }
-
-    const uniqueConflicts = Array.from(new Set(conflicts));
-
-    if (uniqueConflicts.length > 0) {
-      return NextResponse.json(
-        createResponse(
-          false,
-          `These fields are already in use: ${uniqueConflicts.join(", ")}`,
-          null,
-        ),
-        { status: 400 },
-      );
-    }
-
-    const respose = await patchPatientById(patientId, partialPatient);
-    if (respose.isError) {
-      return respose.response;
-    }
-    const updatedPatient = respose.response;
-
-    return NextResponse.json(
-      createResponse(true, "Patient is updated successfully", updatedPatient),
-      { status: 200 },
-    );
-  } catch (error) {
-    console.log("Error in updated patient", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

@@ -28,9 +28,9 @@ model ReferralForm {
 
   referralDentistId String?
   patientId         String?
-  referralDentist   Dentist? @relation(fields: [referralDentistId], references: [id])
-
-  referralRequest ReferralRequest?
+  referralDentist   Dentist?         @relation(fields: [referralDentistId], references: [id])
+  patient           Patient?         @relation(fields: [patientId], references: [id])
+  referralRequest   ReferralRequest?
 
   @@index([patientEmail])
 }
@@ -43,8 +43,7 @@ model ReferralRequest {
   requestStatus     ReferralRequestStatus
   createdAt         DateTime              @default(now())
 
-  referralForm ReferralForm  @relation(fields: [referralFormId], references: [id])
-  appointments Appointment[]
+  referralForm ReferralForm @relation(fields: [referralFormId], references: [id])
 }
 
 model Plan {
@@ -84,39 +83,39 @@ model Dentist {
   email String @unique
 
   gdcNo               String    @unique
-  dentallyId          String    @unique
   firstName           String
   lastName            String
+  dentallyId          String?
   otp                 String?
   otpInvalidationTime DateTime?
   appointmentIds      String[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      DentistRole @default(REFERRING_DENTIST)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
-  reports      Report[]
-  practices    DentistOnPractice[]
+  reports   Report[]
+  practices DentistOnPractice[]
 
   referralForms ReferralForm[]
 }
 
 model Patient {
-  id                  String    @id
+  id                  String    @id @default(cuid())
   uuid                String    @unique
   dentallyId          String    @unique
-  mobileNumber        String?
-  email               String?
-  firstName           String?
-  lastName            String?
-  dateOfBirth         String?
+  name                String    @unique
+  mobileNumber        String
+  email               String
+  dateOfBirth         String
   otp                 String?
   otpInvalidationTime DateTime?
   familyId            String?
   appointmentIds      String[]
-  
-  reports Report[]
 
-  @@unique([mobileNumber, firstName, lastName, dateOfBirth])
+  reports       Report[]
+  referralForms ReferralForm[]
+
   @@index([familyId])
 }
 
@@ -159,8 +158,7 @@ model Practice {
   addressLine2 String
   logoUrl      String?
 
-  dentists     DentistOnPractice[]
-  appointments Appointment[]
+  dentists DentistOnPractice[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -186,34 +184,9 @@ model AppointmentRequests {
   note          String?
   fileUrl       String?
 
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  // patient     Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  appointment Appointment? @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
-}
-
-model Appointment {
-  id         String            @id @default(cuid())
-  practiceId String
-  date       DateTime
-  startTime  DateTime
-  finishTime DateTime
-  patientId  String
-  dentistId  String
-  reason     String
-  state      AppointmentStatus @default(PENDING)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  reports  Report[]
-  practice Practice @relation(fields: [practiceId], references: [id], onDelete: Cascade)
-  // patient  Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  dentist  Dentist  @relation(fields: [dentistId], references: [id], onDelete: Cascade)
-
-  referralRequest     ReferralRequest?     @relation(fields: [referralRequestId], references: [id])
-  appointmentRequests AppointmentRequests?
-  referralRequestId   String?
+  // patient     Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
 }
 
 model Report {
@@ -227,9 +200,8 @@ model Report {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  patient     Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  dentist     Dentist     @relation(fields: [dentistId], references: [id], onDelete: Cascade)
-  Appointment Appointment @relation(fields: [appointmentId], references: [id])
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  dentist Dentist @relation(fields: [dentistId], references: [id], onDelete: Cascade)
 
   @@index([appointmentId])
   @@index([fileType])
@@ -374,8 +346,9 @@ enum PaymentStatus {
 
 enum DentistRole {
   DENTIST
-  RECIEVING_DENTIST
+  DENTALLY_PRACTITIONER
   REFERRING_DENTIST
+  RECIEVING_DENTIST
 }
 
 enum GenderType {

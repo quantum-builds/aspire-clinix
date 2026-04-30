@@ -2,6 +2,8 @@ import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
 import { getPatient } from "@/dentallyHelpers/patient";
 import prisma from "@/lib/db";
+import { getToken } from "next-auth/jwt";
+import { TokenRoles } from "@/constants/UserRoles";
 
 /**
  * @swagger
@@ -49,6 +51,20 @@ import prisma from "@/lib/db";
  */
 export async function GET(req: NextRequest) {
   try {
+    const token = await getToken({ req });
+
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
+    if (token.role !== TokenRoles.PATIENT) {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
+        status: 403,
+      });
+    }
+
     const { searchParams } = new URL(req.url);
     const familyId = searchParams.get("familyId")?.trim() || "";
 
@@ -84,14 +100,18 @@ export async function GET(req: NextRequest) {
             dentallyId: activePatient?.dentallyId,
           },
         });
+        const fullname = `${activePatient.firstName} + ${activePatient.lastName}`
 
         if (!existingPatient) {
           await prisma.patient.create({
             data: {
-              id: activePatient?.id,
               uuid: activePatient?.uuid,
-              dentallyId: activePatient?.dentallyId,
-              familyId,
+              dentallyId: activePatient?.id,
+              email: activePatient.email,
+              mobileNumber: activePatient.mobilePhone,
+              name: fullname,
+              dateOfBirth:activePatient.dateOfBirth,
+              familyId
             },
           });
         }
