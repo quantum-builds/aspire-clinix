@@ -1,14 +1,14 @@
 import { GenderType } from "@prisma/client";
 
 export type TPatientCreate = {
-  title: string;
+  title?: string;
   firstName: string;
   lastName: string;
-  mobilePhone: string;
+  mobilePhone?: string;
   email: string;
-  addressLine1: string;
-  postCode: string;
-  dateOfBirth: string;
+  addressLine1?: string;
+  postCode?: string;
+  dateOfBirth?: Date;
 };
 
 export type TPatient = Omit<TPatientCreate, "password"> & {

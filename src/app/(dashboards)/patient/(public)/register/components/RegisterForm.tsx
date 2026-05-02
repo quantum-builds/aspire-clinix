@@ -13,14 +13,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
-import { CalenderInputIconV2, EyeCloseIcon, EyeOpenIcon, TextIconV2 } from "@/assets";
+import {
+  CalenderInputIconV2,
+  EyeCloseIcon,
+  EyeOpenIcon,
+  TextIconV2,
+} from "@/assets";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { z } from "zod";
 import { DentistRole } from "@prisma/client";
 import { toTitleCase } from "@/utils/formatWords";
 import { formatDate } from "@/utils/formatDateTime";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -29,11 +38,11 @@ import { showToast } from "@/utils/defaultToastOptions";
 import { TPractice } from "@/types/practice";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
-import { Title } from "@/types/patient"
+import { Title } from "@/types/patient";
 import { useCreatePatient } from "@/services/patient/patientMutation";
 
 export const patientSchema = z.object({
-  patientTitle: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "Title is required"),
   firstName: z
     .string()
     .min(2, "First name must be at least 2 characters")
@@ -43,42 +52,36 @@ export const patientSchema = z.object({
     .min(2, "Last name must be at least 2 characters")
     .max(100, "Last name must be less than 30 characters"),
   email: z.string().email("Please enter a valid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(100),
-  phoneNumber: z
+  mobilePhone: z
     .string()
     .regex(
       /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
-      "Please enter a valid UK mobile phone number"
+      "Please enter a valid UK mobile phone number",
     )
     .refine(
       (val) => {
         const digitsOnly = val.replace(/\s+/g, "");
         return digitsOnly.length >= 10 && digitsOnly.length <= 15;
       },
-      { message: "Phone number must be between 10 and 15 digits" }
+      { message: "Phone number must be between 10 and 15 digits" },
     )
     .transform((val) => val.replace(/\s+/g, "")),
   addressLine1: z
     .string()
     .min(1, "Address line 1 is required")
     .max(100, "Address must be less than 100 characters"),
-  postcode: z
+  postCode: z
     .string()
     .min(1, "Postcode is required")
     .regex(
       /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i,
-      "Please enter a valid UK postcode"
+      "Please enter a valid UK postcode",
     ),
   dateOfBirth: z.date({
     required_error: "Date of birth is required",
     invalid_type_error: "Please select a valid date",
   }),
-  marketing: z.number().default(0),
 });
-
 
 type FormData = z.infer<typeof patientSchema>;
 
@@ -110,7 +113,6 @@ export default function PatientRegisterForm({
   const { mutate: createPatient, isPending: createPatientLoader } =
     useCreatePatient();
 
-  const [showPassword, setShowPassword] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const router = useRouter();
@@ -126,16 +128,14 @@ export default function PatientRegisterForm({
   } = useForm<FormData>({
     resolver: zodResolver(patientSchema),
     defaultValues: {
-      patientTitle: "",
+      title: "",
       firstName: "",
       lastName: "",
       email: "",
-      password: "",
-      phoneNumber: "",
+      mobilePhone: "",
       addressLine1: "",
-      postcode: "",
+      postCode: "",
       dateOfBirth: undefined,
-      marketing: 0,
     },
   });
 
@@ -151,23 +151,24 @@ export default function PatientRegisterForm({
   const dateOfBirth = watch("dateOfBirth");
 
   const onSubmit = async (formData: FormData) => {
-    //   {
-    //     dentistCreate: {
-    //       ...formData,
-    //     },
-    //   },
-    //   {
-    //     onSuccess: () => {
-    //       showToast("success", "Dentist Registered Successfully");
-    //       reset();
-    //       router.replace(`/dentist/login`);
-    //     },
-    //     onError: (error) => {
-    //       const msg = getAxiosErrorMessage(error);
-    //       showToast("error", msg);
-    //     },
-    //   }
-    // );
+    createPatient(
+      {
+        patientData: {
+          ...formData,
+        },
+      },
+      {
+        onSuccess: () => {
+          showToast("success", "Patient Registered Successfully");
+          reset();
+          router.replace(`/patient/login`);
+        },
+        onError: (error) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
+        },
+      },
+    );
   };
 
   return (
@@ -188,9 +189,9 @@ export default function PatientRegisterForm({
               value: title.value,
               label: title.label,
             }))}
-            value={watch("patientTitle") || ""}
+            value={watch("title") || ""}
             onValueChange={(val) => {
-              setValue("patientTitle", val as Title, { shouldValidate: true });
+              setValue("title", val as Title, { shouldValidate: true });
             }}
             placeholder="Select Title"
             className="border shadow-sm text-base bg-gray rounded-2xl w-full"
@@ -199,8 +200,8 @@ export default function PatientRegisterForm({
             contentClassName="w-full"
           />
 
-          {errors.patientTitle && (
-            <p className="text-sm text-red-500">{errors.patientTitle?.message}</p>
+          {errors.title && (
+            <p className="text-sm text-red-500">{errors.title?.message}</p>
           )}
         </div>
         <div className="md:col-span-1" />
@@ -261,7 +262,7 @@ export default function PatientRegisterForm({
               id="phoneNumber"
               type="tel"
               placeholder="e.g. +44 7123 456 789"
-              {...register("phoneNumber")}
+              {...register("mobilePhone")}
               className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
             />
             <Image
@@ -270,8 +271,8 @@ export default function PatientRegisterForm({
               className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
             />
           </div>
-          {errors.phoneNumber && (
-            <p className="text-sm text-red-500">{errors.phoneNumber.message}</p>
+          {errors.mobilePhone && (
+            <p className="text-sm text-red-500">{errors.mobilePhone.message}</p>
           )}
         </div>
 
@@ -348,7 +349,9 @@ export default function PatientRegisterForm({
             />
           </div>
           {errors.addressLine1 && (
-            <p className="text-sm text-red-500">{errors.addressLine1.message}</p>
+            <p className="text-sm text-red-500">
+              {errors.addressLine1.message}
+            </p>
           )}
         </div>
 
@@ -364,7 +367,7 @@ export default function PatientRegisterForm({
                 type="button"
                 className={cn(
                   "relative w-full text-left font-normal bg-gray px-6 py-3 h-[52px] rounded-2xl",
-                  !dateOfBirth && "text-muted-foreground"
+                  !dateOfBirth && "text-muted-foreground",
                 )}
               >
                 {dateOfBirth ? (
@@ -406,7 +409,7 @@ export default function PatientRegisterForm({
             <Input
               id="postcode"
               placeholder="e.g. SW1A 1AA"
-              {...register("postcode")}
+              {...register("postCode")}
               className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
             />
             <Image
@@ -415,31 +418,9 @@ export default function PatientRegisterForm({
               className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
             />
           </div>
-          {errors.postcode && (
-            <p className="text-sm text-red-500">{errors.postcode.message}</p>
+          {errors.postCode && (
+            <p className="text-sm text-red-500">{errors.postCode.message}</p>
           )}
-        </div>
-
-        {/* Marketing Consent Checkbox */}
-        <div className="col-span-2">
-          <Controller
-            name="marketing"
-            control={control}
-            render={({ field }) => (
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="marketing"
-                  checked={field.value === 1}
-                  onChange={(e) => field.onChange(e.target.checked ? 1 : 0)}
-                  className="w-5 h-5 border border-gray-400 rounded cursor-pointer"
-                />
-                <Label htmlFor="marketing" className="text-base font-normal cursor-pointer">
-                  Yes please, I'd like to hear about news and special offers
-                </Label>
-              </div>
-            )}
-          />
         </div>
       </div>
 

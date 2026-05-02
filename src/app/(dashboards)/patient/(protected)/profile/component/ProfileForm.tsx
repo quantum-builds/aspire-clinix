@@ -138,7 +138,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
   const defaultValues = {
     fullName: patient?.fullName || "",
     email: patient?.email || "",
-    phoneNumber: patient?.phoneNumber || "",
+    phoneNumber: patient?.mobilePhone || "",
     address: patient?.address || "",
     dateOfBirth: patient?.dateOfBirth
       ? new Date(patient.dateOfBirth)
@@ -200,7 +200,7 @@ export default function ProfileForm({ patient }: ProfileFormProps) {
             {
               fullName: data.fullName,
               email: data.email,
-              phoneNumber: data.phoneNumber,
+              phoneNumber: data.mobilePhone,
               dateOfBirth: data.dateOfBirth
                 ? new Date(data.dateOfBirth)
                 : undefined,
