@@ -232,7 +232,7 @@ export async function GET(req: NextRequest) {
 
     if (
       token.role === TokenRoles.PATIENT ||
-      token.role === TokenRoles.RECIEVING_DENTIST
+      token.role === TokenRoles.DENTALLY_PRACTITIONER
     ) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
@@ -252,7 +252,7 @@ export async function GET(req: NextRequest) {
       where: { id: referralRequestId },
       include: {
         referralForm: true,
-        appointments: { include: { dentist: true } },
+        // appointments: { include: { dentist: true } },
       },
     });
 
@@ -350,7 +350,6 @@ export async function DELETE(req: NextRequest) {
 
     if (
       token.role !== TokenRoles.ADMIN &&
-      token.role !== TokenRoles.DENTIST &&
       token.role !== TokenRoles.REFERRING_DENTIST
     ) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
@@ -410,9 +409,9 @@ export async function DELETE(req: NextRequest) {
     });
 
     return NextResponse.json(
-      createResponse(false, "Referral deleted successfully.", null),
+      createResponse(true,"Referral deleted successfully.",null),
       {
-        status: 403,
+        status: 200,
       },
     );
   } catch (error) {
