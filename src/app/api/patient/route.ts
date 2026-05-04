@@ -8,6 +8,8 @@ import {
   getPatients,
 } from "@/dentallyHelpers/patient";
 
+export const dynamic = "force-dynamic";
+
 /**
  * @swagger
  * /api/patient:
