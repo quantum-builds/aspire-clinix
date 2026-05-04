@@ -1,19 +1,18 @@
 "use client";
 
 import { CalenderInputIconV2, CancelIcon, TimeIconV2 } from "@/assets";
-import { TAppointment } from "@/types/appointment";
+import { AppointmentState, TAppointment } from "@/types/appointment";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
-import { AppointmentStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { usePatchAppointment } from "@/services/appointments/appointmentMutation";
+import { useChangeAppointmentState } from "@/services/appointments/appointmentMutation";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { useState } from "react";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
-import AppointmentDetailsModal from "../../components/AppointmentDetailsModal";
 import StatusBage from "@/app/(dashboards)/components/StatusBadge";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { showToast } from "@/utils/defaultToastOptions";
+import { AppointmentStatus } from "@prisma/client";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -23,29 +22,27 @@ export default function UpcomingAppointmentCard({
   appointment,
 }: UpcomingAppointmentCardProps) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const [openDetailsModal, setOpenDetailsModal] = useState(false);
+  // const [openDetailsModal, setOpenDetailsModal] = useState(false);
 
   const { mutate: cancelAppointment, isPending: isCancelAppointment } =
-    usePatchAppointment();
+    useChangeAppointmentState();
   const { refresh } = useRouter();
 
   const handleCancelAppointment = () => {
     cancelAppointment(
       {
-        appointment: { state: AppointmentStatus.CANCELLED },
+        appointment: { state: AppointmentState.CANCELLED },
         id: appointment.id,
-        patientId: appointment.patientId, // will be getting in backend when token is implemented
+        patientId: appointment.patientId
       },
       {
         onSuccess: (data) => {
           console.log("updated appointment ", data);
           refresh();
           setIsCancelModalOpen(false);
-        },
-        onError: (error) => {
+        }, onError: (error) => {
           const msg = getAxiosErrorMessage(error);
           showToast("error", msg);
-          setIsCancelModalOpen(false);
         },
       }
     );
@@ -62,7 +59,7 @@ export default function UpcomingAppointmentCard({
                 alt="Calendar Icon"
                 className="w-4 h-4"
               />
-              <p className="text-lg">{formatDate(appointment.date)}</p>
+              <p className="text-lg">{formatDate(appointment.startTime)}</p>
             </div>
             <p className="text-lg flex gap-1 items-center">
               <StatusBage status={appointment.state} />
@@ -80,9 +77,9 @@ export default function UpcomingAppointmentCard({
       </div>
       <div className="flex items-center justify-between">
         <p className="text-xl font-medium w-2/3 truncate">
-          Appointment # {appointment.id.slice(0, 10)}
+          Appointment # {appointment.id}
         </p>
-        <AppointmentDetailsModal
+        {/* <AppointmentDetailsModal
           appointment={appointment}
           trigger={
             <p
@@ -94,7 +91,7 @@ export default function UpcomingAppointmentCard({
           }
           open={openDetailsModal}
           onClose={() => setOpenDetailsModal(false)}
-        />
+        /> */}
       </div>
       <div className="flex justify-between w-full">
         <div className="flex items-center gap-2 w-full mt-7">
@@ -103,7 +100,7 @@ export default function UpcomingAppointmentCard({
             href={`/patient/appointments/${appointment.id}/reports`}
           />
 
-          {appointment.state !== AppointmentStatus.CANCELLED && (
+          {appointment.state !== AppointmentState.CANCELLED && (
             <CustomButton
               style="white"
               handleOnClick={() => setIsCancelModalOpen(true)}

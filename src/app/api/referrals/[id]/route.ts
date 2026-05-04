@@ -195,7 +195,7 @@ export async function GET(req: NextRequest) {
 
     if (
       token.role === TokenRoles.PATIENT ||
-      token.role === TokenRoles.RECIEVING_DENTIST
+      token.role === TokenRoles.DENTALLY_PRACTITIONER
     ) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,

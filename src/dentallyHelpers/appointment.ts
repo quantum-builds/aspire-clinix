@@ -1,5 +1,5 @@
 import { axiosDentallyInstance, DENTALLY_ENDPOINTS } from "@/config/api-config";
-import { CreateAppointment, ListAppointment } from "@/types/appointment";
+import { CreateAppointment, ListAppointment, TChangeAppointmentState } from "@/types/appointment";
 import { DATA_TYPE, dentallyErrorHelper } from "./errorHelpers";
 
 export async function createAppointment(appointmentData: CreateAppointment) {
@@ -12,27 +12,27 @@ export async function createAppointment(appointmentData: CreateAppointment) {
 
 export async function editAppointment(
   appointmentId: string,
-  appointmentData: Partial<CreateAppointment>
+  appointmentData: TChangeAppointmentState
 ) {
   const response = await axiosDentallyInstance.patch(
     DENTALLY_ENDPOINTS.appointment.edit(appointmentId),
-    appointmentData
+    { appointment: appointmentData }
   );
-  return dentallyErrorHelper(response, DATA_TYPE.APPOINTMENT);
+  return dentallyErrorHelper(response.data, DATA_TYPE.APPOINTMENT);
 }
 
 export async function listAppointment(params?: ListAppointment) {
   const response = await axiosDentallyInstance.get(
     DENTALLY_ENDPOINTS.appointment.list(params),
   );
-  return dentallyErrorHelper(response, DATA_TYPE.APPOINTMENTS);
+  return dentallyErrorHelper(response.data, DATA_TYPE.APPOINTMENTS);
 }
 
 export async function getAppointment(id: string) {
   const response = await axiosDentallyInstance.get(
     DENTALLY_ENDPOINTS.appointment.get(id),
   );
-  return dentallyErrorHelper(response, DATA_TYPE.APPOINTMENT);
+  return dentallyErrorHelper(response.data, DATA_TYPE.APPOINTMENT);
 }
 
 export async function deleteAppointment(id: string) {
@@ -56,6 +56,8 @@ export function buildAppointmentQuery(params?: ListAppointment): string {
   };
 
   // Add parameters only if they exist
+  if (params.page) queryParams.append("page", String(params.page))
+  if (params.perPage) queryParams.append("per_page", String(params.perPage))
   if (params.on) queryParams.append("on", formatDate(params.on));
   if (params.before) queryParams.append("before", formatDate(params.before));
   if (params.after) queryParams.append("after", formatDate(params.after));

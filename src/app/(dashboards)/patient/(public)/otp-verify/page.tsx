@@ -1,110 +1,39 @@
-"use client";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { TextIconV2 } from "@/assets";
-import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
-import { z } from "zod";
-import { loginMutation } from "@/services/LoginMutation";
-import { UserRoles } from "@/types/common";
-import { useSearchParams, useRouter } from "next/navigation";
-import { showToast } from "@/utils/defaultToastOptions";
-import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { AspireDarkLogo } from "@/assets";
+import PatientOtpVerifyForm from "./components/OtpVerifyForm";
+import BackButton from "@/app/(dashboards)/components/BackButton";
 
-export const dentistsSchema = z.object({
-  otp: z.string().min(1, "OTP is required"),
-});
-
-type FormData = z.infer<typeof dentistsSchema>;
-
-export default function PatientOtpVerify() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const id = searchParams.get("id") || "";
-
-  const { mutate: patientLogin, isPending: patientLoginLoader } =
-    loginMutation();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(dentistsSchema),
-    defaultValues: {
-      otp: "",
-    },
-  });
-
-  const onSubmit = async (data: FormData) => {
-    patientLogin(
-      {
-        patientId: id,
-        otp: data.otp,
-        role: UserRoles.PATIENT,
-      },
-      {
-        onSuccess: () => {
-          showToast("success", "Patient Logged in Successfully");
-          router.replace(`/patient`);
-        },
-        onError: (error) => {
-          const msg = getAxiosErrorMessage(error);
-          showToast("error", msg);
-        },
-      },
-    );
-  };
-
-  const isSubmitting = patientLoginLoader;
-
+export default function OtpVerifyPage() {
   return (
-    <form
-      className="flex flex-col gap-10 max-w-lg items-center"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <div className="flex flex-col gap-8 items-center w-full">
-        {/* Form Fields */}
-        <div className="flex flex-col gap-8 w-full">
-          <div className="space-y-2">
-            <Label htmlFor="otp" className="text-lg font-medium">
-              OTP<span className="text-red-500">*</span>
-            </Label>
+    <main className="min-h-[111vh]">
+      <BackButton
+        className="bg-gray hover:bg-lightGray w-fit mb-5"
+        backToWebsite={true}
+        text="Back To Website"
+      />
 
-            <div className="relative">
-              <Input
-                id="otp"
-                placeholder="Enter OTP"
-                {...register("otp")}
-                className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-              />
-
-              <Image
-                src={TextIconV2}
-                alt="icon"
-                className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
-              />
-            </div>
-
-            {errors.otp && (
-              <p className="text-sm text-red-500">{errors.otp.message}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="w-full flex flex-col justify-center items-center gap-3">
-          <CustomButton
-            style="primary"
-            text={isSubmitting ? "Verifying..." : "Verify"}
-            type="submit"
-            loading={isSubmitting}
-            className="py-4 w-full"
+      <div className="mx-auto w-full bg-dashboardBarBackground rounded-2xl flex flex-col justify-center max-w-3xl p-6 md:p-10">
+        <div className="w-full flex items-center justify-center mb-8">
+          <Image
+            src={AspireDarkLogo}
+            alt="Aspire Logo"
+            width={129}
+            height={60}
           />
         </div>
+        <header className="mb-8 text-start">
+          <h1 className="text-pretty text-2xl font-medium tracking-tight">
+            Verify OTP
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Enter the OTP code sent to your email to verify your identity and access your patient portal.
+          </p>
+        </header>
+
+        <section className="w-full grid gap-6">
+          <PatientOtpVerifyForm />
+        </section>
       </div>
-    </form>
+    </main>
   );
 }

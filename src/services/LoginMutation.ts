@@ -1,3 +1,4 @@
+import { TokenRoles } from "@/constants/UserRoles";
 import { UserRoles } from "@/types/common";
 import { useMutation } from "@tanstack/react-query";
 import { signIn } from "next-auth/react";
@@ -23,7 +24,7 @@ export const loginMutation = () => {
       lastName?: string
       mobilePhone?: string
       dateOfBirth?: string
-      role?: UserRoles;
+      role?: TokenRoles;
     }) => {
       const result = await signIn("credentials", {
         redirect: false,

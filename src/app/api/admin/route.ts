@@ -190,24 +190,27 @@ export async function POST(req: NextRequest) {
     });
 
     if (respose.isError) {
-      return respose.response;
+      return NextResponse.json(
+        createResponse(false, "Failed to get dentally patients", null),
+        { status: 400 },
+      );
     }
-    const existingPatient = respose.response;
+    const existingPatient = respose.response.patients ?? [];
 
     const practitionersResponse = await getPractitioners();
     if (practitionersResponse.isError) {
       return NextResponse.json(
-        createResponse(false, "Failed to verify practitioner", null),
+        createResponse(false, "Failed to dentally practitioner", null),
         { status: 400 },
       );
     }
-    const practitioners = practitionersResponse.response || [];
+    const practitioners = practitionersResponse.response.practitioners ?? [];
     const existingPractitioner = practitioners.find(
-      (p: any) => p.user.email === email || p.user.mobile_phone === phoneNumber
+      (p: any) => p.user.email === email || p.user.mobilePhone === phoneNumber
     );
 
 
-    if (existingDbDentist || existingDbPatient || existingPatient.length > 0 || existingPractitioner.length > 0) {
+    if (existingDbDentist || existingDbPatient || existingPatient.length > 0 || existingPractitioner) {
       return NextResponse.json(
         createResponse(
           false,

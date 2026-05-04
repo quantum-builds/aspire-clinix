@@ -85,7 +85,7 @@ import { NextRequest, NextResponse } from "next/server";
  *               message: "Internal Server Error"
  *               data: null
  */
-export default async function POST(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const { firstName, lastName, mobilePhone, dateOfBirth, email } =
       await req.json();
@@ -103,15 +103,29 @@ export default async function POST(req: NextRequest) {
     });
 
     if (response.isError) {
-      throw new Error("No account found");
+      return NextResponse.json(
+        createResponse(
+          false,
+          `Error in fetching data from dentally`,
+          null,
+        ),
+        { status: 400 },
+      );
     }
 
-    const activePatients = response.response.filter(
-      (patient: any) => patient.active && !patient.archived_reason,
+    const activePatients = (response.response.patients ?? []).filter(
+      (patient: any) => patient.active && !patient.archivedReason,
     );
 
     if (activePatients.length === 0 || activePatients.length > 1) {
-      throw new Error("No account found");
+      return NextResponse.json(
+        createResponse(
+          false,
+          "No Account found",
+          null,
+        ),
+        { status: 404 },
+      );
     }
 
     let active = activePatients[0];
@@ -119,9 +133,11 @@ export default async function POST(req: NextRequest) {
       `${active?.firstName ?? firstName} ${active?.lastName ?? lastName}`.trim();
     let patient = null;
 
+    const dentallyPatientId = active?.id;
+
     const existingPatient = await prisma.patient.findUnique({
       where: {
-        dentallyId: active?.dentallyId,
+        dentallyId: dentallyPatientId,
       },
     });
 
@@ -129,7 +145,7 @@ export default async function POST(req: NextRequest) {
       patient = await prisma.patient.create({
         data: {
           uuid: String(active?.uuid),
-          dentallyId: active?.dentallyId,
+          dentallyId: dentallyPatientId,
           mobileNumber: mobilePhone,
           name: fullName,
           dateOfBirth: dateOfBirth,
@@ -141,7 +157,7 @@ export default async function POST(req: NextRequest) {
       });
     } else {
       patient = await prisma.patient.update({
-        where: { id: active?.id },
+        where: { id: existingPatient.id },
         data: {
           mobileNumber: mobilePhone,
           name: fullName,
@@ -170,7 +186,7 @@ export default async function POST(req: NextRequest) {
         <p>Hi ${fullName},</p>
         <p>Your one-time password is:</p>
         <div style="font-size: 24px; font-weight: 700; letter-spacing: 4px; margin: 16px 0;">
-          ${generateOtp}
+          ${patient.otp}
         </div>
         <p>This code expires in 15 minutes.</p>
       </div>

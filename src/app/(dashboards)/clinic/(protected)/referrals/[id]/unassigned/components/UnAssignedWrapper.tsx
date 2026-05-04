@@ -63,13 +63,6 @@ export default async function UnAssignedWrapper({ id, showModel }: UnAssignedWra
             showBackBtn={true}
             showFilters={false}
             statusOptions={null}
-            extraBtns={
-                <Button
-                    text="Book an Appointment"
-                    href={`/clinic/referrals/${id}/unassigned/book
-                    `}
-                />
-            }
         />
         <UnAssignedPatientDetails
             id={id}

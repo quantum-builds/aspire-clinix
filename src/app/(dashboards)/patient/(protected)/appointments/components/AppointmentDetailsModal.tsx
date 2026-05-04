@@ -45,21 +45,21 @@ export default function AppointmentDetailsModal({
               <p className="flex-1">
                 Name:{" "}
                 <span className="font-medium text-lg">
-                  {appointment.dentist.fullName}
+                  {appointment.practitionerName}
                 </span>
               </p>
-              <p className="flex-1">
+              {/* <p className="flex-1">
                 GDC No.{" "}
                 <span className="font-medium text-lg">
                   {appointment.dentist.gdcNo}
                 </span>
-              </p>
+              </p> */}
             </div>
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <p className="flex-1">
                 Email:{" "}
                 <span className="font-medium text-lg">
-                  {appointment.dentist.email}
+                  {appointment.prac}
                 </span>
               </p>
               <p className="flex-1">
@@ -68,15 +68,15 @@ export default function AppointmentDetailsModal({
                   {appointment.dentist.phoneNumber}
                 </span>
               </p>
-            </div>
-            <div>
+            </div> */}
+            {/* <div>
               <p>
                 Practice Address:{" "}
                 <span className="font-medium text-lg">
                   {appointment.dentist.practiceAddress}
                 </span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -91,7 +91,7 @@ export default function AppointmentDetailsModal({
                 {" "}
                 Date:{" "}
                 <span className="font-medium text-lg">
-                  {formatDate(appointment.date)}
+                  {formatDate(appointment.startTime)}
                 </span>
               </p>
             </div>

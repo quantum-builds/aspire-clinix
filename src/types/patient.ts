@@ -1,14 +1,18 @@
-import { GenderType } from "@prisma/client";
+import { TokenRoles } from "@/constants/UserRoles";
 
 export type TPatientCreate = {
   title?: string;
   firstName: string;
   lastName: string;
+  role?: TokenRoles
   mobilePhone?: string;
   email: string;
+  gdcNo?:string
   addressLine1?: string;
+  paymentPlanId?: string;
   postCode?: string;
   dateOfBirth?: Date;
+  gender?: "male" | "female";
 };
 
 export type TPatient = Omit<TPatientCreate, "password"> & {
@@ -17,6 +21,16 @@ export type TPatient = Omit<TPatientCreate, "password"> & {
   updatedAt: Date;
   file?: string;
 };
+
+export type Patient={
+  id:string
+  uuid:string
+  dentallyId:string
+  name:string
+  mobileNumber:string
+  email:string
+  dateOfBirth:string
+}
 
 export type patientQuery = {
   firstName?: string;

@@ -145,7 +145,7 @@ export async function GET(req: NextRequest) {
       );
     }
   } catch (error) {
-    console.error("Error fetching media:", error);
+    // console.error("Error fetching media:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch media" },
       { status: 500 },

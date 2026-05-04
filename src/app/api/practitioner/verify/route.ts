@@ -75,7 +75,7 @@ import { NextRequest, NextResponse } from "next/server";
  *               message: "Internal Server Error"
  *               data: null
  */
-export default async function POST(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const { email, gdcNumber } = await req.json();
 
@@ -94,14 +94,15 @@ export default async function POST(req: NextRequest) {
         { status: 404 },
       );
     }
+
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedGdcNumber = gdcNumber.trim().toLowerCase();
 
-    const filteredPractitioners = (response.response ?? []).filter(
+    const filteredPractitioners = (response.response.practitioners ?? []).filter(
       (practitioner: any) =>
         practitioner?.user?.email?.trim?.().toLowerCase?.() ===
         normalizedEmail &&
-        practitioner?.gdc_Number?.trim?.().toLowerCase?.() ===
+        practitioner?.gdcNumber?.trim?.().toLowerCase?.() ===
         normalizedGdcNumber,
     );
 
@@ -109,7 +110,7 @@ export default async function POST(req: NextRequest) {
 
     // check if the dentist is REFERRAL_DENTIST
     if (filteredPractitioners.length === 0) {
-      dbDentist = await prisma.dentist.findUnique({ where: { email: email, gdcNo: gdcNumber } })
+      dbDentist = await prisma.dentist.findUnique({ where: { email: email, gdcNo: gdcNumber, role: TokenRoles.REFERRING_DENTIST } })
 
       if (!dbDentist) {
         return NextResponse.json(
@@ -119,7 +120,7 @@ export default async function POST(req: NextRequest) {
       }
 
       const otp = generateOtp();
-      await prisma.dentist.update({
+      dbDentist = await prisma.dentist.update({
         where: { id: dbDentist.id },
         data: {
           otp,
@@ -140,7 +141,6 @@ export default async function POST(req: NextRequest) {
       }
 
       const matchedPractitioner = filteredPractitioners[0];
-      const otp = generateOtp();
 
       const existingDentist = await prisma.dentist.findUnique({
         where: {
@@ -149,16 +149,17 @@ export default async function POST(req: NextRequest) {
         },
       });
 
+      console.log("dentist is ", JSON.stringify(matchedPractitioner))
       if (!existingDentist) {
         dbDentist = await prisma.dentist.create({
           data: {
             email: normalizedEmail,
             gdcNo: normalizedGdcNumber,
             dentallyId: matchedPractitioner.id,
-            firstName: matchedPractitioner.user.first_name,
-            lastName: matchedPractitioner.use.last_name,
+            firstName: matchedPractitioner.user.firstName,
+            lastName: matchedPractitioner.user.lastName,
             role: TokenRoles.DENTALLY_PRACTITIONER,
-            otp,
+            otp: generateOtp(),
             otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
           },
         });
@@ -166,7 +167,7 @@ export default async function POST(req: NextRequest) {
         dbDentist = await prisma.dentist.update({
           where: { id: existingDentist.id },
           data: {
-            otp,
+            otp: generateOtp(),
             otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
           },
         });

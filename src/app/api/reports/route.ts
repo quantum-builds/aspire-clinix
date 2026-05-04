@@ -127,9 +127,16 @@ export async function GET(req: NextRequest) {
     const token = await getToken({
       req,
     });
+
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
     const dentistId =
-      token?.role === TokenRoles.DENTIST ? token.sub : undefined;
-    const patientId =
+      token?.role === TokenRoles.DENTALLY_PRACTITIONER ? token.sub : undefined;
+    const patientDentallyId =
       token?.role === TokenRoles.PATIENT ? token.sub : undefined;
 
     const { searchParams } = new URL(req.url);
@@ -142,14 +149,14 @@ export async function GET(req: NextRequest) {
     const baseWhere: Prisma.ReportWhereInput = {
       ...(search
         ? {
-            title: {
-              contains: search,
-              mode: "insensitive" as Prisma.QueryMode,
-            },
-          }
+          title: {
+            contains: search,
+            mode: "insensitive" as Prisma.QueryMode,
+          },
+        }
         : {}),
       ...(dentistId ? { dentistId } : {}),
-      ...(patientId ? { patientId } : {}),
+      ...(patientDentallyId ? { patientDentallyId } : {}),
       ...(appointmentId ? { appointmentId } : {}),
     };
 
@@ -225,13 +232,17 @@ export async function POST(req: NextRequest) {
   try {
     const token = await getToken({ req });
 
-    if (
-      !token ||
-      (token.role !== TokenRoles.DENTIST &&
-        token.role !== TokenRoles.RECIEVING_DENTIST)
-    ) {
+    if (!token) {
       return NextResponse.json(createResponse(false, "Unauthorized", null), {
         status: 401,
+      });
+    }
+
+    if (
+      token.role !== TokenRoles.DENTALLY_PRACTITIONER
+    ) {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
+        status: 403,
       });
     }
 
@@ -239,7 +250,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const reports = Array.isArray(body) ? body : [body];
-
+    console.log("reports are ", reports)
     // define a set for appointmentIds to check if the appointmentId in each report belongs to the dentist
     const appointmentIdsSet = new Set<string>();
     reports.forEach((report) => {
@@ -276,40 +287,44 @@ export async function POST(req: NextRequest) {
     }
 
     const invalidReportIndex = reports.findIndex(
-      (report) => !report?.patientId || !report?.appointmentId,
+      (report) => !report?.patientDentallyId || !report?.appointmentId,
     );
 
     if (invalidReportIndex !== -1) {
       return NextResponse.json(
         createResponse(
           false,
-          `Each report must include patientId and appointmentId.`,
+          `Each report must include patientDentallyId and appointmentId.`,
           null,
         ),
         { status: 400 },
       );
     }
 
-    const reportsToCreate = reports.map((r) => ({
-      ...r,
-      dentistId,
-    }));
 
-    const isExistingAppointment = await prisma.dentist.findFirst({
+    const dentist = await prisma.dentist.findFirst({
       where: {
-        id: dentistId,
+        dentallyId: Number(dentistId),
         appointmentIds: {
           has: appointmentId,
         },
       },
     });
+    console.log("appointment id ", appointmentId)
 
-    if (!isExistingAppointment) {
+    if (!dentist) {
       return NextResponse.json(
         createResponse(false, "Appointment not found for the dentist.", null),
         { status: 404 },
       );
     }
+
+    const reportsToCreate = reports.map((r) => ({
+      ...r,
+      dentistId: dentist.id,
+    }));
+
+    console.log("report to create ", reportsToCreate)
 
     await prisma.report.createMany({
       data: reportsToCreate,

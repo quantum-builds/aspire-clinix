@@ -140,47 +140,42 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
+    const page = searchParams.get("page") || "1";
+    const perPage = searchParams.get("per_page") || "20";
     const on = searchParams.get("on") || "";
     const before = searchParams.get("before") || "";
     const after = searchParams.get("after") || "";
-    const updatedAfter = searchParams.get("updated_after") || "";
-    const siteId = searchParams.get("site_id") || "";
-    const state = searchParams.get("state") || "";
+    const state = searchParams.get("status") || "";
 
     const appointmentParams: ListAppointment = {
-      on: on ? new Date(on) : undefined,
-      before: before ? new Date(before) : undefined,
-      after: after ? new Date(after) : undefined,
-      updatedAfter: updatedAfter ? new Date(updatedAfter) : undefined,
-      practitionerId: dentistDentallyId || undefined,
-      patientId: patiendDentallyId || undefined,
-      siteId: siteId || undefined,
-      state: state ? (state as AppointmentState) : undefined,
+      page: Number(page),
+      perPage: Number(perPage),
+      ...(on && { on: new Date(on) }),
+      ...(before && { before: new Date(before) }),
+      ...(after && { after: new Date(after) }),
+      ...(dentistDentallyId && { practitionerId: dentistDentallyId }),
+      ...(patiendDentallyId && { patientId: patiendDentallyId }),
+      ...(state && { state: state as AppointmentState }),
     };
+
+    console.log("appointment param ", appointmentParams)
     const response = await listAppointment(appointmentParams);
+    console.log("response form dentally is ", response)
     if (response.isError) return response.response;
+    console.log("real respons eis ", response)
 
-    let appointments: Appointment[] = [];
-    appointments = response.response as Appointment[];
+    const appointments = (response.response.appointments ?? []) as Appointment[];
 
-    const appointmentIdsByDentallyPatientId = appointments.reduce(
-      (acc, appointment) => {
-        const dentallyPatientId = String(appointment.patientId);
+    // Get all unique patient IDs from appointments
+    const dentallyPatientIds = Array.from(new Set(
+      appointments
+        .map((apt) => apt.patientId)
+        .filter((id): id is number => id !== undefined && id !== null)
+    ));
 
-        if (!acc[dentallyPatientId]) {
-          acc[dentallyPatientId] = [];
-        }
-
-        acc[dentallyPatientId].push(String(appointment.id));
-        return acc;
-      },
-      {} as Record<string, string[]>,
-    );
-
-    const dentallyPatientIds = Object.keys(appointmentIdsByDentallyPatientId);
-
+    // Only query and update patients that exist in our database
     if (dentallyPatientIds.length) {
-      const patients = await prisma.patient.findMany({
+      const existingPatients = await prisma.patient.findMany({
         where: {
           dentallyId: {
             in: dentallyPatientIds,
@@ -193,10 +188,26 @@ export async function GET(req: NextRequest) {
         },
       });
 
+      // Create a map of appointments by patient ID for easy lookup
+      const appointmentIdsByPatientId = appointments.reduce(
+        (acc, appointment) => {
+          const patientId = appointment.patientId;
+          if (patientId !== undefined && patientId !== null) {
+            if (!acc[patientId]) {
+              acc[patientId] = [];
+            }
+            acc[patientId].push(String(appointment.id));
+          }
+          return acc;
+        },
+        {} as Record<number, string[]>,
+      );
+
+      // Update only existing patients
       await Promise.all(
-        patients.map(async (patient) => {
+        existingPatients.map(async (patient) => {
           const incomingAppointmentIds =
-            appointmentIdsByDentallyPatientId[patient.dentallyId] ?? [];
+            appointmentIdsByPatientId[patient.dentallyId] ?? [];
           const mergedAppointmentIds = Array.from(
             new Set([
               ...(patient.appointmentIds ?? []),
@@ -212,26 +223,16 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const appointmentIdsByDentallyPractitionerId = appointments.reduce(
-      (acc, appointment) => {
-        const dentallyPractitionerId = String(appointment.practitionerwId);
+    // Get all unique practitioner IDs from appointments
+    const dentallyPractitionerIds = Array.from(new Set(
+      appointments
+        .map((apt) => apt.practitionerId)
+        .filter((id): id is number => id !== undefined && id !== null)
+    ));
 
-        if (!acc[dentallyPractitionerId]) {
-          acc[dentallyPractitionerId] = [];
-        }
-
-        acc[dentallyPractitionerId].push(String(appointment.id));
-        return acc;
-      },
-      {} as Record<string, string[]>,
-    );
-
-    const dentallyPractitionerIds = Object.keys(
-      appointmentIdsByDentallyPractitionerId,
-    );
-
+    // Only query and update dentists that exist in our database
     if (dentallyPractitionerIds.length) {
-      const dentists = await prisma.dentist.findMany({
+      const existingDentists = await prisma.dentist.findMany({
         where: {
           dentallyId: {
             in: dentallyPractitionerIds,
@@ -244,11 +245,26 @@ export async function GET(req: NextRequest) {
         },
       });
 
-      // dentally_id will always be present for the DENTALLY_PRACTITIONER
+      // Create a map of appointments by practitioner ID for easy lookup
+      const appointmentIdsByPractitionerId = appointments.reduce(
+        (acc, appointment) => {
+          const practitionerId = appointment.practitionerId;
+          if (practitionerId !== undefined && practitionerId !== null) {
+            if (!acc[practitionerId]) {
+              acc[practitionerId] = [];
+            }
+            acc[practitionerId].push(String(appointment.id));
+          }
+          return acc;
+        },
+        {} as Record<number, string[]>,
+      );
+
+      // Update only existing dentists
       await Promise.all(
-        dentists.map(async (dentist) => {
+        existingDentists.map(async (dentist) => {
           const incomingAppointmentIds =
-            appointmentIdsByDentallyPractitionerId[dentist.dentallyId ?? ""] ?? [];
+            appointmentIdsByPractitionerId[dentist.dentallyId ?? 0] ?? [];
           const mergedAppointmentIds = Array.from(
             new Set([
               ...(dentist.appointmentIds ?? []),
@@ -265,7 +281,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(
-      createResponse(true, "Appointments fetched successfully", appointments),
+      createResponse(true, "Appointments fetched successfully", response.response),
       { status: 200 },
     );
   } catch (error) {

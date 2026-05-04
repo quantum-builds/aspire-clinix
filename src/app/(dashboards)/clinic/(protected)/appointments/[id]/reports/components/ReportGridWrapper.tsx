@@ -1,12 +1,12 @@
 import PatientRDentistDetails from "./PatientDentistDetails";
 import LetterReportGrid from "@/app/(dashboards)/components/LetterReportGrid";
 import VideoReportGrid from "@/app/(dashboards)/components/VideoReportGrid";
-import { TReport, TReportResponse } from "@/types/reports";
-import { getReports } from "@/services/reports/reportsQuery";
 import { Response } from "@/types/common";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
-import { TPatient } from "@/types/patient";
+import { Patient, TPatient } from "@/types/patient";
 import { TDentist } from "@/types/dentist";
+import { TAppointmentDetail } from "@/types/appointment";
+import { getAppointment } from "@/services/appointments/appointmentQuery";
 
 interface ReportGridWrapperProps {
   id: string;
@@ -14,12 +14,8 @@ interface ReportGridWrapperProps {
 }
 export default async function ReportGridWrapper({
   id,
-  title,
 }: ReportGridWrapperProps) {
-  const response: Response<TReportResponse> = await getReports({
-    search: title,
-    appointmentId: id,
-  });
+  const response: Response<TAppointmentDetail> = await getAppointment(id);
 
   if (
     !response.status ||
@@ -34,15 +30,15 @@ export default async function ReportGridWrapper({
   const pdfs = response.data.reports.pdfs;
   const videos = response.data.reports.videos;
 
-  let patient: TPatient | undefined = undefined,
+  let patient: Patient | null = null,
     dentist: TDentist | undefined = undefined;
 
   const source = pdfs?.[0] || videos?.[0];
 
   if (source) {
-    patient = source.patient;
     dentist = source.dentist;
   }
+  patient = response.data.patient
 
   return (
     <>

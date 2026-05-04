@@ -12,11 +12,8 @@ export const authOptions: AuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        patientId: { label: "PatientId", type: "patientId" },
         otp: { label: "Otp", type: "otp" },
-        firstName: { label: "FirstName", type: "firstName" },
-        lastName: { label: "LastName", type: "lastName" },
-        mobilePhone: { label: "MobilePhone", type: "mobilePhone" },
-        dateOfBirth: { label: "DateOfBirth", type: "dateOfBirth" },
         role: { label: "Role", type: "role" },
       },
       async authorize(credentials) {
@@ -24,14 +21,11 @@ export const authOptions: AuthOptions = {
           throw new Error("Password and role are required");
 
         if (credentials.role === TokenRoles.PATIENT) {
-          if (!credentials.firstName || !credentials.lastName) {
-            throw new Error("FirstName and LastName is required");
+          if (!credentials.patientId) {
+            throw new Error("Patient Id is required");
           }
-          if (!credentials.mobilePhone) {
-            throw new Error("Mobile Phone is required");
-          }
-          if (!credentials.dateOfBirth) {
-            throw new Error("Date Of Birth is required");
+          if (!credentials.otp) {
+            throw new Error("OTP is required");
           }
         } else if (credentials.role === TokenRoles.REFERRING_DENTIST ||
           credentials.role === TokenRoles.DENTALLY_PRACTITIONER
@@ -46,7 +40,7 @@ export const authOptions: AuthOptions = {
           if (!credentials?.email) {
             throw new Error("Email is required");
           }
-          if (!credentials.password) {
+          if (!credentials?.password) {
             throw new Error("Password and role are required");
           }
         }
@@ -71,15 +65,14 @@ export const authOptions: AuthOptions = {
         }
 
         if (role === TokenRoles.PATIENT) {
-          const { email, firstName, lastName, otp } = credentials;
+          const { patientId, otp } = credentials;
 
           let patient = null;
-          const fullName = `${firstName} ${lastName}`.trim()
 
           try {
-            patient = await prisma.patient.findUnique({ where: { email, name: fullName } });
+            patient = await prisma.patient.findUnique({ where: { id: patientId } });
           } catch (error) {
-            throw new Error(`Error in getting patient with email ${email} and name ${fullName}`);
+            throw new Error(`Error in getting patient`);
           }
           if (!patient) {
             throw new Error("No account found");
@@ -97,26 +90,26 @@ export const authOptions: AuthOptions = {
             id: patient.dentallyId,
             email: patient.email,
             role: TokenRoles.PATIENT,
-            name: fullName,
+            name: patient.name,
             image: null,
           };
         }
 
         if (role !== TokenRoles.ADMIN && role !== TokenRoles.PATIENT) {
           const { email, otp } = credentials;
+          console.log("credentislas are ", credentials)
 
           let dentist = null;
-          const dbRole = role === TokenRoles.DENTALLY_PRACTITIONER ? DentistRole.DENTALLY_PRACTITIONER : DentistRole.REFERRING_DENTIST
 
           try {
-            dentist = await prisma.dentist.findUnique({ where: { email, role: dbRole } });
+            dentist = await prisma.dentist.findUnique({ where: { email } });
           } catch (error) {
             throw new Error(`Error in getting dentist with email ${email}`);
           }
           if (!dentist) {
             throw new Error("No account found");
           }
-
+          console.log("dentist is ", dentist)
           if (
             dentist.otp !== otp ||
             !dentist.otpInvalidationTime ||
@@ -127,9 +120,9 @@ export const authOptions: AuthOptions = {
 
           const fullName = `${dentist.firstName} ${dentist.lastName}`.trim();
           return {
-            id: role === DentistRole.DENTALLY_PRACTITIONER && dentist.dentallyId ? dentist.dentallyId : dentist.id,
+            id: dentist.role === DentistRole.DENTALLY_PRACTITIONER && dentist.dentallyId ? dentist.dentallyId : dentist.id,
             email: dentist.email,
-            role: dbRole,
+            role: dentist.role,
             name: fullName,
             image: null,
           };

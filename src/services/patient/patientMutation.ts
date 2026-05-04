@@ -3,16 +3,15 @@ import { Response } from "@/types/common";
 import { TPatient, TPatientCreate } from "@/types/patient";
 import { useMutation } from "@tanstack/react-query";
 
-export const useCreatePatient = () => {
+export const useCreateUser = () => {
   return useMutation({
     mutationFn: async ({ patientData }: { patientData: TPatientCreate }) => {
       const response = await axiosInstance.post(
         ENDPOINTS.auth.register,
         patientData
-
       );
-      const patient: TPatient = response.data.data;
-      return patient;
+      const respons = response.data.data;
+      return respons;
     },
   });
 };
@@ -40,7 +39,7 @@ type VerifyPatientPayload = {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
-  phoneNumber: string;
+  mobilePhone: string;
   email: string;
 };
 
@@ -50,7 +49,7 @@ export const useVerifyPatient = () => {
       firstName,
       lastName,
       dateOfBirth,
-      phoneNumber,
+      mobilePhone,
       email,
     }: VerifyPatientPayload) => {
       const response = await axiosInstance.post(
@@ -59,12 +58,11 @@ export const useVerifyPatient = () => {
           firstName,
           lastName,
           dateOfBirth,
-          phoneNumber,
+          mobilePhone,
           email,
         },
       );
-
-      return response.data.data;
+      return response.data?.data;
     },
   });
 };

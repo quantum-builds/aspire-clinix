@@ -12,6 +12,7 @@ import { useVerifyDentist } from "@/services/dentist/dentistMutation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export const dentistsSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -47,7 +48,7 @@ export default function DentistLoginForm() {
       {
         onSuccess: (resData) => {
           showToast("success", "OTP sent successfully to your email");
-          router.replace(`dentist/otp-verify?email=${resData.email}`);
+          router.replace(`/dentist/otp-verify?email=${resData.email}`);
         },
         onError: (error) => {
           const msg = getAxiosErrorMessage(error);
@@ -125,6 +126,15 @@ export default function DentistLoginForm() {
           loading={isSubmitting}
           className="py-4 w-full"
         />
+        <p className="text-sm text-muted-foreground mt-4">
+          Want to Register as Referring Dentist?{" "}
+          <Link
+            href="/dentist/register"
+            className="font-medium text-green hover:text-greenHover transition-colors"
+          >
+            Register
+          </Link>
+        </p>
       </div>
     </form>
   );

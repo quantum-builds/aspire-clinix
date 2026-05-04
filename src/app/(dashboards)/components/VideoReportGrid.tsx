@@ -5,8 +5,6 @@ import Image from "next/image";
 import VideoReportCard from "./VideoReportCard";
 import { X } from "lucide-react";
 import { VideoModal } from "./VideoModal";
-import UploadVideoForm from "../dentist/(protected)/appointments/[id]/reports/new/components/UploadVideoForm";
-import CustomButton from "./custom-components/CustomButton";
 import { useRef } from "react";
 
 interface VideoReportGridProps {

@@ -14,9 +14,11 @@ import Dropdown from "./custom-components/DropDown"
 interface DateFilterProps {
   statusOptions: TStatusOption[] | null
   showDateFilter?: boolean
+  lockAfterDate?: boolean
+  lockBeforeDate?: boolean
 }
 
-export default function DateFilter({ statusOptions, showDateFilter }: DateFilterProps) {
+export default function DateFilter({ statusOptions, showDateFilter, lockAfterDate, lockBeforeDate }: DateFilterProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -209,36 +211,52 @@ export default function DateFilter({ statusOptions, showDateFilter }: DateFilter
                 <div className="flex gap-6 ">
                   {/* After */}
                   <div className="w-full space-y-[2px]">
-                    <p className="text-green font-medium">After a date</p>
-                    <CustomPopover
-                      trigger={
-                        <div className="w-full relative">
-                          <input
-                            type="text"
-                            placeholder="Select Date"
-                            readOnly
-                            value={formatDate(afterDate)}
-                            className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
-                          />
-                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
-                            <Image src={CalenderInputIconV2} alt="Dropdown Icon" className="w-5 h-5" />
-                          </div>
+                    <p className="text-green font-medium">After a date {lockAfterDate && "(Locked)"}</p>
+                    {lockAfterDate ? (
+                      <div className="w-full relative">
+                        <input
+                          type="text"
+                          placeholder="Current Date"
+                          readOnly
+                          disabled
+                          value={formatDate(afterDate)}
+                          className="w-full border border-gray-300 bg-gray-100 p-3 h-10 rounded-lg focus:outline-none cursor-not-allowed text-gray-500"
+                        />
+                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center opacity-50">
+                          <Image src={CalenderInputIconV2} alt="Dropdown Icon" className="w-5 h-5" />
                         </div>
-                      }
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={afterDate || undefined}
-                        onSelect={(date) => {
-                          if (!date) return
-                          setAfterDate(date)
-                          updateQuery("after", formatDate(date))
-                        }}
-                        showOutsideDays={false}
-                      />
-                    </CustomPopover>
+                      </div>
+                    ) : (
+                      <CustomPopover
+                        trigger={
+                          <div className="w-full relative">
+                            <input
+                              type="text"
+                              placeholder="Select Date"
+                              readOnly
+                              value={formatDate(afterDate)}
+                              className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
+                            />
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
+                              <Image src={CalenderInputIconV2} alt="Dropdown Icon" className="w-5 h-5" />
+                            </div>
+                          </div>
+                        }
+                      >
+                        <Calendar
+                          mode="single"
+                          selected={afterDate || undefined}
+                          onSelect={(date) => {
+                            if (!date) return
+                            setAfterDate(date)
+                            updateQuery("after", formatDate(date))
+                          }}
+                          showOutsideDays={false}
+                        />
+                      </CustomPopover>
+                    )}
 
-                    {afterDate && (
+                    {!lockAfterDate && afterDate && (
                       <button
                         onClick={() => {
                           setAfterDate(null)
@@ -253,36 +271,52 @@ export default function DateFilter({ statusOptions, showDateFilter }: DateFilter
 
                   {/* Before */}
                   <div className="w-full space-y-[2px]">
-                    <p className="text-green font-medium">Before a date</p>
-                    <CustomPopover
-                      trigger={
-                        <div className="w-full relative">
-                          <input
-                            type="text"
-                            placeholder="Select Date"
-                            readOnly
-                            value={formatDate(beforeDate)}
-                            className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
-                          />
-                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
-                            <Image src={CalenderInputIconV2} alt="Dropdown Icon" className="w-5 h-5" />
-                          </div>
+                    <p className="text-green font-medium">Before a date {lockBeforeDate && "(Locked)"}</p>
+                    {lockBeforeDate ? (
+                      <div className="w-full relative">
+                        <input
+                          type="text"
+                          placeholder="Current Date"
+                          readOnly
+                          disabled
+                          value={formatDate(beforeDate)}
+                          className="w-full border border-gray-300 bg-gray-100 p-3 h-10 rounded-lg focus:outline-none cursor-not-allowed text-gray-500"
+                        />
+                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center opacity-50">
+                          <Image src={CalenderInputIconV2} alt="Dropdown Icon" className="w-5 h-5" />
                         </div>
-                      }
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={beforeDate || undefined}
-                        onSelect={(date) => {
-                          if (!date) return
-                          setBeforeDate(date)
-                          updateQuery("before", formatDate(date))
-                        }}
-                        showOutsideDays={false}
-                      />
-                    </CustomPopover>
+                      </div>
+                    ) : (
+                      <CustomPopover
+                        trigger={
+                          <div className="w-full relative">
+                            <input
+                              type="text"
+                              placeholder="Select Date"
+                              readOnly
+                              value={formatDate(beforeDate)}
+                              className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
+                            />
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
+                              <Image src={CalenderInputIconV2} alt="Dropdown Icon" className="w-5 h-5" />
+                            </div>
+                          </div>
+                        }
+                      >
+                        <Calendar
+                          mode="single"
+                          selected={beforeDate || undefined}
+                          onSelect={(date) => {
+                            if (!date) return
+                            setBeforeDate(date)
+                            updateQuery("before", formatDate(date))
+                          }}
+                          showOutsideDays={false}
+                        />
+                      </CustomPopover>
+                    )}
 
-                    {beforeDate && (
+                    {!lockBeforeDate && beforeDate && (
                       <button
                         onClick={() => {
                           setBeforeDate(null)

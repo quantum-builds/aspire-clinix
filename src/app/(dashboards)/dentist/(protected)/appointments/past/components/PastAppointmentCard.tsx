@@ -2,7 +2,7 @@
 
 import { capitalize } from "@/utils/formatWords";
 import { CalenderInputIconV2, DropDownIcon, TimeIconV2 } from "@/assets";
-import { TAppointment } from "@/types/appointment";
+import { AppointmentState, TAppointment } from "@/types/appointment";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
 import PatientDetailsModal from "../../components/PatientDetailsModal";
@@ -14,11 +14,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AppointmentStatus } from "@prisma/client";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
-import { usePatchAppointment } from "@/services/appointments/appointmentMutation";
+import { useChangeAppointmentState } from "@/services/appointments/appointmentMutation";
 import { useRouter } from "next/navigation";
 import StatusBage from "@/app/(dashboards)/components/StatusBadge";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { showToast } from "@/utils/defaultToastOptions";
 
 interface PastAppointmentCardProps {
   appointment: TAppointment;
@@ -31,37 +32,38 @@ export default function PastAppointmentCard({
   const [menuOpen, setMenuOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] =
-    useState<AppointmentStatus | null>(null);
+    useState<AppointmentState | null>(null);
 
-  const { mutate: updateAppointment, isPending: updateAppointmentLoader } =
-    usePatchAppointment();
-  const router = useRouter();
+  const { mutate: updateAppointment, isPending: isUpdateAppointment } =
+    useChangeAppointmentState();
+  const { refresh } = useRouter();
 
-  const statusOptions: AppointmentStatus[] = [
-    AppointmentStatus.CONFIRMED,
-    AppointmentStatus.CANCELLED,
-    AppointmentStatus.DID_NOT_ATTEND,
-    AppointmentStatus.ARRIVED,
-    AppointmentStatus.IN_SURGERY,
+  const statusOptions: AppointmentState[] = [
+    AppointmentState.CONFIRMED,
+    AppointmentState.CANCELLED,
+    AppointmentState.DIDNOTATTEND,
+    AppointmentState.ARRIVED,
+    AppointmentState.INSURGERY,
   ];
 
   const handleStatusChange = () => {
     if (!selectedStatus) return;
     updateAppointment(
       {
-        id: appointment.id,
         appointment: { state: selectedStatus },
-        dentistId: appointment.dentistId,
+        id: appointment.id,
+        dentistId: appointment.practitionerId
       },
       {
-        onSuccess: () => {
-          router.refresh();
+        onSuccess: (data) => {
+          console.log("updated appointment ", data);
+          refresh();
           setIsConfirmModalOpen(false);
           setMenuOpen(false);
-        },
-        onError: () => {
+        }, onError: (error) => {
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
           setIsConfirmModalOpen(false);
-          setMenuOpen(false);
         },
       }
     );
@@ -77,7 +79,7 @@ export default function PastAppointmentCard({
               alt="Calendar Icon"
               className="w-4 h-4"
             />
-            <p className="text-lg">{formatDate(appointment.date)}</p>
+            <p className="text-lg">{formatDate(appointment.startTime)}</p>
           </div>
           <div className="flex items-center gap-1">
             <Image src={TimeIconV2} alt="Time Icon" className="w-4 h-4" />
@@ -91,7 +93,7 @@ export default function PastAppointmentCard({
 
       <div className="flex items-center justify-between">
         <p className="text-xl font-medium truncate">
-          Appointment # {appointment.id.slice(0, 10)}
+          Appointment # {appointment.id}
         </p>
         <PatientDetailsModal
           appointment={appointment}
@@ -133,9 +135,8 @@ export default function PastAppointmentCard({
               {statusOptions.map((status) => (
                 <DropdownMenuItem
                   key={status}
-                  className={`px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors ${
-                    appointment.state === status ? "bg-green-50" : ""
-                  }`}
+                  className={`px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors ${appointment.state === status ? "bg-green-50" : ""
+                    }`}
                   onClick={() => {
                     setSelectedStatus(status);
                     setIsConfirmModalOpen(true);
@@ -161,9 +162,9 @@ export default function PastAppointmentCard({
         isOpen={isConfirmModalOpen}
         onClose={() => {
           setIsConfirmModalOpen(false);
-          setMenuOpen(false); 
+          setMenuOpen(false);
         }}
-        isPending={updateAppointmentLoader}
+        isPending={isUpdateAppointment}
         onConfirm={handleStatusChange}
         title="Change Appointment Status"
         description={`Are you sure you want to set status to "${capitalize(

@@ -2,12 +2,11 @@ import { Suspense } from "react";
 import AppointmentGridWrapper from "./component/AppointmentGrid";
 import { AppointmentGridSkeleton } from "./component/skeletons/AppointmentGrid";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
-import { AppointmentStatus } from "@prisma/client";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import { AppointmentState } from "@/types/appointment";
 
 export default async function PastAppointments(props: {
   searchParams?: Promise<{
-    query?: string;
     page?: string;
     status?: string;
     on?: string;
@@ -16,10 +15,14 @@ export default async function PastAppointments(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
-  const query = searchParams?.query || "";
   const status = searchParams?.status || "";
   const on = searchParams?.on || "";
-  const before = searchParams?.before || (new Date()).toISOString();
+
+  // Default before date to today (YYYY-MM-DD format) for past appointments
+  const today = new Date();
+  const todayFormatted = today.toISOString().split('T')[0];
+  const before = searchParams?.before || todayFormatted;
+
   const after = searchParams?.after || "";
   const page = Number(searchParams?.page) || 1;
 
@@ -27,38 +30,44 @@ export default async function PastAppointments(props: {
     <div className="min-h-[103vh] flex flex-col gap-5">
       <PageTopBar
         pageHeading="Appointments"
-        showSearch={true}
+        showSearch={false}
         showFilters={true}
+        lockBeforeDate={true}
         statusOptions={[
           {
-            value: AppointmentStatus.COMPLETED,
+            value: AppointmentState.PENDING,
           },
           {
-            value: AppointmentStatus.CANCELLED,
+            value: AppointmentState.CONFIRMED,
           },
           {
-            value: AppointmentStatus.DID_NOT_ATTEND,
+            value: AppointmentState.ARRIVED,
           },
           {
-            value: AppointmentStatus.ARRIVED,
+            value: AppointmentState.INSURGERY,
           },
           {
-            value: AppointmentStatus.IN_SURGERY,
+            value: AppointmentState.COMPLETED,
           },
+          {
+            value: AppointmentState.CANCELLED,
+          },
+          {
+            value: AppointmentState.DIDNOTATTEND,
+          }
         ]}
         extraBtns={
           <CustomButton
-            text="Request an appointment"
-            href="/patient/appointments/requests/new"
+            text="Pre-book consultation"
+            href="https://aspire-dental.portal.dental/"
           />
         }
       />
       <Suspense
-        key={query + page + status + on + before + after}
+        key={page + status + on + before + after}
         fallback={<AppointmentGridSkeleton />}
       >
         <AppointmentGridWrapper
-          query={query}
           page={page}
           status={status}
           on={on}

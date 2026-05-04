@@ -2,8 +2,8 @@
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { CalenderInputIconV2, CancelIcon, TimeIconV2 } from "@/assets";
-import { usePatchAppointment } from "@/services/appointments/appointmentMutation";
-import { TAppointment } from "@/types/appointment";
+import { useChangeAppointmentState } from "@/services/appointments/appointmentMutation";
+import { AppointmentState, TAppointment, TChangeAppointmentState } from "@/types/appointment";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
 import { AppointmentStatus } from "@prisma/client";
 import Image from "next/image";
@@ -23,38 +23,38 @@ export default function UpcomingAppointmentCard({
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsCOnfirmModelOpen] = useState(false);
   const [openDetailsModal, setOpenDetailsModal] = useState(false);
-  const router = useRouter();
+  const { refresh } = useRouter();
   const { mutate: updateAppointment, isPending: updateAppointmentLoader } =
-    usePatchAppointment();
+    useChangeAppointmentState();
 
   const handleStusChange = () => {
-    const partialAppointment: Partial<TAppointment> = {
+    const partialAppointment: TChangeAppointmentState = {
       state: isCancelModalOpen
-        ? AppointmentStatus.CANCELLED
+        ? AppointmentState.CANCELLED
         : isConfirmModalOpen
-          ? AppointmentStatus.CONFIRMED
-          : AppointmentStatus.PENDING,
+          ? AppointmentState.CONFIRMED
+          : AppointmentState.PENDING,
     };
-    console.log("appointment dentist id is ", appointment.dentistId);
     updateAppointment(
       {
-        id: appointment.id,
         appointment: partialAppointment,
-        dentistId: "cmfpmcxf00003l6qa0rh5trss",
+        id: appointment.id,
+        dentistId: appointment.practitionerId
       },
       {
         onSuccess: (data) => {
-          console.log("data on success,", data);
-          router.refresh();
+          console.log("updated appointment ", data);
+          refresh();
           setIsCancelModalOpen(false);
-          setIsCOnfirmModelOpen(false);
+          setIsCOnfirmModelOpen(false)
         }, onError: (error) => {
-          const err = getAxiosErrorMessage(error)
-          showToast("error", err)
-        }
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
+        },
       }
     );
   };
+  console.log("aapointment ", appointment)
 
   return (
     <div className="flex flex-col gap-1 p-5 rounded-2xl bg-gray">
@@ -66,7 +66,7 @@ export default function UpcomingAppointmentCard({
               alt="Calendar Icon"
               className="w-4 h-4"
             />
-            <p className="text-lg">{formatDate(appointment.date)}</p>
+            <p className="text-lg">{formatDate(appointment.startTime)}</p>
           </div>
           <div className="flex items-center gap-1">
             <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />
@@ -80,7 +80,7 @@ export default function UpcomingAppointmentCard({
       </div>
       <div className="flex items-center justify-between">
         <p className="text-xl font-medium w-2/3 truncate">
-          Appointment # {appointment.id.slice(0, 10)}
+          Appointment # {appointment.id}
         </p>
         <PatientDetailsModal
           appointment={appointment}
@@ -102,24 +102,34 @@ export default function UpcomingAppointmentCard({
             text="See Reports"
             href={`/dentist/appointments/${appointment.id}/reports`}
           />
-
-          {appointment.state !== AppointmentStatus.CANCELLED && (
+          {appointment.state !== AppointmentState.CONFIRMED && (
+            <CustomButton
+              style="white"
+              handleOnClick={() => setIsCOnfirmModelOpen(true)}
+              text="Confirm Appointment"
+            />
+          )}
+          {appointment.state !== AppointmentState.CANCELLED && (
             <CustomButton
               style="white"
               handleOnClick={() => setIsCancelModalOpen(true)}
               text="Cancel Appointment"
             />
           )}
+
         </div>
       </div>
       <ConfirmationModal
         icon={CancelIcon}
-        isOpen={isCancelModalOpen}
-        onClose={() => setIsCancelModalOpen(false)}
+        isOpen={isCancelModalOpen || isConfirmModalOpen}
+        onClose={() => {
+          setIsCancelModalOpen(false)
+          setIsCOnfirmModelOpen(false)
+        }}
         isPending={updateAppointmentLoader}
         onConfirm={handleStusChange}
-        title="Cancel Appointemnt"
-        description="Are you sure you want to cancel this appointment? This action cannot be undone."
+        title={isCancelModalOpen ? "Cancel Appointment" : "Confirm Appointment"}
+        description={isCancelModalOpen ? "Are you sure you want to cancel this appointment?" : "Are you sure you want to confirm this appointment?"}
         cancelText="No"
         confirmText="Yes"
       />

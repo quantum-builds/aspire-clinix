@@ -6,7 +6,6 @@ import { getAppointments } from "@/services/appointments/appointmentQuery";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 
 interface AppointmentGridWrapperProps {
-  query: string;
   status: string;
   on: string;
   before: string;
@@ -17,14 +16,12 @@ interface AppointmentGridProps {
 }
 
 export default async function AppointmentGridWrapper({
-  query,
   status,
   on,
   before,
   after,
 }: AppointmentGridWrapperProps) {
   const response: Response<TAppointmentResponse> = await getAppointments({
-    search: query,
     dateType: AppointmentDateType.UPCOMING,
     status,
     on,
@@ -32,19 +29,25 @@ export default async function AppointmentGridWrapper({
     after,
   });
 
+  console.log("Respinse in frontend ", response)
+
   if (
     !response.status ||
     !response.data ||
     !response.data.appointments ||
     response.data.appointments.length === 0
   ) {
+    const text = !on.length && !before.length && !before.length ?
+      "Select at least one appointment filter: ON, BEFORE, or AFTER." :
+      "The data you have searched is not found at this moment"
     return (
       // <NoContent title="Resources" placeholder="Enter Appointment Number" />
-      <NoContent1 />
+      <NoContent1 text={text} />
     );
   }
 
   const appointments = response.data.appointments;
+  console.log("appointment is ", appointments)
 
   return (
     <>

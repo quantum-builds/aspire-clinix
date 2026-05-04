@@ -94,20 +94,28 @@ export default function PatientLoginForm() {
   const dateOfBirth = watch("dateOfBirth");
 
   const onSubmit = async (data: FormData) => {
+    console.log("[LoginForm] onSubmit called");
     verifyPatient(
       {
         firstName: data.firstName,
         lastName: data.lastName,
         dateOfBirth: data.dateOfBirth.toISOString().split("T")[0],
-        phoneNumber: data.phoneNumber,
+        mobilePhone: data.phoneNumber,
         email: data.email,
       },
       {
         onSuccess: (resData) => {
           showToast("success", "OTP sent successfully");
-          router.replace(`/patient/otp-verify?id=${resData.id}`);  
+          const patientId = resData?.id;
+          if (patientId) {
+            router.replace(`/patient/otp-verify?id=${patientId}`);
+          } else {
+            console.error("[LoginForm] No patient ID found in response");
+            showToast("error", "Something went wrong. Please try again.");
+          }
         },
         onError: (error) => {
+          console.error("[LoginForm] onError called:", error);
           const msg = getAxiosErrorMessage(error);
           showToast("error", msg);
         },

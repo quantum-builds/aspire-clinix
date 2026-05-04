@@ -36,7 +36,9 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *                 type: string
  *               patientPhoneNumber:
  *                 type: string
- *               patientName:
+ *               patientFirstName:
+ *                 type: string
+ *               patientLastName:
  *                 type: string
  *               other:
  *                 type: string
@@ -53,7 +55,8 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *               attendTreatment:
  *                 type: string
  *             example:
- *               patientName: John Doe
+ *               patientFirstName: John 
+ *               patientLastName: Doe
  *               patientEmail: john.doe@example.com
  *               patientPhoneNumber: "+44 7700 900123"
  *               patientAddress: 10 High Street, London, SW1A 1AA
@@ -149,27 +152,58 @@ import { getPatient } from "@/dentallyHelpers/patient";
 export async function POST(req: NextRequest) {
   const referralForm = await req.json();
   try {
-    const patientEmail = referralForm.patientEmail;
+    const patientFirstName = referralForm.patientFirstName
+    const patientLastName = referralForm.patientLastName
 
-    const response = await getPatient({ emailAddress: patientEmail });
+    if (!patientFirstName || !patientLastName) {
+      return NextResponse.json(
+        createResponse(false, "Patient first and last name is required", null),
+        { status: 400 },
+      );
+    }
+
+    const response = await getPatient({ firstName: patientFirstName, lastName: patientLastName });
 
     let patient = null;
-    if (!response.isError) {
-      patient = response.response;
+    if (response.isError) {
+      return NextResponse.json(
+        createResponse(false, "Dentally Error", null),
+        { status: 400 },
+      );
     }
-    const fullName=`${patient.firstName} ${patient.lastName}`
-    
-    let dbPatient = await prisma.patient.findUnique({ where: { dentallyId: patient.id } })
+
+    const activePatients = (response.response.patients ?? []).filter(
+      (patient: any) => patient.active && !patient.archivedReason,
+    );
+
+    if (activePatients.length === 0 || activePatients.length > 1) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "No Account found",
+          null,
+        ),
+        { status: 404 },
+      );
+    }
+
+    let active = activePatients[0];
+    const patientFullName = `${active.firstName} ${active.lastName}`
+    referralForm.patientName = patientFullName;
+    delete referralForm.patientFirstName;
+    delete referralForm.patientLastName;
+
+    let dbPatient = await prisma.patient.findUnique({ where: { dentallyId: active.id } })
     if (!dbPatient) {
-      dbPatient=await prisma.patient.create({
+      dbPatient = await prisma.patient.create({
         data: {
-          uuid: patient.uuid,
-          dentallyId: patient.id,
-          mobileNumber: patient.mobilePhone,
-          email: patient.emailAddress,
-          name: fullName,
-          dateOfBirth: patient.dateOfBirth,
-          familyId: patient.familyId,
+          uuid: active.uuid,
+          dentallyId: active.id,
+          mobileNumber: active.mobilePhone,
+          email: active.emailAddress,
+          name: patientFullName,
+          dateOfBirth: active.dateOfBirth,
+          familyId: active.familyId,
         },
       });
     }

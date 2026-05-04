@@ -85,7 +85,7 @@ model Dentist {
   gdcNo               String    @unique
   firstName           String
   lastName            String
-  dentallyId          String?
+  dentallyId          Int?
   otp                 String?
   otpInvalidationTime DateTime?
   appointmentIds      String[]
@@ -103,7 +103,7 @@ model Dentist {
 model Patient {
   id                  String    @id @default(cuid())
   uuid                String    @unique
-  dentallyId          String    @unique
+  dentallyId          Int       @unique
   name                String    @unique
   mobileNumber        String
   email               String
@@ -113,7 +113,6 @@ model Patient {
   familyId            String?
   appointmentIds      String[]
 
-  reports       Report[]
   referralForms ReferralForm[]
 
   @@index([familyId])
@@ -192,7 +191,7 @@ model AppointmentRequests {
 model Report {
   id            String        @id @default(cuid())
   dentistId     String
-  patientId     String
+  patientDentallyId     String 
   appointmentId String
   title         String
   fileUrl       String
@@ -200,10 +199,10 @@ model Report {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
   dentist Dentist @relation(fields: [dentistId], references: [id], onDelete: Cascade)
 
   @@index([appointmentId])
+  @@index([patientDentallyId])
   @@index([fileType])
 }
 

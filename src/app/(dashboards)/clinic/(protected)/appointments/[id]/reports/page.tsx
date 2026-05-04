@@ -19,7 +19,7 @@ export default async function ReferralDetailsPage(props: {
         pageHeading="Reports"
         statusOptions={[]}
         showFilters={false}
-        showSearch={true}
+        showSearch={false}
         showBackBtn={true}
       />
       <Suspense key={id + title} fallback={<ReportGridWrapperSkeleton />}>

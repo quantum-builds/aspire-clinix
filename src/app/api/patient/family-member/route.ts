@@ -85,10 +85,10 @@ export async function GET(req: NextRequest) {
       return response.response;
     }
 
-    const activePatients = response.response.filter(
-      (patient: any) => patient.active && !patient.archived_reason,
+    const activePatients = (response.response.patients ?? []).filter(
+      (patient: any) => patient.active && !patient.archivedReason,
     );
-
+    
     if (activePatients.length === 0) {
       throw new Error("No account found");
     }
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
               email: activePatient.email,
               mobileNumber: activePatient.mobilePhone,
               name: fullname,
-              dateOfBirth:activePatient.dateOfBirth,
+              dateOfBirth: activePatient.dateOfBirth,
               familyId
             },
           });

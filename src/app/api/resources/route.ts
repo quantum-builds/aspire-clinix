@@ -197,7 +197,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (token.role !== TokenRoles.ADMIN) {
-      return NextResponse.json(createResponse(false, "Forbidde", null), {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
     }

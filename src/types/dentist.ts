@@ -27,3 +27,13 @@ export interface TDenstistResponse {
   dentist: TDentist;
   request: TDentistPractice;
 }
+
+export type Dentist = {
+  id: string
+  email: string
+  gdcNo: string
+  firstName: string
+  lastName: string
+  dentallyId?: string
+  role:DentistRole
+}

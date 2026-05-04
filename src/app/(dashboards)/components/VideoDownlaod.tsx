@@ -3,13 +3,13 @@
 interface VideoDownloadProps {
   video: string;
   fileName?: string;
-  trigger: React.ReactNode;
+  text: string
 }
 
 export function VideoDownload({
   video,
   fileName,
-  trigger,
+  text,
 }: VideoDownloadProps) {
   const handleDownload = async () => {
     const response = await fetch(video);
@@ -26,5 +26,5 @@ export function VideoDownload({
     window.URL.revokeObjectURL(url);
   };
 
-  return <button onClick={handleDownload}>{trigger}</button>;
+  return <button className="bg-green text-white px-6 py-3 h-[60px] rounded-full border border-white shadow hover:bg-greenHover transition" onClick={handleDownload}>{text}</button>;
 }

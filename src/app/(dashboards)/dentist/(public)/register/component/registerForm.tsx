@@ -37,7 +37,8 @@ import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { TPractice } from "@/types/practice";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
-import { useCreatePatient } from "@/services/patient/patientMutation";
+import { useCreateUser } from "@/services/patient/patientMutation";
+import { TokenRoles } from "@/constants/UserRoles";
 
 export const patientSchema = z.object({
   firstName: z
@@ -49,7 +50,7 @@ export const patientSchema = z.object({
     .min(2, "Last name must be at least 2 characters")
     .max(100, "Last name must be less than 30 characters"),
   email: z.string().email("Please enter a valid email address"),
-  gdcNumber: z
+  gdcNo: z
     .string()
     .min(1, "GDC number is required")
     .max(100, "GDC number must be less than 100 characters"),
@@ -57,25 +58,18 @@ export const patientSchema = z.object({
 
 type FormData = z.infer<typeof patientSchema>;
 
-interface DentistRegisterFormProps {
-  practices: TPractice[];
-}
 
-export default function DentistRegisterForm({
-  practices,
-}: DentistRegisterFormProps) {
-  const { mutate: createPatient, isPending: createPatientLoader } =
-    useCreatePatient();
+
+export default function DentistRegisterForm() {
+  const { mutate: createDentist, isPending: createDentistLoader } =
+    useCreateUser();
 
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
-    setValue,
     reset,
-    watch,
-    control,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(patientSchema),
@@ -83,15 +77,16 @@ export default function DentistRegisterForm({
       firstName: "",
       lastName: "",
       email: "",
-      gdcNumber: "",
+      gdcNo: "",
     },
   });
 
   const onSubmit = async (formData: FormData) => {
-    createPatient(
+    createDentist(
       {
         patientData: {
           ...formData,
+          role: TokenRoles.REFERRING_DENTIST
         },
       },
       {
@@ -192,7 +187,7 @@ export default function DentistRegisterForm({
             <Input
               id="gdcNumber"
               placeholder="Enter your Gdc number"
-              {...register("gdcNumber")}
+              {...register("gdcNo")}
               className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
             />
             <Image
@@ -201,30 +196,31 @@ export default function DentistRegisterForm({
               className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
             />
           </div>
-          {errors.gdcNumber && (
-            <p className="text-sm text-red-500">{errors.gdcNumber.message}</p>
+          {errors.gdcNo && (
+            <p className="text-sm text-red-500">{errors.gdcNo.message}</p>
           )}
         </div>
+        <div></div>
 
         {/* Action Buttons */}
-        <div className="w-full flex flex-col items-end justify-center   gap-3">
-          <CustomButton
-            style="primary"
-            text={createPatientLoader ? "Registering..." : "Register"}
-            type="submit"
-            loading={createPatientLoader}
-            className="w-fit py-4 px-20"
-          />
-          <p className="text-sm text-muted-foreground mt-4">
-            Already have an account?{" "}
-            <Link
-              href="/dentist/login"
-              className="font-medium text-green hover:text-greenHover transition-colors"
-            >
-              Login
-            </Link>
-          </p>
-        </div>
+      </div>
+      <div className="w-full flex flex-col items-end justify-end  gap-3">
+        <CustomButton
+          style="primary"
+          text={createDentistLoader ? "Registering..." : "Register"}
+          type="submit"
+          loading={createDentistLoader}
+          className="w-fit py-4 px-20"
+        />
+        <p className="text-sm text-muted-foreground mt-4">
+          Already have an account?{" "}
+          <Link
+            href="/dentist/login"
+            className="font-medium text-green hover:text-greenHover transition-colors"
+          >
+            Login
+          </Link>
+        </p>
       </div>
     </form>
   );

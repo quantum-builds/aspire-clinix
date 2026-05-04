@@ -60,19 +60,9 @@ const RECIEVING_SIDEBAR_CONTENT: SidebarPage[] = [
         icon: InActiveIcon,
         href: "/dentist/appointments/upcoming",
       },
-      { name: "Past", icon: InActiveIcon, href: "/dentist/appointments/past" },
-      {
-        name: "Requests",
-        icon: InActiveIcon,
-        href: "/dentist/appointments/requests",
-      },
+      { name: "Past", icon: InActiveIcon, href: "/dentist/appointments/past" }
     ],
-  },
-  {
-    name: "Referral Request",
-    icon: ReferralRequestIcon,
-    href: "/dentist/referral-request",
-  },
+  }
 ];
 
 const REFERRING_SIDEBAR_CONTENT: SidebarPage[] = [
@@ -118,14 +108,14 @@ export default async function DentistLayout({
 
   // Pick sidebar based on role
   let sidebarContent = SIDEBAR_CONTENT;
-  if (role === "RECIEVING_DENTIST") {
+  if (role === "DENTALLY_PRACTITIONER") {
     sidebarContent = RECIEVING_SIDEBAR_CONTENT;
   } else if (role === "REFERRING_DENTIST") {
     sidebarContent = REFERRING_SIDEBAR_CONTENT;
   }
 
   return (
-    <div className="font-inter text-dashboardTextBlack bg-dashboardBackground min-h-screen grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden">
+    <div className="font-inter text-dashboardTextBlack bg-dashboardBackground min-h-screen grid grid-cols-[320px_1fr] grid-rows-[90px_1fr]">
       {/* Sidebar */}
       <div className="row-span-2 border-r">
         <Sidebar sideBarContnent={sidebarContent} />

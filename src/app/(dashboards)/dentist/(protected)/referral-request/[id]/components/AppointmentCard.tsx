@@ -4,7 +4,7 @@ import StatusBage from "@/app/(dashboards)/components/StatusBadge";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { CalenderInputIconV2, CancelIcon, DropDownIcon, TimeIcon, TimeIconV2 } from "@/assets";
-import { usePatchAppointment } from "@/services/appointments/appointmentMutation";
+import { useChangeAppointmentState } from "@/services/appointments/appointmentMutation";
 import { TAppointment } from "@/types/appointment";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
 import { AppointmentStatus } from "@prisma/client";
@@ -33,7 +33,7 @@ export default function AppointmentCard({
     useState<AppointmentStatus | null>(null);
   const router = useRouter();
   const { mutate: updateAppointment, isPending: updateAppointmentLoader } =
-    usePatchAppointment();
+    useChangeAppointmentState();
 
   const handleStusChange = () => {
     if (!selectedStatus) return;

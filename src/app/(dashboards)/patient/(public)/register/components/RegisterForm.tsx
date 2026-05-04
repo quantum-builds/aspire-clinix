@@ -35,11 +35,11 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
-import { TPractice } from "@/types/practice";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 import { Title } from "@/types/patient";
-import { useCreatePatient } from "@/services/patient/patientMutation";
+import { useCreateUser } from "@/services/patient/patientMutation";
+import { TokenRoles } from "@/constants/UserRoles";
 
 export const patientSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -51,6 +51,9 @@ export const patientSchema = z.object({
     .string()
     .min(2, "Last name must be at least 2 characters")
     .max(100, "Last name must be less than 30 characters"),
+  gender: z.enum(["male", "female"], {
+    required_error: "Gender is required",
+  }),
   email: z.string().email("Please enter a valid email address"),
   mobilePhone: z
     .string()
@@ -103,15 +106,15 @@ const TITLE_OPTIONS = [
   { label: "Dame", value: Title.DAME },
 ];
 
-interface PatientRegisterFormProps {
-  practices: TPractice[];
-}
+const GENDER_OPTIONS = [
+  { label: "Male", value: "male" },
+  { label: "Female", value: "female" },
+];
 
-export default function PatientRegisterForm({
-  practices,
-}: PatientRegisterFormProps) {
+
+export default function PatientRegisterForm() {
   const { mutate: createPatient, isPending: createPatientLoader } =
-    useCreatePatient();
+    useCreateUser();
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
@@ -131,6 +134,7 @@ export default function PatientRegisterForm({
       title: "",
       firstName: "",
       lastName: "",
+      gender: undefined as unknown as "male" | "female",
       email: "",
       mobilePhone: "",
       addressLine1: "",
@@ -155,6 +159,7 @@ export default function PatientRegisterForm({
       {
         patientData: {
           ...formData,
+          role: TokenRoles.PATIENT,
         },
       },
       {
@@ -249,6 +254,33 @@ export default function PatientRegisterForm({
           </div>
           {errors.lastName && (
             <p className="text-sm text-red-500">{errors.lastName.message}</p>
+          )}
+        </div>
+
+        {/* Gender Dropdown */}
+        <div className="space-y-2">
+          <Label className="text-lg font-medium">
+            Gender<span className="text-red-500">*</span>
+          </Label>
+
+          <Dropdown
+            options={GENDER_OPTIONS.map((g) => ({
+              value: g.value,
+              label: g.label,
+            }))}
+            value={watch("gender") || ""}
+            onValueChange={(val) => {
+              setValue("gender", val as "male" | "female", { shouldValidate: true });
+            }}
+            placeholder="Select Gender"
+            className="border shadow-sm text-base bg-gray rounded-2xl w-full"
+            placeholderClassName="text-sm text-muted-foreground"
+            triggerClassName="w-full bg-gray px-6 py-3 h-[52px] rounded-2xl text-left"
+            contentClassName="w-full"
+          />
+
+          {errors.gender && (
+            <p className="text-sm text-red-500">{errors.gender?.message}</p>
           )}
         </div>
 
@@ -436,7 +468,7 @@ export default function PatientRegisterForm({
         <p className="text-sm text-muted-foreground mt-4">
           Already have an account?{" "}
           <Link
-            href="/dentist/login"
+            href="/patient/login"
             className="font-medium text-green hover:text-greenHover transition-colors"
           >
             Login

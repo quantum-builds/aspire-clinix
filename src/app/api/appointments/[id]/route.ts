@@ -290,27 +290,47 @@ export async function GET(req: NextRequest) {
 
     const appointmentId = req.nextUrl.pathname.split("/").pop();
 
-    if (!appointmentId || !isValidCuid(appointmentId)) {
+    if (!appointmentId) {
       return NextResponse.json(
         createResponse(false, "Invalid Appointment.", null),
         { status: 400 },
       );
     }
+    const response = await getAppointment(appointmentId);
+
+    if (response.isError) {
+      return response.response
+    }
+
+    const appointment = (response.response.appointment ?? null) as Appointment;
+
+    if (!appointment) {
+      return NextResponse.json(
+        createResponse(false, "No appointment found.", null),
+        { status: 404 },
+      );
+    }
+
     let appointmentOwner = null;
 
     if (patiendDentallyId) {
       appointmentOwner = await prisma.patient.findUnique({
-        where: { dentallyId: patiendDentallyId },
+        where: { dentallyId: Number(patiendDentallyId) },
         select: { id: true, appointmentIds: true },
       });
     }
-    if (dentistDentallyId) {
+    else if (dentistDentallyId) {
       appointmentOwner = await prisma.dentist.findFirst({
-        where: { dentallyId: dentistDentallyId },
+        where: { dentallyId: Number(dentistDentallyId) },
+        select: { id: true, appointmentIds: true },
+      });
+    } else {
+      // let me check for the dentist as he will absolutely be in the db as he is the one uploading the report
+      appointmentOwner = await prisma.dentist.findFirst({
+        where: { dentallyId: appointment.practitionerId },
         select: { id: true, appointmentIds: true },
       });
     }
-
     const currentAppointmentIds: string[] = Array.isArray(
       appointmentOwner?.appointmentIds,
     )
@@ -326,34 +346,25 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const response = await getAppointment(appointmentId);
 
-    let appointment: Appointment | null = null;
-    appointment = response.response as Appointment;
-
-    if (!appointment) {
-      return NextResponse.json(
-        createResponse(false, "No appointment found.", null),
-        { status: 404 },
-      );
-    } // fetch videos
-
-    const videos = await prisma.report.findMany({
-      where: { appointmentId, fileType: "VIDEO" },
-      orderBy: { createdAt: "desc" },
-      include: { dentist: true },
-    }); // fetch pdfs
-
-    const pdfs = await prisma.report.findMany({
-      where: { appointmentId, fileType: "PDF" },
-      orderBy: { createdAt: "desc" },
-      include: { dentist: true },
-    });
+    const [patient, videos, pdfs] = await Promise.all([
+      await prisma.patient.findUnique({ where: { dentallyId: appointment.patientId } }),
+      await prisma.report.findMany({
+        where: { appointmentId, fileType: "VIDEO" },
+        orderBy: { createdAt: "desc" },
+        include: { dentist: true }
+      }),
+      await prisma.report.findMany({
+        where: { appointmentId, fileType: "PDF" },
+        orderBy: { createdAt: "desc" },
+        include: { dentist: true }
+      })
+    ])
 
     if (!videos.length && !pdfs.length) {
       return NextResponse.json(
-        createResponse(false, "No reports found.", null),
-        { status: 404 },
+        createResponse(true, "No reports found.", { appointment, reports: { videos: [], pdfs: [] }, patient }),
+        { status: 200 },
       );
     }
 
@@ -361,6 +372,7 @@ export async function GET(req: NextRequest) {
       createResponse(true, "Appointment fetched successfully", {
         appointment,
         reports: { videos, pdfs },
+        patient
       }),
       { status: 200 },
     );
@@ -423,13 +435,13 @@ export async function DELETE(req: NextRequest) {
 
     if (patiendDentallyId) {
       appointment = await prisma.patient.findUnique({
-        where: { dentallyId: patiendDentallyId },
+        where: { dentallyId: Number(patiendDentallyId) },
         select: { id: true, appointmentIds: true },
       });
     }
     if (dentistDentallyId) {
       appointment = await prisma.patient.findFirst({
-        where: { dentallyId: dentistDentallyId },
+        where: { dentallyId: Number(dentistDentallyId) },
         select: { id: true, appointmentIds: true },
       });
     }
@@ -524,13 +536,13 @@ export async function PATCH(req: NextRequest) {
 
     if (patiendDentallyId) {
       appointmentOwner = await prisma.patient.findUnique({
-        where: { dentallyId: patiendDentallyId },
+        where: { dentallyId: Number(patiendDentallyId) },
         select: { id: true, appointmentIds: true },
       });
     }
     if (dentistDentallyId) {
       appointmentOwner = await prisma.dentist.findFirst({
-        where: { dentallyId: dentistDentallyId },
+        where: { dentallyId: Number(dentistDentallyId) },
         select: { id: true, appointmentIds: true },
       });
     }
@@ -561,7 +573,7 @@ export async function PATCH(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Error editing appointment", error);
+    console.error("Error editing appointment", JSON.stringify((error as any)));
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

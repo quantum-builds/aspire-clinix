@@ -7,7 +7,7 @@ export async function getAMedia(backgroundContent: string) {
     );
     return uploadResponse.data.media[0].url;
   } catch (err) {
-    console.error(" Error in getting media ", err);
+    // console.error(" Error in getting media ", err);
     return [];
   }
 }

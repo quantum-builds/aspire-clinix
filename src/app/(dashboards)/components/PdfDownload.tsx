@@ -2,11 +2,11 @@
 
 interface PdfDownloadProps {
   pdf: string;
+  text: string
   fileName?: string;
-  trigger: React.ReactNode;
 }
 
-export function PdfDownload({ pdf, trigger, fileName }: PdfDownloadProps) {
+export function PdfDownload({ pdf, text, fileName }: PdfDownloadProps) {
   const handleDownload = async () => {
     const response = await fetch(pdf);
     const blob = await response.blob();
@@ -22,5 +22,5 @@ export function PdfDownload({ pdf, trigger, fileName }: PdfDownloadProps) {
     window.URL.revokeObjectURL(url);
   };
 
-  return <button onClick={handleDownload}>{trigger}</button>;
+  return <button className="bg-green text-white px-6 py-3 h-[60px] rounded-full border border-white shadow  hover:bg-greenHover transition" onClick={handleDownload}>{text}</button>;
 }

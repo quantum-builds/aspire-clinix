@@ -6,7 +6,7 @@ import axios from "axios";
 
 export const ENDPOINTS = {
   auth: {
-    register: `/auth/register`,
+    register: `/api/auth/register`,
     dentallyPatientRegister: "/oauth/authorize",
     getAToken: "/oauth/token",
   },
@@ -68,8 +68,7 @@ export const ENDPOINTS = {
       status?: string,
       pageType?: string,
     ) =>
-      `/api/referral-requests?page=${page ?? 1}&search=${search ?? ""}&on=${
-        on ?? ""
+      `/api/referral-requests?page=${page ?? 1}&search=${search ?? ""}&on=${on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}&page-type=${pageType ?? ""}&stats-only=${statsOnly}`,
     getById: (id: string) => `/api/referral-requests/${id}`,
     patch: (id: string) => `/api/referral-requests/${id}`,
@@ -113,8 +112,7 @@ export const ENDPOINTS = {
       before?: string,
       after?: string,
     ) =>
-      `/api/resources?page=${page}&fileType=${fileType}&search=${search}&on=${
-        on ?? ""
+      `/api/resources?page=${page}&fileType=${fileType}&search=${search}&on=${on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}`,
     create: "/api/resources",
     delete: (id: string) => `/api/resources/${id}`,
@@ -122,8 +120,7 @@ export const ENDPOINTS = {
 
   practices: {
     getAll: (page?: number, search?: string, status?: string) =>
-      `/api/practices?page=${page ?? 1}&search=${search ?? ""}&status=${
-        status ?? ""
+      `/api/practices?page=${page ?? 1}&search=${search ?? ""}&status=${status ?? ""
       }`,
     getById: (id: string) => `/api/practices/${id}`,
     createPractice: "/api/practices",
@@ -136,6 +133,7 @@ export const ENDPOINTS = {
       state?: string,
       siteId?: string,
       page?: number,
+      perPage?: number,
       search?: string,
       on?: string,
       before?: string,
@@ -143,29 +141,24 @@ export const ENDPOINTS = {
       dateType?: AppointmentDateType | null,
       status?: string,
     ) =>
-      `/api/appointments?page=${page ?? 1}&search=${search ?? ""}&on=${
-        on ?? ""
-      }&before=${before ?? ""}&after=${after ?? ""}&dateType=${
-        dateType ?? ""
-      }&status=${status ?? ""}&practitionerId=${practitionerId ?? ""}&siteId=${siteId}
+      `/api/appointments?page=${page ?? 1}&perPage=${perPage ?? 20}&search=${search ?? ""}&on=${on ?? ""
+      }&before=${before ?? ""}&after=${after ?? ""}&dateType=${dateType ?? ""
+      }&status=${status ?? ""}&practitioner_id=${practitionerId ?? ""}&site_id=${siteId}
       &state${state}&updatedAfte${updatedAfte}`,
     post: "/api/appointments",
-    patch: (id: string) => `/api/appointments/${id}`,
+    patch: (id: number) => `/api/appointments/${id}`,
     getById: (id: string) => `/api/appointments/${id}`,
   },
 
   dentistToPractice: {
     get: (dentistId?: string, practiceId?: string, status?: string) =>
-      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
-        practiceId ?? ""
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${practiceId ?? ""
       }&status=${status ?? ""}`,
     create: (status: string, dentistId?: string, practiceId?: string) =>
-      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
-        practiceId ?? ""
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${practiceId ?? ""
       }&status=${status ?? ""}`,
     updatedStatus: (dentistId?: string, practiceId?: string, status?: string) =>
-      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
-        practiceId ?? ""
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${practiceId ?? ""
       }&status=${status ?? ""}`,
   },
 
@@ -177,8 +170,7 @@ export const ENDPOINTS = {
       before?: string,
       after?: string,
     ) =>
-      `/api/reports?search=${search ?? ""}&appointmentId=${
-        appointmentId ?? ""
+      `/api/reports?search=${search ?? ""}&appointmentId=${appointmentId ?? ""
       }&on=${on ?? ""}&before=${before ?? ""}&after=${after ?? ""}`,
     create: "/api/reports",
   },
@@ -208,8 +200,7 @@ export const ENDPOINTS = {
       after?: string,
       status?: string,
     ) =>
-      `/api/appointment-requests?page=${page ?? 1}&search=${search ?? ""}&on=${
-        on ?? ""
+      `/api/appointment-requests?page=${page ?? 1}&search=${search ?? ""}&on=${on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}`,
 
     getById: (id: string) => `/api/appointment-requests/${id}`,
@@ -230,7 +221,7 @@ export const axiosInstance = axios.create({
 
 export const DENTALLY_ENDPOINTS = {
   patient: {
-    create: `/v1/patients`,
+    create: `patients`,
     get: (patientId: string) => `patients/${patientId}`,
     edit: (patientId: string) => `patients/${patientId}`,
     delete: (patientId: string) => `patients/${patientId}`,
@@ -273,6 +264,13 @@ axiosDentallyInstance.interceptors.request.use(async (config) => {
     config.params = toSnake(config.params);
   }
   return config;
+});
+
+axiosDentallyInstance.interceptors.response.use((response) => {
+  if (response.data) {
+    response.data = toCamel(response.data);
+  }
+  return response;
 });
 
 axiosInstance.interceptors.response.use((response) => {
