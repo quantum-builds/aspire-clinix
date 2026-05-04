@@ -148,6 +148,7 @@ export const ENDPOINTS = {
     post: "/api/appointments",
     patch: (id: number) => `/api/appointments/${id}`,
     getById: (id: string) => `/api/appointments/${id}`,
+    getByPatientName: (patientName: string) => `/api/appointments/patient?patientName=${patientName}`,
   },
 
   dentistToPractice: {

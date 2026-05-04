@@ -20,6 +20,7 @@ export const useUploadFile = () => {
           fileName: selectedFile.name,
           fileType: fileType,
           fileSize: selectedFile.size,
+          mimeType: selectedFile.type,
         },
       });
 

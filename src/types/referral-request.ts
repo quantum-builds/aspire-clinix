@@ -1,4 +1,4 @@
-import { TDentist } from "./dentist";
+import { Dentist, TDentist } from "./dentist";
 import { TAppointment } from "./appointment";
 import { TReferralForm } from "./referral-form";
 import { ReferralRequestStatus } from "@prisma/client";
@@ -14,7 +14,7 @@ export type TReferralRequest = TCreateReferralRequest & {
   id: string;
   createdAt: Date;
   referralForm: TReferralForm;
-  assignedDentist?: TDentist;
+  assignedDentist?: Dentist;
   appointment?: TAppointment;
 };
 

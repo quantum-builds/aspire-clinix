@@ -5,7 +5,7 @@ export async function gettPractitionerById(practitionerId: string) {
   const response = await axiosDentallyInstance.get(
     DENTALLY_ENDPOINTS.practitioner.get(practitionerId),
   );
-  return dentallyErrorHelper(response, DATA_TYPE.PRACTITIONER);
+  return dentallyErrorHelper(response.data, DATA_TYPE.PRACTITIONER);
 }
 
 export async function getPractitioners() {

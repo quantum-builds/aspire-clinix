@@ -50,17 +50,16 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   try {
     const fileName = searchParams.get("fileName");
-    const fileType = searchParams.get("fileType"); // images, video, pdf
+    const fileType = searchParams.get("fileType");
+    const mimeType = searchParams.get("mimeType");
 
-    console.log("in api ", fileType);
     if (!fileName || !fileType) {
       return NextResponse.json(
         { success: false, message: "Missing file details" },
         { status: 400 },
       );
-    } // Map fileType to folder
+    }
     let folder = "";
-    console.log("file type is ", fileType);
     switch (fileType.toLowerCase()) {
       case "images":
         folder = "uploads/aspire-clinic/images";
@@ -72,13 +71,19 @@ export async function GET(req: NextRequest) {
         folder = "uploads/aspire-clinic/letters";
         break;
       default:
-        folder = "uploads/aspire-clinic/others"; // fallback
+        folder = "uploads/aspire-clinic/others";
     }
-    const params = {
+    const params: {
+      Bucket: string;
+      Key: string;
+      ContentType?: string;
+    } = {
       Bucket: process.env.AWS_BUCKET_NAME!,
       Key: `${folder}/${fileName}`,
-      ContentType: fileType,
     };
+    if (mimeType) {
+      params.ContentType = mimeType;
+    }
     const command = new PutObjectCommand(params);
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
     return NextResponse.json({ success: true, url: signedUrl });

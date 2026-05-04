@@ -47,10 +47,38 @@ export async function GET(req: NextRequest) {
       console.log("Generating batch signed URLs...");
       const mediaUrls = await Promise.all(
         fileNames.map(async (fileName: string) => {
-          const command = new GetObjectCommand({
+          const ext = fileName.split(".").pop()?.toLowerCase() || "";
+          let responseContentType: string | undefined;
+          if ([".mp4", ".mov", ".avi", ".mkv"].includes(`.${ext}`)) {
+            responseContentType = "video/mp4";
+          } else if ([".jpg", ".jpeg"].includes(`.${ext}`)) {
+            responseContentType = "image/jpeg";
+          } else if (ext === "png") {
+            responseContentType = "image/png";
+          } else if (ext === "gif") {
+            responseContentType = "image/gif";
+          } else if (ext === "webp") {
+            responseContentType = "image/webp";
+          } else if (ext === "svg") {
+            responseContentType = "image/svg+xml";
+          } else if (ext === "pdf") {
+            responseContentType = "application/pdf";
+          } else if ([".doc", ".docx"].includes(`.${ext}`)) {
+            responseContentType = "application/msword";
+          }
+
+          const commandParams: {
+            Bucket: string;
+            Key: string;
+            ResponseContentType?: string;
+          } = {
             Bucket: process.env.AWS_BUCKET_NAME!,
             Key: fileName,
-          });
+          };
+          if (responseContentType) {
+            commandParams.ResponseContentType = responseContentType;
+          }
+          const command = new GetObjectCommand(commandParams);
           const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
           return { url, fileName };
         }),
@@ -103,12 +131,41 @@ export async function GET(req: NextRequest) {
       console.log("Fetching signed URLs for media files...");
       const mediaUrls = await Promise.all(
         mediaFiles.map(async (file) => {
+          const ext = file.Key!.split(".").pop()?.toLowerCase() || "";
+          let responseContentType: string | undefined;
+          if ([".mp4", ".mov", ".avi", ".mkv"].includes(`.${ext}`)) {
+            responseContentType = "video/mp4";
+          } else if ([".jpg", ".jpeg"].includes(`.${ext}`)) {
+            responseContentType = "image/jpeg";
+          } else if (ext === "png") {
+            responseContentType = "image/png";
+          } else if (ext === "gif") {
+            responseContentType = "image/gif";
+          } else if (ext === "webp") {
+            responseContentType = "image/webp";
+          } else if (ext === "svg") {
+            responseContentType = "image/svg+xml";
+          } else if (ext === "pdf") {
+            responseContentType = "application/pdf";
+          } else if ([".doc", ".docx"].includes(`.${ext}`)) {
+            responseContentType = "application/msword";
+          }
+
+          const commandParams: {
+            Bucket: string;
+            Key: string;
+            ResponseContentType?: string;
+          } = {
+            Bucket: process.env.AWS_BUCKET_NAME!,
+            Key: file.Key!,
+          };
+          if (responseContentType) {
+            commandParams.ResponseContentType = responseContentType;
+          }
+
           const signedUrl = await getSignedUrl(
             s3,
-            new GetObjectCommand({
-              Bucket: process.env.AWS_BUCKET_NAME!,
-              Key: file.Key!,
-            }),
+            new GetObjectCommand(commandParams),
             { expiresIn: 3600 },
           );
 

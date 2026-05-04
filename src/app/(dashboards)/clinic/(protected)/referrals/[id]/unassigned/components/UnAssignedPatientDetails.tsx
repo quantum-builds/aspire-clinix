@@ -1,8 +1,10 @@
 "use client"
 
+import { useState } from "react";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import ReferralFormDetailModal from "@/app/(dashboards)/components/ReferralFormDetailModal";
-import { usePathname } from "next/navigation";
+import BindAppointmentModal from "./BindAppointmentModal";
+import { usePathname, useRouter } from "next/navigation";
 
 interface PatientReferralDetailsProps {
   id: string
@@ -30,6 +32,8 @@ interface PatientReferralDetailsProps {
     attendTreatment: string,
     medicalHistoryPDF?: string
   }
+
+  referralRequestId: string
 }
 
 export default function UnAssignedPatientDetails({
@@ -38,9 +42,18 @@ export default function UnAssignedPatientDetails({
   referralFormDetails,
   patientDetials,
   referralDentistDetails,
+  referralRequestId,
 }: PatientReferralDetailsProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const modalUrl = `${pathname}?showModal=true`;
+
+  const [isBindModalOpen, setIsBindModalOpen] = useState(false);
+
+  const handleAppointmentBound = () => {
+    // Refresh the page to show updated data
+    router.refresh();
+  };
 
   return (
     <div className="bg-white w-full rounded-2xl p-6 space-y-6">
@@ -48,11 +61,18 @@ export default function UnAssignedPatientDetails({
         <p className="font-medium text-dashboardTextBlack text-2xl">
           Patient & Referral Dentist Details
         </p>
-        <CustomButton
-          text="See Referral Form Details"
-          style="secondary"
-          href={modalUrl}
-        />
+        <div className="flex gap-3">
+          <CustomButton
+            text="Bind with Appointment"
+            style="primary"
+            handleOnClick={() => setIsBindModalOpen(true)}
+          />
+          <CustomButton
+            text="See Referral Form Details"
+            style="secondary"
+            href={modalUrl}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
@@ -98,6 +118,14 @@ export default function UnAssignedPatientDetails({
           referralFormDetails={referralFormDetails}
         />
       )}
+
+      <BindAppointmentModal
+        isOpen={isBindModalOpen}
+        onClose={() => setIsBindModalOpen(false)}
+        patientName={patientDetials.name}
+        referralRequestId={referralRequestId}
+        onAppointmentBound={handleAppointmentBound}
+      />
     </div>
   );
 }

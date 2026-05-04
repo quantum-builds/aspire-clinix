@@ -140,6 +140,10 @@ export default function AppointmentCard({
             <div className="flex justify-between w-full">
               {appointment.state === AppointmentState.PENDING &&
                 <div className="flex items-center gap-2 w-full mt-7">
+                  <CustomButton
+                    text="See Reports"
+                    href={`/dentist/appointments/${appointment.id}/reports`}
+                  />
                   {role !== TokenRoles.ADMIN &&
                     <CustomButton
                       text="Confirm Appointment"

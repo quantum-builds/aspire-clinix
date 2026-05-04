@@ -17,7 +17,7 @@ interface ReferralHistoryDetailProps {
 
 export default async function ReferralHistoryDetail({ id, showModel }: ReferralHistoryDetailProps) {
     const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
-    console.log("show modal is ",showModel)
+    console.log("show modal is ", showModel)
     if (!referralRequestResponse || !referralRequestResponse.status || !referralRequestResponse.data || !referralRequestResponse.data.referralForm) {
         return (
             <div className="min-h-screen flex flex-col gap-5">
@@ -48,11 +48,9 @@ export default async function ReferralHistoryDetail({ id, showModel }: ReferralH
     }
 
     const assignedDentistDetails = {
-        name: assignedDentist?.fullName,
-        phone: assignedDentist?.phoneNumber,
+        name: `${assignedDentist?.firstName} ${assignedDentist?.lastName}`,
         email: assignedDentist?.email,
         gdcNo: assignedDentist?.gdcNo,
-        address: assignedDentist?.practiceAddress
     }
     const referralFormDetails = {
         referralDeatils: referralForm.other ? referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", ") + ", " + referralForm.other : referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", "),

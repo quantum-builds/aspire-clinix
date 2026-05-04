@@ -1,6 +1,6 @@
 import { axiosInstance, ENDPOINTS } from "@/config/api-config";
-import { TChangeAppointmentState } from "@/types/appointment";
-import { useMutation } from "@tanstack/react-query";
+import { TAppointment, TChangeAppointmentState } from "@/types/appointment";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useChangeAppointmentState = () => {
   return useMutation({
@@ -8,7 +8,7 @@ export const useChangeAppointmentState = () => {
       appointment,
       id,
     }: {
-    appointment: TChangeAppointmentState;
+      appointment: TChangeAppointmentState;
       id: number;
       patientId?: number;
       dentistId?: number;
@@ -19,6 +19,19 @@ export const useChangeAppointmentState = () => {
       );
       return response.data.data;
     },
+  });
+};
+
+export const useGetAppointmentsByPatient = (patientName: string) => {
+  return useQuery({
+    queryKey: ["appointments", "patient", patientName],
+    queryFn: async () => {
+      const response = await axiosInstance.get(
+        ENDPOINTS.appointemt.getByPatientName(patientName)
+      );
+      return response.data.data as TAppointment[];
+    },
+    enabled: !!patientName,
   });
 };
 

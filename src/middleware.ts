@@ -23,6 +23,7 @@ export async function middleware(request: NextRequest) {
       "/dentist/profile",
     ],
     REFERRING_DENTIST: [
+      "/dentist/appointments",
       "/dentist/referral-history",
       "/dentist/loyalty-points",
       "/dentist/profile",
@@ -54,7 +55,7 @@ export async function middleware(request: NextRequest) {
   }
   if (
     dentistPublic.includes(pathname) &&
-    ( role === "DENTALLY_PRACTITIONER" ||
+    (role === "DENTALLY_PRACTITIONER" ||
       role === "REFERRING_DENTIST")
   ) {
     return NextResponse.redirect(new URL("/dentist", request.url));

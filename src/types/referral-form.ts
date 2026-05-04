@@ -1,5 +1,5 @@
 import { TDentist } from "./dentist";
-import { TPatient } from "./patient";
+import { TPatient, Patient } from "./patient";
 import { TReferralRequest } from "./referral-request";
 
 export interface CreateReferralForm {
@@ -67,7 +67,7 @@ export type TReferralForm = TCreateReferralForm & {
   referralDentistId?: string;
   patientId?: string;
   referralDentist?: TDentist;
-  patient?: TPatient;
+  patient?: Patient;
 
   referralRequest?: TReferralRequest;
 };

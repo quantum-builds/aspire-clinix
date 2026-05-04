@@ -8,7 +8,6 @@ import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { Appointment } from "@/types/appointment";
-import { isValidCuid } from "@/utils/typeValidUtils";
 import prisma from "@/lib/db";
 
 /**
@@ -272,11 +271,11 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    if (token.role === TokenRoles.REFERRING_DENTIST) {
-      return NextResponse.json(createResponse(false, "Forbidden", null), {
-        status: 403,
-      });
-    }
+    // if (token.role === TokenRoles.REFERRING_DENTIST) {
+    //   return NextResponse.json(createResponse(false, "Forbidden", null), {
+    //     status: 403,
+    //   });
+    // }
 
     let patiendDentallyId = "";
     let dentistDentallyId = "";

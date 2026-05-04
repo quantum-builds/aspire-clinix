@@ -17,9 +17,7 @@ interface PatientReferralDetailsProps {
   assignedDentistDetails: {
     name?: string;
     gdcNo?: string;
-    phone?: string;
     email?: string;
-    address?: string;
   };
   referralFormDetails: {
     referralDeatils: string
@@ -84,12 +82,9 @@ export default function PatientReferralDetails({
               <p className="flex-1">GDC no.: {assignedDentistDetails.gdcNo}</p>
             </div>
             <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
-              <p className="flex-1">Phone: {assignedDentistDetails.phone}</p>
               <p className="flex-1">Email: {assignedDentistDetails.email}</p>
             </div>
-            <div className="flex justify-between items-center text-lg">
-              <p>Practice Address: {assignedDentistDetails.address}</p>
-            </div>
+
           </div>
         )}
       </div>

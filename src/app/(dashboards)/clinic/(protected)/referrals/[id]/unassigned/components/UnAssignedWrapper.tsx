@@ -31,6 +31,7 @@ export default async function UnAssignedWrapper({ id, showModel }: UnAssignedWra
     }
 
     const referralForm = referralRequestResponse.data.referralForm
+    const referralRequest = referralRequestResponse.data
 
     console.log(referralForm.patientDateOfBirth)
     const patientDetails = {
@@ -70,6 +71,7 @@ export default async function UnAssignedWrapper({ id, showModel }: UnAssignedWra
             referralFormDetails={referralFormDetails}
             patientDetials={patientDetails}
             referralDentistDetails={dentistDetails}
+            referralRequestId={referralRequest.id}
         />
     </div>)
 }

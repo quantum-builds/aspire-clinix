@@ -110,6 +110,9 @@ export async function POST(req: NextRequest) {
 
     // check if the dentist is REFERRAL_DENTIST
     if (filteredPractitioners.length === 0) {
+      console.log("[Practitioner Verify] email ", email)
+      console.log("[Practitioner Verify] gdcNumber ", gdcNumber)
+
       dbDentist = await prisma.dentist.findUnique({ where: { email: email, gdcNo: gdcNumber, role: TokenRoles.REFERRING_DENTIST } })
 
       if (!dbDentist) {

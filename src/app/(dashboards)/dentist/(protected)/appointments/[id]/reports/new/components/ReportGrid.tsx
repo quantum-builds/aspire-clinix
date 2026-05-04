@@ -60,7 +60,7 @@ export default function ReportGrid({ appointment, videoReports = [], pdfReports 
 
         return {
           title: file.name,
-          fileUrl: `uploads/aspire-clinic/pdfs/${uploaded.name}`,
+          fileUrl: `uploads/aspire-clinic/letters/${uploaded.name}`,
           fileType: ResoucrceType.PDF,
           patientDentallyId: String(appointment.patientId),
           appointmentId: String(appointment.id),

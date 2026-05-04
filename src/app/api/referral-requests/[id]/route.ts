@@ -4,6 +4,9 @@ import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import { DentistRole, ReferralRequestStatus } from "@prisma/client";
+import { gettPractitionerById } from "@/dentallyHelpers/practitioners";
+import { getAppointment } from "@/dentallyHelpers/appointment";
 
 /**
  * @swagger
@@ -251,8 +254,12 @@ export async function GET(req: NextRequest) {
     const existingRequest = await prisma.referralRequest.findUnique({
       where: { id: referralRequestId },
       include: {
-        referralForm: true,
-        // appointments: { include: { dentist: true } },
+        referralForm: {
+          include: {
+            patient: true,
+            referralDentist: true,
+          },
+        },
       },
     });
 
@@ -263,11 +270,36 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    let assignedDentist = null;
+    if (existingRequest.assignedDentistId) {
+      assignedDentist = await prisma.dentist.findUnique({
+        where: { id: existingRequest.assignedDentistId },
+      });
+    }
+
+    let appointment = null;
+    if (existingRequest.appointmentId) {
+      try {
+        const aptRes = await getAppointment(existingRequest.appointmentId);
+        if (!aptRes.isError && aptRes.response?.appointment) {
+          appointment = aptRes.response.appointment;
+        }
+      } catch (e) {
+        console.error("Failed to fetch appointment from Dentally:", e);
+      }
+    }
+
+    const responseData = {
+      ...existingRequest,
+      assignedDentist,
+      appointment,
+    };
+
     return NextResponse.json(
       createResponse(
         true,
         "Referral request fetched successfully.",
-        existingRequest,
+        responseData,
       ),
       { status: 200 },
     );
@@ -295,7 +327,7 @@ export async function PATCH(req: NextRequest) {
       });
     }
     const referralRequestId = req.nextUrl.pathname.split("/").pop();
-    const partialReferralRequest = await req.json();
+    const body = await req.json();
 
     if (!referralRequestId || !isValidCuid(referralRequestId)) {
       return NextResponse.json(
@@ -315,16 +347,104 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    const { appointmentId, requestStatus, practitionerId } = body;
+    console.log("[PATCH] practiotioner ", practitionerId)
+
+    if (!appointmentId || !requestStatus) {
+      return NextResponse.json(
+        createResponse(false, "appointmentId and requestStatus are required.", null),
+        { status: 400 },
+      );
+    }
+
+    let assignedDentistId: string | undefined;
+
+    if (practitionerId) {
+      const existingDentist = await prisma.dentist.findFirst({
+        where: { dentallyId: Number(practitionerId) },
+      });
+
+      if (existingDentist) {
+        assignedDentistId = existingDentist.id;
+      } else {
+        let firstName = "";
+        let lastName = "";
+        let email = "";
+        let gdcNo = ""
+
+        try {
+          const practitionerRes = await gettPractitionerById(String(practitionerId));
+          console.log("[PATCH] practitionerRes ", practitionerRes)
+          if (!practitionerRes.isError && practitionerRes.response?.practitioner) {
+            const prac = practitionerRes.response.practitioner;
+            firstName = prac.user.firstName || ""
+            lastName = prac.user.lastName || "";
+            email = prac.user.email || "";
+            gdcNo = prac.gdcNumber || ""
+          }
+        } catch (e) {
+          console.error("Failed to fetch practitioner from Dentally:", e);
+        }
+
+        const newDentist = await prisma.dentist.create({
+          data: {
+            email: email || `dentist+${practitionerId}@aspire-clinic.com`,
+            firstName: firstName || "Unknown",
+            lastName: lastName || "",
+            gdcNo: gdcNo,
+            dentallyId: Number(practitionerId),
+            role: DentistRole.DENTALLY_PRACTITIONER,
+            otp: undefined,
+            otpInvalidationTime: undefined,
+          },
+        });
+
+        assignedDentistId = newDentist.id;
+      }
+    }
+
+    const updateData: {
+      appointmentId: string;
+      requestStatus: ReferralRequestStatus;
+      assignedDentistId?: string;
+    } = {
+      appointmentId,
+      requestStatus: requestStatus as ReferralRequestStatus,
+    };
+
+    if (assignedDentistId) {
+      updateData.assignedDentistId = assignedDentistId;
+    }
+
     const updatedReferralRequest = await prisma.referralRequest.update({
       where: { id: referralRequestId },
-      data: partialReferralRequest,
+      data: updateData,
     });
+
+    const result = await prisma.referralRequest.findUnique({
+      where: { id: referralRequestId },
+      include: {
+        referralForm: {
+          include: {
+            patient: true,
+            referralDentist: true,
+          },
+        },
+      },
+    });
+
+    if (result && assignedDentistId) {
+      const dentist = await prisma.dentist.findUnique({
+        where: { id: assignedDentistId },
+      });
+      (result as any).assignedDentist = dentist;
+    }
 
     return NextResponse.json(
       createResponse(
         true,
         "Referral request Updated successfully.",
-        updatedReferralRequest,
+        result,
       ),
       { status: 200 },
     );
@@ -409,7 +529,7 @@ export async function DELETE(req: NextRequest) {
     });
 
     return NextResponse.json(
-      createResponse(true,"Referral deleted successfully.",null),
+      createResponse(true, "Referral deleted successfully.", null),
       {
         status: 200,
       },
