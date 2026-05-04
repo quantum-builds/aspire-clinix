@@ -10,14 +10,14 @@ import { toTitleCase } from "@/utils/formatWords";
 import AppointmentCard from "@/app/(dashboards)/dentist/(protected)/referral-request/[id]/components/AppointmentCard";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 
 interface AssignedWrapperProps {
     id: string
     showModel: boolean
 }
-export default async function AssignedWrapper({ id,showModel }: AssignedWrapperProps) {
+export default async function AssignedWrapper({ id, showModel }: AssignedWrapperProps) {
     const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
+    console.log("[ASSIGNED] referralRequestResponse ", referralRequestResponse)
     const session = await getServerSession(authOptions);
     const role = session?.user.role;
 
@@ -71,11 +71,9 @@ export default async function AssignedWrapper({ id,showModel }: AssignedWrapperP
     }
 
     const assignedDentistDetails = {
-        name: assignedDentist?.fullName,
-        phone: assignedDentist?.phoneNumber,
+        name: `${assignedDentist?.firstName} ${assignedDentist.lastName}`,
         email: assignedDentist?.email,
         gdcNo: assignedDentist?.gdcNo,
-        address: assignedDentist?.practiceAddress
     }
 
     const referralFormDetails = {
@@ -84,6 +82,9 @@ export default async function AssignedWrapper({ id,showModel }: AssignedWrapperP
         attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
         medicalHistoryPDF: referralForm.medicalHistoryPdf
     }
+
+    console.log("[ASSIGNED] patient details ", patientDetails)
+    console.log("[ASSIGNED] dentist details ", dentistDetails)
 
     return (
         < div className="min-h-screen flex flex-col gap-5" >

@@ -20,6 +20,8 @@ interface PageTopBarProps {
   showBackBtn?: boolean;
   showDateFilter?: boolean;
   statusOptions: TStatusOption[] | null;
+  lockAfterDate?: boolean;
+  lockBeforeDate?: boolean;
 }
 
 export default function PageTopBar({
@@ -32,6 +34,8 @@ export default function PageTopBar({
   statusOptions,
   showDateFilter = true,
   showBackBtn = false,
+  lockAfterDate = false,
+  lockBeforeDate = false,
 }: PageTopBarProps) {
   const router = useRouter();
   return (
@@ -54,6 +58,8 @@ export default function PageTopBar({
             <DateFilter
               statusOptions={statusOptions}
               showDateFilter={showDateFilter}
+              lockAfterDate={lockAfterDate}
+              lockBeforeDate={lockBeforeDate}
             />
           )}
           {showExport && <ExportButton />}

@@ -52,15 +52,77 @@ import { createResponse } from "@/utils/createResponse";
 import { UserRoles } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/send-email:
+ *   post:
+ *     summary: Send an email
+ *     tags: [Email]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - subject
+ *               - html
+ *             properties:
+ *               subject:
+ *                 type: string
+ *                 description: Email subject
+ *               html:
+ *                 type: string
+ *                 description: Email body in HTML format
+ *               attachment:
+ *                 type: object
+ *                 description: Optional email attachment
+ *                 properties:
+ *                   content:
+ *                     type: string
+ *               userType:
+ *                 type: string
+ *                 description: User type (ADMIN or other)
+ *               recieverMail:
+ *                 type: string
+ *                 format: email
+ *                 description: Recipient email address
+ *     responses:
+ *       200:
+ *         description: Email sent successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Email sent successfully!"
+ *               data: null
+ *       400:
+ *         description: Missing required fields (subject and html)
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "subject and html are required"
+ *               data: null
+ *       500:
+ *         description: Internal Server Error or EMAIL_FROM not configured
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "EMAIL_FROM environment variable is not set. Please configure it in your environment file."
+ *               data: null
+ */
 export async function POST(req: NextRequest) {
-  const { subject, html, attachment, userType, recieverMail } = await req.json();
+  const { subject, html, attachment, userType, recieverMail } =
+    await req.json();
 
   if (!subject || !html) {
     return NextResponse.json(
       createResponse(false, "subject and html are required", null),
       {
         status: 400,
-      }
+      },
     );
   }
 
@@ -69,20 +131,20 @@ export async function POST(req: NextRequest) {
       createResponse(
         false,
         "EMAIL_FROM environment variable is not set. Please configure it in your environment file.",
-        null
+        null,
       ),
-      { status: 500 }
+      { status: 500 },
     );
   }
 
-  console.log("to ", process.env.EMAIL_TO)
-  console.log("to ", process.env.EMAIL_FROM)
+  console.log("to ", process.env.EMAIL_TO);
+  console.log("to ", process.env.EMAIL_FROM);
 
-  let emailTo = ""
+  let emailTo = "";
   if (userType === UserRoles.ADMIN) {
-    emailTo = process.env.EMAIL_TO || ""
+    emailTo = process.env.EMAIL_TO || "";
   } else {
-    emailTo = recieverMail
+    emailTo = recieverMail;
   }
   try {
     const emailData: any = {
@@ -105,11 +167,11 @@ export async function POST(req: NextRequest) {
       ];
     }
 
-    await sendgrid.send(emailData,attachment);
+    await sendgrid.send(emailData, attachment);
 
     return NextResponse.json(
       createResponse(true, "Email sent successfully!", null),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error in sending email:", error);

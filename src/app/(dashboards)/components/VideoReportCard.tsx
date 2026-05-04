@@ -32,11 +32,7 @@ export default function VideoReportCard({ report }: VideoReportCardProps) {
           <VideoDownload
             video={report.file ?? ""}
             fileName={getFileNameFromUrl(report.fileUrl)}
-            trigger={
-              <button className="bg-green text-white px-6 py-3 h-[60px] rounded-full border border-white shadow hover:bg-greenHover transition">
-                Download
-              </button>
-            }
+            text="Download"
           />
         </div>
       </div>

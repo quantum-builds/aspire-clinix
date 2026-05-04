@@ -1,7 +1,7 @@
 import { CalenderInputIconV2, CloseIcon, TimeIconV2 } from "@/assets";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { TAppointment } from "@/types/appointment";
-import { calculateAge, formatDate, formatTime } from "@/utils/formatDateTime";
+import { formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
 
 export default function PatientDetailsModal({
@@ -45,21 +45,21 @@ export default function PatientDetailsModal({
               <p className="w-3/4 truncate">
                 Name:{" "}
                 <span className="font-medium text-lg">
-                  {appointment.patient.fullName}
+                  {appointment.patientName}
                 </span>
               </p>
-              <p className="w-[33%]">
+              {/* <p className="w-[33%]">
                 Age:{" "}
                 <span className="font-medium text-lg">
-                  {calculateAge(appointment.patient.dateOfBirth!)} years
+                  {calculateAge(appointment.!)} years
                 </span>
-              </p>
+              </p> */}
             </div>
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <p className="w-3/4 truncate">
                 Email:{" "}
                 <span className="font-medium text-lg">
-                  {appointment.patient.email}
+                  {appointment.}
                 </span>
               </p>
               <p className="w-[33%]">
@@ -68,7 +68,7 @@ export default function PatientDetailsModal({
                   {appointment.patient.phoneNumber}
                 </span>
               </p>
-            </div>
+            </div> */}
             <div>
               <p>
                 Reason:{" "}
@@ -90,19 +90,19 @@ export default function PatientDetailsModal({
               <p className="w-3/4 truncate">
                 Name:{" "}
                 <span className="font-medium text-lg">
-                  {appointment.dentist.fullName}
+                  {appointment.practitionerName}
                 </span>
               </p>
-              {appointment.dentist.dateOfBirth &&
+              {/* {appointment.dentist.dateOfBirth &&
                 <p className="w-[33%]">
                   Age:{" "}
                   <span className="font-medium text-lg">
                     {calculateAge(appointment.dentist.dateOfBirth!)} years
                   </span>
                 </p>
-              }
+              } */}
             </div>
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <p className="w-3/4 truncate">
                 Email:{" "}
                 <span className="font-medium text-lg">
@@ -115,7 +115,7 @@ export default function PatientDetailsModal({
                   {appointment.dentist.phoneNumber}
                 </span>
               </p>
-            </div>
+            </div> */}
 
           </div>
         </div>
@@ -131,7 +131,7 @@ export default function PatientDetailsModal({
                 {" "}
                 Date:{" "}
                 <span className="font-medium text-lg">
-                  {formatDate(appointment.date)}
+                  {formatDate(appointment.startTime)}
                 </span>
               </p>
             </div>

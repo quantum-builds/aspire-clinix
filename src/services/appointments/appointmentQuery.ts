@@ -1,6 +1,6 @@
 import { ENDPOINTS } from "@/config/api-config";
 import { createServerAxios } from "@/lib/server-axios";
-import { TAppointment, TAppointmentResponse } from "@/types/appointment";
+import { TAppointment, TAppointmentDetail, TAppointmentResponse } from "@/types/appointment";
 import { AppointmentDateType, Response } from "@/types/common";
 import axios from "axios";
 
@@ -12,8 +12,10 @@ export async function getAppointments({
   after,
   dateType,
   status,
+  perPage = 20,
 }: {
   page?: number;
+  perPage?: number
   search?: string;
   on?: string;
   before?: string;
@@ -25,7 +27,12 @@ export async function getAppointments({
     const serverAxios = await createServerAxios();
     const response = await serverAxios.get(
       ENDPOINTS.appointemt.get(
+        undefined, // practitionerId
+        undefined, // updatedAfter
+        undefined, // state
+        undefined, // siteId
         page,
+        perPage,
         search,
         on,
         before,
@@ -55,7 +62,7 @@ export async function getAppointment(id: string) {
     const serverAxios = await createServerAxios();
     const response = await serverAxios.get(ENDPOINTS.appointemt.getById(id));
 
-    const responseData: Response<TAppointment> = response.data;
+    const responseData: Response<TAppointmentDetail> = response.data;
     return responseData;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

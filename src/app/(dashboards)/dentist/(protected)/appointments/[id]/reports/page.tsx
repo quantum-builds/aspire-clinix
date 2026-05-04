@@ -22,7 +22,7 @@ export default async function ReportsPage(props: {
         pageHeading="Reports"
         statusOptions={[]}
         showFilters={false}
-        showSearch={true}
+        showSearch={false}
         showBackBtn={true}
         extraBtns={
           <>

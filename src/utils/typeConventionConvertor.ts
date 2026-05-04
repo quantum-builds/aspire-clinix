@@ -15,11 +15,13 @@ export const toSnake = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map(v => toSnake(v));
   } else if (obj && obj.constructor === Object) {
-    return Object.keys(obj).reduce((result: any, key) => {
+    const result = Object.keys(obj).reduce((result: any, key) => {
       const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
       result[snakeKey] = toSnake(obj[key]);
       return result;
     }, {});
+    console.log("[toSnake] Converted:", JSON.stringify(obj), "->", JSON.stringify(result));
+    return result;
   }
   return obj;
 };

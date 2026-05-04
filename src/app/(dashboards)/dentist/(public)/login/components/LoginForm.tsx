@@ -5,32 +5,25 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { EyeCloseIcon, EyeOpenIcon, TextIconV2 } from "@/assets";
+import { TextIconV2 } from "@/assets";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { z } from "zod";
-import Link from "next/link";
-import { loginMutation } from "@/services/LoginMutation";
-import { useRouter } from "next/navigation";
-import { UserRoles } from "@/types/common";
+import { useVerifyDentist } from "@/services/dentist/dentistMutation";
 import { showToast } from "@/utils/defaultToastOptions";
-import { useState } from "react";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export const dentistsSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(100),
+  gdcNumber: z.string().min(1, "Gdc Number is required"),
 });
 
 type FormData = z.infer<typeof dentistsSchema>;
 
 export default function DentistLoginForm() {
-  const { mutate: dentistLogin, isPending: dentistLoginLoader } =
-    loginMutation();
-  const [showPassword, setShowPassword] = useState(false);
-
+  const { mutate: verifyDentist, isPending: verifyDentistLoader } =
+    useVerifyDentist();
   const router = useRouter();
 
   const {
@@ -42,30 +35,30 @@ export default function DentistLoginForm() {
     resolver: zodResolver(dentistsSchema),
     defaultValues: {
       email: "",
-      password: "",
+      gdcNumber: "",
     },
   });
 
   const onSubmit = async (data: FormData) => {
-    dentistLogin(
+    verifyDentist(
       {
         email: data.email,
-        password: data.password,
-        role: UserRoles.DENTIST,
+        gdcNumber: data.gdcNumber,
       },
       {
-        onSuccess: () => {
-          showToast("success", "Dentist Logged in Successfully");
-          reset();
-          router.replace(`/dentist`);
+        onSuccess: (resData) => {
+          showToast("success", "OTP sent successfully to your email");
+          router.replace(`/dentist/otp-verify?email=${resData.email}`);
         },
         onError: (error) => {
           const msg = getAxiosErrorMessage(error);
-          showToast("error", msg);
+          showToast("error", "Verification failed. Please try again later.");
         },
-      }
+      },
     );
   };
+
+  const isSubmitting = verifyDentistLoader;
 
   return (
     <form
@@ -98,33 +91,27 @@ export default function DentistLoginForm() {
             )}
           </div>
 
-          {/* Password */}
+          {/* Gdc Number */}
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-lg font-medium">
-              Password<span className="text-red-500">*</span>
+            <Label htmlFor="GdcNumber" className="text-lg font-medium">
+              Gdc Number<span className="text-red-500">*</span>
             </Label>
             <div className="relative">
               <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter password"
-                {...register("password")}
+                id="GdcNumber"
+                type={"text"}
+                placeholder="Enter Gdc Number"
+                {...register("gdcNumber")}
                 className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-4 top-1/2 -translate-y-1/2"
-              >
-                <Image
-                  src={showPassword ? EyeCloseIcon : EyeOpenIcon}
-                  alt={showPassword ? "Hide password" : "Show password"}
-                  className="h-4 w-4"
-                />
-              </button>
+              <Image
+                src={TextIconV2}
+                alt="icon"
+                className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
+              />
             </div>
-            {errors.password && (
-              <p className="text-sm text-red-500">{errors.password.message}</p>
+            {errors.gdcNumber && (
+              <p className="text-sm text-red-500">{errors.gdcNumber.message}</p>
             )}
           </div>
         </div>
@@ -134,18 +121,18 @@ export default function DentistLoginForm() {
       <div className="w-full flex flex-col justify-center items-center gap-3">
         <CustomButton
           style="primary"
-          text={dentistLoginLoader ? "Loggin In..." : "Login"}
+          text={isSubmitting ? "Loggin In..." : "Login"}
           type="submit"
-          loading={dentistLoginLoader}
+          loading={isSubmitting}
           className="py-4 w-full"
         />
         <p className="text-sm text-muted-foreground mt-4">
-          Don’t have an account?{" "}
+          Want to Register as Referring Dentist?{" "}
           <Link
             href="/dentist/register"
             className="font-medium text-green hover:text-greenHover transition-colors"
           >
-            Create one
+            Register
           </Link>
         </p>
       </div>

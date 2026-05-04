@@ -29,7 +29,7 @@ export default function UpcomingAppointmentCard({
               alt="Calendar Icon"
               className="w-4 h-4"
             />
-            <p className="text-lg">{formatDate(appointment.date)}</p>
+            <p className="text-lg">{formatDate(appointment.startTime)}</p>
           </div>
           <div className="flex items-center gap-1">
             <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />

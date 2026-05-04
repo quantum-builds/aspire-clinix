@@ -1,8 +1,8 @@
 "use client";
 
 import { CalenderInputIconV2, CancelIcon, TimeIconV2 } from "@/assets";
-import { usePatchAppointment } from "@/services/appointments/appointmentMutation";
-import { TAppointment } from "@/types/appointment";
+import { useChangeAppointmentState } from "@/services/appointments/appointmentMutation";
+import { AppointmentState, TAppointment } from "@/types/appointment";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
 import { AppointmentStatus } from "@prisma/client";
@@ -13,6 +13,7 @@ import { useState } from "react";
 import StatusBage from "@/app/(dashboards)/components/StatusBadge";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { showToast } from "@/utils/defaultToastOptions";
+import App from "next/app";
 
 interface FirstUpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -22,15 +23,15 @@ export default function FirstUpcomingAppointmentCard({
 }: FirstUpcomingAppointmentCardProps) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { mutate: cancelAppointment, isPending: isCancelAppointment } =
-    usePatchAppointment();
+    useChangeAppointmentState();
   const { refresh } = useRouter();
 
   const handleCancelAppointment = () => {
     cancelAppointment(
       {
-        appointment: { state: AppointmentStatus.CANCELLED },
+        appointment: { state: AppointmentState.CANCELLED },
         id: appointment.id,
-        patientId: appointment.patientId, // will be getting in backend when token is implemented
+        patientId: appointment.patientId
       },
       {
         onSuccess: (data) => {
@@ -57,7 +58,7 @@ export default function FirstUpcomingAppointmentCard({
                 alt="Calendar Icon"
                 className="w-4 h-4"
               />
-              <p className="text-lg">{formatDate(appointment.date)}</p>
+              <p className="text-lg">{formatDate(appointment.startTime)}</p>
             </div>
             <div className="flex items-center gap-1">
               <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />
@@ -74,7 +75,7 @@ export default function FirstUpcomingAppointmentCard({
           </p>
 
           <p className="text-lg italic">
-            Appointment # APT-{appointment.id.slice(0, 10)}
+            Appointment # {appointment.id}
           </p>
         </div>
       </div>
@@ -86,17 +87,17 @@ export default function FirstUpcomingAppointmentCard({
               <p>
                 Name:{" "}
                 <span className="font-medium">
-                  {appointment.dentist.fullName}
+                  {appointment.practitionerName}
                 </span>
               </p>
-              <p className="text-lg">
+              {/* <p className="text-lg">
                 Phone:{" "}
                 <span className="font-medium">
                   {appointment.dentist.phoneNumber}
                 </span>
-              </p>
+              </p> */}
             </div>
-            <div className="1xl:flex-[30%] space-y-2">
+            {/* <div className="1xl:flex-[30%] space-y-2">
               <p>
                 GDC no:{" "}
                 <span className="font-medium">{appointment.dentist.gdcNo}</span>
@@ -105,15 +106,15 @@ export default function FirstUpcomingAppointmentCard({
                 Email:{" "}
                 <span className="font-medium">{appointment.dentist.email}</span>
               </p>
-            </div>
+            </div> */}
           </div>
 
-          <p className=" text-lg">
+          {/* <p className=" text-lg">
             Practice Address:{" "}
             <span className="font-medium">
               {appointment.dentist.practiceAddress}
             </span>
-          </p>
+          </p> */}
         </div>
       </div>
       <div className="flex justify-between">
@@ -123,7 +124,7 @@ export default function FirstUpcomingAppointmentCard({
             href={`/patient/appointments/${appointment.id}/reports`}
           />
 
-          {appointment.state !== AppointmentStatus.CANCELLED && (
+          {appointment.state !== AppointmentState.CANCELLED && (
             <CustomButton
               style="secondary"
               text="Cancel Appoinment"

@@ -2,8 +2,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { AuthOptions } from "next-auth";
 import prisma from "@/lib/db";
 import { verifyPassword } from "@/utils/passwordUtils";
-import { UserRoles } from "@/types/common";
-import { getPatient } from "@/dentallyHelpers/patient";
+import { TokenRoles } from "@/constants/UserRoles";
+import { DentistRole } from "@prisma/client";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -12,17 +12,43 @@ export const authOptions: AuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        patientId: { label: "PatientId", type: "patientId" },
+        otp: { label: "Otp", type: "otp" },
         role: { label: "Role", type: "role" },
       },
       async authorize(credentials) {
-        if (!credentials?.email) throw new Error("Email is required");
-        if (!credentials?.password || !credentials?.role)
+        if (!credentials?.role)
           throw new Error("Password and role are required");
+
+        if (credentials.role === TokenRoles.PATIENT) {
+          if (!credentials.patientId) {
+            throw new Error("Patient Id is required");
+          }
+          if (!credentials.otp) {
+            throw new Error("OTP is required");
+          }
+        } else if (credentials.role === TokenRoles.REFERRING_DENTIST ||
+          credentials.role === TokenRoles.DENTALLY_PRACTITIONER
+        ) {
+          if (!credentials?.otp) {
+            throw new Error("Otp is required for dentist login");
+          }
+          if (!credentials?.email) {
+            throw new Error("Email is required for dentist login");
+          }
+        } else if (credentials.role === TokenRoles.ADMIN) {
+          if (!credentials?.email) {
+            throw new Error("Email is required");
+          }
+          if (!credentials?.password) {
+            throw new Error("Password and role are required");
+          }
+        }
 
         const { email, password, role } = credentials;
         let user = null;
 
-        if (role === UserRoles.ADMIN) {
+        if (role === TokenRoles.ADMIN) {
           user = await prisma.admin.findUnique({ where: { email } });
           if (!user) throw new Error("No account found");
 
@@ -30,45 +56,75 @@ export const authOptions: AuthOptions = {
           if (!isValid) throw new Error("Invalid credentials");
 
           return {
-            id: user.id,
+            id: String(user.id),
             email: user.email,
-            role: UserRoles.ADMIN,
+            role: TokenRoles.ADMIN,
             name: user.fullName,
             image: user.fileUrl,
           };
         }
 
-        if (role === UserRoles.PATIENT) {
-          const response = await getPatient({ emailAddress: email })
-          if (!response.isError)
-            user = response.response
-          if (!user) throw new Error("No account found");
+        if (role === TokenRoles.PATIENT) {
+          const { patientId, otp } = credentials;
 
-          const isValid = await verifyPassword(password, user.password);
-          if (!isValid) throw new Error("Invalid credentials");
+          let patient = null;
+
+          try {
+            patient = await prisma.patient.findUnique({ where: { id: patientId } });
+          } catch (error) {
+            throw new Error(`Error in getting patient`);
+          }
+          if (!patient) {
+            throw new Error("No account found");
+          }
+
+          if (
+            patient.otp !== otp ||
+            !patient.otpInvalidationTime ||
+            patient.otpInvalidationTime < new Date()
+          ) {
+            throw new Error("Invalid Otp");
+          }
 
           return {
-            id: user.id,
-            email: user.email,
-            role: UserRoles.PATIENT,
-            name: user.fullName,
-            image: user.fileUrl,
+            id: String(patient.dentallyId),
+            email: patient.email,
+            role: TokenRoles.PATIENT,
+            name: patient.name,
+            image: null,
           };
         }
 
-        if (role === UserRoles.DENTIST) {
-          user = await prisma.dentist.findUnique({ where: { email } });
-          if (!user) throw new Error("No account found");
+        if (role !== TokenRoles.ADMIN && role !== TokenRoles.PATIENT) {
+          const { email, otp } = credentials;
+          console.log("credentislas are ", credentials)
 
-          const isValid = await verifyPassword(password, user.password);
-          if (!isValid) throw new Error("Invalid credentials");
+          let dentist = null;
 
+          try {
+            dentist = await prisma.dentist.findUnique({ where: { email } });
+          } catch (error) {
+            throw new Error(`Error in getting dentist with email ${email}`);
+          }
+          if (!dentist) {
+            throw new Error("No account found");
+          }
+          console.log("dentist is ", dentist)
+          if (
+            dentist.otp !== otp ||
+            !dentist.otpInvalidationTime ||
+            dentist.otpInvalidationTime < new Date()
+          ) {
+            throw new Error("Invalid Otp");
+          }
+
+          const fullName = `${dentist.firstName} ${dentist.lastName}`.trim();
           return {
-            id: user.id,
-            email: user.email,
-            role: user.role,
-            name: user.fullName,
-            image: user.fileUrl,
+            id: String(dentist.role === DentistRole.DENTALLY_PRACTITIONER && dentist.dentallyId ? dentist.dentallyId : dentist.id),
+            email: dentist.email,
+            role: dentist.role,
+            name: fullName,
+            image: null,
           };
         }
 

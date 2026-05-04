@@ -1,18 +1,10 @@
 import Image from "next/image";
-import DentistRegisterForm from "./components/RegisterForm";
 import { AspireDarkLogo } from "@/assets";
 import BackButton from "@/app/(dashboards)/components/BackButton";
-import { Response } from "@/types/common";
-import { TPracticeResponse } from "@/types/practice";
-import { getPractices } from "@/services/practice/practiceQuery";
+import DentistRegisterForm from "./component/registerForm";
 
 export default async function RegisterPage() {
-  const response: Response<TPracticeResponse> = await getPractices({});
-  const practices = response.data
-    ? response.data.practices
-      ? response.data.practices
-      : []
-    : [];
+
   return (
     <main className="min-h-[110vh] ">
       <BackButton
@@ -21,7 +13,7 @@ export default async function RegisterPage() {
         text="Back To Website"
       />
 
-      <div className="mx-auto w-full  bg-dashboardBarBackground rounded-2xl flex flex-col  justify-center max-w-4xl p-6 md:p-10">
+      <div className="mx-auto w-full  bg-dashboardBarBackground rounded-2xl flex flex-col  justify-center max-w-3xl p-6 md:p-10">
         <div className="w-full flex items-center justify-center mb-8">
           <Image
             src={AspireDarkLogo}
@@ -40,10 +32,8 @@ export default async function RegisterPage() {
           </p>
         </header>
 
-        <section className="w-full grid gap-6 md:grid-cols-5">
-          <div className="md:col-span-5 ">
-            <DentistRegisterForm practices={practices} />
-          </div>
+        <section className="w-full grid gap-6">
+            <DentistRegisterForm />
         </section>
       </div>
     </main>

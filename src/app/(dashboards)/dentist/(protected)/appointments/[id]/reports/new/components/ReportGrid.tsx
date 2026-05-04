@@ -5,6 +5,7 @@ import CustomButton from "@/app/(dashboards)/components/custom-components/Custom
 import { useCreateReport } from "@/services/reports/reportsMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { TAppointment } from "@/types/appointment";
+import { TReport } from "@/types/reports";
 import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { ResoucrceType } from "@prisma/client";
@@ -13,9 +14,11 @@ import { useState } from "react";
 
 interface ReportGridProps {
   appointment: TAppointment;
+  videoReports?: TReport[]
+  pdfReports?: TReport[]
 }
 
-export default function ReportGrid({ appointment }: ReportGridProps) {
+export default function ReportGrid({ appointment, videoReports = [], pdfReports = [] }: ReportGridProps) {
   const router = useRouter();
   const { mutate: createReport, isPending: createReportLoader } =
     useCreateReport();
@@ -47,19 +50,20 @@ export default function ReportGrid({ appointment }: ReportGridProps) {
         showToast("error", "No files to upload");
         return;
       }
-
       // Upload PDFs
       const pdfPromises = uploadedPdfs.map(async (file) => {
         const uploaded = await uploadFile({
           selectedFile: file,
           fileType: ResoucrceType.PDF,
         });
+        console.log("appointment in repor is ", appointment)
+
         return {
           title: file.name,
-          fileUrl: `uploads/aspire-clinic/pdfs/${uploaded.name}`,
+          fileUrl: `uploads/aspire-clinic/letters/${uploaded.name}`,
           fileType: ResoucrceType.PDF,
-          patientId: appointment.patientId,
-          appointmentId: appointment.id,
+          patientDentallyId: String(appointment.patientId),
+          appointmentId: String(appointment.id),
         };
       });
 
@@ -69,17 +73,19 @@ export default function ReportGrid({ appointment }: ReportGridProps) {
           selectedFile: file,
           fileType: ResoucrceType.VIDEO,
         });
+        console.log("appointment in repor is ", appointment)
+
         return {
           title: file.name,
           fileUrl: `uploads/aspire-clinic/videos/${uploaded.name}`,
           fileType: ResoucrceType.VIDEO,
-          patientId: appointment.patientId,
-          appointmentId: appointment.id,
+          patientDentallyId: String(appointment.patientId),
+          appointmentId: String(appointment.id),
         };
       });
 
       const reports = await Promise.all([...pdfPromises, ...videoPromises]);
-
+      console.log("Reports are ", reports)
       createReport(
         { reports },
         {
@@ -105,14 +111,14 @@ export default function ReportGrid({ appointment }: ReportGridProps) {
     <div className="flex flex-col gap-7 bg-dashboardBackground">
       <div className="flex flex-col gap-10 bg-dashboardBarBackground rounded-2xl p-6">
         <VideoReportGrid
-          reports={[]}
+          reports={videoReports}
           isNewUploadPage={true}
           uploadedVideos={uploadedVideos}
           handleRemoveVideo={handleRemoveVideo}
           handleVideoSelect={handleVideoSelect}
         />
         <LetterReportGrid
-          reports={[]}
+          reports={pdfReports}
           isNewUploadPage={true}
           uploadedPdfs={uploadedPdfs}
           handleRemovePdf={handleRemovePdf}
@@ -123,7 +129,7 @@ export default function ReportGrid({ appointment }: ReportGridProps) {
       <div className="w-full flex justify-end items-center gap-3">
         <CustomButton
           text="Cancel"
-          disabled={createReportLoader || uploadFileLoader}
+          // disabled={createReportLoader || uploadFileLoader}
           handleOnClick={() => router.back()}
           className="text-[#A3A3A3] h-[60px] w-fit px-6 py-3 bg-gray hover:bg-lightGray shadow-none font-medium text-xl"
         />

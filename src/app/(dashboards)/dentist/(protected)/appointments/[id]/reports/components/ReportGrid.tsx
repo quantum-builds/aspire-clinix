@@ -1,12 +1,12 @@
 import LetterReportGrid from "@/app/(dashboards)/components/LetterReportGrid";
 import VideoReportGrid from "@/app/(dashboards)/components/VideoReportGrid";
-import { ResoucrceType } from "@prisma/client";
 import PatientDetails from "./PatientDetails";
-import { TReport, TReportResponse } from "@/types/reports";
+import { TReport} from "@/types/reports";
 import { Response } from "@/types/common";
-import { getReports } from "@/services/reports/reportsQuery";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
-import { TPatient } from "@/types/patient";
+import { Patient } from "@/types/patient";
+import { TAppointmentDetail } from "@/types/appointment";
+import { getAppointment } from "@/services/appointments/appointmentQuery";
 
 interface ResourceGridWrapperProps {
   query: string;
@@ -16,19 +16,16 @@ interface ResourceGridWrapperProps {
 interface ReportGridProps {
   videoReports: TReport[];
   letterReports: TReport[];
-  patientDetails?: TPatient;
+  patientDetails?: Patient | null;
   isNewUploadPage?: boolean;
 }
 
 export default async function ReportGridWrapper({
-  query,
   appointmentId,
 }: ResourceGridWrapperProps) {
-  const response: Response<TReportResponse> = await getReports({
-    search: query,
-    appointmentId: appointmentId,
-  });
+  const response: Response<TAppointmentDetail> = await getAppointment(appointmentId);
 
+  console.log("reposne is ", response)
   if (
     !response.status ||
     (!response.data.reports.pdfs && !response.data.reports.videos) ||
@@ -38,12 +35,6 @@ export default async function ReportGridWrapper({
     return <NoContent1 />;
   }
 
-  const patientDetails =
-    response.data.reports.pdfs && response.data.reports.pdfs?.length > 0
-      ? response.data.reports.pdfs[0].patient
-      : response.data.reports.videos && response.data.reports.videos?.length > 0
-      ? response.data.reports.videos[0].patient
-      : undefined;
   const pdfs = response.data.reports.pdfs;
   const videos = response.data.reports.videos;
 
@@ -52,7 +43,7 @@ export default async function ReportGridWrapper({
       <ReportGrid
         videoReports={videos ?? []}
         letterReports={pdfs ?? []}
-        patientDetails={patientDetails}
+        patientDetails={response.data.patient}
       />
     </>
   );
@@ -63,10 +54,10 @@ function ReportGrid({
   letterReports,
   patientDetails,
   isNewUploadPage = false,
-}: ReportGridProps) { 
+}: ReportGridProps) {
   return (
     <div className="flex flex-col gap-7 bg-dashboardBackground">
-      <PatientDetails patientDetails={patientDetails} />
+      {patientDetails && <PatientDetails patientDetails={patientDetails} />}
       <div className="flex flex-col gap-10 bg-dashboardBarBackground rounded-2xl p-6">
         <VideoReportGrid
           reports={videoReports}

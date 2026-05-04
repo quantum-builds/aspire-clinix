@@ -6,7 +6,6 @@ import Pagination from "@/app/(dashboards)/components/Pagination";
 import AppointmentGrid from "../../components/AppoinmentGrid";
 
 interface AppointmentGridWrapperProps {
-  query: string;
   page: number;
   status: string;
   on: string;
@@ -15,7 +14,6 @@ interface AppointmentGridWrapperProps {
 }
 
 export default async function AppointmentGridWrapper({
-  query,
   page,
   status,
   on,
@@ -23,7 +21,6 @@ export default async function AppointmentGridWrapper({
   after,
 }: AppointmentGridWrapperProps) {
   const response: Response<TAppointmentResponse> = await getAppointments({
-    search: query,
     dateType: AppointmentDateType.UPCOMING,
     page,
     status,
@@ -49,7 +46,8 @@ export default async function AppointmentGridWrapper({
 
   const appointments = response.data.appointments;
 
-  const total = response.data.pagination.totalPages;
+  const total = response.data.meta.totalPages;
+  console.log("reposnse ", response.data)
 
   return (
     <>

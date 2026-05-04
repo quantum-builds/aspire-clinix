@@ -1,9 +1,9 @@
 import { ResoucrceType } from "@prisma/client";
-import { TDentist } from "./dentist";
-import { TPatient } from "./patient";
+import { Dentist, TDentist } from "./dentist";
+import { Patient, TPatient } from "./patient";
 
 export type TReportCreate = {
-  patientId: string;
+  patientDentallyId: string;
   appointmentId: string;
   title: string;
   fileUrl: string;
@@ -16,8 +16,8 @@ export type TReport = TReportCreate & {
   file?: string;
   createdAt: Date;
   updatedAt: Date;
-  patient?: TPatient;
-  dentist?: TDentist;
+  patient?: Patient;
+  dentist?: Dentist;
 };
 
 export type TReportResponse = {

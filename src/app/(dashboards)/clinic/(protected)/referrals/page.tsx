@@ -31,7 +31,7 @@ export default async function ReferralHistory(props: {
     <div className="min-h-screen flex flex-col gap-5">
       <PageTopBar
         pageHeading="Referrals"
-        showSearch={true}
+        showSearch={false}
         searchPlaceHolder="Search By Name"
         showFilters={true}
         statusOptions={[

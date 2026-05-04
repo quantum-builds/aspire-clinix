@@ -5,11 +5,139 @@ import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/reports:
+ *   get:
+ *     summary: Get reports
+ *     tags: [Reports]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search reports by title
+ *       - in: query
+ *         name: appointmentId
+ *         schema:
+ *           type: string
+ *         description: Filter reports by appointment ID
+ *     responses:
+ *       200:
+ *         description: Reports fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Reports fetched successfully."
+ *               data:
+ *                 reports:
+ *                   videos:
+ *                     - id: "rep_01HXYZ1234ABCDE"
+ *                       title: "Post-op Video"
+ *                       fileType: "VIDEO"
+ *                       fileUrl: "https://example.com/reports/post-op.mp4"
+ *                   pdfs:
+ *                     - id: "rep_01HXYZ1234ABCDF"
+ *                       title: "X-Ray Report"
+ *                       fileType: "PDF"
+ *                       fileUrl: "https://example.com/reports/xray.pdf"
+ *       404:
+ *         description: No reports found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No reports found."
+ *               data: null
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
+ *   post:
+ *     summary: Create report(s)
+ *     tags: [Reports]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - type: object
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *             example:
+ *               appointmentId: clx123abc
+ *               patientId: clx456def
+ *               title: X-Ray Report
+ *               fileType: PDF
+ *     responses:
+ *       201:
+ *         description: Reports created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Reports created successfully."
+ *               data: null
+ *       400:
+ *         description: Validation failed
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Each report must include patientId and appointmentId."
+ *               data: null
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Unauthorized"
+ *               data: null
+ *       404:
+ *         description: Appointment not found for the dentist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Appointment not found for the dentist."
+ *               data: null
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
+ */
 export async function GET(req: NextRequest) {
   try {
-    // const token = await getToken({
-    //   req,
-    // });
+    const token = await getToken({
+      req,
+    });
+
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
+    const dentistId =
+      token?.role === TokenRoles.DENTALLY_PRACTITIONER ? token.sub : undefined;
+    const patientDentallyId =
+      token?.role === TokenRoles.PATIENT ? token.sub : undefined;
 
     const { searchParams } = new URL(req.url);
 
@@ -21,14 +149,14 @@ export async function GET(req: NextRequest) {
     const baseWhere: Prisma.ReportWhereInput = {
       ...(search
         ? {
-            title: {
-              contains: search,
-              mode: "insensitive" as Prisma.QueryMode,
-            },
-          }
+          title: {
+            contains: search,
+            mode: "insensitive" as Prisma.QueryMode,
+          },
+        }
         : {}),
-      // ...(dentistId ? { dentistId } : {}),
-      // ...(patientId ? { patientId } : {}),
+      ...(dentistId ? { dentistId } : {}),
+      ...(patientDentallyId ? { patientDentallyId } : {}),
       ...(appointmentId ? { appointmentId } : {}),
     };
 
@@ -49,7 +177,7 @@ export async function GET(req: NextRequest) {
     if (!videos.length && !pdfs.length) {
       return NextResponse.json(
         createResponse(false, "No reports found.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -89,7 +217,7 @@ export async function GET(req: NextRequest) {
       createResponse(true, "Reports fetched successfully.", {
         reports: { videos, pdfs },
       }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error in fetching reports", error);
@@ -104,13 +232,17 @@ export async function POST(req: NextRequest) {
   try {
     const token = await getToken({ req });
 
-    if (
-      !token ||
-      (token.role !== TokenRoles.DENTIST &&
-        token.role !== TokenRoles.RECIEVING_DENTIST)
-    ) {
+    if (!token) {
       return NextResponse.json(createResponse(false, "Unauthorized", null), {
         status: 401,
+      });
+    }
+
+    if (
+      token.role !== TokenRoles.DENTALLY_PRACTITIONER
+    ) {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
+        status: 403,
       });
     }
 
@@ -118,26 +250,88 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const reports = Array.isArray(body) ? body : [body];
+    console.log("reports are ", reports)
+    // define a set for appointmentIds to check if the appointmentId in each report belongs to the dentist
+    const appointmentIdsSet = new Set<string>();
+    reports.forEach((report) => {
+      if (report.appointmentId) {
+        appointmentIdsSet.add(report.appointmentId);
+      }
+    });
+
+    if (appointmentIdsSet.size === 0 || appointmentIdsSet.size > 1) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "Each report must include the same appointmentId that belongs to the dentist.",
+          null,
+        ),
+        { status: 400 },
+      );
+    }
+
+    const appointmentId = Array.from(appointmentIdsSet)[0];
+
+    if (!dentistId) {
+      return NextResponse.json(
+        createResponse(false, "Dentist id is required", null),
+        { status: 400 },
+      );
+    }
 
     if (!reports.length) {
       return NextResponse.json(
         createResponse(false, "No reports provided", null),
-        { status: 400 }
+        { status: 400 },
+      );
+    }
+
+    const invalidReportIndex = reports.findIndex(
+      (report) => !report?.patientDentallyId || !report?.appointmentId,
+    );
+
+    if (invalidReportIndex !== -1) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          `Each report must include patientDentallyId and appointmentId.`,
+          null,
+        ),
+        { status: 400 },
+      );
+    }
+
+
+    const dentist = await prisma.dentist.findFirst({
+      where: {
+        dentallyId: Number(dentistId),
+        appointmentIds: {
+          has: appointmentId,
+        },
+      },
+    });
+    console.log("appointment id ", appointmentId)
+
+    if (!dentist) {
+      return NextResponse.json(
+        createResponse(false, "Appointment not found for the dentist.", null),
+        { status: 404 },
       );
     }
 
     const reportsToCreate = reports.map((r) => ({
       ...r,
-      dentistId,
+      dentistId: dentist.id,
     }));
+
+    console.log("report to create ", reportsToCreate)
 
     await prisma.report.createMany({
       data: reportsToCreate,
     });
-
     return NextResponse.json(
       createResponse(true, "Reports created successfully.", null),
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error in creating report ", error);

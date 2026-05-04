@@ -200,7 +200,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
         fileType: ResoucrceType.PDF,
       });
 
-      fileUrl = `uploads/aspire-clinic/pdfs/${imageUploaded.name}`;
+      fileUrl = `uploads/aspire-clinic/letters/${imageUploaded.name}`;
     }
     const referralDetail: TCreateReferralForm = {
       patientName: formData.patientName,

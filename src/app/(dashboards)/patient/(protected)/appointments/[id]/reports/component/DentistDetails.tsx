@@ -1,7 +1,7 @@
-import { TDentist } from "@/types/dentist";
+import { Dentist } from "@/types/dentist";
 
 interface DentistDetailsProps {
-  dentistDetails?: TDentist;
+  dentistDetails?: Dentist;
 }
 
 export default function DentistDetails({
@@ -20,7 +20,7 @@ export default function DentistDetails({
             <div className="flex items-center gap-2">
               <p className="flex-[25%] text-xl">
                 Name:{" "}
-                <span className="font-medium">{dentistDetails.fullName}</span>
+                <span className="font-medium">{`${dentistDetails.firstName} ${dentistDetails.lastName}`}</span>
               </p>
               <p className="flex-[25%] text-xl">
                 GDC no:{" "}
@@ -31,7 +31,7 @@ export default function DentistDetails({
 
             {/* Second column - 3 items */}
             <div className="flex items-ceter gap-2">
-              <p className="flex-[25%] text-xl">
+              <p className="flex-[20%] text-xl">
                 Phone:{" "}
                 <span className="font-medium">{dentistDetails.gdcNo}</span>
               </p>
@@ -39,12 +39,7 @@ export default function DentistDetails({
                 Email:{" "}
                 <span className="font-medium">{dentistDetails.email}</span>
               </p>
-              <p className="flex-[50%] text-xl">
-                Practice Address:{" "}
-                <span className="font-medium">
-                  {dentistDetails.practiceAddress}
-                </span>
-              </p>
+              <div className="flex-[40%]"></div>
             </div>
           </div>
         </div>

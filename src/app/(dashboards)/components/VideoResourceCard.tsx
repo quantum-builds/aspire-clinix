@@ -70,11 +70,7 @@ export default function VideoResourceCard({ resource }: VideoResourceCardProps) 
           <VideoDownload
             video={resource.file ?? ""}
             fileName={getFileNameFromUrl(resource.fileUrl)}
-            trigger={
-              <button className="bg-green text-white px-6 py-3 h-[60px] rounded-full border border-white shadow hover:bg-greenHover transition">
-                Download
-              </button>
-            }
+            text="Download"
           />
         </div>
       </div>

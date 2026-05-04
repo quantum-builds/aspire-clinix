@@ -27,11 +27,6 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
         href: "/patient/appointments/upcoming",
       },
       { name: "Past", icon: InActiveIcon, href: "/patient/appointments/past" },
-      {
-        name: "Requests",
-        icon: InActiveIcon,
-        href: "/patient/appointments/requests",
-      },
     ],
   },
   {
@@ -47,31 +42,10 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
     ],
   },
   {
-    name: "Plans & Subscriptions",
-    icon: PlansIcon,
-    pages: [
-      {
-        name: "Plans",
-        icon: InActiveIcon,
-        href: "/patient/plans",
-      },
-      {
-        name: "Subscriptions",
-        icon: InActiveIcon,
-        href: "/patient/subscriptions",
-      },
-    ],
-  },
-  {
     name: "Consent",
     icon: ConsentIcon,
     href: "/patient/consent",
-  },
-  {
-    name: "Store",
-    icon: StoreIcon,
-    href: "/patient/store",
-  },
+  }
 ];
 
 export default async function PatientLayout({

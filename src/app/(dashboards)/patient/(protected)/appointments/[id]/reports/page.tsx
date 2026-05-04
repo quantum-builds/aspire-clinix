@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import ReportGridWrapper from "./component/ReportGrid";
-import BackButton from "@/app/(dashboards)/components/BackButton";
 import { ReportGridWrapperSkeleton } from "./component/skeletons/ReportGridWrapper";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 
@@ -20,7 +19,7 @@ export default async function ReportsPage(props: {
         pageHeading="Reports"
         statusOptions={[]}
         showFilters={false}
-        showSearch={true}
+        showSearch={false}
         showBackBtn={true}
       />
       <Suspense key={title + id} fallback={<ReportGridWrapperSkeleton />}>

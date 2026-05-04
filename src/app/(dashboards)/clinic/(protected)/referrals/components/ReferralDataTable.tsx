@@ -85,9 +85,6 @@ export function ClinicReferralDataTable({ entries }: ClinicReferralDataTableProp
               Patient Name
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
-              Dentist Name
-            </TableHead>
-            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Referral Dentist Name
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
@@ -121,9 +118,6 @@ export function ClinicReferralDataTable({ entries }: ClinicReferralDataTableProp
                 {entry.id.slice(0, 8)}
               </TableCell>
               <TableCell className="px-6 py-4">{entry.referralForm.patientName}</TableCell>
-              <TableCell className="px-6 py-4">
-                {entry.assignedDentist ? entry.assignedDentist.fullName : "-----"}
-              </TableCell>
               <TableCell className="px-6 py-4">{entry.referralForm.referralName}</TableCell>
               <TableCell className="px-6 py-4">
                 <div className="flex gap-2 items-center">

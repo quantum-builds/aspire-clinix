@@ -77,9 +77,6 @@ export function ReferralHistoryDataTable({ entries }: ReferralHistoryDataTablePr
               Patient Name
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
-              Dentist Name
-            </TableHead>
-            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Status
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
@@ -109,9 +106,6 @@ export function ReferralHistoryDataTable({ entries }: ReferralHistoryDataTablePr
                 {entry.referralForm.patientName}
               </TableCell>
 
-              <TableCell className="px-6 py-4">
-                {entry.assignedDentist ? entry.assignedDentist.fullName : "-----"}
-              </TableCell>
 
               <TableCell className="px-6 py-4">
                 <div className="flex gap-2 items-center">

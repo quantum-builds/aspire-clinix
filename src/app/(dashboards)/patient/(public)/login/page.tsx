@@ -12,7 +12,7 @@ export default function LoginPage() {
         text="Back To Website"
       />
 
-      <div className="mx-auto w-full bg-dashboardBarBackground rounded-2xl flex flex-col justify-center max-w-lg p-6 md:p-10">
+      <div className="mx-auto w-full bg-dashboardBarBackground rounded-2xl flex flex-col justify-center max-w-3xl p-6 md:p-10">
         <div className="w-full flex items-center justify-center mb-8">
           <Image
             src={AspireDarkLogo}
@@ -31,7 +31,7 @@ export default function LoginPage() {
           </p>
         </header>
 
-        <section className="w-full max-w-lg ">
+        <section className="w-full grid gap-6">
           <PatientLoginForm />
         </section>
       </div>

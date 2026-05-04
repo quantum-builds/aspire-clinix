@@ -13,7 +13,11 @@ export async function getCartProducts(patientId?: string) {
     );
     const responseData: Response<TCartProduct[]> = response.data;
     console.log("repponse data is ", responseData);
-    const cartProdcuts: TCartProduct[] = responseData.data;
+    const cartProdcuts: TCartProduct[] = responseData.data ?? [];
+
+    if (cartProdcuts.length === 0) {
+      return responseData;
+    }
 
     const uploads = await Promise.all(
       cartProdcuts.map(async (cartProduct) => {

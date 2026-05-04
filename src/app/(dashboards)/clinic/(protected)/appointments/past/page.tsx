@@ -3,10 +3,10 @@ import AppointmentGridWrapper from "./components/AppointmentGridWrapper";
 import { AppointmentStatus } from "@prisma/client";
 import AppointmentGridSkeleton from "../components/skeletons/AppointmentGrid";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
+import { AppointmentState } from "@/types/appointment";
 
 export default async function PastAppointments(props: {
   searchParams?: Promise<{
-    query?: string;
     page?: string;
     status?: string;
     on?: string;
@@ -15,44 +15,53 @@ export default async function PastAppointments(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
-  const query = searchParams?.query || "";
   const status = searchParams?.status || "";
   const on = searchParams?.on || "";
-  const before = searchParams?.before || "";
   const after = searchParams?.after || "";
   const page = Number(searchParams?.page) || 1;
+
+  // Default before date to today (YYYY-MM-DD format) for past appointments
+  const today = new Date();
+  const todayFormatted = today.toISOString().split('T')[0];
+  const before = searchParams?.before || todayFormatted;
 
   return (
     <div>
       <div className="min-h-screen flex flex-col gap-5">
         <PageTopBar
           pageHeading="Appointments"
-          showSearch={true}
+          showSearch={false}
           showFilters={true}
+          lockBeforeDate={true}
           statusOptions={[
             {
-              value: AppointmentStatus.CONFIRMED,
+              value: AppointmentState.PENDING,
             },
             {
-              value: AppointmentStatus.CANCELLED,
+              value: AppointmentState.CONFIRMED,
             },
             {
-              value: AppointmentStatus.DID_NOT_ATTEND,
+              value: AppointmentState.ARRIVED,
             },
             {
-              value: AppointmentStatus.ARRIVED,
+              value: AppointmentState.INSURGERY,
             },
             {
-              value: AppointmentStatus.IN_SURGERY,
+              value: AppointmentState.COMPLETED,
             },
+            {
+              value: AppointmentState.CANCELLED,
+            },
+            {
+              value: AppointmentState.DIDNOTATTEND,
+            }
           ]}
         />
         <Suspense
-          key={query + page + status + on + before + after}
+          key={page + status + on + before + after}
           fallback={<AppointmentGridSkeleton type="PAST" />}
         >
           <AppointmentGridWrapper
-            query={query}
             page={page}
             status={status}
             on={on}

@@ -162,9 +162,6 @@ export function referralUnRegisteredPatientEmail(formData: FormData, baseUrl: st
               <p style="font-size: 15px; line-height: 1.6;">
                 To track your appointments, treatment history, and reports, please create your Aspire account using the link below.
               </p>
-              <div style="text-align:center; margin-top:25px;">
-                <a href="${baseUrl}patient/register" style="background:#e76f51; color:#fff; padding:10px 25px; border-radius:6px; text-decoration:none;">Register with Aspire</a>
-              </div>
             </td>
           </tr>
           <tr>

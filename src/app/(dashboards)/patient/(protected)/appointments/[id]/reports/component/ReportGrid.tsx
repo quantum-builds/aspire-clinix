@@ -2,10 +2,11 @@ import { Response } from "@/types/common";
 import DentistDetails from "./DentistDetails";
 import LetterReportGrid from "@/app/(dashboards)/components/LetterReportGrid";
 import VideoReportGrid from "@/app/(dashboards)/components/VideoReportGrid";
-import { TReport, TReportResponse } from "@/types/reports";
-import { getReports } from "@/services/reports/reportsQuery";
-import { TDentist } from "@/types/dentist";
+import { TReport } from "@/types/reports";
+import { Dentist, TDentist } from "@/types/dentist";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
+import { TAppointmentDetail } from "@/types/appointment";
+import { getAppointment } from "@/services/appointments/appointmentQuery";
 
 interface ResourceGridWrapperProps {
   query: string;
@@ -15,17 +16,14 @@ interface ResourceGridWrapperProps {
 interface ReportGridProps {
   videoReports: TReport[];
   letterReports: TReport[];
-  dentistDetails?: TDentist;
+  dentistDetails?: Dentist;
 }
 
 export default async function ReportGridWrapper({
-  query,
   appointmentId,
 }: ResourceGridWrapperProps) {
-  const response: Response<TReportResponse> = await getReports({
-    search: query,
-    appointmentId: appointmentId,
-  });
+  const response: Response<TAppointmentDetail> = await getAppointment(appointmentId);
+
 
   if (
     !response.status ||
@@ -40,8 +38,8 @@ export default async function ReportGridWrapper({
     response.data.reports.pdfs && response.data.reports.pdfs?.length > 0
       ? response.data.reports.pdfs[0].dentist
       : response.data.reports.videos && response.data.reports.videos?.length > 0
-      ? response.data.reports.videos[0].dentist
-      : undefined;
+        ? response.data.reports.videos[0].dentist
+        : undefined;
   const pdfs = response.data.reports.pdfs;
   const videos = response.data.reports.videos;
 

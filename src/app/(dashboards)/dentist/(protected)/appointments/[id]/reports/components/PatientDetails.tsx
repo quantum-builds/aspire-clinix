@@ -1,10 +1,8 @@
-import { CalenderInputIcon, TimeIcon } from "@/assets";
-import { TPatient } from "@/types/patient";
+import { Patient } from "@/types/patient";
 import { calculateAge } from "@/utils/formatDateTime";
-import Image from "next/image";
 
 interface DentistDetailsProps {
-  patientDetails?: TPatient;
+  patientDetails?: Patient;
 }
 
 export default function DentistDetails({
@@ -25,7 +23,7 @@ export default function DentistDetails({
             <div className="flex items-center gap-2">
               <p className="flex-[20%] text-xl">
                 Name:{" "}
-                <span className="font-medium">{patientDetails.fullName}</span>
+                <span className="font-medium">{patientDetails.name}</span>
               </p>
               <div className="flex-[30%] text-xl text-left truncate">
                 Email:{" "}
@@ -46,15 +44,9 @@ export default function DentistDetails({
               <p className="flex-[20%] text-xl">
                 Phone:{" "}
                 <span className="font-medium">
-                  {patientDetails.phoneNumber}
+                  {patientDetails.mobileNumber}
                 </span>
               </p>
-              {patientDetails.gender &&
-                <p className="flex-[30%] text-xl">
-                  Gender:{" "}
-                  <span className="font-medium">{patientDetails.gender}</span>
-                </p>
-              }
               <p className="flex-[20%]"></p>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { DENTALLY_ENDPOINTS } from "./config/api-config";
 
 const secret = process.env.NEXTAUTH_SECRET; // required for getToken
 
@@ -8,22 +9,13 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   console.log("pathname ", pathname)
   // Define public routes
-  const patientPublic = ["/patient/login", "/patient/register"];
-  const dentistPublic = ["/dentist/login", "/dentist/register"];
+  const patientPublic = ["/patient/login", "/patient/otp-verify", "/patient/register"];
+  const dentistPublic = ["/dentist/login", "/dentist/otp-verify", "/dentist/register"];
   const clinicPublic = ["/clinic/login", "/clinic/register"];
 
   // Dentist role-based route permissions
   const dentistAllowedRoutes: Record<string, string[]> = {
-    DENTIST: [
-      "/dentist/appointments",
-      "/dentist/appointments/upcoming",
-      "/dentist/appointments/past",
-      "/dentist/referral-request",
-      "/dentist/referral-history",
-      "/dentist/loyalty-points",
-      "/dentist/profile",
-    ],
-    RECIEVING_DENTIST: [
+    DENTALLY_PRACTITIONER: [
       "/dentist/appointments",
       "/dentist/appointments/upcoming",
       "/dentist/appointments/past",
@@ -31,6 +23,7 @@ export async function middleware(request: NextRequest) {
       "/dentist/profile",
     ],
     REFERRING_DENTIST: [
+      "/dentist/appointments",
       "/dentist/referral-history",
       "/dentist/loyalty-points",
       "/dentist/profile",
@@ -62,8 +55,7 @@ export async function middleware(request: NextRequest) {
   }
   if (
     dentistPublic.includes(pathname) &&
-    (role === "DENTIST" ||
-      role === "RECIEVING_DENTIST" ||
+    (role === "DENTALLY_PRACTITIONER" ||
       role === "REFERRING_DENTIST")
   ) {
     return NextResponse.redirect(new URL("/dentist", request.url));
@@ -89,9 +81,7 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith("/dentist") &&
     !dentistPublic.includes(pathname) &&
-    !(
-      role === "DENTIST" ||
-      role === "RECIEVING_DENTIST" ||
+    !(role === "DENTALLY_PRACTITIONER" ||
       role === "REFERRING_DENTIST"
     )
   ) {
@@ -117,8 +107,7 @@ export async function middleware(request: NextRequest) {
 
   if (
     pathname.startsWith("/dentist") &&
-    (role === "DENTIST" ||
-      role === "RECIEVING_DENTIST" ||
+    (role === "DENTALLY_PRACTITIONER" ||
       role === "REFERRING_DENTIST")
   ) {
     const allowedRoutes = dentistAllowedRoutes[role] || [];

@@ -6,6 +6,93 @@ import { Prisma, Resource } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/resources:
+ *   get:
+ *     summary: Get resources with pagination and filters
+ *     tags: [Resources]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search resources by title
+ *       - in: query
+ *         name: fileType
+ *         schema:
+ *           type: string
+ *           enum: [PDF, VIDEO]
+ *         description: Filter by file type
+ *       - in: query
+ *         name: on
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter resources created on this date
+ *       - in: query
+ *         name: before
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter resources created before this date
+ *       - in: query
+ *         name: after
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter resources created after this date
+ *     responses:
+ *       200:
+ *         description: Resources fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Resources fetched successfully."
+ *               data:
+ *                 resources:
+ *                   pdfs:
+ *                     - id: "res_01HXYZ1234ABCDE"
+ *                       title: "Root Canal Guide"
+ *                       fileUrl: "https://example.com/resources/root-canal-guide.pdf"
+ *                       fileType: "PDF"
+ *                   videos:
+ *                     - id: "res_01HXYZ1234ABCDF"
+ *                       title: "Implant Procedure"
+ *                       fileUrl: "https://example.com/resources/implant-procedure.mp4"
+ *                       fileType: "VIDEO"
+ *                 pagination:
+ *                   page: 1
+ *                   pdf:
+ *                     total: 12
+ *                     totalPages: 3
+ *                   video:
+ *                     total: 8
+ *                     totalPages: 2
+ *       404:
+ *         description: No resources found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No resources found."
+ *               data: null
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
+ */
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -79,7 +166,7 @@ export async function GET(req: NextRequest) {
     if (!resources.pdfs && !resources.videos) {
       return NextResponse.json(
         createResponse(false, "No resources found.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -88,7 +175,7 @@ export async function GET(req: NextRequest) {
         resources,
         pagination: { page, ...pagination },
       }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error in fetching resources", error);
@@ -110,7 +197,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (token.role !== TokenRoles.ADMIN) {
-      return NextResponse.json(createResponse(false, "Forbidde", null), {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
     }
@@ -122,10 +209,9 @@ export async function POST(req: NextRequest) {
     if (!resources.length) {
       return NextResponse.json(
         createResponse(false, "No resources provided", null),
-        { status: 400 }
+        { status: 400 },
       );
     }
-
 
     await prisma.resource.createMany({
       data: resources,
@@ -133,7 +219,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Resources created successfully.", null),
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.log("Error in creating resources ", error);

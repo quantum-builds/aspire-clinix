@@ -1,5 +1,6 @@
 import { axiosInstance, ENDPOINTS } from "@/config/api-config";
 import { TReferralRequest } from "@/types/referral-request";
+import { ReferralRequestStatus } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
 export const usePatchReferralRequest = () => {
@@ -31,6 +32,26 @@ export const useDeleteReferralRequests = () => {
         ENDPOINTS.referralRequest.delete(id)
       );
       return response.data.data;
+    },
+  });
+};
+
+export const useBindAppointmentToReferral = () => {
+  return useMutation({
+    mutationFn: async ({
+      referralRequestId,
+      appointmentId,
+      practitionerId,
+    }: {
+      referralRequestId: string;
+      appointmentId: string;
+      practitionerId: number;
+    }) => {
+      const response = await axiosInstance.patch(
+        ENDPOINTS.referralRequest.patch(referralRequestId),
+        { appointmentId, practitionerId, requestStatus: ReferralRequestStatus.ASSIGNED }
+      );
+      return response.data;
     },
   });
 };

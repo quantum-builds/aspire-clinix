@@ -4,25 +4,27 @@ import { AppointmentDateType } from "@/types/common";
 import { toCamel, toSnake } from "@/utils/typeConventionConvertor";
 import axios from "axios";
 
-
 export const ENDPOINTS = {
   auth: {
-    register: `/auth/register`,
+    register: `/api/auth/register`,
     dentallyPatientRegister: "/oauth/authorize",
     getAToken: "/oauth/token",
   },
 
   patient: {
-    createPatient: "/api/patient",
     getPatient: (email?: string) => `/api/patient?email=${email ?? null}`,
     getById: (id: string) => `/api/patient/${id}`,
     editPatient: `/api/patient`,
+    Verification: "/api/patient/verify",
+    familyMember: (familyId: string) =>
+      `/api/patient/family-member?familyId=${familyId}`,
   },
 
   dentist: {
     createDentist: "/api/referral-dentist",
     getDentist: `/api/referral-dentist`,
     editDentist: `/api/referral-dentist`,
+    verification: "/api/practitioner/verify",
   },
 
   admin: {
@@ -102,13 +104,18 @@ export const ENDPOINTS = {
   },
 
   resources: {
-    getAll: (page?: number, fileType?: string, search?: string, on?: string,
+    getAll: (
+      page?: number,
+      fileType?: string,
+      search?: string,
+      on?: string,
       before?: string,
-      after?: string,) =>
+      after?: string,
+    ) =>
       `/api/resources?page=${page}&fileType=${fileType}&search=${search}&on=${on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}`,
     create: "/api/resources",
-    delete: (id: string) => `/api/resources/${id}`
+    delete: (id: string) => `/api/resources/${id}`,
   },
 
   practices: {
@@ -121,21 +128,27 @@ export const ENDPOINTS = {
 
   appointemt: {
     get: (
+      practitionerId?: string,
+      updatedAfte?: string,
+      state?: string,
+      siteId?: string,
       page?: number,
+      perPage?: number,
       search?: string,
       on?: string,
       before?: string,
       after?: string,
       dateType?: AppointmentDateType | null,
-      status?: string
+      status?: string,
     ) =>
-      `/api/appointments?page=${page ?? 1}&search=${search ?? ""}&on=${on ?? ""
+      `/api/appointments?page=${page ?? 1}&perPage=${perPage ?? 20}&search=${search ?? ""}&on=${on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}&dateType=${dateType ?? ""
-      }&status=${status ?? ""}`,
+      }&status=${status ?? ""}&practitioner_id=${practitionerId ?? ""}&site_id=${siteId}
+      &state${state}&updatedAfte${updatedAfte}`,
     post: "/api/appointments",
-    patch: (id: string) =>
-      `/api/appointments/${id}`,
+    patch: (id: number) => `/api/appointments/${id}`,
     getById: (id: string) => `/api/appointments/${id}`,
+    getByPatientName: (patientName: string) => `/api/appointments/patient?patientName=${patientName}`,
   },
 
   dentistToPractice: {
@@ -156,7 +169,7 @@ export const ENDPOINTS = {
       appointmentId?: string,
       on?: string,
       before?: string,
-      after?: string
+      after?: string,
     ) =>
       `/api/reports?search=${search ?? ""}&appointmentId=${appointmentId ?? ""
       }&on=${on ?? ""}&before=${before ?? ""}&after=${after ?? ""}`,
@@ -186,7 +199,7 @@ export const ENDPOINTS = {
       on?: string,
       before?: string,
       after?: string,
-      status?: string
+      status?: string,
     ) =>
       `/api/appointment-requests?page=${page ?? 1}&search=${search ?? ""}&on=${on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}`,
@@ -219,28 +232,30 @@ export const DENTALLY_ENDPOINTS = {
   practitioner: {
     get: (practitionerId: string) => `practitioners/${practitionerId}`,
     edit: (practitionerId: string) => `practitioners/${practitionerId}`,
-    list: (dentallyParams: URLSearchParams) => `practitioners?${dentallyParams.toString()}`
+    list: (site_id: string) => `practitioners?siteId=${site_id.toString()}`,
   },
   appointment: {
     create: "appointments",
     list: (params?: ListAppointment): string => {
       return `appointments${buildAppointmentQuery(params)}`;
     },
-  }
+    get: (id: string) => `appointments/${id}`,
+    delete: (id: string) => `appointments/${id}`,
+    edit: (id: string) => `appointments/${id}`,
+  },
 };
 
 const DENTALLY_BASE_URL = process.env.DENTALLY_ENDPOINT;
-const DENTALLY_TOKEN = process.env.DENTALLY_TOKEN
+const DENTALLY_TOKEN = process.env.DENTALLY_TOKEN;
 
 export const axiosDentallyInstance = axios.create({
   baseURL: DENTALLY_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${DENTALLY_TOKEN}`,
-    "User-Agent": "MyApp/1.0"
+    Authorization: `Bearer ${DENTALLY_TOKEN}`,
+    "User-Agent": "MyApp/1.0",
   },
 });
-
 
 axiosDentallyInstance.interceptors.request.use(async (config) => {
   if (config.data) {
@@ -250,6 +265,13 @@ axiosDentallyInstance.interceptors.request.use(async (config) => {
     config.params = toSnake(config.params);
   }
   return config;
+});
+
+axiosDentallyInstance.interceptors.response.use((response) => {
+  if (response.data) {
+    response.data = toCamel(response.data);
+  }
+  return response;
 });
 
 axiosInstance.interceptors.response.use((response) => {

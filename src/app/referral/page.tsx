@@ -4,6 +4,8 @@ import { Response } from "@/types/common";
 import { TPracticeResponse } from "@/types/practice";
 import { getPractices } from "@/services/practice/practiceQuery";
 
+export const dynamic = "force-dynamic";
+
 export default async function ReferralPage() {
   const heroBackgroundColor = "#DCD4C9";
   const herobuttonColor = "#ECE8E3";

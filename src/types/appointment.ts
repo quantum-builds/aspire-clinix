@@ -1,36 +1,57 @@
-import { AppointmentStatus } from "@prisma/client";
-import { TPatient } from "./patient";
-import { TDentist } from "./dentist";
+import { Patient, TPatient } from "./patient";
+import { TReport } from "./reports";
 
-export type TAppointmentCreate = {
-  patientId: string;
-  dentistId: string;
-  practiceId: string;
+export type TAppointment = {
+  id: number;
+  appointmentCancellationReasonId: number | null;
+  arrivedAt: string | null;
+  bookedViaApi: boolean;
+  cancelledAt: string | null;
+  completedAt: string | null;
+  confirmedAt: string | null;
+  createdAt: string;
+  didNotAttendAt: string | null;
+  duration: number;
+  finishTime: string;
+  importId: string | null;
+  inSurgeryAt: string | null;
+  metadata: Record<string, unknown>;
+  notes: string | null;
+  patientId: number;
+  patientImageUrl: string;
+  patientName: string;
+  paymentPlanId: number | null;
+  pendingAt: string | null;
+  practitionerId: number;
   reason: string;
-  state: AppointmentStatus;
-  date: Date;
-  startTime: Date;
-  finishTime: Date;
+  roomId: number | null;
+  startTime: string;
+  state: AppointmentState;
+  treatmentDescription: string | null;
+  updatedAt: string;
+  userId: number;
+  practitionerSiteId: string;
+  practitionerName: string;
+  uuid: string;
 };
 
-export type TAppointment = TAppointmentCreate & {
-  id: string;
-  patient: TPatient;
-  dentist: TDentist;
-};
+export type TChangeAppointmentState = {
+  state: AppointmentState
+}
 
 export type TAppointmentPagination = {
   total: number;
+  currentPage: number;
   totalPages: number;
-  page: number;
 };
 
 export type TAppointmentResponse = {
+  appointmentRequests: any;
   appointments: TAppointment[];
-  pagination: TAppointmentPagination;
+  meta: TAppointmentPagination;
 };
 
-// DENTALLY
+// DENTALLY TYPES
 
 export interface CreateAppointment {
   startTime: Date;
@@ -89,6 +110,8 @@ export interface Appointment {
 }
 
 export interface ListAppointment {
+  page?: number
+  perPage?: number
   on?: Date;
   before?: Date;
   after?: Date;
@@ -129,7 +152,7 @@ enum AppointmentReason {
   OTHER = "Other",
 }
 
-enum AppointmentState {
+export enum AppointmentState {
   PENDING = "Pending",
   CONFIRMED = "Confirmed",
   ARRIVED = "Arrived",
@@ -137,4 +160,10 @@ enum AppointmentState {
   COMPLETED = "Completed",
   CANCELLED = "Cancelled",
   DIDNOTATTEND = "Did not attend",
+}
+
+export interface TAppointmentDetail {
+  appointment: TAppointment
+  reports: { pdfs?: TReport[]; videos?: TReport[] };
+  patient: Patient | null
 }

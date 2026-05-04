@@ -109,6 +109,7 @@ export default function TopBar({
       <UserMenu
         profileLink={profileLink}
         onLogout={() => setIsCancelModalOpen(true)}
+      
       />
 
       <ConfirmationModal

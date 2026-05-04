@@ -1,3 +1,4 @@
+import { TokenRoles } from "@/constants/UserRoles";
 import { UserRoles } from "@/types/common";
 import { useMutation } from "@tanstack/react-query";
 import { signIn } from "next-auth/react";
@@ -5,18 +6,36 @@ import { signIn } from "next-auth/react";
 export const loginMutation = () => {
   return useMutation({
     mutationFn: async ({
+      patientId,
       email,
+      otp,
       password,
+      firstName,
+      lastName,
+      mobilePhone,
+      dateOfBirth,
       role,
     }: {
-      email: string;
-      password: string;
-      role: UserRoles;
+      patientId?: string;
+      email?: string;
+      otp?: string;
+      password?: string
+      firstName?: string
+      lastName?: string
+      mobilePhone?: string
+      dateOfBirth?: string
+      role?: TokenRoles;
     }) => {
       const result = await signIn("credentials", {
         redirect: false,
+        patientId,
         email,
+        otp,
         password,
+        firstName,
+        lastName,
+        mobilePhone,
+        dateOfBirth,
         role,
       });
 

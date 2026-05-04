@@ -5,8 +5,7 @@ import Image from "next/image";
 import { TAppointment } from "@/types/appointment";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
-import { useState } from "react";
-import AppointmentDetailsModal from "../../components/AppointmentDetailsModal";
+import StatusBage from "@/app/(dashboards)/components/StatusBadge";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -15,7 +14,7 @@ interface UpcomingAppointmentCardProps {
 export default function PastAppointmentCard({
   appointment,
 }: UpcomingAppointmentCardProps) {
-  const [openDetailsModal, setOpenDetailsModal] = useState(false);
+  // const [openDetailsModal, setOpenDetailsModal] = useState(false);
 
   return (
     <>
@@ -27,7 +26,7 @@ export default function PastAppointmentCard({
               alt="Calendar Icon"
               className="w-4 h-4"
             />
-            <p className="text-lg">{formatDate(appointment.date)}</p>
+            <p className="text-lg">{formatDate(appointment.startTime)}</p>
           </div>
           <div className="flex items-center gap-1">
             <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />
@@ -40,12 +39,10 @@ export default function PastAppointmentCard({
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex justify-between items-center">
-            <p className="italic text-green font-medium text-xl">
-              Status: {appointment.state}
-            </p>
-          </div>
-          <AppointmentDetailsModal
+          <p className="text-lg flex gap-1 items-center">
+            Status: <StatusBage status={appointment.state} />
+          </p>
+          {/* <AppointmentDetailsModal
             appointment={appointment}
             trigger={
               <p
@@ -57,7 +54,7 @@ export default function PastAppointmentCard({
             }
             open={openDetailsModal}
             onClose={() => setOpenDetailsModal(false)}
-          />
+          /> */}
         </div>
 
         <div className="flex justify-between items-center mt-7">
@@ -66,7 +63,7 @@ export default function PastAppointmentCard({
             href={`/patient/appointments/${appointment.id}/reports`}
           />
           <p className="text-[17px] text-green font-semibold">
-            Appointment with {appointment.dentist.fullName}
+            Appointment with {appointment.practitionerName}
           </p>
         </div>
       </div>

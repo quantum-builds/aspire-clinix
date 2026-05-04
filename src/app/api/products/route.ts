@@ -4,6 +4,112 @@ import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     summary: Get products
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of products per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search products by name
+ *     responses:
+ *       200:
+ *         description: Products fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Products fetched successfully."
+ *               data:
+ *                 products:
+ *                   - id: "ckx1r2a3b0001s2v1b1b2c3d4"
+ *                     name: "Whitening Toothpaste"
+ *                     productId: "PROD-001"
+ *                     price: 12.99
+ *                     stock: 50
+ *                     ratings: 4.8
+ *                     imageUrl: "https://example.com/images/whitening-toothpaste.jpg"
+ *                     createdAt: "2026-04-29T10:00:00.000Z"
+ *                     updatedAt: "2026-04-29T10:00:00.000Z"
+ *                 pagination:
+ *                   page: 1
+ *                   limit: 10
+ *                   total: 42
+ *                   totalPages: 5
+ *       404:
+ *         description: No products found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "No products found."
+ *               data: null
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
+ *   post:
+ *     summary: Create a product
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Product created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               message: "Product created successfully."
+ *               data: null
+ *       400:
+ *         description: Product already exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Product already exist"
+ *               data: null
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: false
+ *               message: "Internal Server Error"
+ *               data: null
+ */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -31,7 +137,7 @@ export async function GET(req: Request) {
     if (!products || !total) {
       return NextResponse.json(
         createResponse(false, "No products found.", null),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -45,7 +151,7 @@ export async function GET(req: Request) {
           totalPages: Math.ceil(total / limit),
         },
       }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error in fetching products", error);
@@ -76,7 +182,7 @@ export async function POST(req: NextRequest) {
         createResponse(false, "Product already exist", null),
         {
           status: 400,
-        }
+        },
       );
     }
 
@@ -86,7 +192,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       createResponse(true, "Product created successfully.", null),
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.log("Error in creating product ", error);

@@ -1,49 +1,78 @@
-import { createResponse } from "@/utils/createResponse"
-import { NextResponse } from "next/server"
+import { createResponse } from "@/utils/createResponse";
+import { NextResponse } from "next/server";
 
 export enum DATA_TYPE {
-    PATIENT = "paient",
-    PATIENTS = "patients",
-    APPOINTMENT = "appointment",
-    PRACTITIONER = "practitioner",
-    PRACTITIONERS = "practitioners"
+  PATIENT = "patient",
+  PATIENTS = "patients",
+  APPOINTMENT = "appointment",
+  APPOINTMENTS = "appointments",
+  PRACTITIONER = "practitioner",
+  PRACTITIONERS = "practitioners",
 }
 
 const DATA_TYPE_KEY_MAP: Record<DATA_TYPE, string> = {
-    [DATA_TYPE.PATIENT]: "patient",
-    [DATA_TYPE.APPOINTMENT]: "appointment",
-    [DATA_TYPE.PATIENTS]:"patients",
-    [DATA_TYPE.PRACTITIONER]:"practitioner",
-    [DATA_TYPE.PRACTITIONERS]:"practitioners",
-}
+  [DATA_TYPE.PATIENT]: "patient",
+  [DATA_TYPE.APPOINTMENT]: "appointment",
+  [DATA_TYPE.APPOINTMENTS]: "appointments",
+  [DATA_TYPE.PATIENTS]: "patients",
+  [DATA_TYPE.PRACTITIONER]: "practitioner",
+  [DATA_TYPE.PRACTITIONERS]: "practitioners",
+};
 
-export function dentallyErrorHelper(data: any, type: DATA_TYPE) {
-    const error = data?.error
+type ErrorResult = {
+  isError: true;
+  response: NextResponse;
+};
 
-    if (error) {
-        if (error.type === "invalid_access_error") {
-            return {
-                isError: true,
-                response: NextResponse.json(
-                    createResponse(false, "Forbidden", null),
-                    { status: 403 }
-                ),
-            }
-        }
+type SuccessResult = {
+  isError: false;
+  response: {
+    [key: string]: any;
+    meta: any;
+  };
+};
 
-        // invalid_request_error or anything else
-        return {
-            isError: true,
-            response: NextResponse.json(
-                createResponse(false, "Resource not found", null),
-                { status: 404 }
-            ),
-        }
+type DentallyErrorResult = ErrorResult | SuccessResult;
+
+export function dentallyErrorHelper(
+  data: any,
+  type?: DATA_TYPE
+): DentallyErrorResult {
+  const error = data?.error;
+
+  if (error) {
+    if (error.type === "invalid_access_error") {
+      return {
+        isError: true,
+        response: NextResponse.json(createResponse(false, "Forbidden", null), {
+          status: 403,
+        }),
+      };
     }
 
-    const responseKey = DATA_TYPE_KEY_MAP[type]
     return {
-        isError: false,
-        response: data?.[responseKey] ?? null,
-    }
+      isError: true,
+      response: NextResponse.json(
+        createResponse(false, "Resource not found", null),
+        { status: 404 }
+      ),
+    };
+  }
+
+  const responseKey = type ? DATA_TYPE_KEY_MAP[type] : null;
+
+  if (!responseKey) {
+    return {
+      isError: false,
+      response: { meta: null },
+    };
+  }
+
+  return {
+    isError: false,
+    response: {
+      [responseKey]: data?.[responseKey] ?? null,
+      meta: data?.meta ?? null,
+    },
+  };
 }

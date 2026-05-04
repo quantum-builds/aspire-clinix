@@ -27,11 +27,6 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
         href: "/clinic/appointments/upcoming",
       },
       { name: "Past", icon: InActiveIcon, href: "/clinic/appointments/past" },
-      {
-        name: "Requests",
-        icon: InActiveIcon,
-        href: "/clinic/appointments/requests",
-      },
     ],
   },
   {
@@ -51,33 +46,7 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
       },
       { name: "Letters", icon: InActiveIcon, href: "/clinic/resources/letters" },
     ],
-  },
-  {
-    name: "Plans & Packages",
-    icon: PlansIcon,
-    pages: [
-      {
-        name: "Plans",
-        icon: InActiveIcon,
-        href: "/clinic/plans",
-      },
-      {
-        name: "Subscriptions",
-        icon: InActiveIcon,
-        href: "/clinic/subscriptions",
-      },
-    ],
-  },
-  {
-    name: "Store",
-    icon: StoreIcon,
-    href: "/clinic/store",
-  },
-  {
-    name: "Practice",
-    icon: PracticeIcon,
-    href: "/clinic/practice",
-  },
+  }
 ];
 
 export default async function ClinicLayout({
