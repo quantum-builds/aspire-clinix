@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { UserRoles } from "@/types/common";
 import { useState } from "react";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { TokenRoles } from "@/constants/UserRoles";
 
 export const adminSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -49,7 +50,7 @@ export default function AdminLoginForm() {
       {
         email: data.email,
         password: data.password,
-        role: UserRoles.ADMIN,
+        role: TokenRoles.ADMIN,
       },
       {
         onSuccess: () => {

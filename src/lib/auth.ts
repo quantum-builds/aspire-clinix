@@ -56,7 +56,7 @@ export const authOptions: AuthOptions = {
           if (!isValid) throw new Error("Invalid credentials");
 
           return {
-            id: user.id,
+            id: String(user.id),
             email: user.email,
             role: TokenRoles.ADMIN,
             name: user.fullName,
@@ -87,7 +87,7 @@ export const authOptions: AuthOptions = {
           }
 
           return {
-            id: patient.dentallyId,
+            id: String(patient.dentallyId),
             email: patient.email,
             role: TokenRoles.PATIENT,
             name: patient.name,
@@ -120,7 +120,7 @@ export const authOptions: AuthOptions = {
 
           const fullName = `${dentist.firstName} ${dentist.lastName}`.trim();
           return {
-            id: dentist.role === DentistRole.DENTALLY_PRACTITIONER && dentist.dentallyId ? dentist.dentallyId : dentist.id,
+            id: String(dentist.role === DentistRole.DENTALLY_PRACTITIONER && dentist.dentallyId ? dentist.dentallyId : dentist.id),
             email: dentist.email,
             role: dentist.role,
             name: fullName,

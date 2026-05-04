@@ -221,8 +221,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (
-      token.role === TokenRoles.DENTIST ||
-      token.role === TokenRoles.RECIEVING_DENTIST ||
+      token.role === TokenRoles.DENTALLY_PRACTITIONER ||
       token.role === TokenRoles.REFERRING_DENTIST
     ) {
       const dentistId = token.sub;
@@ -314,7 +313,7 @@ export async function PATCH(req: NextRequest) {
 
     const existingDentist = await prisma.dentist.findFirst({
       where: {
-        OR: [{ email: email }, { phoneNumber: phoneNumber }, { gdcNo: gdc }],
+        OR: [{ email: email }, { gdcNo: gdc }],
       },
     });
 
@@ -344,8 +343,6 @@ export async function PATCH(req: NextRequest) {
 
     if (existingDentist) {
       if (existingDentist.email === email) conflicts.push("email");
-      if (existingDentist.phoneNumber === phoneNumber)
-        conflicts.push("phone number");
       if (existingDentist.gdcNo === gdc) conflicts.push("GDC number");
     }
 

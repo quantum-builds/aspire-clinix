@@ -5,7 +5,7 @@ import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { CalenderInputIconV2, CancelIcon, DropDownIcon, TimeIcon, TimeIconV2 } from "@/assets";
 import { useChangeAppointmentState } from "@/services/appointments/appointmentMutation";
-import { TAppointment } from "@/types/appointment";
+import { AppointmentState, TAppointment } from "@/types/appointment";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
 import { AppointmentStatus } from "@prisma/client";
 import Image from "next/image";
@@ -30,7 +30,7 @@ export default function AppointmentCard({
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] =
-    useState<AppointmentStatus | null>(null);
+    useState<AppointmentState | null>(null);
   const router = useRouter();
   const { mutate: updateAppointment, isPending: updateAppointmentLoader } =
     useChangeAppointmentState();
@@ -46,10 +46,10 @@ export default function AppointmentCard({
         onSuccess: () => {
 
           router.refresh()
-          if (selectedStatus === "CANCELLED") {
+          if (selectedStatus === AppointmentState.CANCELLED) {
             if (role === TokenRoles.ADMIN)
               router.replace(`/clinic/referrals?ts=${Date.now()}`)
-            else if (role === TokenRoles.DENTIST || role === TokenRoles.RECIEVING_DENTIST)
+            else if (role === TokenRoles.DENTALLY_PRACTITIONER)
               router.replace(`/dentist/referral-request?ts=${Date.now()}`)
           }
           setIsUpdateModalOpen(false);
@@ -69,14 +69,14 @@ export default function AppointmentCard({
     )
   };
 
-  const statusOptions: AppointmentStatus[] = [
-    AppointmentStatus.COMPLETED,
-    AppointmentStatus.CONFIRMED,
-    // AppointmentStatus.CANCELLED,
-    AppointmentStatus.DID_NOT_ATTEND,
-    AppointmentStatus.ARRIVED,
-    AppointmentStatus.IN_SURGERY,
-    AppointmentStatus.PENDING
+  const statusOptions: AppointmentState[] = [
+    AppointmentState.COMPLETED,
+    AppointmentState.CONFIRMED,
+    AppointmentState.CANCELLED,
+    AppointmentState.DIDNOTATTEND,
+    AppointmentState.ARRIVED,
+    AppointmentState.INSURGERY,
+    AppointmentState.PENDING
   ];
   return (
     <div className="bg-dashboardBarBackground rounded-2xl p-6 space-y-10">
@@ -94,7 +94,7 @@ export default function AppointmentCard({
               <div className="flex gap-3 items-center">
                 <p className="flex items-center gap-2 text-xl">
                   <Image src={CalenderInputIconV2} alt="Calender Icon" />
-                  {formatDate(appointment.date)}
+                  {formatDate(appointment.startTime)}
                 </p>
                 <p className="flex items-center gap-2 text-xl">
                   <Image src={TimeIconV2} alt="Time icon" />
@@ -107,7 +107,7 @@ export default function AppointmentCard({
                 Status: {appointment.state}
               </p>
             </div>
-            {appointment.state !== AppointmentStatus.PENDING &&
+            {appointment.state !== AppointmentState.PENDING &&
               <div className="flex justify-between items-center mt-2">
                 <div className="flex gap-1 items-center">
                   <p className="text-lg flex gap-1 items-center">
@@ -122,7 +122,7 @@ export default function AppointmentCard({
                     }))}
                     value={selectedStatus || ""}
                     onValueChange={(newStatus) => {
-                      setSelectedStatus(newStatus as AppointmentStatus);
+                      setSelectedStatus(newStatus as AppointmentState);
                       setIsUpdateModalOpen(true);
                     }}
                     placeholder="Select Status"
@@ -138,13 +138,13 @@ export default function AppointmentCard({
           <div className="flex justify-between items-end">
             {/* <Button text="See reports" href={`/dentist/appointments/${appointment.id}/reports`} /> */}
             <div className="flex justify-between w-full">
-              {appointment.state === AppointmentStatus.PENDING &&
+              {appointment.state === AppointmentState.PENDING &&
                 <div className="flex items-center gap-2 w-full mt-7">
                   {role !== TokenRoles.ADMIN &&
                     <CustomButton
                       text="Confirm Appointment"
                       handleOnClick={() => {
-                        setSelectedStatus(AppointmentStatus.CONFIRMED)
+                        setSelectedStatus(AppointmentState.CONFIRMED)
                         setIsCOnfirmModelOpen(true)
                       }
                       }
@@ -152,7 +152,7 @@ export default function AppointmentCard({
                   }
                   <CustomButton
                     handleOnClick={() => {
-                      setSelectedStatus(AppointmentStatus.CANCELLED)
+                      setSelectedStatus(AppointmentState.CANCELLED)
                       setIsCancelModalOpen(true)
                     }
                     }
@@ -162,7 +162,7 @@ export default function AppointmentCard({
                   />
                 </div>
               }
-              {appointment.state !== AppointmentStatus.PENDING &&
+              {appointment.state !== AppointmentState.PENDING &&
                 <div className="flex items-center gap-2 w-full mt-7">
                   <CustomButton
                     text="See Reports"
@@ -170,7 +170,7 @@ export default function AppointmentCard({
                   />
                   <CustomButton
                     handleOnClick={() => {
-                      setSelectedStatus(AppointmentStatus.CANCELLED)
+                      setSelectedStatus(AppointmentState.CANCELLED)
                       setIsCancelModalOpen(true)
                     }
                     }
@@ -182,7 +182,7 @@ export default function AppointmentCard({
               }
             </div>
             <p className="font-medium italic text-xl text-green text-nowrap">
-              Assigned to {appointment.dentist.fullName}
+              Assigned to {appointment.practitionerName}
             </p>
           </div>
         </div>

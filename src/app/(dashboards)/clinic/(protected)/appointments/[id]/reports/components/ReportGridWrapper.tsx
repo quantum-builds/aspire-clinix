@@ -4,7 +4,7 @@ import VideoReportGrid from "@/app/(dashboards)/components/VideoReportGrid";
 import { Response } from "@/types/common";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import { Patient, TPatient } from "@/types/patient";
-import { TDentist } from "@/types/dentist";
+import { Dentist, TDentist } from "@/types/dentist";
 import { TAppointmentDetail } from "@/types/appointment";
 import { getAppointment } from "@/services/appointments/appointmentQuery";
 
@@ -31,7 +31,7 @@ export default async function ReportGridWrapper({
   const videos = response.data.reports.videos;
 
   let patient: Patient | null = null,
-    dentist: TDentist | undefined = undefined;
+    dentist: Dentist | undefined = undefined;
 
   const source = pdfs?.[0] || videos?.[0];
 

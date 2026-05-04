@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
 
     if (
       token.role === TokenRoles.PATIENT ||
-      token.role === TokenRoles.RECIEVING_DENTIST
+      token.role === TokenRoles.DENTALLY_PRACTITIONER
     ) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
@@ -145,8 +145,7 @@ export async function GET(req: NextRequest) {
 
       // if dentist or receiving dentist, and page-type=request
       if (
-        (token.role === TokenRoles.DENTIST ||
-          token.role === TokenRoles.REFERRING_DENTIST) &&
+        token.role === TokenRoles.REFERRING_DENTIST &&
         searchParams.get("page-type") === DentistReferralPageTYpe.HISTORY
       ) {
         (baseWhere.referralForm ??= {}).referralDentistId = token.sub;
@@ -236,8 +235,7 @@ export async function GET(req: NextRequest) {
         : undefined;
     let referringDentist = null;
     if (
-      (pageType === DentistReferralPageTYpe.HISTORY &&
-        token.role === TokenRoles.DENTIST) ||
+      pageType === DentistReferralPageTYpe.HISTORY ||
       token.role === TokenRoles.REFERRING_DENTIST
     ) {
       referringDentist = token.sub;
@@ -245,9 +243,8 @@ export async function GET(req: NextRequest) {
 
     let recievingDentist = null;
     if (
-      (pageType === DentistReferralPageTYpe.REQUEST &&
-        token.role === TokenRoles.DENTIST) ||
-      token.role === TokenRoles.RECIEVING_DENTIST
+      (pageType === DentistReferralPageTYpe.REQUEST ) ||
+      token.role === TokenRoles.DENTALLY_PRACTITIONER
     ) {
       recievingDentist = token.sub;
     }

@@ -25,7 +25,7 @@ export default function AssignedAppointmentCard({
               <div className="flex gap-3 items-center">
                 <p className="flex items-center gap-2 text-xl">
                   <Image src={CalenderGreenIcon} alt="Calender Icon" />
-                  {formatDate(appointment.date)}
+                  {formatDate(appointment.startTime)}
                 </p>
                 <p className="flex items-center gap-2 text-xl">
                   <Image src={TimeIcon} alt="Time icon" />
@@ -42,7 +42,7 @@ export default function AssignedAppointmentCard({
           <div className="flex justify-between items-end">
             <Button text="See reports" href={`/dentist/appointments/${appointment.id}/reports`} />
             <p className="font-medium italic text-xl text-green">
-              Assigned to {appointment.dentist.fullName}
+              Assigned to {appointment.practitionerName}
             </p>
           </div>
         </div>
