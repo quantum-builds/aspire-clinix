@@ -9,16 +9,23 @@ import { TReport } from "@/types/reports";
 import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { ResoucrceType } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ReportRecipient } from "@/types/reports";
 import { useState } from "react";
 
 interface ReportGridProps {
   appointment: TAppointment;
-  videoReports?: TReport[]
-  pdfReports?: TReport[]
+  videoReports?: TReport[];
+  pdfReports?: TReport[];
+  recipientType?: string; // 'PATIENT' | 'REFERRING_DENTIST'
 }
 
-export default function ReportGrid({ appointment, videoReports = [], pdfReports = [] }: ReportGridProps) {
+export default function ReportGrid({
+  appointment,
+  videoReports = [],
+  pdfReports = [],
+  recipientType,
+}: ReportGridProps) {
   const router = useRouter();
   const { mutate: createReport, isPending: createReportLoader } =
     useCreateReport();
@@ -27,6 +34,9 @@ export default function ReportGrid({ appointment, videoReports = [], pdfReports 
 
   const [uploadedPdfs, setUploadedPdfs] = useState<File[]>([]);
   const [uploadedVideos, setUploadedVideos] = useState<File[]>([]);
+  const searchParams = useSearchParams();
+  const recipientTypeFromParams =
+    (searchParams?.get("recipientType") as string) ?? "PATIENT";
 
   const handlePdfSelect = (file: File) => {
     setUploadedPdfs((prev) => [...prev, file]);
@@ -56,7 +66,7 @@ export default function ReportGrid({ appointment, videoReports = [], pdfReports 
           selectedFile: file,
           fileType: ResoucrceType.PDF,
         });
-        console.log("appointment in repor is ", appointment)
+        console.log("appointment in report(PDF) is ", appointment);
 
         return {
           title: file.name,
@@ -64,6 +74,7 @@ export default function ReportGrid({ appointment, videoReports = [], pdfReports 
           fileType: ResoucrceType.PDF,
           patientDentallyId: String(appointment.patientId),
           appointmentId: String(appointment.id),
+          recipientType: recipientTypeFromParams as ReportRecipient,
         };
       });
 
@@ -73,7 +84,7 @@ export default function ReportGrid({ appointment, videoReports = [], pdfReports 
           selectedFile: file,
           fileType: ResoucrceType.VIDEO,
         });
-        console.log("appointment in repor is ", appointment)
+        console.log("appointment in report is ", appointment);
 
         return {
           title: file.name,
@@ -81,25 +92,26 @@ export default function ReportGrid({ appointment, videoReports = [], pdfReports 
           fileType: ResoucrceType.VIDEO,
           patientDentallyId: String(appointment.patientId),
           appointmentId: String(appointment.id),
+          recipientType: recipientTypeFromParams as ReportRecipient,
         };
       });
 
       const reports = await Promise.all([...pdfPromises, ...videoPromises]);
-      console.log("Reports are ", reports)
+      console.log("Reports are ", reports);
       createReport(
         { reports },
         {
           onSuccess: () => {
             showToast("success", "Reports uploaded successfully");
             router.replace(
-              `/dentist/appointments/${appointment.id}/reports?ts=${Date.now()}`
+              `/dentist/appointments/${appointment.id}/reports?ts=${Date.now()}`,
             );
           },
           onError: (error) => {
             const msg = getAxiosErrorMessage(error);
             showToast("error", msg);
           },
-        }
+        },
       );
     } catch (error) {
       console.error("Error in handleOnSave: ", error);

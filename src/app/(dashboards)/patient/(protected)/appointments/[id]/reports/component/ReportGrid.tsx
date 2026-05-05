@@ -7,6 +7,7 @@ import { Dentist, TDentist } from "@/types/dentist";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import { TAppointmentDetail } from "@/types/appointment";
 import { getAppointment } from "@/services/appointments/appointmentQuery";
+import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 
 interface ResourceGridWrapperProps {
   query: string;
@@ -20,6 +21,7 @@ interface ReportGridProps {
 }
 
 export default async function ReportGridWrapper({
+
   appointmentId,
 }: ResourceGridWrapperProps) {
   const response: Response<TAppointmentDetail> = await getAppointment(appointmentId);
@@ -62,6 +64,7 @@ export function ReportGrid({
   return (
     <div className="flex flex-col gap-7 bg-dashboardBackground">
       <DentistDetails dentistDetails={dentistDetails} />
+      
       <div className="flex flex-col gap-10 bg-dashboardBarBackground rounded-2xl p-6">
         <VideoReportGrid reports={videoReports} />
         <LetterReportGrid reports={letterReports} />

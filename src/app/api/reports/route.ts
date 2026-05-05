@@ -149,11 +149,11 @@ export async function GET(req: NextRequest) {
     const baseWhere: Prisma.ReportWhereInput = {
       ...(search
         ? {
-          title: {
-            contains: search,
-            mode: "insensitive" as Prisma.QueryMode,
-          },
-        }
+            title: {
+              contains: search,
+              mode: "insensitive" as Prisma.QueryMode,
+            },
+          }
         : {}),
       ...(dentistId ? { dentistId } : {}),
       ...(patientDentallyId ? { patientDentallyId } : {}),
@@ -238,9 +238,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    if (
-      token.role !== TokenRoles.DENTALLY_PRACTITIONER
-    ) {
+    if (token.role !== TokenRoles.DENTALLY_PRACTITIONER) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
@@ -250,7 +248,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const reports = Array.isArray(body) ? body : [body];
-    console.log("reports are ", reports)
+    console.log("reports are ", reports);
     // define a set for appointmentIds to check if the appointmentId in each report belongs to the dentist
     const appointmentIdsSet = new Set<string>();
     reports.forEach((report) => {
@@ -301,7 +299,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-
     const dentist = await prisma.dentist.findFirst({
       where: {
         dentallyId: Number(dentistId),
@@ -310,7 +307,7 @@ export async function POST(req: NextRequest) {
         },
       },
     });
-    console.log("appointment id ", appointmentId)
+    console.log("appointment id ", appointmentId);
 
     if (!dentist) {
       return NextResponse.json(
@@ -319,16 +316,49 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const reportsToCreate = reports.map((r) => ({
-      ...r,
-      dentistId: dentist.id,
-    }));
-
-    console.log("report to create ", reportsToCreate)
-
-    await prisma.report.createMany({
-      data: reportsToCreate,
+    const patientDentallyIds = Array.from(
+      new Set(reports.map((r) => r.patientDentallyId)),
+    );
+    const dentallyNumbers = patientDentallyIds.map((d) => Number(d));
+    const patients = await prisma.patient.findMany({
+      where: { dentallyId: { in: dentallyNumbers } },
+      select: { id: true, dentallyId: true },
     });
+    const dentallyToPatientId = new Map<number, string>();
+    for (const p of patients) {
+      dentallyToPatientId.set(Number(p.dentallyId ?? 0), p.id);
+    }
+
+    const missing = dentallyNumbers.filter((n) => !dentallyToPatientId.has(n));
+    if (missing.length) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          `Patients not found for dentallyIds: ${missing.join(", ")}`,
+          null,
+        ),
+        { status: 400 },
+      );
+    }
+
+    const reportsToCreateTyped: Prisma.ReportCreateManyInput[] = reports.map(
+      (r) => ({
+        dentistId: dentist.id,
+        patientDentallyId: r.patientDentallyId,
+        appointmentId: r.appointmentId,
+        title: r.title ?? "Report",
+        fileUrl: r.fileUrl ?? "",
+        fileType:
+          (r.fileType as Prisma.ReportCreateManyInput["fileType"]) ?? "PDF",
+        recipientType:
+          (r.recipientType as Prisma.ReportCreateManyInput["recipientType"]) ,
+       
+      }),
+    );
+
+    console.log("report to create--- ", reportsToCreateTyped);
+
+    await prisma.report.createMany({ data: reportsToCreateTyped });
     return NextResponse.json(
       createResponse(true, "Reports created successfully.", null),
       { status: 201 },
