@@ -6,6 +6,7 @@ import {
   getPatient,
   getPatientById,
   getPatients,
+  patchPatientById,
 } from "@/dentallyHelpers/patient";
 
 export const dynamic = "force-dynamic";
@@ -156,6 +157,52 @@ export async function GET(req: NextRequest) {
     }
   } catch (error) {
     console.log("Error in fetching patients ", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(createResponse(false, errorMessage, null), {
+      status: 500,
+    });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const token = await getToken({ req });
+
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
+    const payload = await req.json();
+
+    if (token.role === TokenRoles.PATIENT) {
+      const patientDentallyId = token.sub ?? "";
+
+      if (!payload || Object.keys(payload).length === 0) {
+        return NextResponse.json(
+          createResponse(false, "No fields to update provided", null),
+          { status: 400 },
+        );
+      }
+
+      const respose = await patchPatientById(patientDentallyId, payload);
+      if (respose.isError) {
+        return respose.response;
+      }
+
+      return NextResponse.json(
+        createResponse(true, "Patient updated successfully", respose.response),
+        { status: 200 },
+      );
+    }
+
+    // Only PATIENT role may update their own record
+    return NextResponse.json(createResponse(false, "Forbidden", null), {
+      status: 403,
+    });
+  } catch (error) {
+    console.log("Error in updating patient ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,
