@@ -16,23 +16,30 @@ export function buildReferralHtml(
     parts.push(`<div style="margin-bottom:12px">${body}</div>`);
   };
 
+  const rawBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+
   // Header
   if (recipient === "dentist") {
     parts.push(`<p>Hi ${referralForm.referralName ?? "Dentist"},</p>`);
-    parts.push(
-      `<p>A referral form has been submitted for your patient ${referralForm.patientName ?? "Patient"}.</p>`,
-    );
-    parts.push(
-      `<p>Please log in to your dashboard to review the referral details and manage the referral request.</p>`,
-    );
-    parts.push(`<p>Reference: ${referralId ?? "N/A"}</p>`);
+    if (isRegistered) {
+      parts.push(
+        `<p>You submitted a referral for ${referralForm.patientName ?? "Patient"}.</p>`,
+      );
+      parts.push(
+        `<p>Please log in to your dashboard to review the referral details and see any progress on the referral reuqest.</p>`,
+      );
+      parts.push(`<p>Reference: ${referralId ?? "N/A"}</p>`);
+    } else {
+      parts.push(
+        `<p>You submitted a referral for ${referralForm.patientName ?? "Patient"}.</p>`,
+      );
+      parts.push(
+        `<p>Please Register your account by following the link given below so that you an see the progress on the referral request.</p>`,
+      );
+      parts.push(`<p><a href="${rawBase}/dentist/register">Register</a></p>`);
+    }
   } else {
     // patient
-    const rawBase =process.env.NEXT_PUBLIC_API_BASE_URL ;
-     
-
-   
-
     parts.push(`<p>Hi ${referralForm.patientName ?? "Patient"},</p>`);
     if (isRegistered) {
       parts.push(

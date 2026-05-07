@@ -213,8 +213,8 @@ export async function POST(req: NextRequest) {
       isPatientRegistered = false;
     } else {
       return NextResponse.json(
-        createResponse(false, "No Account found", null),
-        { status: 404 },
+        createResponse(false, "Multiple accounts registered under this Patient. Contact with Aspire to resolve this issue", null),
+        { status: 400 },
       );
     }
 
@@ -246,6 +246,7 @@ export async function POST(req: NextRequest) {
       try {
         const dentistHtml = buildReferralHtml(referralForm, {
           recipient: "dentist",
+          isRegistered: isReferralDentistRegistered,
           referralId: referral.id,
         });
         await sendgrid.send({
@@ -260,10 +261,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Prepare patient email address
-    // Prepare patient email address
     const patientEmail = referralForm.patientEmail;
-
     if (patientEmail && process.env.EMAIL_FROM) {
       try {
         const patientHtml = buildReferralHtml(referralForm, {
