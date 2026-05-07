@@ -1,6 +1,5 @@
 import PatientRDentistDetails from "./PatientDentistDetails";
-import LetterReportGrid from "@/app/(dashboards)/components/LetterReportGrid";
-import VideoReportGrid from "@/app/(dashboards)/components/VideoReportGrid";
+import ClientReportGrid from "./ClientReportGrid";
 import { Response } from "@/types/common";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import { Patient, TPatient } from "@/types/patient";
@@ -40,7 +39,7 @@ export default async function ReportGridWrapper({
   if (source) {
     dentist = source.dentist;
   }
-  patient = response.data.patient
+  patient = response.data.patient;
 
   return (
     <>
@@ -48,10 +47,12 @@ export default async function ReportGridWrapper({
         patientDetials={patient}
         dentistDetails={dentist}
       />
-      <div className="flex flex-col gap-10 bg-dashboardBarBackground rounded-2xl p-6">
-        <VideoReportGrid reports={videos ?? []} />
-        <LetterReportGrid reports={pdfs ?? []} />
-      </div>
+      <ClientReportGrid
+        pdfs={pdfs}
+        videos={videos}
+        patient={patient}
+        dentist={dentist}
+      />
     </>
   );
 }

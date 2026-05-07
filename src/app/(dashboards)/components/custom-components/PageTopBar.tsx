@@ -90,10 +90,12 @@ export default function PageTopBar({
                   // ignore
                 }
               }}
+
               placeholder="Patient"
               placeholderClassName="text-gray-600"
               triggerClassName="border border-green rounded-full px-4 py-2 bg-white text-sm min-w-[160px] flex items-center justify-between"
               contentClassName="min-w-[220px] rounded-xl"
+              showClearOption={false}
             />
           )}
           {extraBtns}

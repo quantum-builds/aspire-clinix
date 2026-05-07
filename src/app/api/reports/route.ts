@@ -1,3 +1,4 @@
+import sendgrid from "@/config/sendgrid-config";
 import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
@@ -322,14 +323,21 @@ export async function POST(req: NextRequest) {
     const dentallyNumbers = patientDentallyIds.map((d) => Number(d));
     const patients = await prisma.patient.findMany({
       where: { dentallyId: { in: dentallyNumbers } },
-      select: { id: true, dentallyId: true },
+      select: { id: true, dentallyId: true, email: true, name: true },
     });
-    const dentallyToPatientId = new Map<number, string>();
+    const dentallyToPatient = new Map<
+      number,
+      { id: string; email: string; name: string }
+    >();
     for (const p of patients) {
-      dentallyToPatientId.set(Number(p.dentallyId ?? 0), p.id);
+      dentallyToPatient.set(Number(p.dentallyId ?? 0), {
+        id: p.id,
+        email: p.email,
+        name: p.name,
+      });
     }
 
-    const missing = dentallyNumbers.filter((n) => !dentallyToPatientId.has(n));
+    const missing = dentallyNumbers.filter((n) => !dentallyToPatient.has(n));
     if (missing.length) {
       return NextResponse.json(
         createResponse(
@@ -341,24 +349,166 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const reportsToCreateTyped: Prisma.ReportCreateManyInput[] = reports.map(
-      (r) => ({
-        dentistId: dentist.id,
-        patientDentallyId: r.patientDentallyId,
-        appointmentId: r.appointmentId,
-        title: r.title ?? "Report",
-        fileUrl: r.fileUrl ?? "",
-        fileType:
-          (r.fileType as Prisma.ReportCreateManyInput["fileType"]) ?? "PDF",
-        recipientType:
-          (r.recipientType as Prisma.ReportCreateManyInput["recipientType"]) ,
-       
-      }),
-    );
+    // fetch dentist details (email/name) to notify if needed
+    const dentistDetails = await prisma.dentist.findFirst({
+      where: {
+        dentallyId: Number(dentistId),
+        appointmentIds: { has: appointmentId },
+      },
+      select: { id: true, email: true, firstName: true, lastName: true },
+    });
 
-    console.log("report to create--- ", reportsToCreateTyped);
+    // create reports individually so we can notify recipients after creation
+    const createdReports: Array<{
+      title: string;
+      recipientType?: string;
+      patientDentallyId?: string;
+    }> = [];
 
-    await prisma.report.createMany({ data: reportsToCreateTyped });
+    await prisma.$transaction(async (tx) => {
+      for (const r of reports) {
+        const patientInfo = dentallyToPatient.get(Number(r.patientDentallyId));
+        const data: Prisma.ReportCreateInput = {
+          dentist: { connect: { id: dentist.id } },
+          patientDentallyId: r.patientDentallyId,
+          appointmentId: r.appointmentId,
+          title: r.title ?? "Report",
+          fileUrl: r.fileUrl ?? "",
+          fileType:
+            (r.fileType as Prisma.ReportCreateManyInput["fileType"]) ?? "PDF",
+        } as any;
+
+        if (patientInfo) {
+          (data as any).patient = { connect: { id: patientInfo.id } };
+        }
+
+        if (r.recipientType) {
+          (data as any).recipientType = r.recipientType;
+        }
+
+        const created = await tx.report.create({ data });
+        createdReports.push({
+          title: created.title,
+          recipientType: r.recipientType,
+          patientDentallyId: r.patientDentallyId,
+        });
+      }
+    });
+
+    // aggregate notifications
+    const patientNotifications = new Map<
+      string,
+      { email: string; name: string; titles: string[] }
+    >();
+    const dentistNotifications = new Map<
+      string,
+      { email: string; name: string; titles: string[] }
+    >();
+
+    for (const cr of createdReports) {
+      const recipient = cr.recipientType ?? "PATIENT";
+      if (recipient === "PATIENT") {
+        const info = dentallyToPatient.get(Number(cr.patientDentallyId));
+        if (info && info.email) {
+          const existing = patientNotifications.get(info.id);
+          if (existing) existing.titles.push(cr.title);
+          else
+            patientNotifications.set(info.id, {
+              email: info.email,
+              name: info.name,
+              titles: [cr.title],
+            });
+        }
+      } else if (recipient === "REFERRING_DENTIST") {
+        if (dentistDetails && dentistDetails.email) {
+          const did = dentistDetails.id;
+          const name =
+            `${dentistDetails.firstName ?? ""} ${dentistDetails.lastName ?? ""}`.trim();
+          const existing = dentistNotifications.get(did);
+          if (existing) existing.titles.push(cr.title);
+          else
+            dentistNotifications.set(did, {
+              email: dentistDetails.email,
+              name: name || "Dentist",
+              titles: [cr.title],
+            });
+        }
+      }
+    }
+
+    // send notification emails
+    const emailPromises: Promise<any>[] = [];
+
+    const fromEmail = process.env.EMAIL_FROM;
+    if (!fromEmail) {
+      console.error(
+        "EMAIL_FROM is not configured; skipping notification emails",
+      );
+    }
+
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ;
+
+    for (const [, info] of patientNotifications) {
+      const patientLink = `${baseUrl}/patient/appointments/${appointmentId}/reports`;
+      const html = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
+          <p>Hi ${info.name || "there"},</p>
+          <p>Your report hase been share by the dentist ${dentistDetails?.firstName} ${dentistDetails?.lastName}</p>
+          <ul>
+            ${info.titles.map((t) => `<li>${t}</li>`).join("")}
+          </ul>
+          <p>You can view them here: <a href="${patientLink}">Link</a></p>
+          <p>Please sign in to your Aspire account to view them.</p>
+        </div>
+      `;
+
+      if (fromEmail) {
+        emailPromises.push(
+          sendgrid.send({
+            from: fromEmail,
+            to: info.email,
+            subject: "New report(s) available on Aspire",
+            html,
+            text: undefined,
+          }),
+        );
+      }
+    }
+
+    for (const [, info] of dentistNotifications) {
+      const dentistLink = `${baseUrl}/dentist/appointments/${appointmentId}/reports/new`;
+      const html = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
+          <p>Hi ${info.name || "there"},</p>
+          <p>Your referring dentist has shared new report(s) with you:</p>
+          <ul>
+            ${info.titles.map((t) => `<li>${t}</li>`).join("")}
+          </ul>
+          <p>Open the reports page: <a href="${dentistLink}">${dentistLink}</a></p>
+          <p>Please sign in to your Aspire account to view them.</p>
+        </div>
+      `;
+
+      if (fromEmail) {
+        emailPromises.push(
+          sendgrid.send({
+            from: fromEmail,
+            to: info.email,
+            subject: "New report(s) added",
+            html,
+            text: undefined,
+          }),
+        );
+      }
+    }
+
+    try {
+      await Promise.all(emailPromises);
+    } catch (err) {
+      console.error("Error sending notification emails", err);
+    }
+
     return NextResponse.json(
       createResponse(true, "Reports created successfully.", null),
       { status: 201 },
