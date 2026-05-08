@@ -8,8 +8,6 @@ export type TReportCreate = {
   title: string;
   fileUrl: string;
   fileType: ResoucrceType;
-  recipientType: ReportRecipient;
-  recipientId?: string;
 };
 
 export type TReport = TReportCreate & {
@@ -25,8 +23,3 @@ export type TReport = TReportCreate & {
 export type TReportResponse = {
   reports: { pdfs?: TReport[]; videos?: TReport[] };
 };
-
-export enum ReportRecipient {
-  PATIENT = "PATIENT",
-  REFERRING_DENTIST = "REFERRING_DENTIST",
-}
