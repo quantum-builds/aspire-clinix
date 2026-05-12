@@ -224,10 +224,21 @@ export async function GET(req: NextRequest) {
       token.role === TokenRoles.DENTALLY_PRACTITIONER ||
       token.role === TokenRoles.REFERRING_DENTIST
     ) {
-      const dentistId = token.sub;
-      const dentist = await prisma.dentist.findUnique({
-        where: { id: dentistId },
-      });
+      const dentistSub = token.sub ?? "";
+
+      const dentist =
+        token.role === TokenRoles.DENTALLY_PRACTITIONER
+          ? await prisma.dentist.findFirst({
+              where: {
+                dentallyId: Number.isFinite(Number(dentistSub))
+                  ? Number(dentistSub)
+                  : undefined,
+              },
+            })
+          : await prisma.dentist.findUnique({
+              where: { id: dentistSub },
+            });
+
       if (!dentist) {
         return NextResponse.json(
           createResponse(false, "No Dentist found", dentist),
@@ -235,6 +246,7 @@ export async function GET(req: NextRequest) {
         );
       }
 
+      const dentistId = dentist.id;
       const request = await prisma.dentistOnPractice.findFirst({
         where: { dentistId },
         include: { dentist: true, practice: true },
@@ -294,10 +306,19 @@ export async function PATCH(req: NextRequest) {
       });
     }
 
-    const dentistId = token.sub;
-    const dentist = await prisma.dentist.findUnique({
-      where: { id: dentistId },
-    });
+    const dentistSub = token.sub ?? "";
+    const dentist =
+      token.role === TokenRoles.DENTALLY_PRACTITIONER
+        ? await prisma.dentist.findFirst({
+            where: {
+              dentallyId: Number.isFinite(Number(dentistSub))
+                ? Number(dentistSub)
+                : undefined,
+            },
+          })
+        : await prisma.dentist.findUnique({
+            where: { id: dentistSub },
+          });
 
     if (!dentist) {
       return NextResponse.json(
@@ -306,31 +327,68 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    const dentistId = dentist.id;
+
     const partialDentist = await req.json();
-    const email = partialDentist.email;
-    const phoneNumber = partialDentist.phoneNumber;
-    const gdc = partialDentist.gdcNo;
+    const email = partialDentist?.email;
+    const gdc = partialDentist?.gdcNo;
+    const firstName = partialDentist?.firstName;
+    const lastName = partialDentist?.lastName;
+    const fullName = partialDentist?.fullName;
+
+    const updateData: Record<string, unknown> = {};
+    if (typeof email === "string" && email.trim()) updateData.email = email;
+    if (typeof gdc === "string" && gdc.trim()) updateData.gdcNo = gdc;
+    if (typeof firstName === "string" && firstName.trim())
+      updateData.firstName = firstName;
+    if (typeof lastName === "string" && lastName.trim())
+      updateData.lastName = lastName;
+
+    if (
+      typeof fullName === "string" &&
+      fullName.trim() &&
+      typeof updateData.firstName !== "string" &&
+      typeof updateData.lastName !== "string"
+    ) {
+      const parts = fullName.trim().split(/\s+/);
+      updateData.firstName = parts[0] ?? "";
+      updateData.lastName = parts.slice(1).join(" ");
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json(
+        createResponse(false, "No valid fields provided", null),
+        { status: 400 },
+      );
+    }
+
+    
 
     const existingDentist = await prisma.dentist.findFirst({
       where: {
-        OR: [{ email: email }, { gdcNo: gdc }],
+        id: { not: dentistId },
+        OR: [
+          ...(typeof email === "string" && email.trim() ? [{ email }] : []),
+          ...(typeof gdc === "string" && gdc.trim() ? [{ gdcNo: gdc }] : []),
+        ],
       },
     });
 
-    const respose = await getPatient({
-      emailAddress: email,
-      mobilePhone: phoneNumber,
-    });
-    if (respose.isError) {
+    const respose =
+      typeof email === "string" && email.trim()
+        ? await getPatient({ emailAddress: email })
+        : null;
+    if (respose?.isError) {
       return respose.response;
     }
-    const existingPatient = respose.response;
+    const existingPatients = respose?.response?.patients ?? null;
 
-    const existingAdmin = await prisma.admin.findFirst({
-      where: {
-        OR: [{ email: email }, { phoneNumber: phoneNumber }],
-      },
-    });
+    const existingAdmin =
+      typeof email === "string" && email.trim()
+        ? await prisma.admin.findFirst({
+            where: { email },
+          })
+        : null;
 
     // if (existingDentist || existingPatient || existingAdmin) {
     //   return NextResponse.json(
@@ -342,20 +400,23 @@ export async function PATCH(req: NextRequest) {
     const conflicts: string[] = [];
 
     if (existingDentist) {
-      if (existingDentist.email === email) conflicts.push("email");
-      if (existingDentist.gdcNo === gdc) conflicts.push("GDC number");
+      if (typeof email === "string" && existingDentist.email === email)
+        conflicts.push("email");
+      if (typeof gdc === "string" && existingDentist.gdcNo === gdc)
+        conflicts.push("GDC number");
     }
 
-    if (existingPatient) {
-      if (existingPatient.email === email) conflicts.push("email");
-      if (existingPatient.mobilePhone === phoneNumber)
-        conflicts.push("phone number");
+    if (
+      typeof email === "string" &&
+      Array.isArray(existingPatients) &&
+      existingPatients.some((p: any) => p?.email === email)
+    ) {
+      conflicts.push("email");
     }
 
     if (existingAdmin) {
-      if (existingAdmin.email === email) conflicts.push("email");
-      if (existingAdmin.phoneNumber === phoneNumber)
-        conflicts.push("phone number");
+      if (typeof email === "string" && existingAdmin.email === email)
+        conflicts.push("email");
     }
 
     const uniqueConflicts = Array.from(new Set(conflicts));
@@ -373,7 +434,7 @@ export async function PATCH(req: NextRequest) {
 
     const updatedDentist = await prisma.dentist.update({
       where: { id: dentistId },
-      data: partialDentist,
+      data: updateData,
     });
 
     return NextResponse.json(

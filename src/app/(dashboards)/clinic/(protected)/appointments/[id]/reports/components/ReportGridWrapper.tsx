@@ -7,8 +7,7 @@ import { Patient, TPatient } from "@/types/patient";
 import { Dentist, TDentist } from "@/types/dentist";
 import { TAppointmentDetail } from "@/types/appointment";
 import { getAppointment } from "@/services/appointments/appointmentQuery";
-import {dropDown} from "";
-
+// import {dropDown} from "";
 
 interface ReportGridWrapperProps {
   id: string;
@@ -40,7 +39,7 @@ export default async function ReportGridWrapper({
   if (source) {
     dentist = source.dentist;
   }
-  patient = response.data.patient
+  patient = response.data.patient;
 
   return (
     <>

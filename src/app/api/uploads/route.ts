@@ -40,7 +40,17 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
 
   try {
-    const fileNames: string[] = searchParams.getAll("fileName");
+    const rawFileNames: string[] = searchParams.getAll("fileName");
+    const fileNames: string[] = rawFileNames
+      .map((f) => f.trim())
+      .filter((f) => f.length > 0);
+
+    if (rawFileNames.length > 0 && fileNames.length === 0) {
+      return NextResponse.json(
+        { success: false, message: "fileName query param cannot be empty" },
+        { status: 400 },
+      );
+    }
 
     if (fileNames.length > 0) {
       // Batch generate signed URLs

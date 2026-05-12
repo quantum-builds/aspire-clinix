@@ -1,4 +1,5 @@
 "use client";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
@@ -16,14 +17,22 @@ import { showToast } from "@/utils/defaultToastOptions";
 import { useRouter } from "next/navigation";
 import { getAMedia } from "@/services/s3/s3Query";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 
 const profileFormSchema = z.object({
   title: z.string().optional(),
+
   firstName: z.string().min(1, "First name is required").max(50),
+
   lastName: z.string().min(1, "Last name is required").max(50),
+
   gender: z.string().optional(),
-  email: z.string().email("Please enter a valid email address"),
-  phoneNumber: z
+
+  emailAddress: z
+    .string()
+    .email("Please enter a valid email address"),
+
+  mobilePhone: z
     .string()
     .regex(
       /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
@@ -37,11 +46,13 @@ const profileFormSchema = z.object({
       { message: "Phone number must be between 10 and 15 digits" },
     )
     .transform((val) => val.replace(/\s+/g, "")),
-  gdcNo: z.string().optional(),
+
   addressLine1: z.string().optional(),
-  paymentPlanId: z.string().optional(),
+
   postCode: z.string().optional(),
+
   dateOfBirth: z.string().optional(),
+
   profileImage: z.union([
     z
       .instanceof(File)
@@ -56,6 +67,7 @@ const profileFormSchema = z.object({
           ),
         "Only JPEG, PNG, and WebP images are allowed",
       ),
+
     z.string().url().or(z.literal("")),
   ]),
 });
@@ -66,30 +78,43 @@ interface PatientFormProps {
   patient?: TPatient;
 }
 
+const GENDER_OPTIONS = [
+  { label: "Male", value: "male" },
+  { label: "Female", value: "female" },
+];
+
 export default function ProfileForm({ patient }: PatientFormProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const { refresh } = useRouter();
 
-  const { mutate: editPatientInfo, isPending: editPatientInfoLoader } =
-    usePatchPatient();
-  const { mutateAsync: uploadFile, isPending: uplaodFileLoader } =
-    useUploadFile();
+  const {
+    mutate: editPatientInfo,
+    isPending: editPatientInfoLoader,
+  } = usePatchPatient();
+
+  const {
+    mutateAsync: uploadFile,
+    isPending: uplaodFileLoader,
+  } = useUploadFile();
 
   const defaultValues: Partial<FormData> = {
     title: patient?.title ?? "",
     firstName: patient?.firstName ?? "",
     lastName: patient?.lastName ?? "",
     gender: patient?.gender ?? "",
-    email: patient?.email ?? "",
-    phoneNumber: patient?.mobilePhone ?? "",
-    gdcNo: patient?.gdcNo ?? "",
+    emailAddress: patient?.emailAddress ?? "",
+    mobilePhone: patient?.mobilePhone ?? "",
     addressLine1: patient?.addressLine1 ?? "",
-    paymentPlanId: patient?.paymentPlanId ?? "",
+
     dateOfBirth: patient?.dateOfBirth
-      ? patient.dateOfBirth.toISOString().split("T")[0]
+      ? new Date(patient.dateOfBirth).toISOString().split("T")[0]
       : "",
+
     postCode: patient?.postCode ?? "",
-    profileImage: "", // Placeholder or an actual URL (e.g., "https://via.placeholder.com/150")
+
+    profileImage:
+      "https://aspire-media.s3.eu-west-2.amazonaws.com/uploads/aspire-clinic/images/default-profile.png",
   };
 
   const {
@@ -108,8 +133,11 @@ export default function ProfileForm({ patient }: PatientFormProps) {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
+
     if (file) {
       try {
         const imageSchema = z
@@ -120,9 +148,12 @@ export default function ProfileForm({ patient }: PatientFormProps) {
           )
           .refine(
             (file) =>
-              ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-                file.type,
-              ),
+              [
+                "image/jpeg",
+                "image/jpg",
+                "image/png",
+                "image/webp",
+              ].includes(file.type),
             "Only JPEG, PNG, and WebP images are allowed",
           );
 
@@ -134,6 +165,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
         });
       } catch (error) {
         console.error("Image validation failed:", error);
+
         setValue("profileImage", "", {
           shouldValidate: true,
           shouldDirty: true,
@@ -145,19 +177,26 @@ export default function ProfileForm({ patient }: PatientFormProps) {
   const onSubmit = async (formData: FormData) => {
     console.log("Form submitted:", formData);
 
-    let payload: Record<string, any> = {};
+    const payload: Record<string, any> = {};
 
     Object.keys(dirtyFields).forEach((field) => {
       const key = field as keyof FormData;
 
-      if (key === "profileImage" && formData.profileImage instanceof File) {
+      if (
+        key === "profileImage" &&
+        formData.profileImage instanceof File
+      ) {
         return;
       }
 
-      payload[key as keyof TPatientCreate] = formData[key] as any;
+      payload[key as keyof TPatientCreate] =
+        formData[key] as any;
     });
 
-    if (dirtyFields.profileImage && formData.profileImage instanceof File) {
+    if (
+      dirtyFields.profileImage &&
+      formData.profileImage instanceof File
+    ) {
       const imageUploaded = await uploadFile({
         selectedFile: formData.profileImage,
         fileType: ResoucrceType.IMAGES,
@@ -175,34 +214,43 @@ export default function ProfileForm({ patient }: PatientFormProps) {
       { partialPatient: payload },
       {
         onSuccess: async (data) => {
-          showToast("success", "Profile Updated Successfully");
+          showToast(
+            "success",
+            "Profile Updated Successfully",
+          );
 
-          const file = await getAMedia((data as TPatient).file || "");
+          const file = await getAMedia(
+            (data as TPatient).file || "",
+          );
 
           reset(
             {
-              title: (data as any).title ?? "",
-              firstName: (data as any).firstName ?? "",
-              lastName: (data as any).lastName ?? "",
-              gender: (data as any).gender ?? "",
-              email: data.email ?? (data as any).user?.email ?? "",
-              phoneNumber: data.mobilePhone ?? data.mobilePhone ?? "",
-              gdcNo: (data as any).gdcNo ?? "",
-              paymentPlanId: (data as any).paymentPlanId ?? "",
-              addressLine1: (data as any).addressLine1 ?? "",
-              dateOfBirth: (data as any).dateOfBirth
-                ? new Date((data as any).dateOfBirth)
+              title: data.title,
+
+              dateOfBirth: data.dateOfBirth
+                ? new Date(data.dateOfBirth)
                     .toISOString()
                     .split("T")[0]
                 : "",
-              postCode: (data as any).postCode ?? (data as any).postcode ?? "",
-              profileImage: file,
+
+              firstName: data.firstName,
+              lastName: data.lastName,
+              emailAddress: data.emailAddress,
+              mobilePhone: data.mobilePhone,
+              gender: data.gender,
+              addressLine1: data.addressLine1,
+              postCode: data.postCode,
+
+              profileImage: file
+                ? URL.createObjectURL(file)
+                : "",
             },
             { keepDefaultValues: false },
           );
 
           refresh();
         },
+
         onError: (error) => {
           const msg = getAxiosErrorMessage(error);
           showToast("error", msg);
@@ -218,9 +266,14 @@ export default function ProfileForm({ patient }: PatientFormProps) {
   const profileImage = watch("profileImage");
 
   return (
-    <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="flex flex-col gap-5"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="bg-dashboardBarBackground rounded-2xl p-6 flex flex-col gap-5">
-        <p className="font-semibold text-[22px] text-green">Your Details</p>
+        <p className="font-semibold text-[22px] text-green">
+          Your Details
+        </p>
 
         <div className="flex items-center gap-6">
           <div className="bg-gray rounded-2xl h-[120px] w-[120px] overflow-hidden flex items-center justify-center">
@@ -245,7 +298,9 @@ export default function ProfileForm({ patient }: PatientFormProps) {
                 />
               )
             ) : (
-              <span className="text-sm text-gray-500">No Image</span>
+              <span className="text-sm text-gray-500">
+                No Image
+              </span>
             )}
           </div>
 
@@ -257,6 +312,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
               className="hidden"
               onChange={handleFileChange}
             />
+
             <label
               onClick={handleUploadClick}
               className="text-green underline cursor-pointer inline-block font-medium"
@@ -275,9 +331,13 @@ export default function ProfileForm({ patient }: PatientFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
           <div className="space-y-2">
             <div>
-              <Label htmlFor="title" className="text-lg font-medium">
+              <Label
+                htmlFor="title"
+                className="text-lg font-medium"
+              >
                 Title
               </Label>
+
               <Controller
                 name="title"
                 control={control}
@@ -293,9 +353,16 @@ export default function ProfileForm({ patient }: PatientFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="firstName" className="text-lg font-medium">
-                First Name<span className="text-red-500 text-sm ml-1">*</span>
+              <Label
+                htmlFor="firstName"
+                className="text-lg font-medium"
+              >
+                First Name
+                <span className="text-red-500 text-sm ml-1">
+                  *
+                </span>
               </Label>
+
               <Controller
                 name="firstName"
                 control={control}
@@ -308,6 +375,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
                   />
                 )}
               />
+
               {errors.firstName && (
                 <p className="text-sm text-red-500">
                   {errors.firstName.message}
@@ -316,9 +384,16 @@ export default function ProfileForm({ patient }: PatientFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="lastName" className="text-lg font-medium">
-                Last Name<span className="text-red-500 text-sm ml-1">*</span>
+              <Label
+                htmlFor="lastName"
+                className="text-lg font-medium"
+              >
+                Last Name
+                <span className="text-red-500 text-sm ml-1">
+                  *
+                </span>
               </Label>
+
               <Controller
                 name="lastName"
                 control={control}
@@ -331,6 +406,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
                   />
                 )}
               />
+
               {errors.lastName && (
                 <p className="text-sm text-red-500">
                   {errors.lastName.message}
@@ -340,61 +416,78 @@ export default function ProfileForm({ patient }: PatientFormProps) {
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="email" className="text-lg font-medium">
-              Email<span className="text-red-500 text-sm ml-1">*</span>
+            <Label
+              htmlFor="emailAddress"
+              className="text-lg font-medium"
+            >
+              Email
+              <span className="text-red-500 text-sm ml-1">
+                *
+              </span>
             </Label>
+
             <div className="relative">
               <Controller
-                name="email"
+                name="emailAddress"
                 control={control}
                 render={({ field }) => (
                   <Input
                     {...field}
-                    id="email"
+                    id="emailAddress"
                     type="email"
                     placeholder="Enter email address"
                     className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
                   />
                 )}
               />
+
               <Image
                 src={TextIconV2}
                 alt="text-input"
                 className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
             </div>
-            {errors.email && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
+
+            {errors.emailAddress && (
+              <p className="text-sm text-red-500">
+                {errors.emailAddress.message}
+              </p>
             )}
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="phoneNumber" className="text-lg font-medium">
+            <Label
+              htmlFor="mobilePhone"
+              className="text-lg font-medium"
+            >
               Mobile Phone
             </Label>
+
             <div className="relative">
               <Controller
-                name="phoneNumber"
+                name="mobilePhone"
                 control={control}
                 render={({ field }) => (
                   <Input
                     {...field}
-                    id="phoneNumber"
+                    id="mobilePhone"
                     type="tel"
                     placeholder="e.g. +44 7123 456 789"
                     className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
                   />
                 )}
               />
+
               <Image
                 src={TextIconV2}
                 alt="text-input"
                 className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
             </div>
-            {errors.phoneNumber && (
+
+            {errors.mobilePhone && (
               <p className="text-sm text-red-500">
-                {errors.phoneNumber.message}
+                {errors.mobilePhone.message}
               </p>
             )}
           </div>
@@ -402,9 +495,13 @@ export default function ProfileForm({ patient }: PatientFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4 mt-4">
           <div className="space-y-1">
-            <Label htmlFor="addressLine1" className="text-lg font-medium">
+            <Label
+              htmlFor="addressLine1"
+              className="text-lg font-medium"
+            >
               Address Line 1
             </Label>
+
             <Controller
               name="addressLine1"
               control={control}
@@ -417,6 +514,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
                 />
               )}
             />
+
             {errors.addressLine1 && (
               <p className="text-sm text-red-500">
                 {errors.addressLine1.message}
@@ -425,9 +523,13 @@ export default function ProfileForm({ patient }: PatientFormProps) {
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="dateOfBirth" className="text-lg font-medium">
+            <Label
+              htmlFor="dateOfBirth"
+              className="text-lg font-medium"
+            >
               Date of Birth
             </Label>
+
             <Controller
               name="dateOfBirth"
               control={control}
@@ -440,6 +542,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
                 />
               )}
             />
+
             {errors.dateOfBirth && (
               <p className="text-sm text-red-500">
                 {errors.dateOfBirth.message}
@@ -448,9 +551,13 @@ export default function ProfileForm({ patient }: PatientFormProps) {
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="postCode" className="text-lg font-medium">
+            <Label
+              htmlFor="postCode"
+              className="text-lg font-medium"
+            >
               Postcode
             </Label>
+
             <Controller
               name="postCode"
               control={control}
@@ -463,62 +570,41 @@ export default function ProfileForm({ patient }: PatientFormProps) {
                 />
               )}
             />
+
             {errors.postCode && (
-              <p className="text-sm text-red-500">{errors.postCode.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.postCode.message}
+              </p>
             )}
           </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="gender" className="text-lg font-medium">
+          <div className="space-y-2">
+            <Label className="text-lg font-medium">
               Gender
+              <span className="text-red-500">*</span>
             </Label>
-            <Controller
-              name="gender"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="gender"
-                  placeholder="male / female"
-                  className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-                />
-              )}
-            />
-          </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="gdcNo" className="text-lg font-medium">
-              GDC No
-            </Label>
-            <Controller
-              name="gdcNo"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="gdcNo"
-                  placeholder="GDC Number (if any)"
-                  className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-                />
-              )}
-            />
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="paymentPlanId" className="text-lg font-medium">
-              Payment Plan ID
-            </Label>
-            <Controller
-              name="paymentPlanId"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="paymentPlanId"
-                  placeholder="Payment plan id"
-                  className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-                />
-              )}
+            <Dropdown
+              options={GENDER_OPTIONS.map((g) => ({
+                value: g.value,
+                label: g.label,
+              }))}
+              value={watch("gender") || ""}
+              onValueChange={(val) => {
+                setValue(
+                  "gender",
+                  val as "male" | "female",
+                  {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  },
+                );
+              }}
+              placeholder="Select Gender"
+              className="border shadow-sm text-base bg-gray rounded-2xl w-full"
+              placeholderClassName="text-sm text-muted-foreground"
+              triggerClassName="w-full bg-gray px-6 py-3 h-[52px] rounded-2xl text-left"
+              contentClassName="w-full"
             />
           </div>
         </div>
@@ -528,15 +614,25 @@ export default function ProfileForm({ patient }: PatientFormProps) {
         <CustomButton
           text="Cancel"
           handleOnClick={handleCancel}
-          disabled={!isDirty || uplaodFileLoader || editPatientInfoLoader}
+          disabled={
+            !isDirty ||
+            uplaodFileLoader ||
+            editPatientInfoLoader
+          }
           className="text-[#A3A3A3] h-[60px] w-fit px-6 py-3 bg-gray hover:bg-lightGray shadow-none font-medium text-xl"
         />
 
         <CustomButton
           type="submit"
           text="Save Changes"
-          disabled={!isDirty || uplaodFileLoader || editPatientInfoLoader}
-          loading={uplaodFileLoader || editPatientInfoLoader}
+          disabled={
+            !isDirty ||
+            uplaodFileLoader ||
+            editPatientInfoLoader
+          }
+          loading={
+            uplaodFileLoader || editPatientInfoLoader
+          }
           className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-greenHover flex items-center justify-center gap-2 rounded-[100px]"
         />
       </div>

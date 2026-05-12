@@ -2,8 +2,10 @@ import { axiosInstance, ENDPOINTS } from "@/config/api-config";
 
 export async function getAMedia(backgroundContent: string) {
   try {
+    if (!backgroundContent || !backgroundContent.trim()) return [];
+
     const uploadResponse = await axiosInstance.get(
-      `${ENDPOINTS.uploads.getMedia}?fileName=${backgroundContent}`
+      `${ENDPOINTS.uploads.getMedia}?fileName=${backgroundContent}`,
     );
     return uploadResponse.data.media[0].url;
   } catch (err) {

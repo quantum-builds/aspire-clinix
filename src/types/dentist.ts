@@ -25,7 +25,7 @@ export type TDentist = Omit<TDentistCreate, "password"> & {
 
 export interface TDenstistResponse {
   dentist: TDentist;
-  request: TDentistPractice;
+  request: TDentistPractice | null;
 }
 
 export type Dentist = {

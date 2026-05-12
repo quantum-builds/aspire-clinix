@@ -1,14 +1,16 @@
-import { TAdmin } from "@/types/admin";
 import ProfileForm from "./components/ProfileForm";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
-import { getAdmin } from "@/services/admin/adminQuery";
+
+import { TPatient } from "@/types/patient";
+import { getPatient } from "@/services/patient/patientQuery";
 import { Response } from "@/types/common";
 
 export default async function ProfilePage() {
-  const response: Response<TAdmin> = await getAdmin();
+  
+  const response: Response<TPatient> = await getPatient();
 
   return (
-    <div className=" w-full min-h-screen flex flex-col gap-5">
+    <div className="w-full min-h-screen flex flex-col gap-5">
       <PageTopBar
         pageHeading="Profile Details"
         showFilters={false}
@@ -16,7 +18,7 @@ export default async function ProfilePage() {
         statusOptions={null}
         showBackBtn={true}
       />
-      <ProfileForm admin={response.data} />
+      <ProfileForm patient={response.data } />
     </div>
   );
 }

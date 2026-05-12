@@ -3,13 +3,20 @@ import ProfileForm from "./components/profileForm";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 import { getDentist } from "@/services/dentist/dentistQuery";
 import { Response } from "@/types/common";
-import { TDentistPractice } from "@/types/dentistRequest";
 
 export default async function ProfilePage() {
   try {
-    const response: Response<TDenstistResponse> = await getDentist(); // Fixed typo here
+    const response: Response<TDenstistResponse | null> = await getDentist();
 
-    if (!response.data.dentist) {
+    if (!response?.status) {
+      return (
+        <div className="w-full min-h-screen flex justify-center items-center">
+          <p>{response?.message || "Error fetching profile data."}</p>
+        </div>
+      );
+    }
+
+    if (!response.data?.dentist) {
       return (
         <div className="w-full min-h-screen flex justify-center items-center">
           <p>Doctor information not found.</p>
@@ -18,7 +25,7 @@ export default async function ProfilePage() {
     }
 
     const dentist: TDentist = response.data.dentist;
-    const request: TDentistPractice = response.data.request;
+    const request = response.data.request ?? null;
 
     return (
       <div className="w-full min-h-screen flex flex-col gap-7">
@@ -33,7 +40,8 @@ export default async function ProfilePage() {
       </div>
     );
   } catch (error) {
-    // Handle any errors that occur during the fetch or processing
+    console.error("Profile fetch error:", error);
+  
     return (
       <div className="w-full min-h-screen flex justify-center items-center">
         <p>Error fetching profile data. Please try again later.</p>

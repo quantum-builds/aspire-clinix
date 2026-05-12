@@ -101,14 +101,11 @@ export async function POST(req: NextRequest) {
       firstName,
       lastName,
     });
+    console.log("getPatient response", response);
 
     if (response.isError) {
       return NextResponse.json(
-        createResponse(
-          false,
-          `Error in fetching data from dentally`,
-          null,
-        ),
+        createResponse(false, `Error in fetching data from dentally`, null),
         { status: 400 },
       );
     }
@@ -116,14 +113,11 @@ export async function POST(req: NextRequest) {
     const activePatients = (response.response.patients ?? []).filter(
       (patient: any) => patient.active && !patient.archivedReason,
     );
+    console.log("activePatients", activePatients);
 
     if (activePatients.length === 0 || activePatients.length > 1) {
       return NextResponse.json(
-        createResponse(
-          false,
-          "No Account found",
-          null,
-        ),
+        createResponse(false, "No Account found", null),
         { status: 404 },
       );
     }

@@ -6,13 +6,14 @@ export type TPatientCreate = {
   lastName: string;
   role?: TokenRoles
   mobilePhone?: string;
-  email: string;
-  gdcNo?:string
+  emailAddress: string;
+  gdcNumber?: string;
   addressLine1?: string;
   paymentPlanId?: string;
   postCode?: string;
   dateOfBirth?: Date;
   gender?: "male" | "female";
+  fileUrl?: string;
 };
 
 export type TPatient = Omit<TPatientCreate, "password"> & {

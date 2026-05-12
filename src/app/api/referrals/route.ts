@@ -175,6 +175,7 @@ export async function POST(req: NextRequest) {
     const activePatients = (response.response.patients ?? []).filter(
       (patient: any) => patient.active && !patient.archivedReason,
     );
+   
 
     if (activePatients.length === 0 || activePatients.length > 1) {
       return NextResponse.json(
@@ -208,7 +209,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    if (patient) {
+    if (dbPatient) {
       referralForm.patientId = dbPatient.id;
     }
 

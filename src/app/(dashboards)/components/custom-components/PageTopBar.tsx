@@ -84,7 +84,6 @@ export default function PageTopBar({
                   const url = new URL(window.location.href);
                   const recipient = val === "patient" ? "PATIENT" : "REFERRING_DENTIST";
                   url.searchParams.set("recipientType", recipient);
-                  // replace so navigation state doesn't add history entries
                   router.replace(url.pathname + url.search);
                 } catch (e) {
                   // ignore

@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Table,
   TableHeader,
@@ -25,12 +24,17 @@ interface ClinicReferralDataTableProps {
   entries: TReferralRequest[];
 }
 
-export function ClinicReferralDataTable({ entries }: ClinicReferralDataTableProps) {
+export function ClinicReferralDataTable({
+  entries,
+}: ClinicReferralDataTableProps) {
   const router = useRouter();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(
+    null,
+  );
 
-  const { mutate: deleteReferralRequest, isPending } = useDeleteReferralRequests();
+  const { mutate: deleteReferralRequest, isPending } =
+    useDeleteReferralRequests();
 
   const handleDeleteReferralRequest = () => {
     if (!selectedRequestId) return;
@@ -48,7 +52,7 @@ export function ClinicReferralDataTable({ entries }: ClinicReferralDataTableProp
           const err = getAxiosErrorMessage(error);
           showToast("error", err);
         },
-      }
+      },
     );
   };
 
@@ -57,10 +61,11 @@ export function ClinicReferralDataTable({ entries }: ClinicReferralDataTableProp
       label: "View",
       onClick: () => {
         router.push(
-          `/clinic/referrals/${entry.id}/${entry.requestStatus === ReferralRequestStatus.ASSIGNED
-            ? ReferralRequestStatus.ASSIGNED.toLowerCase()
-            : ReferralRequestStatus.UNASSIGNED.toLowerCase()
-          }`
+          `/clinic/referrals/${entry.id}/${
+            entry.requestStatus === ReferralRequestStatus.ASSIGNED
+              ? ReferralRequestStatus.ASSIGNED.toLowerCase()
+              : ReferralRequestStatus.UNASSIGNED.toLowerCase()
+          }`,
         );
       },
     },
@@ -79,7 +84,7 @@ export function ClinicReferralDataTable({ entries }: ClinicReferralDataTableProp
         <TableHeader>
           <TableRow>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground rounded-l-full text-xl text-dashboardTextBlack font-medium">
-              Reference #
+              #
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Patient Name
@@ -100,32 +105,38 @@ export function ClinicReferralDataTable({ entries }: ClinicReferralDataTableProp
         </TableHeader>
 
         <TableBody>
-          {entries.map((entry) => (
+          {entries.map((entry, index) => (
             <TableRow
               key={entry.id}
               className="bg-dashboardBackground hover:bg-gray text-lg text-dashboardTextBlack cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 router.push(
-                  `/clinic/referrals/${entry.id}/${entry.requestStatus === ReferralRequestStatus.ASSIGNED
-                    ? ReferralRequestStatus.ASSIGNED.toLowerCase()
-                    : ReferralRequestStatus.UNASSIGNED.toLowerCase()
-                  }`
+                  `/clinic/referrals/${entry.id}/${
+                    entry.requestStatus === ReferralRequestStatus.ASSIGNED
+                      ? ReferralRequestStatus.ASSIGNED.toLowerCase()
+                      : ReferralRequestStatus.UNASSIGNED.toLowerCase()
+                  }`,
                 );
               }}
             >
               <TableCell className="px-6 py-4 rounded-l-full">
-                {entry.id.slice(0, 8)}
+                {index + 1}
               </TableCell>
-              <TableCell className="px-6 py-4">{entry.referralForm.patientName}</TableCell>
-              <TableCell className="px-6 py-4">{entry.referralForm.referralName}</TableCell>
+              <TableCell className="px-6 py-4">
+                {entry.referralForm.patientName}
+              </TableCell>
+              <TableCell className="px-6 py-4">
+                {entry.referralForm.referralName}
+              </TableCell>
               <TableCell className="px-6 py-4">
                 <div className="flex gap-2 items-center">
                   <div
-                    className={`size-3 rounded-[4px] ${entry.requestStatus === ReferralRequestStatus.ASSIGNED
+                    className={`size-3 rounded-[4px] ${
+                      entry.requestStatus === ReferralRequestStatus.ASSIGNED
                         ? "bg-green"
                         : "bg-[#fcd833]"
-                      }`}
+                    }`}
                   />
                   {entry.requestStatus}
                 </div>

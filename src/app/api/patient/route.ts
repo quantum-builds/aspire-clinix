@@ -8,6 +8,8 @@ import {
   getPatients,
   patchPatientById,
 } from "@/dentallyHelpers/patient";
+import prisma from "@/lib/db";
+import { title } from "process";
 
 export const dynamic = "force-dynamic";
 
@@ -79,6 +81,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
+    console.log("Token: ", token);
 
     if (!token) {
       return NextResponse.json(createResponse(false, "Unauthorized", null), {
@@ -110,7 +113,6 @@ export async function GET(req: NextRequest) {
       const { searchParams } = new URL(req.url);
       const emailParam = searchParams.get("email") || "";
 
-      // decode URL-encoded email
       const email = decodeURIComponent(emailParam);
       console.log("email is ", email);
       if (email.trim().length > 0) {
@@ -191,13 +193,53 @@ export async function PATCH(req: NextRequest) {
         return respose.response;
       }
 
+      const patient = respose.response;
+
+      if (!patient) {
+        return NextResponse.json(
+          createResponse(false, "No Patient found", patient),
+          { status: 404 },
+        );
+      }
+
+      const patientId = token.sub;
+
+      const {  firstName,lastName, emailAddress, mobilePhone, gender,  gdcNumber ,addressLine1, postCode, dateOfBirth } = patient as {
+        firstName?: string;
+        lastName?: string;
+        emailAddress?: string;
+        mobilePhone?: string;
+        title?: string;
+        gender?: string;
+        gdcNumber?: string;
+        addressLine1?: string;
+
+        postCode?: string;
+        dateOfBirth?: string;
+      };
+
+      const updated = await prisma.patient.update({
+        where: { id: patientId },
+        data: {
+          ...(firstName ? { firstName } : {}),
+          ...(lastName ? { lastName } : {}),
+          ...(emailAddress ? { emailAddress } : {}),
+          ...(mobilePhone ? { mobilePhone } : {}),
+          ...(title ? { title } : {}),
+          ...(gender? { gender } : {}),
+          ...(gdcNumber ? { gdcNumber } : {}),
+          ...(addressLine1 ? { addressLine1 } : {}),
+          ...(postCode ? { postCode} : {}),
+          ...(dateOfBirth ? { dateOfBirth} : {}),
+        },
+      });
+
       return NextResponse.json(
         createResponse(true, "Patient updated successfully", respose.response),
         { status: 200 },
       );
     }
 
-    // Only PATIENT role may update their own record
     return NextResponse.json(createResponse(false, "Forbidden", null), {
       status: 403,
     });

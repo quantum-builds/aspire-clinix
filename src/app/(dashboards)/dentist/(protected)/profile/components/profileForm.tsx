@@ -20,36 +20,22 @@ import { TDentistPractice } from "@/types/dentistRequest";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 const profileFormSchema = z.object({
-  fullName: z
+  firstName: z
     .string()
-    .min(2, "Full name must be at least 2 characters")
-    .max(100, "Full name must be less than 100 characters"),
+    .min(2, "First name must be at least 2 characters")
+    .max(50, "First name must be less than 50 characters"),
+  lastName: z
+    .string()
+    .min(2, "Last name must be at least 2 characters")
+    .max(50, "Last name must be less than 50 characters"),
   email: z
     .string()
     .email("Please enter a valid email address")
     .min(1, "Email is required"),
-  phoneNumber: z
-    .string()
-    .regex(
-      /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
-      "Please enter a valid UK mobile phone number",
-    )
-    .refine(
-      (val) => {
-        const digitsOnly = val.replace(/\s+/g, "");
-        return digitsOnly.length >= 10 && digitsOnly.length <= 15;
-      },
-      { message: "Phone number must be between 10 and 15 digits" },
-    )
-    .transform((val) => val.replace(/\s+/g, "")),
   gdcNumber: z
     .string()
     .min(4, "GDC number must be at least 4 characters")
     .max(20, "GDC number must be less than 20 characters"),
-  practiceAddress: z
-    .string()
-    .min(5, "Practice address must be at least 5 characters")
-    .max(200, "Practice address must be less than 200 characters"),
   profileImage: z.union([
     z
       .instanceof(File)
@@ -72,7 +58,7 @@ type FormData = z.infer<typeof profileFormSchema>;
 
 interface DentistFormProps {
   dentist: TDentist;
-  request: TDentistPractice;
+  request: TDentistPractice | null;
 }
 
 export default function ProfileForm({ dentist, request }: DentistFormProps) {
@@ -84,16 +70,18 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
     useUploadFile();
   const { refresh } = useRouter();
 
-  const practiceAddress = `${request.practice.name}, ${request.practice.addressLine1}, ${request.practice.town}, ${request.practice.postcode}`;
-  const practiceEmail = request.practice.email;
-  const status = request.status;
+  const practice = request?.practice;
+  const practiceAddress = practice
+    ? `${practice.name}, ${practice.addressLine1}, ${practice.town}, ${practice.postcode}`
+    : "No practice assigned";
+  const practiceEmail = practice?.email ?? "";
+  const status = request?.status;
 
   const defaultValues = {
-    fullName: dentist?.fullName || "",
+    firstName: (dentist as any)?.firstName || "",
+    lastName: (dentist as any)?.lastName || "",
     email: dentist?.email || "",
-    phoneNumber: dentist?.phoneNumber || "",
     gdcNumber: dentist?.gdcNo || "",
-    practiceAddress: practiceAddress || "",
     profileImage: dentist?.file || undefined,
   };
 
@@ -110,17 +98,16 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
   });
 
   const onSubmit = async (formData: FormData) => {
-    let payload: Partial<TDentistCreate> = {};
+    const payload: Partial<TDentistCreate> = {};
 
-    Object.keys(dirtyFields).forEach((field) => {
-      const key = field as keyof FormData;
+    if (dirtyFields.firstName) (payload as any).firstName = formData.firstName;
+    if (dirtyFields.lastName) (payload as any).lastName = formData.lastName;
+    if (dirtyFields.email) payload.email = formData.email;
+    if (dirtyFields.gdcNumber) payload.gdcNo = formData.gdcNumber;
 
-      if (key === "profileImage" && formData.profileImage instanceof File) {
-        payload.fileUrl = "uploads/aspire-clinic/images/placeholder.png";
-      } else {
-        payload[key as keyof TDentistCreate] = formData[key] as any;
-      }
-    });
+    if (dirtyFields.profileImage && formData.profileImage instanceof File) {
+      payload.fileUrl = "uploads/aspire-clinic/images/placeholder.png";
+    }
 
     if (dirtyFields.profileImage && formData.profileImage instanceof File) {
       const imageUploaded = await uploadFile({
@@ -262,18 +249,18 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
           <div className="space-y-1">
-            <Label htmlFor="fullName" className="text-lg font-medium">
-              Full Name<span className="text-red-500 text-sm ml-1">*</span>
+            <Label htmlFor="firstName" className="text-lg font-medium">
+              First Name<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
             <div className="relative">
               <Controller
-                name="fullName"
+                name="firstName"
                 control={control}
                 render={({ field }) => (
                   <Input
                     {...field}
-                    id="fullName"
-                    placeholder="Enter your full name"
+                    id="firstName"
+                    placeholder="Enter your first name"
                     className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
                   />
                 )}
@@ -284,8 +271,38 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
                 className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
               />
             </div>
-            {errors.fullName && (
-              <p className="text-sm text-red-500">{errors.fullName.message}</p>
+            {errors.firstName && (
+              <p className="text-sm text-red-500">
+                {errors.firstName.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="lastName" className="text-lg font-medium">
+              Last Name<span className="text-red-500 text-sm ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <Controller
+                name="lastName"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="lastName"
+                    placeholder="Enter your last name"
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              <Image
+                src={TextIconV2}
+                alt="text-input"
+                className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
+              />
+            </div>
+            {errors.lastName && (
+              <p className="text-sm text-red-500">{errors.lastName.message}</p>
             )}
           </div>
 
@@ -318,7 +335,7 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
             )}
           </div>
 
-          <div className="space-y-1">
+          {/* <div className="space-y-1">
             <Label htmlFor="" className="text-lg font-medium">
               Phone Number<span className="text-red-500 text-sm ml-1">*</span>
             </Label>
@@ -347,7 +364,7 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
                 {errors.phoneNumber.message}
               </p>
             )}
-          </div>
+          </div> */}
 
           <div className="space-y-1">
             <Label htmlFor="gdcNumber" className="text-lg font-medium">
@@ -377,45 +394,19 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
             )}
           </div>
 
-          <div className="space-y-1 col-span-2">
-            <Label htmlFor="practiceAddress" className="text-lg font-medium">
-              Practice Address
-              <span className="text-red-500 text-sm ml-1">*</span>
-            </Label>
-            <div className="relative">
-              <Controller
-                name="practiceAddress"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    id="practiceAddress"
-                    placeholder="Enter your practice address"
-                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-                    disabled
-                  />
-                )}
-              />
-              <Image
-                src={TextIconV2}
-                alt="text-input"
-                className="cursor-pointer absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50"
-              />
-            </div>
-            {errors.practiceAddress && (
-              <p className="text-sm text-red-500">
-                {errors.practiceAddress.message}
-              </p>
-            )}
-          </div>
         </div>
 
         <div className="flex flex-col gap-3 mt-10">
           <div className="flex gap-1 items-center">
             Practice Request Status:
-            <StatusBage status={status} />
+            {status ? <StatusBage status={status} /> : <span>N/A</span>}
           </div>
-          {status === PracticeApprovalStatus.PENDING && (
+          {!request && (
+            <p className="italic font-light">
+              No practice request found for this account.
+            </p>
+          )}
+          {status === PracticeApprovalStatus.PENDING && practiceEmail && (
             <p className="italic font-light">
               For the approval of a practice request, please mail us on{" "}
               <a
@@ -437,7 +428,7 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
               </a>{" "}
             </p>
           )}
-          {status === PracticeApprovalStatus.CANCELLED && (
+          {status === PracticeApprovalStatus.CANCELLED && practiceEmail && (
             <p className="italic font-light">
               Your practice request has been cancelled. If you want to request
               again, please mail us on{" "}

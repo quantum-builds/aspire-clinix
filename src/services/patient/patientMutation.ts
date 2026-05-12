@@ -1,4 +1,4 @@
-import { axiosInstance, ENDPOINTS } from "@/config/api-config";
+import { axiosInstance, axiosDentallyInstance, ENDPOINTS, DENTALLY_ENDPOINTS } from "@/config/api-config";
 import { Response } from "@/types/common";
 import { TPatient, TPatientCreate } from "@/types/patient";
 import { useMutation } from "@tanstack/react-query";
@@ -23,7 +23,6 @@ export const usePatchPatient = () => {
     }: {
       partialPatient: Partial<TPatientCreate>;
     }) => {
-      console.log("patient patient is ", partialPatient);
       const response = await axiosInstance.patch(
         ENDPOINTS.patient.editPatient,
         partialPatient,
@@ -87,3 +86,18 @@ export const useGetFamilyMembers = () => {
     },
   });
 };
+
+export const getPatientById = async (patientId: string) => {
+  const response = await axiosDentallyInstance.get(
+    DENTALLY_ENDPOINTS.patient.get(patientId)
+  );
+  const responseData: Response<TPatient> = response.data;
+  return responseData.data;
+}
+
+
+
+
+
+
+ 

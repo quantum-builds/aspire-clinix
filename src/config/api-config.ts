@@ -1,4 +1,5 @@
 import { buildAppointmentQuery } from "@/dentallyHelpers/appointment";
+import { getPatient } from "@/dentallyHelpers/patient";
 import { ListAppointment } from "@/types/appointment";
 import { AppointmentDateType } from "@/types/common";
 import { toCamel, toSnake } from "@/utils/typeConventionConvertor";
@@ -18,6 +19,7 @@ export const ENDPOINTS = {
     Verification: "/api/patient/verify",
     familyMember: (familyId: string) =>
       `/api/patient/family-member?familyId=${familyId}`,
+    getPatientByDentallyId: `/api/patient`
   },
 
   dentist: {
@@ -222,8 +224,8 @@ export const axiosInstance = axios.create({
 
 export const DENTALLY_ENDPOINTS = {
   patient: {
-    create: `patients`,
-    get: (patientId: string) => `patients/${patientId}`,
+   
+    get: (patientId: string) => `/patients/${patientId}`, 
     edit: (patientId: string) => `patients/${patientId}`,
     delete: (patientId: string) => `patients/${patientId}`,
     list: (query?: string) =>
