@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Notifications from "./Notifications";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import ConfirmationModal from "./ConfirmationModal";
 import { signOutMutation } from "@/services/signOutMutation";
 import { UserMenu } from "./UserMenu";
@@ -113,10 +113,14 @@ export default function TopBar({
         </div>
       </div>
 
-      <UserMenu
-        profileLink={profileLink}
-        onLogout={() => setIsCancelModalOpen(true)}
-      />
+      <Suspense fallback={<div className="w-11 h-11 rounded-full bg-[#F3F5F7] flex justify-center items-center">
+        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+      </div>}>
+        <UserMenu
+          profileLink={profileLink}
+          onLogout={() => setIsCancelModalOpen(true)}
+        />
+      </Suspense>
 
       <ConfirmationModal
         icon={LogoutIconV2}
