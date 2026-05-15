@@ -93,6 +93,7 @@ model Dentist {
   role      DentistRole @default(REFERRING_DENTIST)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  fileUrl     String?
 
   reports   Report[]
   practices DentistOnPractice[]
@@ -112,6 +113,7 @@ model Patient {
   otpInvalidationTime DateTime?
   familyId            String?
   appointmentIds      String[]
+  fileUrl     String?
 
   referralForms ReferralForm[]
   reports       Report[]

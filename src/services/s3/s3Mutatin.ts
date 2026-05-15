@@ -12,7 +12,8 @@ export const useUploadFile = () => {
       fileType?: string;
     }) => {
 
-      console.log("in function ",fileType)
+      
+      
       if (!selectedFile) throw new Error("Please select a file first!");
 
       const response = await axiosInstance.get(ENDPOINTS.s3.getSignedUrl, {
@@ -24,12 +25,11 @@ export const useUploadFile = () => {
         },
       });
 
-      console.log("params are ", selectedFile.size);
       const data = response.data;
 
       if (!data.success) throw new Error("Failed to get signed URL");
 
-      await fetch(data.url, {
+      const resp =await fetch(data.url, {
         method: "PUT",
         body: selectedFile,
         headers: { "Content-Type": selectedFile.type },

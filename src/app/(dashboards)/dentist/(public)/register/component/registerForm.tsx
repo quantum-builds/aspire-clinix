@@ -58,8 +58,6 @@ export const patientSchema = z.object({
 
 type FormData = z.infer<typeof patientSchema>;
 
-
-
 export default function DentistRegisterForm() {
   const { mutate: createDentist, isPending: createDentistLoader } =
     useCreateUser();
@@ -86,7 +84,8 @@ export default function DentistRegisterForm() {
       {
         patientData: {
           ...formData,
-          role: TokenRoles.REFERRING_DENTIST
+          emailAddress: formData.email,
+          role: TokenRoles.REFERRING_DENTIST,
         },
       },
       {

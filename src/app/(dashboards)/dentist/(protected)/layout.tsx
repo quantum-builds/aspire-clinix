@@ -12,6 +12,7 @@ import { getServerSession } from "next-auth";
 import { toTitleCase } from "@/utils/formatWords";
 import { authOptions } from "@/lib/auth";
 import TopBarWrapper from "../../components/TopBarWrapper";
+import { getDentist } from "@/services/dentist/dentistQuery";
 
 const SIDEBAR_CONTENT: SidebarPage[] = [
   {
@@ -60,9 +61,9 @@ const RECIEVING_SIDEBAR_CONTENT: SidebarPage[] = [
         icon: InActiveIcon,
         href: "/dentist/appointments/upcoming",
       },
-      { name: "Past", icon: InActiveIcon, href: "/dentist/appointments/past" }
+      { name: "Past", icon: InActiveIcon, href: "/dentist/appointments/past" },
     ],
-  }
+  },
 ];
 
 const REFERRING_SIDEBAR_CONTENT: SidebarPage[] = [
@@ -103,8 +104,14 @@ export default async function DentistLayout({
   const session = await getServerSession(authOptions);
 
   const role = session?.user.role;
-  const name = session?.user.name;
-  const profilePic = session?.user.image;
+  // const name = session?.user.name;
+  // const profilePic = session?.user.image;
+
+  const response = await getDentist();
+  const denResponse = response?.data ?? null;
+  const dentist = denResponse?.dentist ?? null;
+  const name = dentist?.fullName ?? "";
+  const profilePic = dentist?.file ?? null;
 
   // Pick sidebar based on role
   let sidebarContent = SIDEBAR_CONTENT;

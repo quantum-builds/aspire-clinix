@@ -6,6 +6,7 @@ import { getAMedia } from "../s3/s3Query";
 import axios from "axios";
 import { TAdmin } from "@/types/admin";
 
+
 export async function getAdmin() {
   try {
     const serverAxios = await createServerAxios();
@@ -14,8 +15,7 @@ export async function getAdmin() {
     const admin: TAdmin = responseData.data;
 
     const upload = admin.fileUrl ? await getAMedia(admin.fileUrl) : null;
-
-    admin.file = upload;
+    admin.file = upload?.files?.[0] ?? null;
     responseData.data = admin;
     return responseData;
   } catch (error) {

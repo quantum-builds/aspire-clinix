@@ -7,7 +7,7 @@ import { Patient, TPatient } from "@/types/patient";
 import { Dentist, TDentist } from "@/types/dentist";
 import { TAppointmentDetail } from "@/types/appointment";
 import { getAppointment } from "@/services/appointments/appointmentQuery";
-// import {dropDown} from "";
+
 
 interface ReportGridWrapperProps {
   id: string;
@@ -24,7 +24,7 @@ export default async function ReportGridWrapper({
     (response.data.reports.pdfs?.length === 0 &&
       response.data.reports.videos?.length === 0)
   ) {
-    // return <NoContent title="Reports" placeholder="Enter Report title" />;
+    
     return <NoContent1 />;
   }
 

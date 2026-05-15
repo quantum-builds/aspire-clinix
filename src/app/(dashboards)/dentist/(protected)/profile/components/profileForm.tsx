@@ -13,7 +13,7 @@ import { usePatchDentist } from "@/services/dentist/dentistMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { PracticeApprovalStatus, ResoucrceType } from "@prisma/client";
 import { showToast } from "@/utils/defaultToastOptions";
-import { getAMedia } from "@/services/s3/s3Query";
+// removed getAMedia usage; use persisted S3 url like admin
 import { useRouter } from "next/navigation";
 import StatusBage from "@/app/(dashboards)/components/StatusBadge";
 import { TDentistPractice } from "@/types/dentistRequest";
@@ -82,7 +82,11 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
     lastName: (dentist as any)?.lastName || "",
     email: dentist?.email || "",
     gdcNumber: dentist?.gdcNo || "",
-    profileImage: dentist?.file || undefined,
+    profileImage: dentist?.file
+      ? typeof dentist.file === "string"
+        ? dentist.file
+        : dentist.file?.url || ""
+      : "",
   };
 
   const {
@@ -104,18 +108,19 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
     if (dirtyFields.lastName) (payload as any).lastName = formData.lastName;
     if (dirtyFields.email) payload.email = formData.email;
     if (dirtyFields.gdcNumber) payload.gdcNo = formData.gdcNumber;
-
     if (dirtyFields.profileImage && formData.profileImage instanceof File) {
-      payload.fileUrl = "uploads/aspire-clinic/images/placeholder.png";
-    }
+      try {
+        const imageUploaded = await uploadFile({
+          selectedFile: formData.profileImage,
+          fileType: ResoucrceType.IMAGES,
+        });
 
-    if (dirtyFields.profileImage && formData.profileImage instanceof File) {
-      const imageUploaded = await uploadFile({
-        selectedFile: formData.profileImage,
-        fileType: ResoucrceType.IMAGES,
-      });
-
-      payload.fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+        payload.fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+      } catch (error) {
+        console.error("Image upload failed:", error);
+        showToast("error", "Failed to upload image");
+        return;
+      }
     }
 
     if (Object.keys(payload).length === 0) {
@@ -126,14 +131,18 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
     editDentistInfo(
       { partialDentist: payload },
       {
-        onSuccess: async (data) => {
+        onSuccess: (data) => {
           showToast("success", "Profile Updated Successfully");
-          const file = await getAMedia(data.fileUrl || "");
+
+          const s3Base = "https://aspire-media.s3.eu-west-2.amazonaws.com/";
+          const profileUrl = data.fileUrl
+            ? `${s3Base}${data.fileUrl}`
+            : defaultValues.profileImage || "";
 
           reset(
             {
               ...formData,
-              profileImage: file,
+              profileImage: profileUrl,
             },
             { keepDefaultValues: false },
           );
@@ -272,9 +281,7 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
               />
             </div>
             {errors.firstName && (
-              <p className="text-sm text-red-500">
-                {errors.firstName.message}
-              </p>
+              <p className="text-sm text-red-500">{errors.firstName.message}</p>
             )}
           </div>
 
@@ -393,7 +400,6 @@ export default function ProfileForm({ dentist, request }: DentistFormProps) {
               <p className="text-sm text-red-500">{errors.gdcNumber.message}</p>
             )}
           </div>
-
         </div>
 
         <div className="flex flex-col gap-3 mt-10">

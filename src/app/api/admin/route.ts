@@ -267,15 +267,20 @@ export async function PATCH(req: NextRequest) {
 
     const adminId = token.sub;
     const payload = await req.json();
-    const { fullName, email, phoneNumber } = payload as {
+    const { fullName, email, phoneNumber, fileUrl } = payload as {
       fullName?: string;
       email?: string;
       phoneNumber?: string;
+      fileUrl?: string;
     };
 
-    if (!fullName && !email && !phoneNumber) {
+    if (!fullName && !email && !phoneNumber && !fileUrl) {
       return NextResponse.json(
-        createResponse(false, "All fields are required.", null),
+        createResponse(
+          false,
+          "At least one field is required to update.",
+          null,
+        ),
         { status: 400 },
       );
     }
@@ -304,6 +309,7 @@ export async function PATCH(req: NextRequest) {
         ...(fullName ? { fullName } : {}),
         ...(email ? { email } : {}),
         ...(phoneNumber ? { phoneNumber } : {}),
+        ...(fileUrl ? { fileUrl } : {}),
       },
     });
 

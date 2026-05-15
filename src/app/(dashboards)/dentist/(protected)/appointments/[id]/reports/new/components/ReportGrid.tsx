@@ -5,12 +5,13 @@ import CustomButton from "@/app/(dashboards)/components/custom-components/Custom
 import { useCreateReport } from "@/services/reports/reportsMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { TAppointment } from "@/types/appointment";
-import { TReport } from "@/types/reports";
+import { TReport, TReportCreate } from "@/types/reports";
 import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { ResoucrceType } from "@prisma/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ReportRecipient } from "@/types/reports";
+
 import { useState } from "react";
 
 interface ReportGridProps {
@@ -60,49 +61,64 @@ export default function ReportGrid({
         showToast("error", "No files to upload");
         return;
       }
-      // Upload PDFs
-      const pdfPromises = uploadedPdfs.map(async (file) => {
-        const uploaded = await uploadFile({
-          selectedFile: file,
-          fileType: ResoucrceType.PDF,
-        });
-        console.log("appointment in report(PDF) is ", appointment);
+      const buildReportPayload = async (
+        file: File,
+        fileType: ResoucrceType,
+      ) => {
+        try {
+          const uploaded = await uploadFile({
+            selectedFile: file,
+            fileType,
+          });
 
-        return {
-          title: file.name,
-          fileUrl: `uploads/aspire-clinic/letters/${uploaded.name}`,
-          fileType: ResoucrceType.PDF,
-          patientDentallyId: String(appointment.patientId),
-          appointmentId: String(appointment.id),
-          recipientType: recipientTypeFromParams as ReportRecipient,
-        };
-      });
+          const folder =
+            fileType === ResoucrceType.PDF
+              ? "uploads/aspire-clinic/letters"
+              : "uploads/aspire-clinic/videos";
+
+          return {
+            title: file.name,
+            fileUrl: `${folder}/${uploaded.name}`,
+            fileType,
+            patientDentallyId: String(appointment.patientId),
+            appointmentId: String(appointment.id),
+            recipientType: recipientTypeFromParams as ReportRecipient,
+          };
+        } catch (error) {
+          console.error("Report file upload failed:", error);
+          showToast(
+            "error",
+            `Failed to upload ${fileType === ResoucrceType.PDF ? "PDF" : "video"}`,
+          );
+          return null;
+        }
+      };
+
+      // Upload PDFs
+      const pdfPromises = uploadedPdfs.map((file) =>
+        buildReportPayload(file, ResoucrceType.PDF),
+      );
 
       // Upload Videos
-      const videoPromises = uploadedVideos.map(async (file) => {
-        const uploaded = await uploadFile({
-          selectedFile: file,
-          fileType: ResoucrceType.VIDEO,
-        });
-        console.log("appointment in report is ", appointment);
+      const videoPromises = uploadedVideos.map((file) =>
+        buildReportPayload(file, ResoucrceType.VIDEO),
+      );
 
-        return {
-          title: file.name,
-          fileUrl: `uploads/aspire-clinic/videos/${uploaded.name}`,
-          fileType: ResoucrceType.VIDEO,
-          patientDentallyId: String(appointment.patientId),
-          appointmentId: String(appointment.id),
-          recipientType: recipientTypeFromParams as ReportRecipient,
-        };
-      });
+      const reports: TReportCreate[] = (
+        await Promise.all([...pdfPromises, ...videoPromises])
+      ).filter((report): report is TReportCreate => report !== null);
 
-      const reports = await Promise.all([...pdfPromises, ...videoPromises]);
-      console.log("Reports are ", reports);
+      if (reports.length === 0) {
+        return;
+      }
+
       createReport(
         { reports },
         {
           onSuccess: () => {
             showToast("success", "Reports uploaded successfully");
+            setUploadedPdfs([]);
+            setUploadedVideos([]);
             router.replace(
               `/dentist/appointments/${appointment.id}/reports?ts=${Date.now()}`,
             );

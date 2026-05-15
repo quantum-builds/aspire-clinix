@@ -51,7 +51,9 @@ export async function getPatient() {
       }
 
       const upload = patient.fileUrl ? await getAMedia(patient.fileUrl) : null;
-      patient.file = upload;
+      patient.file = upload?.files?.[0] ?? null;
+      responseData.data = patient;
+     
     }
 
     responseData.data = patient;

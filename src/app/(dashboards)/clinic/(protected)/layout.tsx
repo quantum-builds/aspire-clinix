@@ -47,6 +47,7 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
         name: "Letters",
         icon: InActiveIcon,
         href: "/clinic/resources/letters",
+        
       },
     ],
   },

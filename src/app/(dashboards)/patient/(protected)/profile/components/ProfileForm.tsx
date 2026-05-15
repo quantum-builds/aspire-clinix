@@ -15,7 +15,6 @@ import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { ResoucrceType } from "@prisma/client";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useRouter } from "next/navigation";
-import { getAMedia } from "@/services/s3/s3Query";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 
@@ -28,9 +27,7 @@ const profileFormSchema = z.object({
 
   gender: z.string().optional(),
 
-  emailAddress: z
-    .string()
-    .email("Please enter a valid email address"),
+  emailAddress: z.string().email("Please enter a valid email address"),
 
   mobilePhone: z
     .string()
@@ -88,15 +85,11 @@ export default function ProfileForm({ patient }: PatientFormProps) {
 
   const { refresh } = useRouter();
 
-  const {
-    mutate: editPatientInfo,
-    isPending: editPatientInfoLoader,
-  } = usePatchPatient();
+  const { mutate: editPatientInfo, isPending: editPatientInfoLoader } =
+    usePatchPatient();
 
-  const {
-    mutateAsync: uploadFile,
-    isPending: uplaodFileLoader,
-  } = useUploadFile();
+  const { mutateAsync: uploadFile, isPending: uplaodFileLoader } =
+    useUploadFile();
 
   const defaultValues: Partial<FormData> = {
     title: patient?.title ?? "",
@@ -112,9 +105,11 @@ export default function ProfileForm({ patient }: PatientFormProps) {
       : "",
 
     postCode: patient?.postCode ?? "",
-
-    profileImage:
-      "https://aspire-media.s3.eu-west-2.amazonaws.com/uploads/aspire-clinic/images/default-profile.png",
+    profileImage: patient?.file
+      ? typeof patient.file === "string"
+        ? patient.file
+        : patient.file?.url || ""
+      : "",
   };
 
   const {
@@ -133,9 +128,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (file) {
@@ -148,12 +141,9 @@ export default function ProfileForm({ patient }: PatientFormProps) {
           )
           .refine(
             (file) =>
-              [
-                "image/jpeg",
-                "image/jpg",
-                "image/png",
-                "image/webp",
-              ].includes(file.type),
+              ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+                file.type,
+              ),
             "Only JPEG, PNG, and WebP images are allowed",
           );
 
@@ -175,34 +165,29 @@ export default function ProfileForm({ patient }: PatientFormProps) {
   };
 
   const onSubmit = async (formData: FormData) => {
-    console.log("Form submitted:", formData);
-
-    const payload: Record<string, any> = {};
+    const payload: Partial<TPatientCreate> = {};
 
     Object.keys(dirtyFields).forEach((field) => {
       const key = field as keyof FormData;
 
-      if (
-        key === "profileImage" &&
-        formData.profileImage instanceof File
-      ) {
-        return;
-      }
+      if (key === "profileImage") return;
 
-      payload[key as keyof TPatientCreate] =
-        formData[key] as any;
+      payload[key as keyof TPatientCreate] = formData[key] as any;
     });
 
-    if (
-      dirtyFields.profileImage &&
-      formData.profileImage instanceof File
-    ) {
-      const imageUploaded = await uploadFile({
-        selectedFile: formData.profileImage,
-        fileType: ResoucrceType.IMAGES,
-      });
+    if (dirtyFields.profileImage && formData.profileImage instanceof File) {
+      try {
+        const imageUploaded = await uploadFile({
+          selectedFile: formData.profileImage,
+          fileType: ResoucrceType.IMAGES,
+        });
 
-      payload.fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+        payload.fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+      } catch (error) {
+        console.error("Image upload failed:", error);
+        showToast("error", "Failed to upload image");
+        return;
+      }
     }
 
     if (Object.keys(payload).length === 0) {
@@ -213,24 +198,20 @@ export default function ProfileForm({ patient }: PatientFormProps) {
     editPatientInfo(
       { partialPatient: payload },
       {
-        onSuccess: async (data) => {
-          showToast(
-            "success",
-            "Profile Updated Successfully",
-          );
+        onSuccess: (data) => {
+          showToast("success", "Profile Updated Successfully");
 
-          const file = await getAMedia(
-            (data as TPatient).file || "",
-          );
+          const s3Base = "https://aspire-media.s3.eu-west-2.amazonaws.com/";
+          const profileUrl = data.fileUrl
+            ? `${s3Base}${data.fileUrl}`
+            : defaultValues.profileImage || "";
 
           reset(
             {
               title: data.title,
 
               dateOfBirth: data.dateOfBirth
-                ? new Date(data.dateOfBirth)
-                    .toISOString()
-                    .split("T")[0]
+                ? new Date(data.dateOfBirth).toISOString().split("T")[0]
                 : "",
 
               firstName: data.firstName,
@@ -240,10 +221,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
               gender: data.gender,
               addressLine1: data.addressLine1,
               postCode: data.postCode,
-
-              profileImage: file
-                ? URL.createObjectURL(file)
-                : "",
+              profileImage: profileUrl,
             },
             { keepDefaultValues: false },
           );
@@ -266,14 +244,9 @@ export default function ProfileForm({ patient }: PatientFormProps) {
   const profileImage = watch("profileImage");
 
   return (
-    <form
-      className="flex flex-col gap-5"
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
       <div className="bg-dashboardBarBackground rounded-2xl p-6 flex flex-col gap-5">
-        <p className="font-semibold text-[22px] text-green">
-          Your Details
-        </p>
+        <p className="font-semibold text-[22px] text-green">Your Details</p>
 
         <div className="flex items-center gap-6">
           <div className="bg-gray rounded-2xl h-[120px] w-[120px] overflow-hidden flex items-center justify-center">
@@ -298,9 +271,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
                 />
               )
             ) : (
-              <span className="text-sm text-gray-500">
-                No Image
-              </span>
+              <span className="text-sm text-gray-500">No Image</span>
             )}
           </div>
 
@@ -331,10 +302,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
           <div className="space-y-2">
             <div>
-              <Label
-                htmlFor="title"
-                className="text-lg font-medium"
-              >
+              <Label htmlFor="title" className="text-lg font-medium">
                 Title
               </Label>
 
@@ -353,14 +321,9 @@ export default function ProfileForm({ patient }: PatientFormProps) {
             </div>
 
             <div>
-              <Label
-                htmlFor="firstName"
-                className="text-lg font-medium"
-              >
+              <Label htmlFor="firstName" className="text-lg font-medium">
                 First Name
-                <span className="text-red-500 text-sm ml-1">
-                  *
-                </span>
+                <span className="text-red-500 text-sm ml-1">*</span>
               </Label>
 
               <Controller
@@ -384,14 +347,9 @@ export default function ProfileForm({ patient }: PatientFormProps) {
             </div>
 
             <div>
-              <Label
-                htmlFor="lastName"
-                className="text-lg font-medium"
-              >
+              <Label htmlFor="lastName" className="text-lg font-medium">
                 Last Name
-                <span className="text-red-500 text-sm ml-1">
-                  *
-                </span>
+                <span className="text-red-500 text-sm ml-1">*</span>
               </Label>
 
               <Controller
@@ -416,14 +374,9 @@ export default function ProfileForm({ patient }: PatientFormProps) {
           </div>
 
           <div className="space-y-1">
-            <Label
-              htmlFor="emailAddress"
-              className="text-lg font-medium"
-            >
+            <Label htmlFor="emailAddress" className="text-lg font-medium">
               Email
-              <span className="text-red-500 text-sm ml-1">
-                *
-              </span>
+              <span className="text-red-500 text-sm ml-1">*</span>
             </Label>
 
             <div className="relative">
@@ -456,10 +409,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
           </div>
 
           <div className="space-y-1">
-            <Label
-              htmlFor="mobilePhone"
-              className="text-lg font-medium"
-            >
+            <Label htmlFor="mobilePhone" className="text-lg font-medium">
               Mobile Phone
             </Label>
 
@@ -495,10 +445,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4 mt-4">
           <div className="space-y-1">
-            <Label
-              htmlFor="addressLine1"
-              className="text-lg font-medium"
-            >
+            <Label htmlFor="addressLine1" className="text-lg font-medium">
               Address Line 1
             </Label>
 
@@ -523,10 +470,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
           </div>
 
           <div className="space-y-1">
-            <Label
-              htmlFor="dateOfBirth"
-              className="text-lg font-medium"
-            >
+            <Label htmlFor="dateOfBirth" className="text-lg font-medium">
               Date of Birth
             </Label>
 
@@ -551,10 +495,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
           </div>
 
           <div className="space-y-1">
-            <Label
-              htmlFor="postCode"
-              className="text-lg font-medium"
-            >
+            <Label htmlFor="postCode" className="text-lg font-medium">
               Postcode
             </Label>
 
@@ -572,9 +513,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
             />
 
             {errors.postCode && (
-              <p className="text-sm text-red-500">
-                {errors.postCode.message}
-              </p>
+              <p className="text-sm text-red-500">{errors.postCode.message}</p>
             )}
           </div>
 
@@ -591,14 +530,10 @@ export default function ProfileForm({ patient }: PatientFormProps) {
               }))}
               value={watch("gender") || ""}
               onValueChange={(val) => {
-                setValue(
-                  "gender",
-                  val as "male" | "female",
-                  {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  },
-                );
+                setValue("gender", val as "male" | "female", {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
               }}
               placeholder="Select Gender"
               className="border shadow-sm text-base bg-gray rounded-2xl w-full"
@@ -614,25 +549,15 @@ export default function ProfileForm({ patient }: PatientFormProps) {
         <CustomButton
           text="Cancel"
           handleOnClick={handleCancel}
-          disabled={
-            !isDirty ||
-            uplaodFileLoader ||
-            editPatientInfoLoader
-          }
+          disabled={!isDirty || uplaodFileLoader || editPatientInfoLoader}
           className="text-[#A3A3A3] h-[60px] w-fit px-6 py-3 bg-gray hover:bg-lightGray shadow-none font-medium text-xl"
         />
 
         <CustomButton
           type="submit"
           text="Save Changes"
-          disabled={
-            !isDirty ||
-            uplaodFileLoader ||
-            editPatientInfoLoader
-          }
-          loading={
-            uplaodFileLoader || editPatientInfoLoader
-          }
+          disabled={!isDirty || uplaodFileLoader || editPatientInfoLoader}
+          loading={uplaodFileLoader || editPatientInfoLoader}
           className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-greenHover flex items-center justify-center gap-2 rounded-[100px]"
         />
       </div>

@@ -14,7 +14,6 @@ import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { ResoucrceType } from "@prisma/client";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useRouter } from "next/navigation";
-import { getAMedia } from "@/services/s3/s3Query";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 const profileFormSchema = z.object({
@@ -27,14 +26,14 @@ const profileFormSchema = z.object({
     .string()
     .regex(
       /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
-      "Please enter a valid UK mobile phone number"
+      "Please enter a valid UK mobile phone number",
     )
     .refine(
       (val) => {
         const digitsOnly = val.replace(/\s+/g, "");
         return digitsOnly.length >= 10 && digitsOnly.length <= 15;
       },
-      { message: "Phone number must be between 10 and 15 digits" }
+      { message: "Phone number must be between 10 and 15 digits" },
     )
     .transform((val) => val.replace(/\s+/g, "")),
   profileImage: z.union([
@@ -42,14 +41,14 @@ const profileFormSchema = z.object({
       .instanceof(File)
       .refine(
         (file) => file.size <= 5 * 1024 * 1024,
-        "Image must be less than 5MB"
+        "Image must be less than 5MB",
       )
       .refine(
         (file) =>
           ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-            file.type
+            file.type,
           ),
-        "Only JPEG, PNG, and WebP images are allowed"
+        "Only JPEG, PNG, and WebP images are allowed",
       ),
     z.string().url().or(z.literal("")),
   ]),
@@ -67,15 +66,14 @@ export default function ProfileForm({ admin }: AdminFormProps) {
 
   const { mutate: editAdminInfo, isPending: editAdminInfoLoader } =
     usePatchAdmin();
-  const { mutateAsync: uploadFile, isPending: uplaodFileLoader } =
+  const { mutateAsync: uploadFile, isPending: uploadFileLoader } =
     useUploadFile();
 
-  // Use const for defaultValues - it will be recreated on each render with new admin prop
   const defaultValues: Partial<FormData> = {
     fullName: admin?.fullName,
     email: admin?.email,
     phoneNumber: admin?.phoneNumber,
-    profileImage: "https://aspire-media.s3.eu-west-2.amazonaws.com",
+    profileImage: admin?.file?.url || "",
   };
 
   const {
@@ -102,19 +100,18 @@ export default function ProfileForm({ admin }: AdminFormProps) {
           .instanceof(File)
           .refine(
             (file) => file.size <= 5 * 1024 * 1024,
-            "Image must be less than 5MB"
+            "Image must be less than 5MB",
           )
           .refine(
             (file) =>
               ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-                file.type
+                file.type,
               ),
-            "Only JPEG, PNG, and WebP images are allowed"
+            "Only JPEG, PNG, and WebP images are allowed",
           );
 
         imageSchema.parse(file);
 
-        // update the form field directly
         setValue("profileImage", file, {
           shouldValidate: true,
           shouldDirty: true,
@@ -130,33 +127,32 @@ export default function ProfileForm({ admin }: AdminFormProps) {
   };
 
   const onSubmit = async (formData: FormData) => {
-    console.log("Form submitted:", formData);
-
     let payload: Partial<TAdminCreate> = {};
 
-    // Loop through dirty fields
+ 
     Object.keys(dirtyFields).forEach((field) => {
       const key = field as keyof FormData;
-
-      // Skip profileImage if it's a File, handle it separately
-      if (key === "profileImage" && formData.profileImage instanceof File) {
-        return;
-      }
-
+      if (key === "profileImage") return;
       payload[key as keyof TAdminCreate] = formData[key] as any;
     });
 
-    // Handle profileImage upload if changed
+  
     if (dirtyFields.profileImage && formData.profileImage instanceof File) {
-      const imageUploaded = await uploadFile({
-        selectedFile: formData.profileImage,
-        fileType: ResoucrceType.IMAGES,
-      });
+      try {
+        const imageUploaded = await uploadFile({
+          selectedFile: formData.profileImage,
+          fileType: ResoucrceType.IMAGES,
+        });
 
-      payload.fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+      
+        payload.fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+      } catch (error) {
+        console.error("Image upload failed:", error);
+        showToast("error", "Failed to upload image");
+        return;
+      }
     }
 
-    // If no changes
     if (Object.keys(payload).length === 0) {
       showToast("info", "No changes to update");
       return;
@@ -165,27 +161,33 @@ export default function ProfileForm({ admin }: AdminFormProps) {
     editAdminInfo(
       { partialAdmin: payload },
       {
-        onSuccess: async (data) => {
+        onSuccess: (data) => {
           showToast("success", "Profile Updated Successfully");
 
-          const file = await getAMedia(data.fileUrl || "");
+          const s3Base = "https://aspire-media.s3.eu-west-2.amazonaws.com/";
+
+          
+          const profileUrl = data.fileUrl
+            ? `${s3Base}${data.fileUrl}`
+            : defaultValues.profileImage || "";
 
           reset(
             {
               fullName: data.fullName,
               email: data.email,
               phoneNumber: data.phoneNumber,
-              profileImage: file,
+              profileImage: profileUrl,
             },
-            { keepDefaultValues: false }
+            { keepDefaultValues: false },
           );
 
           refresh();
-        }, onError: (error) => {
+        },
+        onError: (error) => {
           const msg = getAxiosErrorMessage(error);
           showToast("error", msg);
         },
-      }
+      },
     );
   };
 
@@ -345,15 +347,15 @@ export default function ProfileForm({ admin }: AdminFormProps) {
         <CustomButton
           text="Cancel"
           handleOnClick={handleCancel}
-          disabled={!isDirty || uplaodFileLoader || editAdminInfoLoader}
+          disabled={!isDirty || uploadFileLoader || editAdminInfoLoader}
           className="text-[#A3A3A3] h-[60px] w-fit px-6 py-3 bg-gray hover:bg-lightGray shadow-none font-medium text-xl"
         />
 
         <CustomButton
           type="submit"
           text="Save Changes"
-          disabled={!isDirty || uplaodFileLoader || editAdminInfoLoader}
-          loading={uplaodFileLoader || editAdminInfoLoader}
+          disabled={!isDirty || uploadFileLoader || editAdminInfoLoader}
+          loading={uploadFileLoader || editAdminInfoLoader}
           className="h-[60px] w-fit px-6 py-3 font-medium text-xl text-dashboardBarBackground bg-green hover:bg-greenHover flex items-center justify-center gap-2 rounded-[100px]"
         />
       </div>

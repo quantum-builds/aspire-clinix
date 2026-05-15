@@ -85,6 +85,7 @@ import { NextRequest, NextResponse } from "next/server";
  *               message: "Internal Server Error"
  *               data: null
  */
+
 export async function POST(req: NextRequest) {
   try {
     const { firstName, lastName, mobilePhone, dateOfBirth, email } =
@@ -123,6 +124,9 @@ export async function POST(req: NextRequest) {
     }
 
     let active = activePatients[0];
+
+    /** Check if the values in request body matches dentally one if not throw error */
+    
     const fullName =
       `${active?.firstName ?? firstName} ${active?.lastName ?? lastName}`.trim();
     let patient = null;
@@ -134,6 +138,8 @@ export async function POST(req: NextRequest) {
         dentallyId: dentallyPatientId,
       },
     });
+
+    console.log("existingPatient", existingPatient);
 
     if (!existingPatient) {
       patient = await prisma.patient.create({

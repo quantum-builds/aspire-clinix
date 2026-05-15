@@ -10,14 +10,13 @@ export async function getDentist(): Promise<
   Response<TDenstistResponse | null>
 > {
   try {
-    console.log("getDentist: calling endpoint", ENDPOINTS.dentist.getDentist);
     const serverAxios = await createServerAxios();
     const response = await serverAxios.get(ENDPOINTS.dentist.getDentist, {
       validateStatus: () => true,
     });
-    
+
     const responseData = response.data as Response<TDenstistResponse | null>;
-  
+
     if (!responseData?.status) return responseData;
 
     if (!responseData.data) {
@@ -26,18 +25,17 @@ export async function getDentist(): Promise<
 
     const dentist: TDentist | null = responseData.data.dentist ?? null;
     if (!dentist) return responseData;
+
     const upload = dentist.fileUrl ? await getAMedia(dentist.fileUrl) : null;
+    dentist.file = upload?.files?.[0] ?? null;
+    responseData.data.dentist = dentist;
 
-    const dentistWithFile: TDentist = {
-      ...dentist,
-      file: typeof upload === "string" ? upload : undefined,
-    };
-
+    // keep responseData.data as TDenstistResponse and update its dentist property
     return {
       ...responseData,
       data: {
         ...responseData.data,
-        dentist: dentistWithFile,
+        dentist,
       },
     };
   } catch (error) {

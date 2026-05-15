@@ -204,7 +204,18 @@ export async function PATCH(req: NextRequest) {
 
       const patientId = token.sub;
 
-      const {  firstName,lastName, emailAddress, mobilePhone, gender,  gdcNumber ,addressLine1, postCode, dateOfBirth } = patient as {
+      const {
+        firstName,
+        lastName,
+        emailAddress,
+        mobilePhone,
+        gender,
+        gdcNumber,
+        addressLine1,
+        postCode,
+        dateOfBirth,
+        fileUrl,
+      } = patient as {
         firstName?: string;
         lastName?: string;
         emailAddress?: string;
@@ -213,9 +224,9 @@ export async function PATCH(req: NextRequest) {
         gender?: string;
         gdcNumber?: string;
         addressLine1?: string;
-
         postCode?: string;
         dateOfBirth?: string;
+        fileUrl?: string;
       };
 
       const updated = await prisma.patient.update({
@@ -226,11 +237,12 @@ export async function PATCH(req: NextRequest) {
           ...(emailAddress ? { emailAddress } : {}),
           ...(mobilePhone ? { mobilePhone } : {}),
           ...(title ? { title } : {}),
-          ...(gender? { gender } : {}),
+          ...(gender ? { gender } : {}),
           ...(gdcNumber ? { gdcNumber } : {}),
           ...(addressLine1 ? { addressLine1 } : {}),
-          ...(postCode ? { postCode} : {}),
-          ...(dateOfBirth ? { dateOfBirth} : {}),
+          ...(postCode ? { postCode } : {}),
+          ...(dateOfBirth ? { dateOfBirth } : {}),
+          ...(fileUrl ? { fileUrl } : {}),
         },
       });
 

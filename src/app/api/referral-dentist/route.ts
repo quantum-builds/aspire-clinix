@@ -335,6 +335,7 @@ export async function PATCH(req: NextRequest) {
     const firstName = partialDentist?.firstName;
     const lastName = partialDentist?.lastName;
     const fullName = partialDentist?.fullName;
+    const fileUrl = partialDentist?.fileUrl;
 
     const updateData: Record<string, unknown> = {};
     if (typeof email === "string" && email.trim()) updateData.email = email;
@@ -343,6 +344,8 @@ export async function PATCH(req: NextRequest) {
       updateData.firstName = firstName;
     if (typeof lastName === "string" && lastName.trim())
       updateData.lastName = lastName;
+    if (typeof fileUrl === "string" && fileUrl.trim())
+      updateData.fileUrl = fileUrl;
 
     if (
       typeof fullName === "string" &&
@@ -361,8 +364,6 @@ export async function PATCH(req: NextRequest) {
         { status: 400 },
       );
     }
-
-    
 
     const existingDentist = await prisma.dentist.findFirst({
       where: {

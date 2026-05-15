@@ -19,10 +19,11 @@ import ConfirmationModal from "./ConfirmationModal";
 import { signOutMutation } from "@/services/signOutMutation";
 import { UserMenu } from "./UserMenu";
 import CustomPopover from "./custom-components/Popover";
+import { S3File } from "@/services/s3/s3Query";
 
 interface TopBarProps {
   name: string;
-  profilePic: string | null | undefined;
+  profilePic: S3File | string | null;
   role: string;
   profileLink: string;
 }
@@ -36,7 +37,7 @@ export default function TopBar({
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { mutate: signOut, isPending } = signOutMutation();
 
-  console.log("profile pic is ", profilePic)
+  console.log("profile pic is ", JSON.stringify(profilePic, null, 2));
   return (
     <div className="fixed top-0 left-[320px] w-[calc(100%-320px)] h-[90px] bg-dashboardBarBackground border-b border-gray-200 flex items-center justify-end gap-8 px-6 z-10">
       {/* <Popover>
@@ -94,7 +95,13 @@ export default function TopBar({
       </CustomPopover>
       <div className="flex gap-3 items-center">
         <Image
-          src={HarryKaneImage}
+          src={
+            profilePic
+              ? typeof profilePic === "string"
+                ? profilePic
+                : profilePic.url
+              : HarryKaneImage
+          }
           alt="User Image"
           width={40}
           height={40}
@@ -109,7 +116,6 @@ export default function TopBar({
       <UserMenu
         profileLink={profileLink}
         onLogout={() => setIsCancelModalOpen(true)}
-      
       />
 
       <ConfirmationModal
