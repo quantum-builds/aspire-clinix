@@ -324,7 +324,6 @@ export async function GET(req: NextRequest) {
         select: { id: true, appointmentIds: true },
       });
     } else {
-      // let me check for the dentist as he will absolutely be in the db as he is the one uploading the report
       appointmentOwner = await prisma.dentist.findFirst({
         where: { dentallyId: appointment.practitionerId },
         select: { id: true, appointmentIds: true },
@@ -346,15 +345,22 @@ export async function GET(req: NextRequest) {
     }
 
 
+    const recipientWhere: Record<string, any> = {};
+    if (token?.role === TokenRoles.PATIENT) {
+      recipientWhere.recipientType = "PATIENT";
+    } else if (token?.role === TokenRoles.REFERRING_DENTIST) {
+      recipientWhere.recipientType = "REFERRING_DENTIST";
+    }
+
     const [patient, videos, pdfs] = await Promise.all([
       await prisma.patient.findUnique({ where: { dentallyId: appointment.patientId } }),
       await prisma.report.findMany({
-        where: { appointmentId, fileType: "VIDEO" },
+        where: { appointmentId, fileType: "VIDEO", ...recipientWhere },
         orderBy: { createdAt: "desc" },
         include: { dentist: true }
       }),
       await prisma.report.findMany({
-        where: { appointmentId, fileType: "PDF" },
+        where: { appointmentId, fileType: "PDF", ...recipientWhere },
         orderBy: { createdAt: "desc" },
         include: { dentist: true }
       })

@@ -1,3 +1,5 @@
+import { S3File } from "@/services/s3/s3Query";
+
 export type TAdminCreate = {
   email: string;
   password: string;
@@ -10,5 +12,5 @@ export type TAdmin = Omit<TAdminCreate, "password"> & {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-  file?: string;
+  file?: S3File | null;
 };

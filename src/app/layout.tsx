@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import { TanStackProvider } from "@/providers/TanStackProvider";
 import ToastProvider from "@/providers/ToastProvider";
 
+
 const gillSans = localFont({
   src: "../app/fonts/GillSans.otf",
   variable: "--font-gill-sans",
@@ -28,9 +29,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`text-[#382F26] ${opus.variable}  ${gillSans.variable}`}>
-        <TanStackProvider>
-          <ToastProvider>{children}</ToastProvider>
-        </TanStackProvider>
+     
+          <TanStackProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </TanStackProvider>
+        
       </body>
     </html>
   );

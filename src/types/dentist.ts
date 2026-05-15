@@ -1,5 +1,6 @@
 import { DentistRole, GenderType } from "@prisma/client";
 import { TDentistPractice } from "./dentistRequest";
+import { S3File } from "@/services/s3/s3Query";
 
 export type TDentistCreate = {
   email: string;
@@ -20,20 +21,20 @@ export type TDentist = Omit<TDentistCreate, "password"> & {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-  file?: string;
+  file?: S3File | string | null;
 };
 
 export interface TDenstistResponse {
   dentist: TDentist;
-  request: TDentistPractice;
+  request: TDentistPractice | null;
 }
 
 export type Dentist = {
-  id: string
-  email: string
-  gdcNo: string
-  firstName: string
-  lastName: string
-  dentallyId?: string
-  role:DentistRole
-}
+  id: string;
+  email: string;
+  gdcNo: string;
+  firstName: string;
+  lastName: string;
+  dentallyId?: string;
+  role: DentistRole;
+};

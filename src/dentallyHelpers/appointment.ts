@@ -18,6 +18,7 @@ export async function editAppointment(
     DENTALLY_ENDPOINTS.appointment.edit(appointmentId),
     { appointment: appointmentData }
   );
+  
   return dentallyErrorHelper(response.data, DATA_TYPE.APPOINTMENT);
 }
 

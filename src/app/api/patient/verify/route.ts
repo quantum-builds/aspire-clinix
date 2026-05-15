@@ -85,6 +85,7 @@ import { NextRequest, NextResponse } from "next/server";
  *               message: "Internal Server Error"
  *               data: null
  */
+
 export async function POST(req: NextRequest) {
   try {
     const { firstName, lastName, mobilePhone, dateOfBirth, email } =
@@ -101,14 +102,11 @@ export async function POST(req: NextRequest) {
       firstName,
       lastName,
     });
+    console.log("getPatient response", response);
 
     if (response.isError) {
       return NextResponse.json(
-        createResponse(
-          false,
-          `Error in fetching data from dentally`,
-          null,
-        ),
+        createResponse(false, `Error in fetching data from dentally`, null),
         { status: 400 },
       );
     }
@@ -116,19 +114,19 @@ export async function POST(req: NextRequest) {
     const activePatients = (response.response.patients ?? []).filter(
       (patient: any) => patient.active && !patient.archivedReason,
     );
+    console.log("activePatients", activePatients);
 
     if (activePatients.length === 0 || activePatients.length > 1) {
       return NextResponse.json(
-        createResponse(
-          false,
-          "No Account found",
-          null,
-        ),
+        createResponse(false, "No Account found", null),
         { status: 404 },
       );
     }
 
     let active = activePatients[0];
+
+    /** Check if the values in request body matches dentally one if not throw error */
+    
     const fullName =
       `${active?.firstName ?? firstName} ${active?.lastName ?? lastName}`.trim();
     let patient = null;
@@ -140,6 +138,8 @@ export async function POST(req: NextRequest) {
         dentallyId: dentallyPatientId,
       },
     });
+
+    console.log("existingPatient", existingPatient);
 
     if (!existingPatient) {
       patient = await prisma.patient.create({

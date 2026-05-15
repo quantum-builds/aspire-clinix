@@ -1,4 +1,5 @@
 import { buildAppointmentQuery } from "@/dentallyHelpers/appointment";
+import { getPatient } from "@/dentallyHelpers/patient";
 import { ListAppointment } from "@/types/appointment";
 import { AppointmentDateType } from "@/types/common";
 import { toCamel, toSnake } from "@/utils/typeConventionConvertor";
@@ -18,6 +19,7 @@ export const ENDPOINTS = {
     Verification: "/api/patient/verify",
     familyMember: (familyId: string) =>
       `/api/patient/family-member?familyId=${familyId}`,
+    getPatientByDentallyId: `/api/patient`,
   },
 
   dentist: {
@@ -68,7 +70,8 @@ export const ENDPOINTS = {
       status?: string,
       pageType?: string,
     ) =>
-      `/api/referral-requests?page=${page ?? 1}&search=${search ?? ""}&on=${on ?? ""
+      `/api/referral-requests?page=${page ?? 1}&search=${search ?? ""}&on=${
+        on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}&page-type=${pageType ?? ""}&stats-only=${statsOnly}`,
     getById: (id: string) => `/api/referral-requests/${id}`,
     patch: (id: string) => `/api/referral-requests/${id}`,
@@ -100,7 +103,7 @@ export const ENDPOINTS = {
     getSignedUrl: "/api/s3",
   },
   uploads: {
-    getMedia: "/api/uploads",
+    getMedia: "/api/s3-file",
   },
 
   resources: {
@@ -112,7 +115,8 @@ export const ENDPOINTS = {
       before?: string,
       after?: string,
     ) =>
-      `/api/resources?page=${page}&fileType=${fileType}&search=${search}&on=${on ?? ""
+      `/api/resources?page=${page}&fileType=${fileType}&search=${search}&on=${
+        on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}`,
     create: "/api/resources",
     delete: (id: string) => `/api/resources/${id}`,
@@ -120,7 +124,8 @@ export const ENDPOINTS = {
 
   practices: {
     getAll: (page?: number, search?: string, status?: string) =>
-      `/api/practices?page=${page ?? 1}&search=${search ?? ""}&status=${status ?? ""
+      `/api/practices?page=${page ?? 1}&search=${search ?? ""}&status=${
+        status ?? ""
       }`,
     getById: (id: string) => `/api/practices/${id}`,
     createPractice: "/api/practices",
@@ -141,25 +146,31 @@ export const ENDPOINTS = {
       dateType?: AppointmentDateType | null,
       status?: string,
     ) =>
-      `/api/appointments?page=${page ?? 1}&perPage=${perPage ?? 20}&search=${search ?? ""}&on=${on ?? ""
-      }&before=${before ?? ""}&after=${after ?? ""}&dateType=${dateType ?? ""
+      `/api/appointments?page=${page ?? 1}&perPage=${perPage ?? 20}&search=${search ?? ""}&on=${
+        on ?? ""
+      }&before=${before ?? ""}&after=${after ?? ""}&dateType=${
+        dateType ?? ""
       }&status=${status ?? ""}&practitioner_id=${practitionerId ?? ""}&site_id=${siteId}
       &state${state}&updatedAfte${updatedAfte}`,
     post: "/api/appointments",
     patch: (id: number) => `/api/appointments/${id}`,
     getById: (id: string) => `/api/appointments/${id}`,
-    getByPatientName: (patientName: string) => `/api/appointments/patient?patientName=${patientName}`,
+    getByPatientName: (patientName: string) =>
+      `/api/appointments/patient?patientName=${patientName}`,
   },
 
   dentistToPractice: {
     get: (dentistId?: string, practiceId?: string, status?: string) =>
-      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${practiceId ?? ""
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
+        practiceId ?? ""
       }&status=${status ?? ""}`,
     create: (status: string, dentistId?: string, practiceId?: string) =>
-      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${practiceId ?? ""
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
+        practiceId ?? ""
       }&status=${status ?? ""}`,
     updatedStatus: (dentistId?: string, practiceId?: string, status?: string) =>
-      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${practiceId ?? ""
+      `/api/dentist-practice?dentistId=${dentistId ?? ""}&practiceId=${
+        practiceId ?? ""
       }&status=${status ?? ""}`,
   },
 
@@ -171,7 +182,8 @@ export const ENDPOINTS = {
       before?: string,
       after?: string,
     ) =>
-      `/api/reports?search=${search ?? ""}&appointmentId=${appointmentId ?? ""
+      `/api/reports?search=${search ?? ""}&appointmentId=${
+        appointmentId ?? ""
       }&on=${on ?? ""}&before=${before ?? ""}&after=${after ?? ""}`,
     create: "/api/reports",
   },
@@ -201,7 +213,8 @@ export const ENDPOINTS = {
       after?: string,
       status?: string,
     ) =>
-      `/api/appointment-requests?page=${page ?? 1}&search=${search ?? ""}&on=${on ?? ""
+      `/api/appointment-requests?page=${page ?? 1}&search=${search ?? ""}&on=${
+        on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}`,
 
     getById: (id: string) => `/api/appointment-requests/${id}`,
@@ -222,8 +235,8 @@ export const axiosInstance = axios.create({
 
 export const DENTALLY_ENDPOINTS = {
   patient: {
-    create: `patients`,
-    get: (patientId: string) => `patients/${patientId}`,
+    create: "patients",
+    get: (patientId: string) => `/patients/${patientId}`,
     edit: (patientId: string) => `patients/${patientId}`,
     delete: (patientId: string) => `patients/${patientId}`,
     list: (query?: string) =>

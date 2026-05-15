@@ -111,7 +111,6 @@ const GENDER_OPTIONS = [
   { label: "Female", value: "female" },
 ];
 
-
 export default function PatientRegisterForm() {
   const { mutate: createPatient, isPending: createPatientLoader } =
     useCreateUser();
@@ -159,6 +158,7 @@ export default function PatientRegisterForm() {
       {
         patientData: {
           ...formData,
+          emailAddress: formData.email,
           role: TokenRoles.PATIENT,
         },
       },
@@ -270,7 +270,9 @@ export default function PatientRegisterForm() {
             }))}
             value={watch("gender") || ""}
             onValueChange={(val) => {
-              setValue("gender", val as "male" | "female", { shouldValidate: true });
+              setValue("gender", val as "male" | "female", {
+                shouldValidate: true,
+              });
             }}
             placeholder="Select Gender"
             className="border shadow-sm text-base bg-gray rounded-2xl w-full"

@@ -181,6 +181,7 @@ export async function POST(req: NextRequest) {
     const activePatients = (response.response.patients ?? []).filter(
       (patient: any) => patient.active && !patient.archivedReason,
     );
+   
 
     const patientFullName = `${patientFirstName} ${patientLastName}`;
     referralForm.patientName = patientFullName;

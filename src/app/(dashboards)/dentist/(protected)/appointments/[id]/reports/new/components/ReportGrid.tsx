@@ -5,20 +5,28 @@ import CustomButton from "@/app/(dashboards)/components/custom-components/Custom
 import { useCreateReport } from "@/services/reports/reportsMutation";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { TAppointment } from "@/types/appointment";
-import { TReport } from "@/types/reports";
+import { TReport, TReportCreate } from "@/types/reports";
 import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { ResoucrceType } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ReportRecipient } from "@/types/reports";
+
 import { useState } from "react";
 
 interface ReportGridProps {
   appointment: TAppointment;
-  videoReports?: TReport[]
-  pdfReports?: TReport[]
+  videoReports?: TReport[];
+  pdfReports?: TReport[];
+  recipientType?: string; // 'PATIENT' | 'REFERRING_DENTIST'
 }
 
-export default function ReportGrid({ appointment, videoReports = [], pdfReports = [] }: ReportGridProps) {
+export default function ReportGrid({
+  appointment,
+  videoReports = [],
+  pdfReports = [],
+  recipientType,
+}: ReportGridProps) {
   const router = useRouter();
   const { mutate: createReport, isPending: createReportLoader } =
     useCreateReport();
@@ -27,6 +35,9 @@ export default function ReportGrid({ appointment, videoReports = [], pdfReports 
 
   const [uploadedPdfs, setUploadedPdfs] = useState<File[]>([]);
   const [uploadedVideos, setUploadedVideos] = useState<File[]>([]);
+  const searchParams = useSearchParams();
+  const recipientTypeFromParams =
+    (searchParams?.get("recipientType") as string) ?? "PATIENT";
 
   const handlePdfSelect = (file: File) => {
     setUploadedPdfs((prev) => [...prev, file]);
@@ -50,56 +61,73 @@ export default function ReportGrid({ appointment, videoReports = [], pdfReports 
         showToast("error", "No files to upload");
         return;
       }
-      // Upload PDFs
-      const pdfPromises = uploadedPdfs.map(async (file) => {
-        const uploaded = await uploadFile({
-          selectedFile: file,
-          fileType: ResoucrceType.PDF,
-        });
-        console.log("appointment in repor is ", appointment)
+      const buildReportPayload = async (
+        file: File,
+        fileType: ResoucrceType,
+      ) => {
+        try {
+          const uploaded = await uploadFile({
+            selectedFile: file,
+            fileType,
+          });
 
-        return {
-          title: file.name,
-          fileUrl: `uploads/aspire-clinic/letters/${uploaded.name}`,
-          fileType: ResoucrceType.PDF,
-          patientDentallyId: String(appointment.patientId),
-          appointmentId: String(appointment.id),
-        };
-      });
+          const folder =
+            fileType === ResoucrceType.PDF
+              ? "uploads/aspire-clinic/letters"
+              : "uploads/aspire-clinic/videos";
+
+          return {
+            title: file.name,
+            fileUrl: `${folder}/${uploaded.name}`,
+            fileType,
+            patientDentallyId: String(appointment.patientId),
+            appointmentId: String(appointment.id),
+            recipientType: recipientTypeFromParams as ReportRecipient,
+          };
+        } catch (error) {
+          console.error("Report file upload failed:", error);
+          showToast(
+            "error",
+            `Failed to upload ${fileType === ResoucrceType.PDF ? "PDF" : "video"}`,
+          );
+          return null;
+        }
+      };
+
+      // Upload PDFs
+      const pdfPromises = uploadedPdfs.map((file) =>
+        buildReportPayload(file, ResoucrceType.PDF),
+      );
 
       // Upload Videos
-      const videoPromises = uploadedVideos.map(async (file) => {
-        const uploaded = await uploadFile({
-          selectedFile: file,
-          fileType: ResoucrceType.VIDEO,
-        });
-        console.log("appointment in repor is ", appointment)
+      const videoPromises = uploadedVideos.map((file) =>
+        buildReportPayload(file, ResoucrceType.VIDEO),
+      );
 
-        return {
-          title: file.name,
-          fileUrl: `uploads/aspire-clinic/videos/${uploaded.name}`,
-          fileType: ResoucrceType.VIDEO,
-          patientDentallyId: String(appointment.patientId),
-          appointmentId: String(appointment.id),
-        };
-      });
+      const reports: TReportCreate[] = (
+        await Promise.all([...pdfPromises, ...videoPromises])
+      ).filter((report): report is TReportCreate => report !== null);
 
-      const reports = await Promise.all([...pdfPromises, ...videoPromises]);
-      console.log("Reports are ", reports)
+      if (reports.length === 0) {
+        return;
+      }
+
       createReport(
         { reports },
         {
           onSuccess: () => {
             showToast("success", "Reports uploaded successfully");
+            setUploadedPdfs([]);
+            setUploadedVideos([]);
             router.replace(
-              `/dentist/appointments/${appointment.id}/reports?ts=${Date.now()}`
+              `/dentist/appointments/${appointment.id}/reports?ts=${Date.now()}`,
             );
           },
           onError: (error) => {
             const msg = getAxiosErrorMessage(error);
             showToast("error", msg);
           },
-        }
+        },
       );
     } catch (error) {
       console.error("Error in handleOnSave: ", error);

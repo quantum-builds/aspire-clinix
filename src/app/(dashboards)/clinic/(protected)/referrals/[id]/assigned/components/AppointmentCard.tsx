@@ -42,7 +42,7 @@ export default function AssignedAppointmentCard({
           <div className="flex justify-between items-end">
             <Button text="See reports" href={`/dentist/appointments/${appointment.id}/reports`} />
             <p className="font-medium italic text-xl text-green">
-              Assigned to {appointment.practitionerName}
+              Assigned to {appointment.practitionerName }
             </p>
           </div>
         </div>

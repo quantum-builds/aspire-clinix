@@ -10,9 +10,8 @@ import {
   StoreIcon,
 } from "@/assets";
 import Sidebar from "../../components/SideBar";
-import { getServerSession } from "next-auth";
 import { toTitleCase } from "@/utils/formatWords";
-import { authOptions } from "@/lib/auth";
+import { getAdmin } from "@/services/admin/adminQuery";
 import TopBarWrapper from "../../components/TopBarWrapper";
 
 const SIDEBAR_CONTENT: SidebarPage[] = [
@@ -44,19 +43,24 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
         icon: InActiveIcon,
         href: "/clinic/resources/videos",
       },
-      { name: "Letters", icon: InActiveIcon, href: "/clinic/resources/letters" },
+      {
+        name: "Letters",
+        icon: InActiveIcon,
+        href: "/clinic/resources/letters",
+        
+      },
     ],
-  }
+  },
 ];
 
 export default async function ClinicLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const session = await getServerSession(authOptions);
-
-  const role = session?.user.role;
-  const name = session?.user.name;
-  const profilePic = session?.user.image;
+  const response = await getAdmin();
+  const admin = response?.data ?? null;
+  const role = "admin";
+  const name = admin?.fullName ?? "";
+  const profilePic = admin?.file ?? null;
 
   return (
     <div className="font-inter text-dashboardTextBlack bg-dashboardBackground h-full grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden">
