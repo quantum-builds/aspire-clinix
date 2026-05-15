@@ -5,6 +5,8 @@ import { DentistRole, ReferralRequestStatus } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
 import { getPatient } from "@/dentallyHelpers/patient";
+import sendgrid from "@/config/sendgrid-config";
+import buildReferralHtml from "@/utils/referalEmailDentsit";
 
 /**
  * @swagger
@@ -55,7 +57,7 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *               attendTreatment:
  *                 type: string
  *             example:
- *               patientFirstName: John 
+ *               patientFirstName: John
  *               patientLastName: Doe
  *               patientEmail: john.doe@example.com
  *               patientPhoneNumber: "+44 7700 900123"
@@ -150,10 +152,13 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *               data: null
  */
 export async function POST(req: NextRequest) {
+  let isPatientRegistered = true;
+  let isReferralDentistRegistered = true;
+
   const referralForm = await req.json();
   try {
-    const patientFirstName = referralForm.patientFirstName
-    const patientLastName = referralForm.patientLastName
+    const patientFirstName = referralForm.patientFirstName;
+    const patientLastName = referralForm.patientLastName;
 
     if (!patientFirstName || !patientLastName) {
       return NextResponse.json(
@@ -162,14 +167,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const response = await getPatient({ firstName: patientFirstName, lastName: patientLastName });
+    const response = await getPatient({
+      firstName: patientFirstName,
+      lastName: patientLastName,
+    });
 
-    let patient = null;
     if (response.isError) {
-      return NextResponse.json(
-        createResponse(false, "Dentally Error", null),
-        { status: 400 },
-      );
+      return NextResponse.json(createResponse(false, "Dentally Error", null), {
+        status: 400,
+      });
     }
 
     const activePatients = (response.response.patients ?? []).filter(
@@ -177,40 +183,40 @@ export async function POST(req: NextRequest) {
     );
    
 
-    if (activePatients.length === 0 || activePatients.length > 1) {
-      return NextResponse.json(
-        createResponse(
-          false,
-          "No Account found",
-          null,
-        ),
-        { status: 404 },
-      );
-    }
-
-    let active = activePatients[0];
-    const patientFullName = `${active.firstName} ${active.lastName}`
+    const patientFullName = `${patientFirstName} ${patientLastName}`;
     referralForm.patientName = patientFullName;
     delete referralForm.patientFirstName;
     delete referralForm.patientLastName;
 
-    let dbPatient = await prisma.patient.findUnique({ where: { dentallyId: active.id } })
-    if (!dbPatient) {
-      dbPatient = await prisma.patient.create({
-        data: {
-          uuid: active.uuid,
-          dentallyId: active.id,
-          mobileNumber: active.mobilePhone,
-          email: active.emailAddress,
-          name: patientFullName,
-          dateOfBirth: active.dateOfBirth,
-          familyId: active.familyId,
-        },
+    if (activePatients.length === 1) {
+      let active = activePatients[0];
+      let dbPatient = await prisma.patient.findUnique({
+        where: { dentallyId: active.id },
       });
-    }
+      if (!dbPatient) {
+        dbPatient = await prisma.patient.create({
+          data: {
+            uuid: active.uuid,
+            dentallyId: active.id,
+            mobileNumber: active.mobilePhone,
+            email: active.emailAddress,
+            name: patientFullName,
+            dateOfBirth: active.dateOfBirth,
+            familyId: active.familyId,
+          },
+        });
+      }
 
-    if (dbPatient) {
-      referralForm.patientId = dbPatient.id;
+      if (dbPatient) {
+        referralForm.patientId = dbPatient.id;
+      }
+    } else if (activePatients.length === 0) {
+      isPatientRegistered = false;
+    } else {
+      return NextResponse.json(
+        createResponse(false, "Multiple accounts registered under this Patient. Contact with Aspire to resolve this issue", null),
+        { status: 400 },
+      );
     }
 
     const referralEmail = referralForm.referralEmail;
@@ -219,7 +225,10 @@ export async function POST(req: NextRequest) {
     });
     if (referralDentist) {
       referralForm.referralDentistId = referralDentist.id;
+    } else {
+      isReferralDentistRegistered = false;
     }
+
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({
         data: referralForm,
@@ -232,6 +241,49 @@ export async function POST(req: NextRequest) {
       });
       return newReferral;
     });
+
+    const dentsitEmail = referralForm.referralEmail;
+    if (dentsitEmail && process.env.EMAIL_FROM) {
+      try {
+        const dentistHtml = buildReferralHtml(referralForm, {
+          recipient: "dentist",
+          isRegistered: isReferralDentistRegistered,
+          referralId: referral.id,
+        });
+        await sendgrid.send({
+          from: process.env.EMAIL_FROM,
+          to: dentsitEmail,
+          subject: "New Referral Form Submitted",
+          html: dentistHtml,
+          text: undefined,
+        });
+      } catch (err) {
+        console.error("Error sending referral dentist email:", err);
+      }
+    }
+
+    const patientEmail = referralForm.patientEmail;
+    if (patientEmail && process.env.EMAIL_FROM) {
+      try {
+        const patientHtml = buildReferralHtml(referralForm, {
+          recipient: "patient",
+          isRegistered: isPatientRegistered,
+          referralId: referral.id,
+        });
+        const subject = isPatientRegistered
+          ? "Referral form received"
+          : "Complete your Aspire registration";
+        await sendgrid.send({
+          from: process.env.EMAIL_FROM,
+          to: patientEmail,
+          subject,
+          html: patientHtml,
+          text: undefined,
+        });
+      } catch (err) {
+        console.error("Error sending referral patient email:", err);
+      }
+    }
 
     return NextResponse.json(
       createResponse(true, "Form created successfully.", referral),
@@ -265,9 +317,7 @@ export async function GET(req: NextRequest) {
     }
 
     let dentistId = null;
-    if (
-      token.role === TokenRoles.REFERRING_DENTIST
-    ) {
+    if (token.role === TokenRoles.REFERRING_DENTIST) {
       dentistId = token.sub;
     }
 
