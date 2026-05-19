@@ -1,14 +1,15 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import ReferralFormDetailModal from "@/app/(dashboards)/components/ReferralFormDetailModal";
 import BindAppointmentModal from "./BindAppointmentModal";
 import { usePathname, useRouter } from "next/navigation";
+import { log } from "console";
 
 interface PatientReferralDetailsProps {
-  id: string
-  showModel: boolean
+  id: string;
+  showModel: boolean;
   patientDetials: {
     referenceId?: string;
     name: string;
@@ -27,13 +28,13 @@ interface PatientReferralDetailsProps {
   };
 
   referralFormDetails: {
-    referralDeatils: string
-    treatmentDetails?: string,
-    attendTreatment: string,
-    medicalHistoryPDF?: string
-  }
+    referralDeatils: string;
+    treatmentDetails?: string;
+    attendTreatment: string;
+    medicalHistoryPDF?: string;
+  };
 
-  referralRequestId: string
+  referralRequestId: string;
 }
 
 export default function UnAssignedPatientDetails({
@@ -114,9 +115,7 @@ export default function UnAssignedPatientDetails({
         </div>
       </div>
       {showModel && (
-        <ReferralFormDetailModal
-          referralFormDetails={referralFormDetails}
-        />
+        <ReferralFormDetailModal referralFormDetails={referralFormDetails} />
       )}
 
       <BindAppointmentModal

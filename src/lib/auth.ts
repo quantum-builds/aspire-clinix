@@ -72,7 +72,7 @@ export const authOptions: AuthOptions = {
             throw new Error("Invalid credentials");
           }
 
-          console.log("[ADMIN LOGIN DEBUG] Admin login successful for:", email);
+
           return {
             id: String(user.id),
             email: user.email,

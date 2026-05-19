@@ -181,46 +181,81 @@ export async function POST(req: NextRequest) {
     const activePatients = (response.response.patients ?? []).filter(
       (patient: any) => patient.active && !patient.archivedReason,
     );
-   
+
+    console.log("Active patients found in Dentally:", activePatients.length);
+    console.log("Active patients details:", activePatients);
 
     const patientFullName = `${patientFirstName} ${patientLastName}`;
     referralForm.patientName = patientFullName;
     delete referralForm.patientFirstName;
     delete referralForm.patientLastName;
 
-    if (activePatients.length === 1) {
-      let active = activePatients[0];
-      let dbPatient = await prisma.patient.findUnique({
-        where: { dentallyId: active.id },
-      });
-      if (!dbPatient) {
-        dbPatient = await prisma.patient.create({
-          data: {
-            uuid: active.uuid,
-            dentallyId: active.id,
-            mobileNumber: active.mobilePhone,
-            email: active.emailAddress,
-            name: patientFullName,
-            dateOfBirth: active.dateOfBirth,
-            familyId: active.familyId,
-          },
-        });
+    if (referralForm.patientDateOfBirth) {
+      const parsedDateOfBirth = new Date(referralForm.patientDateOfBirth);
+      if (Number.isNaN(parsedDateOfBirth.getTime())) {
+        return NextResponse.json(
+          createResponse(false, "Patient date of birth is invalid", null),
+          { status: 400 },
+        );
       }
 
-      if (dbPatient) {
+      referralForm.patientDateOfBirth = parsedDateOfBirth;
+    }
+
+    if (!Array.isArray(referralForm.referralDetails)) {
+      return NextResponse.json(
+        createResponse(false, "Referral details must be an array", null),
+        { status: 400 },
+      );
+    }
+
+    if (activePatients.length === 1) {
+      try {
+        const active = activePatients[0];
+        console.log("1")
+        let dbPatient = await prisma.patient.findUnique({
+          where: { dentallyId: active.id },
+          select: { id: true },
+        });
+        console.log("2")
+
+        if (!dbPatient) {
+          dbPatient = await prisma.patient.create({
+            data: {
+              uuid: active.uuid,
+              dentallyId: active.id,
+              mobileNumber: active.mobilePhone,
+              email: active.emailAddress,
+              name: patientFullName,
+              dateOfBirth: active.dateOfBirth,
+              familyId: active.familyId,
+            },
+            select: { id: true },
+          });
+        }
+
         referralForm.patientId = dbPatient.id;
+      } catch (error) {
+        console.error("Error linking referral patient record:", error);
+        isPatientRegistered = false;
       }
     } else if (activePatients.length === 0) {
       isPatientRegistered = false;
     } else {
       return NextResponse.json(
-        createResponse(false, "Multiple accounts registered under this Patient. Contact with Aspire to resolve this issue", null),
+        createResponse(
+          false,
+          "Multiple accounts registered under this Patient. Contact with Aspire to resolve this issue",
+          null,
+        ),
         { status: 400 },
       );
     }
 
     const referralEmail = referralForm.referralEmail;
-    const referralDentist = await prisma.dentist.findUnique({
+        console.log("3")
+
+    const referralDentist = await prisma.dentist.findFirst({
       where: { email: referralEmail, role: DentistRole.REFERRING_DENTIST },
     });
     if (referralDentist) {
@@ -228,6 +263,8 @@ export async function POST(req: NextRequest) {
     } else {
       isReferralDentistRegistered = false;
     }
+        console.log("4")
+
 
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({
@@ -290,10 +327,11 @@ export async function POST(req: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(createResponse(false, errorMessage, null), {
-      status: 500,
-    });
+    console.error("Error creating referral form:", error);
+    return NextResponse.json(
+      createResponse(false, "Unable to create referral form", null),
+      { status: 500 },
+    );
   }
 }
 
@@ -320,7 +358,7 @@ export async function GET(req: NextRequest) {
     if (token.role === TokenRoles.REFERRING_DENTIST) {
       dentistId = token.sub;
     }
-
+      
     const referralForms = await prisma.referralForm.findMany({
       where: { referralDentistId: dentistId },
     });
@@ -341,9 +379,10 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(createResponse(false, errorMessage, null), {
-      status: 500,
-    });
+    console.error("Error fetching referral forms:", error);
+    return NextResponse.json(
+      createResponse(false, "Unable to fetch referral forms", null),
+      { status: 500 },
+    );
   }
 }

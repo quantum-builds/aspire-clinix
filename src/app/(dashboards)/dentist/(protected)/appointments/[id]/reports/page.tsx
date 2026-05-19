@@ -3,6 +3,8 @@ import Button from "@/app/(dashboards)/components/Button";
 import ReportGridWrapperSkeleton from "@/app/(dashboards)/clinic/(protected)/appointments/[id]/reports/components/skeletons/ReportGridWrapper";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 import ReportGridWrapper from "./components/ReportGrid";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
 
 export default async function ReportsPage(props: {
   params: { id: string };
@@ -15,6 +17,10 @@ export default async function ReportsPage(props: {
   const title = searchParams?.query || "";
   const ts = new Date(searchParams?.ts || "");
   const { id } = props.params;
+
+  const session = await getServerSession(authOptions);
+  
+  const role = session?.user.role;
 
   return (
     <div className="flex flex-col gap-5 min-h-[103vh]">
