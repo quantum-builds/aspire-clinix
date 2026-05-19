@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
         firstName,
         lastName,
         mobilePhone,
-        email,
+        emailAddress: email,
         addressLine1,
         postCode,
         dateOfBirth,

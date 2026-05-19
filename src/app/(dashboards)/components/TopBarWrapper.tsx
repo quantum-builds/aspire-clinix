@@ -1,9 +1,10 @@
 import TopBar from "./TopBar";
 import { getAMedia } from "@/services/s3/s3Query";
+import { S3File } from "@/services/s3/s3Query";
 
 interface TopBarWrapperProps {
   name: string;
-  profilePic: string | null | undefined;
+  profilePic: S3File | string | null;
   role: string;
   profileLink: string;
 }
@@ -13,13 +14,13 @@ export default async function TopBarWrapper({
   role,
   profileLink,
 }: TopBarWrapperProps) {
-  const file = await getAMedia(profilePic || "");
 
+  console.log("profile pic in wrapper is ", JSON.stringify(profilePic, null, 2));
   return (
     <TopBar
       name={name}
       role={role}
-      profilePic={file}
+      profilePic={profilePic}
       profileLink={profileLink}
     />
   );

@@ -14,6 +14,8 @@ import { getServerSession } from "next-auth";
 import { toTitleCase } from "@/utils/formatWords";
 import { authOptions } from "@/lib/auth";
 import TopBarWrapper from "../../components/TopBarWrapper";
+import { getPatient } from "@/services/patient/patientQuery"; 
+
 
 const SIDEBAR_CONTENT: SidebarPage[] = [
   {
@@ -51,10 +53,17 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
 export default async function PatientLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+   const response = await getPatient();
+    const patient = response?.data ?? null;
+    const role = "patient";
+    // const name = patient?.fullName ?? "";
+    const profilePic = patient?.file?? null;
+
   const session = await getServerSession(authOptions);
-  const role = session?.user.role;
+
+  // const role = session?.user.role;
   const name = session?.user.name;
-  const profilePic = session?.user.image;
+  
 
   return (
     <div

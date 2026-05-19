@@ -17,7 +17,7 @@ export async function getReferralRequests({
   after,
   status,
   pageType,
-  statsOnly = false
+  statsOnly = false,
 }: {
   page?: number;
   search?: string;
@@ -25,14 +25,31 @@ export async function getReferralRequests({
   before?: string;
   after?: string;
   status?: string;
-  pageType?: string
-  statsOnly?: boolean
+  pageType?: string;
+  statsOnly?: boolean;
 }) {
   try {
     const serverAxios = await createServerAxios();
     const response = await serverAxios.get(
-      ENDPOINTS.referralRequest.get(statsOnly, page, search, on, before, after, status, pageType)
+      ENDPOINTS.referralRequest.get(
+        statsOnly,
+        page,
+        search,
+        on,
+        before,
+        after,
+        status,
+        pageType,
+      ),
     );
+    const responseData: Response<TReferralRequestResponse> = response.data;
+    const referralRequests = responseData.data;
+
+    const upload = referralRequests.fileUrl
+      ? await getAMedia(referralRequests.fileUrl)
+      : null;
+    referralRequests.file = upload?.files?.[0] ?? null;
+    responseData.data = referralRequests;
 
     return response.data;
   } catch (error) {
@@ -52,18 +69,18 @@ export async function getReferralRequest(id: string) {
   try {
     const serverAxios = await createServerAxios();
     const response = await serverAxios.get(
-      ENDPOINTS.referralRequest.getById(id)
+      ENDPOINTS.referralRequest.getById(id),
     );
 
     const responseData: Response<TReferralRequest> = response.data;
-    const referralForm: TReferralForm = responseData.data.referralForm
+    const referralForm: TReferralForm = responseData.data.referralForm;
 
     const upload = referralForm.medicalHistoryPdfUrl
       ? await getAMedia(referralForm.medicalHistoryPdfUrl)
       : null;
 
-    referralForm.medicalHistoryPdf = upload;
-    responseData.data.referralForm = referralForm
+    referralForm.medicalHistoryPdf = upload?.files?.[0]?.url;
+    responseData.data.referralForm = referralForm;
     return responseData;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

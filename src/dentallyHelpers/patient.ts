@@ -13,7 +13,8 @@ export async function getPatientById(patientId: string) {
   const response = await axiosDentallyInstance.get(
     DENTALLY_ENDPOINTS.patient.get(patientId),
   );
-  return dentallyErrorHelper(response, DATA_TYPE.PATIENT);
+
+  return dentallyErrorHelper(response.data, DATA_TYPE.PATIENT);
 }
 
 export async function getPatient(query: patientQuery) {
@@ -25,9 +26,12 @@ export async function getPatient(query: patientQuery) {
       .filter(Boolean)
       .join(" ");
 
+      console.log("dentallyQuery", dentallyQuery);
+
   const response = await axiosDentallyInstance.get(
     DENTALLY_ENDPOINTS.patient.list(dentallyQuery),
   );
+  console.log("response from dentally is ", response)
   const patientsResponse = dentallyErrorHelper(response.data, DATA_TYPE.PATIENTS);
 
   return patientsResponse
@@ -52,12 +56,14 @@ export async function patchPatientById(patientId: string, partialPatient: any) {
     DENTALLY_ENDPOINTS.patient.edit(patientId),
     partialPatient,
   );
-  return dentallyErrorHelper(response, DATA_TYPE.PATIENT);
+  return dentallyErrorHelper(response.data, DATA_TYPE.PATIENT);
 }
 
 export async function deletePatientById(patientId: string) {
   const response = await axiosDentallyInstance.delete(
     DENTALLY_ENDPOINTS.patient.delete(patientId),
   );
-  return dentallyErrorHelper(response, DATA_TYPE.PATIENT);
+  return dentallyErrorHelper(response.data, DATA_TYPE.PATIENT);
 }
+
+

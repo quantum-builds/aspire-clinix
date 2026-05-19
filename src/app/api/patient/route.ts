@@ -6,7 +6,10 @@ import {
   getPatient,
   getPatientById,
   getPatients,
+  patchPatientById,
 } from "@/dentallyHelpers/patient";
+import prisma from "@/lib/db";
+import { title } from "process";
 
 export const dynamic = "force-dynamic";
 
@@ -78,6 +81,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
+    console.log("Token: ", token);
 
     if (!token) {
       return NextResponse.json(createResponse(false, "Unauthorized", null), {
@@ -109,7 +113,6 @@ export async function GET(req: NextRequest) {
       const { searchParams } = new URL(req.url);
       const emailParam = searchParams.get("email") || "";
 
-      // decode URL-encoded email
       const email = decodeURIComponent(emailParam);
       console.log("email is ", email);
       if (email.trim().length > 0) {
@@ -156,6 +159,104 @@ export async function GET(req: NextRequest) {
     }
   } catch (error) {
     console.log("Error in fetching patients ", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(createResponse(false, errorMessage, null), {
+      status: 500,
+    });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const token = await getToken({ req });
+
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
+    const payload = await req.json();
+
+    if (token.role === TokenRoles.PATIENT) {
+      const patientDentallyId = token.sub ?? "";
+
+      if (!payload || Object.keys(payload).length === 0) {
+        return NextResponse.json(
+          createResponse(false, "No fields to update provided", null),
+          { status: 400 },
+        );
+      }
+
+      const respose = await patchPatientById(patientDentallyId, payload);
+      if (respose.isError) {
+        return respose.response;
+      }
+
+      const patient = respose.response;
+
+      if (!patient) {
+        return NextResponse.json(
+          createResponse(false, "No Patient found", patient),
+          { status: 404 },
+        );
+      }
+
+      const patientId = token.sub;
+
+      const {
+        firstName,
+        lastName,
+        emailAddress,
+        mobilePhone,
+        gender,
+        gdcNumber,
+        addressLine1,
+        postCode,
+        dateOfBirth,
+        imageUrl,
+      } = patient as {
+        firstName?: string;
+        lastName?: string;
+        emailAddress?: string;
+        mobilePhone?: string;
+        title?: string;
+        gender?: string;
+        gdcNumber?: string;
+        addressLine1?: string;
+        postCode?: string;
+        dateOfBirth?: string;
+        imageUrl?: string;
+      };
+
+      const updated = await prisma.patient.update({
+        where: { id: patientId },
+        data: {
+          ...(firstName ? { firstName } : {}),
+          ...(lastName ? { lastName } : {}),
+          ...(emailAddress ? { emailAddress } : {}),
+          ...(mobilePhone ? { mobilePhone } : {}),
+          ...(title ? { title } : {}),
+          ...(gender ? { gender } : {}),
+          ...(gdcNumber ? { gdcNumber } : {}),
+          ...(addressLine1 ? { addressLine1 } : {}),
+          ...(postCode ? { postCode } : {}),
+          ...(dateOfBirth ? { dateOfBirth } : {}),
+          ...(imageUrl ? { imageUrl } : {}),
+        },
+      });
+
+      return NextResponse.json(
+        createResponse(true, "Patient updated successfully", respose.response),
+        { status: 200 },
+      );
+    }
+
+    return NextResponse.json(createResponse(false, "Forbidden", null), {
+      status: 403,
+    });
+  } catch (error) {
+    console.log("Error in updating patient ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

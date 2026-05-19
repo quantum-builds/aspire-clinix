@@ -30,7 +30,7 @@ export function LoyaltyPointsDataTable({
         <TableHeader>
           <TableRow className="bg-dashboardBackground">
             <TableHead className="px-6 py-4 bg-dashboardBarBackground rounded-l-full text-xl text-dashboardTextBlack font-medium">
-              Reference #
+               #
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Patient Name
@@ -54,7 +54,7 @@ export function LoyaltyPointsDataTable({
         </TableHeader>
 
         <TableBody>
-          {entries.map((entry) => (
+          {entries.map((entry,index) => (
             <TableRow
               key={entry.referenceId}
               className="text-lg hover:bg-gray text-dashboardTextBlack cursor-pointer"
@@ -63,7 +63,7 @@ export function LoyaltyPointsDataTable({
               }
             >
               <TableCell className="px-6 py-4 rounded-l-full">
-                {entry.referenceId}
+                {index+1}
               </TableCell>
               <TableCell className="px-6 py-4">{entry.patientName}</TableCell>
               <TableCell className="px-6 py-4">{entry.dentistName}</TableCell>

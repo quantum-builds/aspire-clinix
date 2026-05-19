@@ -52,6 +52,7 @@ export async function GET(req: NextRequest) {
     const fileName = searchParams.get("fileName");
     const fileType = searchParams.get("fileType");
     const mimeType = searchParams.get("mimeType");
+    
 
     if (!fileName || !fileType) {
       return NextResponse.json(

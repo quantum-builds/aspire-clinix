@@ -1,8 +1,13 @@
 import { ENDPOINTS } from "@/config/api-config";
 import { createServerAxios } from "@/lib/server-axios";
-import { TAppointment, TAppointmentDetail, TAppointmentResponse } from "@/types/appointment";
+import {
+  TAppointment,
+  TAppointmentDetail,
+  TAppointmentResponse,
+} from "@/types/appointment";
 import { AppointmentDateType, Response } from "@/types/common";
 import axios from "axios";
+import { getAMedia } from "../s3/s3Query";
 
 export async function getAppointments({
   page,
@@ -15,7 +20,7 @@ export async function getAppointments({
   perPage = 20,
 }: {
   page?: number;
-  perPage?: number
+  perPage?: number;
   search?: string;
   on?: string;
   before?: string;
@@ -38,8 +43,8 @@ export async function getAppointments({
         before,
         after,
         dateType,
-        status
-      )
+        status,
+      ),
     );
 
     const responseData: Response<TAppointmentResponse> = response.data;
@@ -63,6 +68,47 @@ export async function getAppointment(id: string) {
     const response = await serverAxios.get(ENDPOINTS.appointemt.getById(id));
 
     const responseData: Response<TAppointmentDetail> = response.data;
+
+    const reports = responseData.data?.reports;
+
+    if (reports) {
+      const pdfs = reports.pdfs ?? [];
+      const videos = reports.videos ?? [];
+
+      const pdfUploads =
+        pdfs.length > 0
+          ? await Promise.all(
+              pdfs.map(async (report) => {
+                if (!report.fileUrl) return null;
+                const upload = await getAMedia(report.fileUrl);
+                return upload?.files?.[0]?.url ?? null;
+              }),
+            )
+          : [];
+
+      const videoUploads =
+        videos.length > 0
+          ? await Promise.all(
+              videos.map(async (report) => {
+                if (!report.fileUrl) return null;
+                const upload = await getAMedia(report.fileUrl);
+                return upload?.files?.[0]?.url ?? null;
+              }),
+            )
+          : [];
+
+      responseData.data.reports = {
+        pdfs: pdfs.map((report, index) => ({
+          ...report,
+          file: pdfUploads[index] ?? undefined,
+        })),
+        videos: videos.map((report, index) => ({
+          ...report,
+          file: videoUploads[index] ?? undefined,
+        })),
+      };
+    }
+
     return responseData;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

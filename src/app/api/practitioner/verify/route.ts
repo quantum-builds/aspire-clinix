@@ -115,6 +115,8 @@ export async function POST(req: NextRequest) {
 
       dbDentist = await prisma.dentist.findUnique({ where: { email: email, gdcNo: gdcNumber, role: TokenRoles.REFERRING_DENTIST } })
 
+      console.log("[Practitioner Verify] dbDentist ", dbDentist)
+
       if (!dbDentist) {
         return NextResponse.json(
           createResponse(false, "No account found with these details", null),
@@ -131,7 +133,7 @@ export async function POST(req: NextRequest) {
         },
       });
     } else {
-      // is DENTALLY_PRACTITIONER
+      console.log("[Practitioner Verify] filteredPractitioners ", filteredPractitioners)
       if (filteredPractitioners.length > 1) {
         return NextResponse.json(
           createResponse(
@@ -144,6 +146,7 @@ export async function POST(req: NextRequest) {
       }
 
       const matchedPractitioner = filteredPractitioners[0];
+      console.log("[Practitioner Verify] matchedPractitioner ", matchedPractitioner)
 
       const existingDentist = await prisma.dentist.findUnique({
         where: {
@@ -151,8 +154,11 @@ export async function POST(req: NextRequest) {
           gdcNo: normalizedGdcNumber,
         },
       });
+      
+      console.log("existingDentist", existingDentist);
 
       console.log("dentist is ", JSON.stringify(matchedPractitioner))
+      
       if (!existingDentist) {
         dbDentist = await prisma.dentist.create({
           data: {

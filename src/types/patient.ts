@@ -1,36 +1,39 @@
 import { TokenRoles } from "@/constants/UserRoles";
+import { S3File } from "@/services/s3/s3Query";
 
 export type TPatientCreate = {
   title?: string;
   firstName: string;
   lastName: string;
-  role?: TokenRoles
+  role?: TokenRoles;
   mobilePhone?: string;
-  email: string;
-  gdcNo?:string
+  emailAddress: string;
+  gdcNumber?: string;
   addressLine1?: string;
   paymentPlanId?: string;
   postCode?: string;
   dateOfBirth?: Date;
   gender?: "male" | "female";
+  fileUrl?: string;
 };
 
 export type TPatient = Omit<TPatientCreate, "password"> & {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-  file?: string;
+  file?: S3File | string | null
+  
 };
 
-export type Patient={
-  id:string
-  uuid:string
-  dentallyId:string
-  name:string
-  mobileNumber:string
-  email:string
-  dateOfBirth:string
-}
+export type Patient = {
+  id: string;
+  uuid: string;
+  dentallyId: string;
+  name: string;
+  mobileNumber: string;
+  email: string;
+  dateOfBirth: string;
+};
 
 export type patientQuery = {
   firstName?: string;

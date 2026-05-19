@@ -3,6 +3,9 @@ import Button from "@/app/(dashboards)/components/Button";
 import ReportGridWrapperSkeleton from "@/app/(dashboards)/clinic/(protected)/appointments/[id]/reports/components/skeletons/ReportGridWrapper";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 import ReportGridWrapper from "./components/ReportGrid";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { TokenRoles } from "@/constants/UserRoles";
 
 export default async function ReportsPage(props: {
   params: { id: string };
@@ -16,6 +19,10 @@ export default async function ReportsPage(props: {
   const ts = new Date(searchParams?.ts || "");
   const { id } = props.params;
 
+  const session = await getServerSession(authOptions);
+
+  const role = session?.user.role;
+
   return (
     <div className="flex flex-col gap-5 min-h-[103vh]">
       <PageTopBar
@@ -26,13 +33,15 @@ export default async function ReportsPage(props: {
         showBackBtn={true}
         extraBtns={
           <>
-            <div className="flex justify-end">
-              <Button
-                text="Create New Report"
-                href={`/dentist/appointments/${id}/reports/new`}
-                className="w-fit"
-              />
-            </div>
+            {role === TokenRoles.DENTALLY_PRACTITIONER && (
+              <div className="flex justify-end">
+                <Button
+                  text="Create New Report"
+                  href={`/dentist/appointments/${id}/reports/new`}
+                  className="w-fit"
+                />
+              </div>
+            )}
           </>
         }
       />

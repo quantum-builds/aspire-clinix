@@ -85,6 +85,7 @@ import { NextRequest, NextResponse } from "next/server";
  *               message: "Internal Server Error"
  *               data: null
  */
+
 export async function POST(req: NextRequest) {
   try {
     const { firstName, lastName, mobilePhone, dateOfBirth, email } =
@@ -100,15 +101,16 @@ export async function POST(req: NextRequest) {
     const response = await getPatient({
       firstName,
       lastName,
+      mobilePhone,
+      dateOfBirth,
+      emailAddress: email,
     });
 
+    console.log("Dentally API response:", response);
+   
     if (response.isError) {
       return NextResponse.json(
-        createResponse(
-          false,
-          `Error in fetching data from dentally`,
-          null,
-        ),
+        createResponse(false, `Error in fetching data from dentally`, null),
         { status: 400 },
       );
     }
@@ -117,18 +119,18 @@ export async function POST(req: NextRequest) {
       (patient: any) => patient.active && !patient.archivedReason,
     );
 
+    console.log("Active patients found:", activePatients.length);
+    console.log("Active patients details:", activePatients);
+    
     if (activePatients.length === 0 || activePatients.length > 1) {
       return NextResponse.json(
-        createResponse(
-          false,
-          "No Account found",
-          null,
-        ),
+        createResponse(false, "No Account found", null),
         { status: 404 },
       );
     }
 
     let active = activePatients[0];
+    
     const fullName =
       `${active?.firstName ?? firstName} ${active?.lastName ?? lastName}`.trim();
     let patient = null;

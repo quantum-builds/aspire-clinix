@@ -6,6 +6,7 @@ import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
 import { getPatient } from "@/dentallyHelpers/patient";
 import { getPractitioners } from "@/dentallyHelpers/practitioners";
+// removed external dentally helpers; uniqueness checks restricted to Admin table
 
 /**
  * @swagger
@@ -162,10 +163,15 @@ export async function POST(req: NextRequest) {
     const admin = await req.json();
     const email = admin.email;
     const phoneNumber = admin.phoneNumber;
+    const fullName = admin.fullName;
 
-    if (!email || !phoneNumber) {
+    if (!email || !phoneNumber || !fullName) {
       return NextResponse.json(
-        createResponse(false, "Email and phone number are required.", null),
+        createResponse(
+          false,
+          "Email, phone number, and full name are required.",
+          null,
+        ),
         { status: 400 },
       );
     }
@@ -182,8 +188,8 @@ export async function POST(req: NextRequest) {
       where: { email: email },
     });
     const existingDbPatient = await prisma.patient.findFirst({
-      where: { OR: [{ email }, { mobileNumber: phoneNumber }] }
-    })
+      where: { OR: [{ email }, { mobileNumber: phoneNumber }] },
+    });
     const respose = await getPatient({
       emailAddress: email,
       mobilePhone: phoneNumber,
@@ -206,17 +212,17 @@ export async function POST(req: NextRequest) {
     }
     const practitioners = practitionersResponse.response.practitioners ?? [];
     const existingPractitioner = practitioners.find(
-      (p: any) => p.user.email === email || p.user.mobilePhone === phoneNumber
+      (p: any) => p.user.email === email || p.user.mobilePhone === phoneNumber,
     );
 
-
-    if (existingDbDentist || existingDbPatient || existingPatient.length > 0 || existingPractitioner) {
+    if (
+      existingDbDentist ||
+      existingDbPatient ||
+      existingPatient.length > 0 ||
+      existingPractitioner
+    ) {
       return NextResponse.json(
-        createResponse(
-          false,
-          `Email or Phone Number already registered`,
-          null,
-        ),
+        createResponse(false, `Email or Phone Number already registered`, null),
         { status: 400 },
       );
     }
@@ -236,6 +242,83 @@ export async function POST(req: NextRequest) {
     );
   } catch (error) {
     console.log("Error in creating admin ", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(createResponse(false, errorMessage, null), {
+      status: 500,
+    });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const token = await getToken({ req });
+
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
+    if (token.role !== TokenRoles.ADMIN) {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
+        status: 403,
+      });
+    }
+
+    const adminId = token.sub;
+    const payload = await req.json();
+    const { fullName, email, phoneNumber, fileUrl } = payload as {
+      fullName?: string;
+      email?: string;
+      phoneNumber?: string;
+      fileUrl?: string;
+    };
+
+    if (!fullName && !email && !phoneNumber && !fileUrl) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "At least one field is required to update.",
+          null,
+        ),
+        { status: 400 },
+      );
+    }
+
+    const admin = await prisma.admin.findUnique({ where: { id: adminId } });
+    if (!admin) {
+      return NextResponse.json(createResponse(false, "No Admin found", null), {
+        status: 404,
+      });
+    }
+
+    // Check uniqueness only within Admin table
+    if (email && email !== admin.email) {
+      const isExist = await prisma.admin.findFirst({ where: { email } });
+      if (isExist) {
+        return NextResponse.json(
+          createResponse(false, "Email already registered", null),
+          { status: 400 },
+        );
+      }
+    }
+
+    const updated = await prisma.admin.update({
+      where: { id: adminId },
+      data: {
+        ...(fullName ? { fullName } : {}),
+        ...(email ? { email } : {}),
+        ...(phoneNumber ? { phoneNumber } : {}),
+        ...(fileUrl ? { fileUrl } : {}),
+      },
+    });
+
+    return NextResponse.json(
+      createResponse(true, "Admin updated successfully", updated),
+      { status: 200 },
+    );
+  } catch (error) {
+    console.log("Error in updating admin ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

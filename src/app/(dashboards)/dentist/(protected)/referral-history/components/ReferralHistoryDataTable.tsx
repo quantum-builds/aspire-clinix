@@ -71,7 +71,7 @@ export function ReferralHistoryDataTable({ entries }: ReferralHistoryDataTablePr
         <TableHeader>
           <TableRow>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground rounded-l-full text-xl text-dashboardTextBlack font-medium">
-              Reference #
+               #
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Patient Name
@@ -89,7 +89,7 @@ export function ReferralHistoryDataTable({ entries }: ReferralHistoryDataTablePr
         </TableHeader>
 
         <TableBody>
-          {entries.map((entry) => (
+          {entries.map((entry, index) => (
             <TableRow
               key={entry.id}
               className="bg-dashboardBackground hover:bg-gray cursor-pointer text-lg text-dashboardTextBlack"
@@ -99,7 +99,7 @@ export function ReferralHistoryDataTable({ entries }: ReferralHistoryDataTablePr
               }}
             >
               <TableCell className="px-6 py-4 rounded-l-full">
-                {entry.id.slice(0, 8)}
+                {index + 1}
               </TableCell>
 
               <TableCell className="px-6 py-4">

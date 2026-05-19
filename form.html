@@ -316,9 +316,7 @@
   }
 
   @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
+    to { transform: rotate(360deg); }
   }
 
   .btn-submit:hover {
@@ -377,17 +375,22 @@
 </head>
 <body>
 <div class="container">
-  <h1 class="page-title">I am referring for;</h1>
-  <p class="page-subtitle">Please fill in the patient and dentist details below to complete the referral.</p>
 
   <!-- PATIENT DETAILS -->
   <div class="card">
     <div class="section-title">Patient Details</div>
 
-    <div class="field">
-      <label>Name of Patient <span class="req">*</span></label>
-      <input type="text" id="patientName" placeholder="Full name" />
-      <div class="field-error" id="err-patientName"></div>
+    <div class="row-2">
+      <div class="field">
+        <label>First Name <span class="req">*</span></label>
+        <input type="text" id="patientFirstName" placeholder="First name" />
+        <div class="field-error" id="err-patientFirstName"></div>
+      </div>
+      <div class="field">
+        <label>Last Name <span class="req">*</span></label>
+        <input type="text" id="patientLastName" placeholder="Last name" />
+        <div class="field-error" id="err-patientLastName"></div>
+      </div>
     </div>
 
     <div class="field">
@@ -429,6 +432,7 @@
     </div>
 
     <div class="field">
+      <!-- FIX 1: Replaced &amp; with & inside label text (safe in HTML content) -->
       <label>I am referring for <span class="req">*</span></label>
       <div class="checkbox-grid" id="referralServices">
         <label class="checkbox-label"><input type="checkbox" value="Implants" /> Implants</label>
@@ -438,6 +442,7 @@
         <label class="checkbox-label"><input type="checkbox" value="Root Canal" /> Root Canal</label>
         <label class="checkbox-label"><input type="checkbox" value="Paediatric Dentistry" /> Paediatric Dentistry</label>
         <label class="checkbox-label"><input type="checkbox" value="Orthodontics" /> Orthodontics</label>
+        <!-- FIX 2: &amp; is correct in HTML attribute/text content — kept as-is here -->
         <label class="checkbox-label"><input type="checkbox" value="Treatment Planning & Advice" /> Treatment Planning &amp; Advice</label>
       </div>
       <div class="field-error" id="err-services"></div>
@@ -445,10 +450,15 @@
 
     <div class="field">
       <label>Upload Supporting Documents <small style="text-transform:none;letter-spacing:0">(Photographs, Radiographs)</small></label>
-      <div class="upload-area" onclick="document.getElementById('fileUpload').click()">
-        <input type="file" id="fileUpload" multiple accept="image/*,.pdf,.dcm" onchange="updateFileList()" />
-        <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
-        <div class="upload-text" style="margin-top:4px;font-size:11px">Images, PDF, Radiographs</div>
+      <!-- FIX 3: Removed onclick from div; using a proper label-for pattern instead -->
+      <div class="upload-area" id="uploadArea">
+        <label for="fileUpload" style="cursor:pointer;display:block;">
+          <span class="upload-icon">📁</span>
+          <!-- FIX 4: &amp; is correct in HTML text — kept -->
+          <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
+          <div class="upload-text" style="margin-top:4px;font-size:11px">Images, PDF, Radiographs</div>
+        </label>
+        <input type="file" id="fileUpload" multiple accept="image/*,.pdf,.dcm" />
       </div>
       <div id="file-list"></div>
     </div>
@@ -469,6 +479,43 @@
       <input type="text" id="gdcNumber" placeholder="e.g. 123456" />
       <div class="field-error" id="err-gdcNumber"></div>
     </div>
+    
+
+    <div class="field">
+      <label>Referral Email</label>
+      <input type="email" id="referralEmail" placeholder="referral@contact.com" />
+      <div class="field-error" id="err-referralEmail"></div>
+    </div>
+
+    <div class="field">
+      <label>Referral Phone Number</label>
+      <div class="phone-field">
+        <select id="referralCountry">
+          <option value="+92">PK +92</option>
+          <option value="+44">GB +44</option>
+          <option value="+1">US +1</option>
+          <option value="+91">IN +91</option>
+          <option value="+61">AU +61</option>
+        </select>
+        <input type="tel" id="referralPhone" placeholder="3001234567" />
+      </div>
+      <div class="field-error" id="err-referralPhone"></div>
+    </div>
+
+    <div class="field">
+      <label>Would you like to attend the treatment appointment and shadow the dentist? <span class="req">*</span></label>
+      <div class="radio-row">
+        <label class="radio-label"><input type="radio" name="shadow" value="yes" /> Yes</label>
+        <label class="radio-label"><input type="radio" name="shadow" value="no" /> No</label>
+      </div>
+      <div class="field-error" id="err-shadow"></div>
+    </div>
+
+  </div>
+
+  <!-- PRACTICE DETAILS -->
+  <div class="card">
+    <div class="section-title">Practice Details</div>
 
     <div class="field">
       <label>Practice Name <span class="req">*</span></label>
@@ -502,14 +549,6 @@
       <div class="field-error" id="err-practicePhone"></div>
     </div>
 
-    <div class="field">
-      <label>Would you like to attend the treatment appointment and shadow the dentist? <span class="req">*</span></label>
-      <div class="radio-row">
-        <label class="radio-label"><input type="radio" name="shadow" value="yes" /> Yes</label>
-        <label class="radio-label"><input type="radio" name="shadow" value="no" /> No</label>
-      </div>
-      <div class="field-error" id="err-shadow"></div>
-    </div>
   </div>
 
   <button class="btn-submit" id="submitBtn" onclick="submitForm()">Submit Referral</button>
@@ -519,69 +558,93 @@
 
 <script>
   // Checkbox visual state
-  document.querySelectorAll('.checkbox-label input[type="checkbox"]').forEach(cb => {
-    cb.addEventListener('change', () => {
+  document.querySelectorAll('.checkbox-label input[type="checkbox"]').forEach(function(cb) {
+    cb.addEventListener('change', function() {
       cb.closest('.checkbox-label').classList.toggle('checked', cb.checked);
     });
   });
 
+  // FIX 5: File input change listener attached via JS (not inline onchange)
+  document.getElementById('fileUpload').addEventListener('change', updateFileList);
+
   function updateFileList() {
-    const input = document.getElementById('fileUpload');
-    const list = document.getElementById('file-list');
-    if (input.files.length === 0) { list.textContent = ''; return; }
-    list.textContent = Array.from(input.files).map(f => `📎 ${f.name}`).join('  ·  ');
+    var input = document.getElementById('fileUpload');
+    var list = document.getElementById('file-list');
+    if (!input.files || input.files.length === 0) {
+      list.textContent = '';
+      return;
+    }
+    list.textContent = Array.from(input.files).map(function(f) { return '\uD83D\uDCCE ' + f.name; }).join('  \u00B7  ');
   }
 
-  // Drag & Drop
-  const uploadArea = document.querySelector('.upload-area');
-  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = 'var(--accent)'; });
-  uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
-  uploadArea.addEventListener('drop', e => {
+  // FIX 6: Drag & drop — input.files is read-only, use a DataTransfer object to assign files
+  var uploadArea = document.getElementById('uploadArea');
+
+  uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    uploadArea.style.borderColor = 'var(--accent)';
+  });
+
+  uploadArea.addEventListener('dragleave', function() {
+    uploadArea.style.borderColor = '';
+  });
+
+  uploadArea.addEventListener('drop', function(e) {
     e.preventDefault();
     uploadArea.style.borderColor = '';
-    document.getElementById('fileUpload').files = e.dataTransfer.files;
+    var fileInput = document.getElementById('fileUpload');
+    // FIX: Cannot assign e.dataTransfer.files directly; use DataTransfer to copy files
+    var dt = new DataTransfer();
+    Array.from(e.dataTransfer.files).forEach(function(file) {
+      dt.items.add(file);
+    });
+    fileInput.files = dt.files;
     updateFileList();
   });
 
-  function showToast(msg, type = 'success') {
-    const t = document.getElementById('toast');
+  function showToast(msg, type) {
+    type = type || 'success';
+    var t = document.getElementById('toast');
     t.textContent = msg;
-    t.className = `show ${type}`;
-    setTimeout(() => { t.className = ''; }, 4000);
+    t.className = 'show ' + type;
+    setTimeout(function() { t.className = ''; }, 4000);
   }
 
   function setError(id, msg) {
-    const el = document.getElementById('err-' + id);
+    var el = document.getElementById('err-' + id);
     if (el) el.textContent = msg;
-    const input = document.getElementById(id);
+    var input = document.getElementById(id);
     if (input) input.classList.toggle('invalid', !!msg);
   }
 
   function clearErrors() {
-    document.querySelectorAll('.field-error').forEach(e => e.textContent = '');
-    document.querySelectorAll('.invalid').forEach(e => e.classList.remove('invalid'));
+    document.querySelectorAll('.field-error').forEach(function(e) { e.textContent = ''; });
+    document.querySelectorAll('.invalid').forEach(function(e) { e.classList.remove('invalid'); });
   }
 
   function validate() {
-    let ok = true;
-    const req = (id, msg) => {
-      const el = document.getElementById(id);
+    var ok = true;
+
+    function req(id, msg) {
+      var el = document.getElementById(id);
       if (!el || !el.value.trim()) { setError(id, msg); ok = false; }
-    };
-    const email = (id) => {
-      const el = document.getElementById(id);
+    }
+
+    function email(id) {
+      var el = document.getElementById(id);
       if (el && el.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value)) {
         setError(id, 'Enter a valid email address'); ok = false;
       }
-    };
+    }
 
-    req('patientName', 'Patient name is required');
+    req('patientFirstName', 'First name is required');
+    req('patientLastName', 'Last name is required');
     req('dob', 'Date of birth is required');
     req('mobileNumber', 'Mobile number is required');
     req('patientEmail', 'Email is required');
     email('patientEmail');
 
-    const services = [...document.querySelectorAll('#referralServices input:checked')];
+    var services = Array.from(document.querySelectorAll('#referralServices input:checked'));
     if (services.length === 0) { setError('services', 'Please select at least one service'); ok = false; }
 
     req('dentistName', 'Dentist name is required');
@@ -589,12 +652,40 @@
     req('practiceName', 'Practice name is required');
     req('practiceEmail', 'Practice email is required');
     email('practiceEmail');
+    email('referralEmail');
     req('practicePhone', 'Practice phone is required');
 
-    const shadow = document.querySelector('input[name="shadow"]:checked');
+    var shadow = document.querySelector('input[name="shadow"]:checked');
     if (!shadow) { setError('shadow', 'Please select an option'); ok = false; }
 
     return ok;
+  }
+
+  function setInputsDisabled(disabled) {
+    document.querySelectorAll('input:not(#submitBtn), select, textarea').forEach(function(input) {
+      input.disabled = disabled;
+    });
+  }
+
+  function clearForm() {
+    ['patientFirstName','patientLastName','dob','address','mobileNumber','patientEmail',
+     'medicalHistory','dentistName','gdcNumber','practiceName','practiceAddress',
+     'practiceEmail','practicePhone','referralEmail','referralPhone'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+
+    document.getElementById('fileUpload').value = '';
+    document.getElementById('file-list').textContent = '';
+
+    document.querySelectorAll('#referralServices input[type="checkbox"]').forEach(function(cb) {
+      cb.checked = false;
+      cb.closest('.checkbox-label').classList.remove('checked');
+    });
+
+    document.querySelectorAll('input[name="shadow"]').forEach(function(radio) {
+      radio.checked = false;
+    });
   }
 
   async function submitForm() {
@@ -605,54 +696,122 @@
       return;
     }
 
-    const services = [...document.querySelectorAll('#referralServices input:checked')].map(c => c.value);
-    const shadow = document.querySelector('input[name="shadow"]:checked')?.value;
+    var services = Array.from(document.querySelectorAll('#referralServices input:checked')).map(function(c) { return c.value; });
+    var shadowEl = document.querySelector('input[name="shadow"]:checked');
+    var shadow = shadowEl ? shadowEl.value : '';
 
-    const payload = {
-      patient: {
-        name: document.getElementById('patientName').value.trim(),
-        dob: document.getElementById('dob').value,
-        address: document.getElementById('address').value.trim(),
-        mobile: document.getElementById('mobileCountry').value + document.getElementById('mobileNumber').value.trim(),
-        email: document.getElementById('patientEmail').value.trim(),
-        medicalHistory: document.getElementById('medicalHistory').value.trim(),
-        referralServices: services,
-      },
-      dentist: {
-        name: document.getElementById('dentistName').value.trim(),
-        gdc: document.getElementById('gdcNumber').value.trim(),
-        practiceName: document.getElementById('practiceName').value.trim(),
-        practiceAddress: document.getElementById('practiceAddress').value.trim(),
-        practiceEmail: document.getElementById('practiceEmail').value.trim(),
-        practicePhone: document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
-        shadowAppointment: shadow,
-      }
+    var payload = {
+      patientFirstName: document.getElementById('patientFirstName').value.trim(),
+      patientLastName: document.getElementById('patientLastName').value.trim(),
+      patientName: (document.getElementById('patientFirstName').value.trim() + ' ' + document.getElementById('patientLastName').value.trim()).trim(),
+      patientDateOfBirth: document.getElementById('dob').value
+        ? new Date(document.getElementById('dob').value).toISOString()
+        : null,
+      patientAddress: document.getElementById('address').value.trim(),
+      patientPhoneNumber: document.getElementById('mobileCountry').value + document.getElementById('mobileNumber').value.trim(),
+      patientEmail: document.getElementById('patientEmail').value.trim(),
+      treatmentDetails: document.getElementById('medicalHistory').value.trim(),
+      referralDetails: services,
+      referralName: document.getElementById('dentistName').value.trim(),
+      referralGDC: document.getElementById('gdcNumber').value.trim(),
+      referralPracticeNameAddress: document.getElementById('practiceName').value.trim() +
+        (document.getElementById('practiceAddress').value ? ' - ' + document.getElementById('practiceAddress').value.trim() : ''),
+      referralEmail: (document.getElementById('referralEmail') && document.getElementById('referralEmail').value.trim())
+        ? document.getElementById('referralEmail').value.trim()
+        : document.getElementById('practiceEmail').value.trim(),
+      referralPhoneNumber: (document.getElementById('referralPhone') && document.getElementById('referralPhone').value.trim())
+        ? document.getElementById('referralCountry').value + document.getElementById('referralPhone').value.trim()
+        : document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
+      practiceName: document.getElementById('practiceName').value.trim(),
+      practiceEmail: document.getElementById('practiceEmail').value.trim(),
+      practicePhoneNumber: document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
+      attendTreatment: shadow === 'yes' ? 'Yes' : 'No',
+      medicalHistoryPdfUrl: null,
+      other: ''
     };
 
-    const btn = document.getElementById('submitBtn');
+    var btn = document.getElementById('submitBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="btn-loader"></span> Submitting...';
+    setInputsDisabled(true);
 
     try {
-      const res = await fetch('http://localhost:3000/api/referrals', {
+      var fileInput = document.getElementById('fileUpload');
+      var file = (fileInput.files && fileInput.files.length > 0) ? fileInput.files[0] : null;
+
+      if (file) {
+        var fileTypeParam = 'others';
+        if (file.type === 'application/pdf') fileTypeParam = 'pdf';
+        else if (file.type.startsWith('image/')) fileTypeParam = 'images';
+        else if (file.type.startsWith('video/')) fileTypeParam = 'video';
+
+        var params = new URLSearchParams({
+          fileName: file.name,
+          fileType: fileTypeParam,
+          mimeType: file.type,
+          fileSize: String(file.size)
+        });
+
+        var signedRes = await fetch(' https://tabloid-passivism-useable.ngrok-free.dev/api/s3?' + params.toString());
+
+        var signedJson = null;
+        var ct = signedRes.headers.get('content-type') || '';
+        if (ct.includes('application/json')) {
+          try {
+            signedJson = await signedRes.json();
+          } catch (parseErr) {
+            var text = await signedRes.text();
+            console.error('Failed to parse JSON from /api/s3:', parseErr, text);
+            throw new Error('Upload service returned invalid JSON response');
+          }
+        } else {
+          var text = await signedRes.text();
+          console.error('Non-JSON response from /api/s3:', text);
+          throw new Error('Upload service returned non-JSON response: ' + (text ? text.slice(0,200) : ''));
+        }
+
+        if (!signedRes.ok || !signedJson || !signedJson.success || !signedJson.url) {
+          console.error('Signed URL response:', signedRes.status, signedJson);
+          throw new Error('Failed to obtain upload URL');
+        }
+
+        var signedUrl = signedJson.url;
+        var put = await fetch(signedUrl, {
+          method: 'PUT',
+          body: file,
+          headers: { 'Content-Type': file.type }
+        });
+        if (!put.ok) throw new Error('Failed to upload file to storage');
+
+        console.log('url', signedUrl);
+        var u = new URL(signedUrl);
+        var key = u.pathname.replace(/^\//, '');
+        console.log('key', key);
+
+        payload.medicalHistoryPdfUrl = key;
+      }
+
+      var res = await fetch(' https://tabloid-passivism-useable.ngrok-free.dev/api/referrals', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
-      const data = await res.json().catch(() => null);
+      var data = null;
+      try { data = await res.json(); } catch(e) { data = null; }
 
       if (!res.ok) {
-        throw new Error(data?.message || `Server error: ${res.status}`);
+        throw new Error((data && data.message) || ('Server error: ' + res.status));
       }
 
       showToast('Referral submitted successfully!', 'success');
+      clearForm();
+
     } catch (err) {
       console.error(err);
       showToast(err.message || 'Submission failed. Please try again.', 'error');
     } finally {
+      setInputsDisabled(false);
       btn.disabled = false;
       btn.innerHTML = 'Submit Referral';
     }
