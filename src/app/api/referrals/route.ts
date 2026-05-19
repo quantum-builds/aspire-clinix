@@ -182,9 +182,6 @@ export async function POST(req: NextRequest) {
       (patient: any) => patient.active && !patient.archivedReason,
     );
 
-    console.log("Active patients found in Dentally:", activePatients.length);
-    console.log("Active patients details:", activePatients);
-
     const patientFullName = `${patientFirstName} ${patientLastName}`;
     referralForm.patientName = patientFullName;
     delete referralForm.patientFirstName;
@@ -243,11 +240,7 @@ export async function POST(req: NextRequest) {
       isPatientRegistered = false;
     } else {
       return NextResponse.json(
-        createResponse(
-          false,
-          "Multiple accounts registered under this Patient. Contact with Aspire to resolve this issue",
-          null,
-        ),
+        createResponse(false, "Multiple accounts registered under this Patient. Contact with Aspire to resolve this issue", null),
         { status: 400 },
       );
     }
@@ -263,8 +256,6 @@ export async function POST(req: NextRequest) {
     } else {
       isReferralDentistRegistered = false;
     }
-        console.log("4")
-
 
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({

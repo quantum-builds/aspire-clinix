@@ -18,14 +18,12 @@ interface ReportGridProps {
   appointment: TAppointment;
   videoReports?: TReport[];
   pdfReports?: TReport[];
-  recipientType?: string; // 'PATIENT' | 'REFERRING_DENTIST'
 }
 
 export default function ReportGrid({
   appointment,
   videoReports = [],
   pdfReports = [],
-  recipientType,
 }: ReportGridProps) {
   const router = useRouter();
   const { mutate: createReport, isPending: createReportLoader } =

@@ -9,7 +9,7 @@ import { TStatusOption } from "@/types/common";
 import Image from "next/image";
 import { BackButtonIcon } from "@/assets";
 import { useRouter } from "next/navigation";
-import DropDown from "./DropDown";
+import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 
 interface PageTopBarProps {
   pageHeading: string;
@@ -41,9 +41,7 @@ export default function PageTopBar({
   showDropdown = false,
 }: PageTopBarProps) {
   const router = useRouter();
-  const [participantType, setParticipantType] = useState<"patient" | "dentist">(
-    "patient",
-  );
+  const [participantType, setParticipantType] = useState<string>("patient");
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -70,7 +68,7 @@ export default function PageTopBar({
           )}
           {showExport && <ExportButton />}
           {showDropdown && (
-            <DropDown
+            <Dropdown
               options={[
                 { value: "patient", label: "Patient" },
                 { value: "dentist", label: "Refering Dentist" },
@@ -82,7 +80,8 @@ export default function PageTopBar({
                 setParticipantType(val);
                 try {
                   const url = new URL(window.location.href);
-                  const recipient = val === "patient" ? "PATIENT" : "REFERRING_DENTIST";
+                  const recipient =
+                    val === "patient" ? "PATIENT" : "REFERRING_DENTIST";
                   url.searchParams.set("recipientType", recipient);
                   router.replace(url.pathname + url.search);
                 } catch (e) {

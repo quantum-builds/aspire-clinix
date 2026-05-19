@@ -8,7 +8,6 @@ import { Dentist, TDentist } from "@/types/dentist";
 import { TAppointmentDetail } from "@/types/appointment";
 import { getAppointment } from "@/services/appointments/appointmentQuery";
 
-
 interface ReportGridWrapperProps {
   id: string;
   title: string;

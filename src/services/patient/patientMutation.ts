@@ -8,7 +8,7 @@ export const useCreateUser = () => {
     mutationFn: async ({ patientData }: { patientData: TPatientCreate }) => {
       const response = await axiosInstance.post(
         ENDPOINTS.auth.register,
-        patientData,
+        patientData
       );
       const respons = response.data.data;
       return respons;
