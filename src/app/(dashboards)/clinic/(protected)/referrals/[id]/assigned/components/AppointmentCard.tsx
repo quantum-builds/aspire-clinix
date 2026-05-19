@@ -29,7 +29,8 @@ export default function AssignedAppointmentCard({
                 </p>
                 <p className="flex items-center gap-2 text-xl">
                   <Image src={TimeIcon} alt="Time icon" />
-                  {formatTime(appointment.startTime)}{" "} - {" "}{formatTime(appointment.finishTime)}
+                  {formatTime(appointment.startTime)} -{" "}
+                  {formatTime(appointment.finishTime)}
                 </p>
               </div>
             </div>
@@ -40,9 +41,12 @@ export default function AssignedAppointmentCard({
             </div>
           </div>
           <div className="flex justify-between items-end">
-            <Button text="See reports" href={`/dentist/appointments/${appointment.id}/reports`} />
+            <Button
+              text="See reports"
+              href={`/clinic/appointments/${appointment.id}/reports`}
+            />
             <p className="font-medium italic text-xl text-green">
-              Assigned to {appointment.practitionerName }
+              Assigned to {appointment.practitionerName}
             </p>
           </div>
         </div>

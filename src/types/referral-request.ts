@@ -25,6 +25,8 @@ export type TReferralRequestPagination = {
 };
 
 export type TReferralRequestResponse = {
+  file: any;
+  fileUrl: any;
   referralRequests: TReferralRequest[];
   pagination: TReferralRequestPagination;
 };

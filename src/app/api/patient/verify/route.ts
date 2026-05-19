@@ -101,9 +101,13 @@ export async function POST(req: NextRequest) {
     const response = await getPatient({
       firstName,
       lastName,
+      mobilePhone,
+      dateOfBirth,
+      emailAddress: email,
     });
-    console.log("getPatient response", response);
 
+    console.log("Dentally API response:", response);
+   
     if (response.isError) {
       return NextResponse.json(
         createResponse(false, `Error in fetching data from dentally`, null),
@@ -114,8 +118,10 @@ export async function POST(req: NextRequest) {
     const activePatients = (response.response.patients ?? []).filter(
       (patient: any) => patient.active && !patient.archivedReason,
     );
-    console.log("activePatients", activePatients);
 
+    console.log("Active patients found:", activePatients.length);
+    console.log("Active patients details:", activePatients);
+    
     if (activePatients.length === 0 || activePatients.length > 1) {
       return NextResponse.json(
         createResponse(false, "No Account found", null),
@@ -124,8 +130,6 @@ export async function POST(req: NextRequest) {
     }
 
     let active = activePatients[0];
-
-    /** Check if the values in request body matches dentally one if not throw error */
     
     const fullName =
       `${active?.firstName ?? firstName} ${active?.lastName ?? lastName}`.trim();
@@ -138,8 +142,6 @@ export async function POST(req: NextRequest) {
         dentallyId: dentallyPatientId,
       },
     });
-
-    console.log("existingPatient", existingPatient);
 
     if (!existingPatient) {
       patient = await prisma.patient.create({

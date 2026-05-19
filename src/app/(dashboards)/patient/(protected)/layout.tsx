@@ -56,8 +56,13 @@ export default async function PatientLayout({
    const response = await getPatient();
     const patient = response?.data ?? null;
     const role = "patient";
-    const name = patient?.fullName ?? "";
+    // const name = patient?.fullName ?? "";
     const profilePic = patient?.file?? null;
+
+  const session = await getServerSession(authOptions);
+
+  // const role = session?.user.role;
+  const name = session?.user.name;
   
 
   return (

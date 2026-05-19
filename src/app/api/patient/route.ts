@@ -214,7 +214,7 @@ export async function PATCH(req: NextRequest) {
         addressLine1,
         postCode,
         dateOfBirth,
-        fileUrl,
+        imageUrl,
       } = patient as {
         firstName?: string;
         lastName?: string;
@@ -226,7 +226,7 @@ export async function PATCH(req: NextRequest) {
         addressLine1?: string;
         postCode?: string;
         dateOfBirth?: string;
-        fileUrl?: string;
+        imageUrl?: string;
       };
 
       const updated = await prisma.patient.update({
@@ -242,7 +242,7 @@ export async function PATCH(req: NextRequest) {
           ...(addressLine1 ? { addressLine1 } : {}),
           ...(postCode ? { postCode } : {}),
           ...(dateOfBirth ? { dateOfBirth } : {}),
-          ...(fileUrl ? { fileUrl } : {}),
+          ...(imageUrl ? { imageUrl } : {}),
         },
       });
 

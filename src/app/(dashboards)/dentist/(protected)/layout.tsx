@@ -104,13 +104,13 @@ export default async function DentistLayout({
   const session = await getServerSession(authOptions);
 
   const role = session?.user.role;
-  // const name = session?.user.name;
+  const name = session?.user.name;
   // const profilePic = session?.user.image;
 
   const response = await getDentist();
   const denResponse = response?.data ?? null;
   const dentist = denResponse?.dentist ?? null;
-  const name = dentist?.fullName ?? "";
+  // const name = dentist?.fullName ?? "";
   const profilePic = dentist?.file ?? null;
 
   // Pick sidebar based on role
