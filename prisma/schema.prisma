@@ -27,13 +27,12 @@ model ReferralForm {
   referralPhoneNumber         String
   attendTreatment             String
   referralPracticeNameAddress String
+  practiceEmail               String?
+  practiceName                String?
+  practicePhoneNumber         String?
   patient                     Patient?         @relation(fields: [patientId], references: [id])
   referralDentist             Dentist?         @relation(fields: [referralDentistId], references: [id])
   referralRequest             ReferralRequest?
-  practiceName                String?
-  practiceEmail               String?
-  practicePhoneNumber         String?
-
 
   @@index([patientEmail])
 }
@@ -111,7 +110,7 @@ model Patient {
   appointmentIds      String[]
   name                String         @unique
   dentallyId          Int            @unique
-  imageUrl             String?
+  imageUrl            String?
   referralForms       ReferralForm[]
   reports             Report[]
 

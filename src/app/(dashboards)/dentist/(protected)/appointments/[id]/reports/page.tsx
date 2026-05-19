@@ -5,6 +5,7 @@ import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopB
 import ReportGridWrapper from "./components/ReportGrid";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
+import { TokenRoles } from "@/constants/UserRoles";
 
 export default async function ReportsPage(props: {
   params: { id: string };
@@ -19,7 +20,7 @@ export default async function ReportsPage(props: {
   const { id } = props.params;
 
   const session = await getServerSession(authOptions);
-  
+
   const role = session?.user.role;
 
   return (
@@ -32,13 +33,15 @@ export default async function ReportsPage(props: {
         showBackBtn={true}
         extraBtns={
           <>
-            <div className="flex justify-end">
-              <Button
-                text="Create New Report"
-                href={`/dentist/appointments/${id}/reports/new`}
-                className="w-fit"
-              />
-            </div>
+            {role === TokenRoles.DENTALLY_PRACTITIONER && (
+              <div className="flex justify-end">
+                <Button
+                  text="Create New Report"
+                  href={`/dentist/appointments/${id}/reports/new`}
+                  className="w-fit"
+                />
+              </div>
+            )}
           </>
         }
       />
