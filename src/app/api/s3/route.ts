@@ -3,6 +3,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3 from "@/config/s3-config";
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+function createCorsJson(body: unknown, init: ResponseInit = {}) {
+  return NextResponse.json(body, {
+    headers: CORS_HEADERS,
+    ...init,
+  });
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+}
+
 /**
  * @swagger
  * /api/s3:
@@ -87,10 +104,10 @@ export async function GET(req: NextRequest) {
     }
     const command = new PutObjectCommand(params);
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
-    return NextResponse.json({ success: true, url: signedUrl });
+    return createCorsJson({ success: true, url: signedUrl });
   } catch (error) {
     console.error("Error generating upload URL:", error);
-    return NextResponse.json(
+    return createCorsJson(
       { success: false, message: "Failed to generate URL" },
       { status: 500 },
     );

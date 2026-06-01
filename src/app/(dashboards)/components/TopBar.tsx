@@ -26,6 +26,7 @@ interface TopBarProps {
   profilePic: S3File | string | null;
   role: string;
   profileLink: string;
+  familyId?: string;
 }
 
 export default function TopBar({
@@ -33,6 +34,7 @@ export default function TopBar({
   profilePic,
   role,
   profileLink,
+  familyId,
 }: TopBarProps) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { mutate: signOut, isPending } = signOutMutation();
@@ -113,11 +115,17 @@ export default function TopBar({
         </div>
       </div>
 
-      <Suspense fallback={<div className="w-11 h-11 rounded-full bg-[#F3F5F7] flex justify-center items-center">
-        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-      </div>}>
+      <Suspense
+        fallback={
+          <div className="w-11 h-11 rounded-full bg-[#F3F5F7] flex justify-center items-center">
+            <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+          </div>
+        }
+      >
         <UserMenu
           profileLink={profileLink}
+          role={role}
+          familyId={familyId}
           onLogout={() => setIsCancelModalOpen(true)}
         />
       </Suspense>

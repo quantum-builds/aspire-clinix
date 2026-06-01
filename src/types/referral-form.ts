@@ -13,7 +13,8 @@ export interface CreateReferralForm {
   referralAddress: string;
   referralMobileNumber: string;
   referralEmail: string;
-  referralDetails?: string[];
+  cbctApp?: string;
+  dentalSpecialty?: string;
   treatMeantAppointment?: string;
   // medicalHistory?: string;
   // medicalHistoryPdf?: string;
@@ -32,7 +33,8 @@ export interface UpdateReferralForm {
   referralAddress?: string;
   referralMobileNumber?: string;
   referralEmail?: string;
-  referralDetails?: string[];
+  cbctApp?: string;
+  dentalSpecialty?: string;
   treatMeantAppointment?: string;
   medicalHistory?: string;
   treatmentDetails?: string;
@@ -46,7 +48,8 @@ export type TCreateReferralForm = {
   patientAddress: string;
 
   medicalHistoryPdfUrl?: string;
-  referralDetails: string[];
+  cbctApp?: string;
+  dentalSpecialty?: string;
   other?: string;
   treatmentDetails?: string;
 
@@ -63,7 +66,7 @@ export type TReferralForm = TCreateReferralForm & {
   id: string;
   createdAt: Date;
 
-  medicalHistoryPdf?:string;
+  medicalHistoryPdf?: string;
   referralDentistId?: string;
   patientId?: string;
   referralDentist?: TDentist;

@@ -14,6 +14,7 @@ import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+
 export const dentistsSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   gdcNumber: z.string().min(1, "Gdc Number is required"),

@@ -9,69 +9,88 @@ import { calculateAge } from "@/utils/formatDateTime";
 import { toTitleCase } from "@/utils/formatWords";
 
 interface UnAssignedWrapperProps {
-    id: string
-    showModel: boolean
+  id: string;
+  showModel: boolean;
 }
-export default async function UnAssignedWrapper({ id, showModel }: UnAssignedWrapperProps) {
-    const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
+export default async function UnAssignedWrapper({
+  id,
+  showModel,
+}: UnAssignedWrapperProps) {
+  const referralRequestResponse: Response<TReferralRequest> =
+    await getReferralRequest(id);
 
-    if (!referralRequestResponse || !referralRequestResponse.status || !referralRequestResponse.data || !referralRequestResponse.data.referralForm) {
-        return (
-            <div className="min-h-screen flex flex-col gap-5">
-                <PageTopBar
-                    pageHeading="Referrals Details"
-                    showSearch={false}
-                    showBackBtn={true}
-                    showFilters={false}
-                    statusOptions={null}
-                />
-                <NoContent1 />
-            </div>
-        )
-    }
-
-    const referralForm = referralRequestResponse.data.referralForm
-    const referralRequest = referralRequestResponse.data
-
-    console.log(referralForm.patientDateOfBirth)
-    const patientDetails = {
-        name: referralForm.patientName,
-        phone: referralForm.patientPhoneNumber,
-        email: referralForm.patientEmail,
-        address: referralForm.patientAddress,
-        age: String(calculateAge(referralForm.patientDateOfBirth))
-    }
-
-    const dentistDetails = {
-        name: referralForm.referralName,
-        phone: referralForm.referralPhoneNumber,
-        email: referralForm.referralEmail,
-        gdcNo: referralForm.referralGDC,
-        address: referralForm.patientAddress
-    }
-
-    const referralFormDetails = {
-        referralDeatils: referralForm.other ? referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", ") + ", " + referralForm.other : referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", "),
-        treatmentDetails: referralForm.treatmentDetails,
-        attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
-        medicalHistoryPDF: referralForm.medicalHistoryPdf
-    }
-
-    return (<div className="min-h-screen flex flex-col gap-5">
+  if (
+    !referralRequestResponse ||
+    !referralRequestResponse.status ||
+    !referralRequestResponse.data ||
+    !referralRequestResponse.data.referralForm
+  ) {
+    return (
+      <div className="min-h-screen flex flex-col gap-5">
         <PageTopBar
-            pageHeading="Referrals Details"
-            showSearch={false}
-            showBackBtn={true}
-            showFilters={false}
-            statusOptions={null}
+          pageHeading="Referrals Details"
+          showSearch={false}
+          showBackBtn={true}
+          showFilters={false}
+          statusOptions={null}
         />
-        <UnAssignedPatientDetails
-            id={id}
-            showModel={showModel}
-            referralFormDetails={referralFormDetails}
-            patientDetials={patientDetails}
-            referralDentistDetails={dentistDetails}
-            referralRequestId={referralRequest.id}
-        />
-    </div>)
+        <NoContent1 />
+      </div>
+    );
+  }
+
+  const referralForm = referralRequestResponse.data.referralForm;
+  const referralRequest = referralRequestResponse.data;
+
+  console.log(referralForm.patientDateOfBirth);
+  const patientDetails = {
+    name: referralForm.patientName,
+    phone: referralForm.patientPhoneNumber,
+    email: referralForm.patientEmail,
+    address: referralForm.patientAddress,
+    age: String(calculateAge(referralForm.patientDateOfBirth)),
+  };
+
+  const dentistDetails = {
+    name: referralForm.referralName,
+    phone: referralForm.referralPhoneNumber,
+    email: referralForm.referralEmail,
+    gdcNo: referralForm.referralGDC,
+    address: referralForm.patientAddress,
+  };
+
+  const referralService =
+    referralForm.cbctApp || referralForm.dentalSpecialty || "";
+  const referralDeatilsText = referralService
+    ? referralForm.other
+      ? `${referralService}, ${referralForm.other}`
+      : referralService
+    : referralForm.other || "No referral details provided";
+
+  const referralFormDetails = {
+    referralDeatils: referralDeatilsText,
+    treatmentDetails: referralForm.treatmentDetails,
+    attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
+    medicalHistoryPDF: referralForm.medicalHistoryPdf,
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col gap-5">
+      <PageTopBar
+        pageHeading="Referrals Details"
+        showSearch={false}
+        showBackBtn={true}
+        showFilters={false}
+        statusOptions={null}
+      />
+      <UnAssignedPatientDetails
+        id={id}
+        showModel={showModel}
+        referralFormDetails={referralFormDetails}
+        patientDetials={patientDetails}
+        referralDentistDetails={dentistDetails}
+        referralRequestId={referralRequest.id}
+      />
+    </div>
+  );
 }

@@ -11,16 +11,25 @@ import { authOptions } from "@/lib/auth";
 import { toTitleCase } from "@/utils/formatWords";
 
 interface ReferralRequestDetailProps {
-  id: string
-  showModel: boolean
+  id: string;
+  showModel: boolean;
 }
 
-export default async function ReferralRequestDetail({ id, showModel }: ReferralRequestDetailProps) {
-  const referralRequestResponse: Response<TReferralRequest> = await getReferralRequest(id)
+export default async function ReferralRequestDetail({
+  id,
+  showModel,
+}: ReferralRequestDetailProps) {
+  const referralRequestResponse: Response<TReferralRequest> =
+    await getReferralRequest(id);
   const session = await getServerSession(authOptions);
   const role = session?.user.role;
 
-  if (!referralRequestResponse || !referralRequestResponse.status || !referralRequestResponse.data || !referralRequestResponse.data.referralForm) {
+  if (
+    !referralRequestResponse ||
+    !referralRequestResponse.status ||
+    !referralRequestResponse.data ||
+    !referralRequestResponse.data.referralForm
+  ) {
     return (
       <div className="min-h-screen flex flex-col gap-5">
         <PageTopBar
@@ -32,35 +41,42 @@ export default async function ReferralRequestDetail({ id, showModel }: ReferralR
         />
         <NoContent1 />
       </div>
-    )
+    );
   }
 
-  const referralForm = referralRequestResponse.data.referralForm
-  const appointment = referralRequestResponse.data.appointment
+  const referralForm = referralRequestResponse.data.referralForm;
+  const appointment = referralRequestResponse.data.appointment;
 
   const patientDetails = {
     name: referralForm.patientName,
     phone: referralForm.patientPhoneNumber,
     email: referralForm.patientEmail,
     address: referralForm.patientAddress,
-    age: String(calculateAge(referralForm.patientDateOfBirth))
-  }
+    age: String(calculateAge(referralForm.patientDateOfBirth)),
+  };
 
   const dentistDetails = {
     name: referralForm.referralName,
     phone: referralForm.referralPhoneNumber,
     email: referralForm.referralEmail,
     gdcNo: referralForm.referralGDC,
-    address: referralForm.patientAddress
-  }
+    address: referralForm.patientAddress,
+  };
+
+  const referralService =
+    referralForm.cbctApp || referralForm.dentalSpecialty || "";
+  const referralDeatilsText = referralService
+    ? referralForm.other
+      ? `${referralService}, ${referralForm.other}`
+      : referralService
+    : referralForm.other || "No referral details provided";
 
   const referralFormDetails = {
-    referralDeatils: referralForm.other ? referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", ") + ", " + referralForm.other : referralForm.referralDetails.map((disease) => toTitleCase(disease)).join(", "),
+    referralDeatils: referralDeatilsText,
     treatmentDetails: referralForm.treatmentDetails,
     attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
-    medicalHistoryPDF: referralForm.medicalHistoryPdf
-  }
-
+    medicalHistoryPDF: referralForm.medicalHistoryPdf,
+  };
 
   return (
     <div className="w-full min-h-screen flex flex-col gap-5">
@@ -77,13 +93,11 @@ export default async function ReferralRequestDetail({ id, showModel }: ReferralR
         patientDetials={patientDetails}
         dentistDetails={dentistDetails}
         referralFormDetails={referralFormDetails}
-
       />
 
-      {
-        appointment &&
+      {appointment && (
         <AppointmentCard appointment={appointment} role={role ?? ""} />
-      }
+      )}
     </div>
-  )
+  );
 }

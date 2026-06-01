@@ -1,6 +1,6 @@
 import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
-import { getPatient } from "@/dentallyHelpers/patient";
+import { getPatient, getPatientById } from "@/dentallyHelpers/patient";
 import prisma from "@/lib/db";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
@@ -66,7 +66,35 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const familyId = searchParams.get("familyId")?.trim() || "";
+    let familyId = searchParams.get("familyId")?.trim() || "";
+
+    if (!familyId) {
+      const patientDentallyId = String(token.id ?? token.sub ?? "").trim();
+
+      if (patientDentallyId) {
+        const currentPatientResponse = await getPatientById(patientDentallyId);
+
+        if (!currentPatientResponse.isError) {
+          const currentPatient = currentPatientResponse.response ?? null;
+          familyId = currentPatient?.familyId?.trim() || "";
+        }
+      }
+
+      if (!familyId && token.email) {
+        const currentPatientResponse = await getPatient({
+          emailAddress: token.email,
+        });
+
+        if (!currentPatientResponse.isError) {
+          const currentPatient =
+            currentPatientResponse.response.patient ??
+            currentPatientResponse.response.patients?.[0] ??
+            null;
+
+          familyId = currentPatient?.familyId?.trim() || "";
+        }
+      }
+    }
 
     if (!familyId) {
       return NextResponse.json(
@@ -88,41 +116,68 @@ export async function GET(req: NextRequest) {
     const activePatients = (response.response.patients ?? []).filter(
       (patient: any) => patient.active && !patient.archivedReason,
     );
-    
+
     if (activePatients.length === 0) {
       throw new Error("No account found");
     }
 
-    await Promise.all(
+    const familyMembers = await Promise.all(
       activePatients.map(async (activePatient: any) => {
+        const fullName =
+          `${activePatient.firstName ?? ""} ${activePatient.lastName ?? ""}`
+            .trim()
+            .replace(/\s+/g, " ");
+
         const existingPatient = await prisma.patient.findFirst({
           where: {
-            dentallyId: activePatient?.dentallyId,
+            dentallyId: activePatient?.dentallyId ?? activePatient?.id,
           },
         });
-        const fullname = `${activePatient.firstName} + ${activePatient.lastName}`
 
-        if (!existingPatient) {
-          await prisma.patient.create({
-            data: {
-              uuid: activePatient?.uuid,
-              dentallyId: activePatient?.id,
-              email: activePatient.email,
-              mobileNumber: activePatient.mobilePhone,
-              name: fullname,
-              dateOfBirth: activePatient.dateOfBirth,
-              familyId
-            },
-          });
-        }
+        const localPatient = existingPatient
+          ? await prisma.patient.update({
+              where: { id: existingPatient.id },
+              data: {
+                ...(activePatient?.imageUrl || activePatient?.fileUrl
+                  ? {
+                      imageUrl:
+                        activePatient?.imageUrl ??
+                        activePatient?.fileUrl ??
+                        null,
+                    }
+                  : {}),
+              },
+            })
+          : await prisma.patient.create({
+              data: {
+                uuid: activePatient?.uuid ?? crypto.randomUUID(),
+                dentallyId: activePatient?.id,
+                email: activePatient.email,
+                mobileNumber: activePatient.mobilePhone,
+                name: fullName,
+                dateOfBirth: activePatient.dateOfBirth,
+                familyId,
+                imageUrl:
+                  activePatient?.imageUrl ?? activePatient?.fileUrl ?? null,
+              },
+            });
+
+        return {
+          ...activePatient,
+          id: localPatient.id,
+          name: fullName,
+          imageUrl: localPatient.imageUrl ?? null,
+        };
       }),
     );
+
+    console.log("family members fetched are ", familyMembers);
 
     return NextResponse.json(
       createResponse(
         true,
         "Family members fetched successfully",
-        activePatients,
+        familyMembers,
       ),
       {
         status: 200,

@@ -202,6 +202,10 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
 
       fileUrl = `uploads/aspire-clinic/letters/${imageUploaded.name}`;
     }
+    const selectedSpecialty = Array.isArray(formData.referralDetails)
+      ? formData.referralDetails.join(", ")
+      : "";
+
     const referralDetail: TCreateReferralForm = {
       patientName: formData.patientName,
       patientDateOfBirth: formData.patientDateOfBirth,
@@ -213,7 +217,9 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
       referralPracticeNameAddress: formData.referralPracticeNameAddress,
       referralPhoneNumber: formData.referralPhoneNumber,
       referralEmail: formData.referralEmail,
-      referralDetails: formData.referralDetails,
+      dentalSpecialty: selectedSpecialty || undefined,
+      cbctApp: undefined,
+      other: formData.other,
       attendTreatment: formData.attendTreatment,
       treatmentDetails: formData.treatmentDetails,
       medicalHistoryPdfUrl: fileUrl,

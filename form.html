@@ -206,6 +206,14 @@
     flex-shrink: 0;
   }
 
+  .checkbox-label input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
   .checkbox-label.checked {
     border-color: var(--accent);
     background: rgba(201,169,110,0.1);
@@ -433,19 +441,30 @@
 
     <div class="field">
       <!-- FIX 1: Replaced &amp; with & inside label text (safe in HTML content) -->
-      <label>I am referring for <span class="req">*</span></label>
+      <label>Please describe the treatment required in as much detail as possible (for CBCT Scans please state which teeth require the scan and provide justification): </label>
+      <label>Dental Specialty<span class="req">*</span></label>
+      
       <div class="checkbox-grid" id="referralServices">
-        <label class="checkbox-label"><input type="checkbox" value="Implants" /> Implants</label>
-        <label class="checkbox-label"><input type="checkbox" value="Periodontology" /> Periodontology</label>
-        <label class="checkbox-label"><input type="checkbox" value="Oral Surgery" /> Oral Surgery</label>
-        <label class="checkbox-label"><input type="checkbox" value="Dentures" /> Dentures</label>
-        <label class="checkbox-label"><input type="checkbox" value="Root Canal" /> Root Canal</label>
-        <label class="checkbox-label"><input type="checkbox" value="Paediatric Dentistry" /> Paediatric Dentistry</label>
-        <label class="checkbox-label"><input type="checkbox" value="Orthodontics" /> Orthodontics</label>
+        <label class="checkbox-label"><input type="radio" name="referralService" value="Implants" /> Implants</label>
+        <label class="checkbox-label"><input type="radio" name="referralService" value="Periodontology" /> Periodontology</label>
+        <label class="checkbox-label"><input type="radio" name="referralService" value="Oral Surgery" /> Oral Surgery</label>
+        <label class="checkbox-label"><input type="radio" name="referralService" value="Dentures" /> Dentures</label>
+        <label class="checkbox-label"><input type="radio" name="referralService" value="Root Canal" /> Root Canal</label>
+        <label class="checkbox-label"><input type="radio" name="referralService" value="Paediatric Dentistry" /> Paediatric Dentistry</label>
+        <label class="checkbox-label"><input type="radio" name="referralService" value="Orthodontics" /> Orthodontics</label>
         <!-- FIX 2: &amp; is correct in HTML attribute/text content — kept as-is here -->
-        <label class="checkbox-label"><input type="checkbox" value="Treatment Planning & Advice" /> Treatment Planning &amp; Advice</label>
+        <label class="checkbox-label"><input type="radio" name="referralService" value="Treatment Planning & Advice" /> Treatment Planning &amp; Advice</label>
       </div>
       <div class="field-error" id="err-services"></div>
+      <div class="field" style="margin-top: 18px; margin-bottom: 0;">
+        <label>CBCT</label>
+        <div class="checkbox-grid" id="cbctFieldOfView">
+          <label class="checkbox-label"><input type="radio" name="referralService" value="Single Tooth (≤5×5 cm)" /> Single Tooth (≤5×5 cm)</label>
+          <label class="checkbox-label"><input type="radio" name="referralService" value="Quadrant (8×5 cm)" /> Quadrant (8×5 cm)</label>
+          <label class="checkbox-label"><input type="radio" name="referralService" value="Single Jaw (8×8 cm)" /> Single Jaw (8×8 cm)</label>
+          <label class="checkbox-label"><input type="radio" name="referralService" value="Both Jaws (&gt;8×8 cm)" /> Both Jaws (&gt;8×8 cm)</label>
+        </div>
+      </div>
     </div>
 
     <div class="field">
@@ -557,10 +576,32 @@
 <div id="toast"></div>
 
 <script>
-  // Checkbox visual state
-  document.querySelectorAll('.checkbox-label input[type="checkbox"]').forEach(function(cb) {
-    cb.addEventListener('change', function() {
-      cb.closest('.checkbox-label').classList.toggle('checked', cb.checked);
+  var CBCT_OPTIONS = [
+    'Single Tooth (≤5×5 cm)',
+    'Quadrant (8×5 cm)',
+    'Single Jaw (8×8 cm)',
+    'Both Jaws (>8×8 cm)'
+  ];
+
+  // Visual state for checkbox/radio labels inside .checkbox-label
+  document.querySelectorAll('.checkbox-label input[type="checkbox"], .checkbox-label input[type="radio"]').forEach(function(input) {
+    input.addEventListener('change', function() {
+      var label = input.closest('.checkbox-label');
+      if (!label) return;
+      if (input.type === 'radio' && input.name === 'referralService') {
+        // clear checked class on any radio labels that belong to the referralService group
+        document.querySelectorAll('.checkbox-label input[type="radio"][name="referralService"]').forEach(function(r) {
+          var l = r.closest('.checkbox-label'); if (l) l.classList.remove('checked');
+        });
+        if (input.checked) label.classList.add('checked');
+      } else if (input.type === 'radio') {
+        // other radio groups (if any)
+        var container = label.parentElement;
+        if (container) container.querySelectorAll('.checkbox-label').forEach(function(l) { l.classList.remove('checked'); });
+        if (input.checked) label.classList.add('checked');
+      } else {
+        label.classList.toggle('checked', input.checked);
+      }
     });
   });
 
@@ -644,7 +685,7 @@
     req('patientEmail', 'Email is required');
     email('patientEmail');
 
-    var services = Array.from(document.querySelectorAll('#referralServices input:checked'));
+    var services = Array.from(document.querySelectorAll('input[name="referralService"]:checked'));
     if (services.length === 0) { setError('services', 'Please select at least one service'); ok = false; }
 
     req('dentistName', 'Dentist name is required');
@@ -678,9 +719,9 @@
     document.getElementById('fileUpload').value = '';
     document.getElementById('file-list').textContent = '';
 
-    document.querySelectorAll('#referralServices input[type="checkbox"]').forEach(function(cb) {
-      cb.checked = false;
-      cb.closest('.checkbox-label').classList.remove('checked');
+    document.querySelectorAll('input[name="referralService"]').forEach(function(inp) {
+      inp.checked = false;
+      var lab = inp.closest('.checkbox-label'); if (lab) lab.classList.remove('checked');
     });
 
     document.querySelectorAll('input[name="shadow"]').forEach(function(radio) {
@@ -696,7 +737,9 @@
       return;
     }
 
-    var services = Array.from(document.querySelectorAll('#referralServices input:checked')).map(function(c) { return c.value; });
+    var selectedServiceEl = document.querySelector('input[name="referralService"]:checked');
+    var selectedService = selectedServiceEl ? selectedServiceEl.value : '';
+    var isCbctSelection = CBCT_OPTIONS.indexOf(selectedService) !== -1;
     var shadowEl = document.querySelector('input[name="shadow"]:checked');
     var shadow = shadowEl ? shadowEl.value : '';
 
@@ -711,7 +754,8 @@
       patientPhoneNumber: document.getElementById('mobileCountry').value + document.getElementById('mobileNumber').value.trim(),
       patientEmail: document.getElementById('patientEmail').value.trim(),
       treatmentDetails: document.getElementById('medicalHistory').value.trim(),
-      referralDetails: services,
+      dentalSpecialty: isCbctSelection ? null : selectedService,
+      cbctApp: isCbctSelection ? selectedService : null,
       referralName: document.getElementById('dentistName').value.trim(),
       referralGDC: document.getElementById('gdcNumber').value.trim(),
       referralPracticeNameAddress: document.getElementById('practiceName').value.trim() +
@@ -752,7 +796,7 @@
           fileSize: String(file.size)
         });
 
-        var signedRes = await fetch(' https://tabloid-passivism-useable.ngrok-free.dev/api/s3?' + params.toString());
+        var signedRes = await fetch('http://localhost:3000/api/s3?' + params.toString());
 
         var signedJson = null;
         var ct = signedRes.headers.get('content-type') || '';
@@ -791,7 +835,7 @@
         payload.medicalHistoryPdfUrl = key;
       }
 
-      var res = await fetch(' https://tabloid-passivism-useable.ngrok-free.dev/api/referrals', {
+      var res = await fetch('http://localhost:3000/api/referrals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

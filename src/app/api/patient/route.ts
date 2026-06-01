@@ -9,7 +9,6 @@ import {
   patchPatientById,
 } from "@/dentallyHelpers/patient";
 import prisma from "@/lib/db";
-import { title } from "process";
 
 export const dynamic = "force-dynamic";
 
@@ -179,7 +178,14 @@ export async function PATCH(req: NextRequest) {
     const payload = await req.json();
 
     if (token.role === TokenRoles.PATIENT) {
-      const patientDentallyId = token.sub ?? "";
+      const patientDentallyId = Number(token.sub ?? "");
+
+      if (!Number.isFinite(patientDentallyId)) {
+        return NextResponse.json(
+          createResponse(false, "Invalid patient session", null),
+          { status: 401 },
+        );
+      }
 
       if (!payload || Object.keys(payload).length === 0) {
         return NextResponse.json(
@@ -188,7 +194,37 @@ export async function PATCH(req: NextRequest) {
         );
       }
 
-      const respose = await patchPatientById(patientDentallyId, payload);
+      const { fileUrl, ...patientPayload } = payload as {
+        fileUrl?: string;
+        gender?: string;
+        [key: string]: unknown;
+      };
+
+      const normalizedPayload = Object.fromEntries(
+        Object.entries(patientPayload)
+          .filter(
+            ([, value]) =>
+              value !== undefined && value !== null && value !== "",
+          )
+          .map(([key, value]) => {
+            if (key === "gender") {
+              if (value === "male") return [key, true];
+              if (value === "female") return [key, false];
+            }
+
+            return [key, value];
+          }),
+      );
+
+      const localImageUrl =
+        typeof fileUrl === "string" && fileUrl.trim().length > 0
+          ? fileUrl.trim()
+          : undefined;
+
+      const respose = await patchPatientById(
+        String(patientDentallyId),
+        normalizedPayload,
+      );
       if (respose.isError) {
         return respose.response;
       }
@@ -202,8 +238,6 @@ export async function PATCH(req: NextRequest) {
         );
       }
 
-      const patientId = token.sub;
-
       const {
         firstName,
         lastName,
@@ -215,6 +249,7 @@ export async function PATCH(req: NextRequest) {
         postCode,
         dateOfBirth,
         imageUrl,
+        title,
       } = patient as {
         firstName?: string;
         lastName?: string;
@@ -230,7 +265,7 @@ export async function PATCH(req: NextRequest) {
       };
 
       const updated = await prisma.patient.update({
-        where: { id: patientId },
+        where: { dentallyId: patientDentallyId },
         data: {
           ...(firstName ? { firstName } : {}),
           ...(lastName ? { lastName } : {}),
@@ -243,6 +278,7 @@ export async function PATCH(req: NextRequest) {
           ...(postCode ? { postCode } : {}),
           ...(dateOfBirth ? { dateOfBirth } : {}),
           ...(imageUrl ? { imageUrl } : {}),
+          ...(localImageUrl ? { imageUrl: localImageUrl } : {}),
         },
       });
 

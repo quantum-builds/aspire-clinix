@@ -15,6 +15,7 @@ import { ResoucrceType } from "@prisma/client";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useRouter } from "next/navigation";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { capitalize } from "@/utils/formatWords";
 
 const profileFormSchema = z.object({
   fullName: z
@@ -173,7 +174,8 @@ export default function ProfileForm({ admin }: AdminFormProps) {
 
           reset(
             {
-              fullName: data.fullName,
+            
+              fullName: capitalize(data.fullName.trim()),
               email: data.email,
               phoneNumber: data.phoneNumber,
               profileImage: profileUrl,

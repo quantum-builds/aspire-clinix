@@ -39,6 +39,7 @@ import { TPractice } from "@/types/practice";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { useCreateUser } from "@/services/patient/patientMutation";
 import { TokenRoles } from "@/constants/UserRoles";
+import { capitalize } from "@/utils/formatWords";
 
 export const patientSchema = z.object({
   firstName: z
@@ -86,6 +87,7 @@ export default function DentistRegisterForm() {
           ...formData,
           emailAddress: formData.email,
           role: TokenRoles.REFERRING_DENTIST,
+          firstName: capitalize(formData.firstName.trim()),
         },
       },
       {

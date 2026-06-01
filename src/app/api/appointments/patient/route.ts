@@ -77,8 +77,7 @@ import { getPatient } from "@/dentallyHelpers/patient";
  *         description: Internal Server Error
  */
 export async function GET(req: NextRequest) {
-
-  console.log("in ednpoint ")
+  console.log("in ednpoint ");
   try {
     const token = await getToken({ req });
 
@@ -96,13 +95,17 @@ export async function GET(req: NextRequest) {
     }
     const { searchParams } = new URL(req.url);
     const patientName = searchParams.get("patientName") || "";
-    const [firstName, lastName] = patientName.split(" ")
+    const [firstName, lastName] = patientName.split(" ");
 
-    console.log("[/api/appointments/patient] patient id is ", patientName)
+    console.log("[/api/appointments/patient] patient id is ", patientName);
     if (!firstName || !lastName) {
       return NextResponse.json(
-        createResponse(false, "Patient FirstName and LastName is required", null),
-        { status: 400 }
+        createResponse(
+          false,
+          "Patient FirstName and LastName is required",
+          null,
+        ),
+        { status: 400 },
       );
     }
 
@@ -113,8 +116,8 @@ export async function GET(req: NextRequest) {
 
     if (response.isError) {
       return NextResponse.json(
-        createResponse(false, "Failed to fetch patients from Dentally", null),
-        { status: 500 }
+        createResponse(false, "Failed to get response from dentally", null),
+        { status: 400 },
       );
     }
 
@@ -124,11 +127,7 @@ export async function GET(req: NextRequest) {
 
     if (activePatients.length === 0 || activePatients.length > 1) {
       return NextResponse.json(
-        createResponse(
-          false,
-          "No Account found",
-          null,
-        ),
+        createResponse(false, "No Account found", null),
         { status: 404 },
       );
     }
@@ -143,12 +142,17 @@ export async function GET(req: NextRequest) {
 
     if (appointmentRes.isError) {
       return NextResponse.json(
-        createResponse(false, "Failed to fetch appointments from Dentally", null),
-        { status: 500 }
+        createResponse(
+          false,
+          "Failed to fetch appointments from Dentally",
+          null,
+        ),
+        { status: 500 },
       );
     }
 
-    const appointments = (appointmentRes.response.appointments ?? []) as TAppointment[];
+    const appointments = (appointmentRes.response.appointments ??
+      []) as TAppointment[];
 
     // Format appointments for the response
     const formattedAppointments = appointments.map((apt) => ({
@@ -165,8 +169,12 @@ export async function GET(req: NextRequest) {
     }));
 
     return NextResponse.json(
-      createResponse(true, "Appointments fetched successfully", formattedAppointments),
-      { status: 200 }
+      createResponse(
+        true,
+        "Appointments fetched successfully",
+        formattedAppointments,
+      ),
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error fetching patient appointments:", error);

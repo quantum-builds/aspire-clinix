@@ -88,16 +88,16 @@ export default async function AssignedWrapper({
     gdcNo: assignedDentist?.gdcNo,
   };
 
+  const referralService =
+    referralForm.cbctApp || referralForm.dentalSpecialty || "";
+  const referralDeatilsText = referralService
+    ? referralForm.other
+      ? `${referralService}, ${referralForm.other}`
+      : referralService
+    : referralForm.other || "No referral details provided";
+
   const referralFormDetails = {
-    referralDeatils: referralForm.other
-      ? referralForm.referralDetails
-          .map((disease) => toTitleCase(disease))
-          .join(", ") +
-        ", " +
-        referralForm.other
-      : referralForm.referralDetails
-          .map((disease) => toTitleCase(disease))
-          .join(", "),
+    referralDeatils: referralDeatilsText,
     treatmentDetails: referralForm.treatmentDetails,
     attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
     medicalHistoryPDF: referralForm.medicalHistoryPdf,
@@ -125,7 +125,10 @@ export default async function AssignedWrapper({
         referralDentistDetails={assignedDentistDetails}
       />
 
-      <AppointmentCard appointment={appointment} />
+      <AppointmentCard
+        appointment={appointment}
+        buttonHref={`/clinic/appointments/${appointment.id}/reports`}
+      />
     </div>
   );
 }

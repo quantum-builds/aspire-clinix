@@ -40,6 +40,7 @@ import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 import { Title } from "@/types/patient";
 import { useCreateUser } from "@/services/patient/patientMutation";
 import { TokenRoles } from "@/constants/UserRoles";
+import {capitalize} from "@/utils/formatWords";
 
 export const patientSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -160,6 +161,7 @@ export default function PatientRegisterForm() {
           ...formData,
           emailAddress: formData.email,
           role: TokenRoles.PATIENT,
+          firstName: capitalize(formData.firstName.trim()),
         },
       },
       {

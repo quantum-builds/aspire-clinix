@@ -13,45 +13,57 @@ export const authOptions: AuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
         patientId: { label: "PatientId", type: "patientId" },
+        familyMemberId: { label: "FamilyMemberId", type: "familyMemberId" },
         otp: { label: "Otp", type: "otp" },
         role: { label: "Role", type: "role" },
       },
       async authorize(credentials) {
-        console.log(
-          "[AUTH DEBUG] Authorization started with role:",
-          credentials?.role,
-        );
+        const normalizeCredential = (value?: string | null) => {
+          if (value === undefined || value === null) return undefined;
+          const trimmed = String(value).trim();
+          if (!trimmed || trimmed === "undefined" || trimmed === "null") {
+            return undefined;
+          }
+          return trimmed;
+        };
 
-        if (!credentials?.role)
-          throw new Error("Password and role are required");
+        const role = normalizeCredential(credentials?.role);
+        const patientId = normalizeCredential(credentials?.patientId);
+        const familyMemberId = normalizeCredential(credentials?.familyMemberId);
+        const otp = normalizeCredential(credentials?.otp);
+        const email = normalizeCredential(credentials?.email);
+        const password = normalizeCredential(credentials?.password);
 
-        if (credentials.role === TokenRoles.PATIENT) {
-          if (!credentials.patientId) {
+        console.log("[AUTH DEBUG] Authorization started with role:", role);
+
+        if (!role) throw new Error("Password and role are required");
+
+        if (role === TokenRoles.PATIENT) {
+          if (!patientId) {
             throw new Error("Patient Id is required");
           }
-          if (!credentials.otp) {
+          if (!otp && !familyMemberId) {
             throw new Error("OTP is required");
           }
         } else if (
-          credentials.role === TokenRoles.REFERRING_DENTIST ||
-          credentials.role === TokenRoles.DENTALLY_PRACTITIONER
+          role === TokenRoles.REFERRING_DENTIST ||
+          role === TokenRoles.DENTALLY_PRACTITIONER
         ) {
-          if (!credentials?.otp) {
+          if (!otp) {
             throw new Error("Otp is required for dentist login");
           }
-          if (!credentials?.email) {
+          if (!email) {
             throw new Error("Email is required for dentist login");
           }
-        } else if (credentials.role === TokenRoles.ADMIN) {
-          if (!credentials?.email) {
+        } else if (role === TokenRoles.ADMIN) {
+          if (!email) {
             throw new Error("Email is required");
           }
-          if (!credentials?.password) {
+          if (!password) {
             throw new Error("Password and role are required");
           }
         }
 
-        const { email, password, role } = credentials;
         let user = null;
 
         if (role === TokenRoles.ADMIN) {
@@ -66,12 +78,11 @@ export const authOptions: AuthOptions = {
           }
 
           console.log("[ADMIN LOGIN DEBUG] Admin found, verifying password");
-          const isValid = await verifyPassword(password, user.password);
+          const isValid = await verifyPassword(password ?? "", user.password);
           if (!isValid) {
             console.error("[ADMIN LOGIN DEBUG] Password verification failed");
             throw new Error("Invalid credentials");
           }
-
 
           return {
             id: String(user.id),
@@ -83,10 +94,10 @@ export const authOptions: AuthOptions = {
         }
 
         if (role === TokenRoles.PATIENT) {
-          const { patientId, otp } = credentials;
           console.log("[PATIENT LOGIN DEBUG] Credentials received:", {
             patientId,
             otp,
+            familyMemberId,
             role,
           });
 
@@ -122,25 +133,31 @@ export const authOptions: AuthOptions = {
             throw new Error("No account found");
           }
 
-          // Validate OTP
-          console.log("[PATIENT LOGIN DEBUG] Validating OTP:", {
-            providedOtp: otp,
-            storedOtp: patient.otp,
-            otpMatch: patient.otp === otp,
-            otpInvalidationTime: patient.otpInvalidationTime,
-            currentTime: new Date(),
-            isExpired: patient.otpInvalidationTime
-              ? patient.otpInvalidationTime < new Date()
-              : "no time",
-          });
+          if (familyMemberId) {
+            if (String(patient.id) !== String(familyMemberId)) {
+              throw new Error("No account found");
+            }
+          } else {
+            // Validate OTP for the normal login flow.
+            console.log("[PATIENT LOGIN DEBUG] Validating OTP:", {
+              providedOtp: otp,
+              storedOtp: patient.otp,
+              otpMatch: patient.otp === otp,
+              otpInvalidationTime: patient.otpInvalidationTime,
+              currentTime: new Date(),
+              isExpired: patient.otpInvalidationTime
+                ? patient.otpInvalidationTime < new Date()
+                : "no time",
+            });
 
-          if (
-            patient.otp !== otp ||
-            !patient.otpInvalidationTime ||
-            patient.otpInvalidationTime < new Date()
-          ) {
-            console.error("[PATIENT LOGIN DEBUG] OTP validation failed");
-            throw new Error("Invalid Otp");
+            if (
+              patient.otp !== otp ||
+              !patient.otpInvalidationTime ||
+              patient.otpInvalidationTime < new Date()
+            ) {
+              console.error("[PATIENT LOGIN DEBUG] OTP validation failed");
+              throw new Error("Invalid Otp");
+            }
           }
 
           console.log("[PATIENT LOGIN DEBUG] Patient login successful for:", {
@@ -159,7 +176,6 @@ export const authOptions: AuthOptions = {
         }
 
         if (role !== TokenRoles.ADMIN && role !== TokenRoles.PATIENT) {
-          const { email, otp } = credentials;
           console.log("[DENTIST LOGIN DEBUG] Credentials received:", {
             email,
             otp,

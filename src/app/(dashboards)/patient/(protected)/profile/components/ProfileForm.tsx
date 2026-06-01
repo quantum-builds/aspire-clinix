@@ -17,6 +17,7 @@ import { showToast } from "@/utils/defaultToastOptions";
 import { useRouter } from "next/navigation";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
+import { capitalize } from "@/utils/formatWords";
 
 const profileFormSchema = z.object({
   title: z.string().optional(),
@@ -166,6 +167,10 @@ export default function ProfileForm({ patient }: PatientFormProps) {
 
   const onSubmit = async (formData: FormData) => {
     const payload: Partial<TPatientCreate> = {};
+    const uploadedFileUrl =
+      dirtyFields.profileImage && formData.profileImage instanceof File
+        ? `uploads/aspire-clinic/images/${formData.profileImage.name}`
+        : undefined;
 
     Object.keys(dirtyFields).forEach((field) => {
       const key = field as keyof FormData;
@@ -202,25 +207,29 @@ export default function ProfileForm({ patient }: PatientFormProps) {
           showToast("success", "Profile Updated Successfully");
 
           const s3Base = "https://aspire-media.s3.eu-west-2.amazonaws.com/";
-          const profileUrl = data.fileUrl
-            ? `${s3Base}${data.fileUrl}`
-            : defaultValues.profileImage || "";
+          const profileUrl = uploadedFileUrl
+            ? `${s3Base}${uploadedFileUrl}`
+            : data.fileUrl
+              ? `${s3Base}${data.fileUrl}`
+              : defaultValues.profileImage || "";
 
           reset(
             {
-              title: data.title,
+              title: data.title ?? formData.title ?? "",
 
               dateOfBirth: data.dateOfBirth
                 ? new Date(data.dateOfBirth).toISOString().split("T")[0]
-                : "",
+                : formData.dateOfBirth || "",
 
-              firstName: data.firstName,
-              lastName: data.lastName,
-              emailAddress: data.emailAddress,
-              mobilePhone: data.mobilePhone,
-              gender: data.gender,
-              addressLine1: data.addressLine1,
-              postCode: data.postCode,
+              firstName: capitalize(
+                (data.firstName ?? formData.firstName).trim(),
+              ),
+              lastName: data.lastName ?? formData.lastName,
+              emailAddress: data.emailAddress ?? formData.emailAddress,
+              mobilePhone: data.mobilePhone ?? formData.mobilePhone,
+              gender: data.gender ?? formData.gender,
+              addressLine1: data.addressLine1 ?? formData.addressLine1,
+              postCode: data.postCode ?? formData.postCode,
               profileImage: profileUrl,
             },
             { keepDefaultValues: false },

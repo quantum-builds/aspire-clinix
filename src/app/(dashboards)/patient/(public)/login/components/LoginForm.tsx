@@ -23,6 +23,11 @@ import { formatDate } from "@/utils/formatDateTime";
 import { useVerifyPatient } from "@/services/patient/patientMutation";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import Link from "next/link";
+import { capitalize } from "@/utils/formatWords";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { loginMutation } from "@/services/LoginMutation";
+import { TokenRoles } from "@/constants/UserRoles";
 
 export const patientSchema = z.object({
   firstName: z
@@ -62,8 +67,13 @@ type FormData = z.infer<typeof patientSchema>;
 export default function PatientLoginForm() {
   const { mutate: verifyPatient, isPending: verifyPatientLoader } =
     useVerifyPatient();
+  const { mutate: loginPatient, isPending: familyMemberLoginLoader } =
+    loginMutation();
   const router = useRouter();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const familyMemberId = searchParams.get("familyMemberId")?.trim() || "";
+  const autoLoginStarted = useRef(false);
 
   const {
     register,
@@ -93,11 +103,36 @@ export default function PatientLoginForm() {
 
   const dateOfBirth = watch("dateOfBirth");
 
+  useEffect(() => {
+    if (!familyMemberId || autoLoginStarted.current) return;
+
+    autoLoginStarted.current = true;
+
+    loginPatient(
+      {
+        patientId: familyMemberId,
+        familyMemberId,
+        role: TokenRoles.PATIENT,
+      },
+      {
+        onSuccess: () => {
+          showToast("success", "Switched to family member dashboard");
+          router.replace("/patient");
+        },
+        onError: (error) => {
+          autoLoginStarted.current = false;
+          const msg = getAxiosErrorMessage(error);
+          showToast("error", msg);
+        },
+      },
+    );
+  }, [familyMemberId, router, loginPatient]);
+
   const onSubmit = async (data: FormData) => {
     console.log("[LoginForm] onSubmit called");
     verifyPatient(
       {
-        firstName: data.firstName,
+        firstName: capitalize(data.firstName.trim()),
         lastName: data.lastName,
         dateOfBirth: data.dateOfBirth.toISOString().split("T")[0],
         mobilePhone: data.phoneNumber,
@@ -273,9 +308,13 @@ export default function PatientLoginForm() {
       <div className="w-full flex flex-col justify-center items-center ">
         <CustomButton
           style="primary"
-          text={verifyPatientLoader ? "Logging In..." : "Login"}
+          text={
+            verifyPatientLoader || familyMemberLoginLoader
+              ? "Logging In..."
+              : "Login"
+          }
           type="submit"
-          loading={verifyPatientLoader}
+          loading={verifyPatientLoader || familyMemberLoginLoader}
           className="w-fit py-4 px-20"
         />
         <p className="text-sm text-muted-foreground mt-4">

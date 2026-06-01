@@ -103,7 +103,13 @@ export function buildReferralHtml(
   if (refLines.length) wrap("Referral details", refLines.join("<br/>"));
 
   // Clinical / treatment details
+  const referralService =
+    referralForm.dentalSpecialty || referralForm.cbctApp || "";
+
   const treatLines: string[] = [];
+  if (referralService) {
+    treatLines.push(`<strong>Referral service:</strong> ${referralService}`);
+  }
   if (
     referralForm.referralDetails &&
     Array.isArray(referralForm.referralDetails) &&

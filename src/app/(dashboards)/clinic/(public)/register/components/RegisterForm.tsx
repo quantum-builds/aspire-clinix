@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useCreateAdmin } from "@/services/admin/adminMutation";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { capitalize } from "@/utils/formatWords";
 
 export const adminSchema = z.object({
   fullName: z
@@ -29,14 +30,14 @@ export const adminSchema = z.object({
     .string()
     .regex(
       /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
-      "Please enter a valid UK mobile phone number"
+      "Please enter a valid UK mobile phone number",
     )
     .refine(
       (val) => {
         const digitsOnly = val.replace(/\s+/g, "");
         return digitsOnly.length >= 10 && digitsOnly.length <= 15;
       },
-      { message: "Phone number must be between 10 and 15 digits" }
+      { message: "Phone number must be between 10 and 15 digits" },
     )
     .transform((val) => val.replace(/\s+/g, "")),
 });
@@ -69,6 +70,7 @@ export default function AdminRegisterForm() {
       {
         adminCreate: {
           ...data,
+          fullName: capitalize(data.fullName.trim()),
         },
       },
       {
@@ -81,7 +83,7 @@ export default function AdminRegisterForm() {
           const msg = getAxiosErrorMessage(error);
           showToast("error", msg);
         },
-      }
+      },
     );
   };
 

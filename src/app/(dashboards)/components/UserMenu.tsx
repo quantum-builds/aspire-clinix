@@ -1,9 +1,9 @@
 "use client";
-
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signOut } from "next-auth/react";
 import {
   DropDownIcon,
   ProfileIcon,
@@ -11,22 +11,30 @@ import {
   HarryKaneImage,
 } from "@/assets";
 import { useGetFamilyMembers } from "@/services/patient/patientMutation";
+import { getAMedia } from "@/services/s3/s3Query";
 
 interface UserMenuProps {
   profileLink: string;
   onLogout: () => void;
- 
+  role?: string;
+  familyId?: string;
 }
-const users: { name: string; image: any }[] = [];
+const users: { id: string; name: string; image: any }[] = [];
 
-export function UserMenu({ profileLink, onLogout  }: UserMenuProps) {
+export function UserMenu({
+  profileLink,
+  onLogout,
+  role,
+  familyId: familyIdProp,
+}: UserMenuProps) {
   const [open, setOpen] = useState(false);
+  const [familyMembersList, setFamilyMembersList] = useState<any[]>([]);
   const menuRef = useRef<HTMLDivElement>(null);
-
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const familyId = searchParams.get("familyId")?.trim() || "";
-  const { mutateAsync: fetchFamilyMembers, data: familyMembers } =
-    useGetFamilyMembers();
+  const familyId =
+    familyIdProp?.trim() || searchParams.get("familyId")?.trim() || "";
+  const { mutateAsync: fetchFamilyMembers } = useGetFamilyMembers();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -39,23 +47,116 @@ export function UserMenu({ profileLink, onLogout  }: UserMenuProps) {
   }, []);
 
   useEffect(() => {
-    if (!familyId) return;
-    void fetchFamilyMembers({ familyId });
+    void fetchFamilyMembers({ familyId: familyId || undefined }).then(
+      (members) => {
+        setFamilyMembersList(Array.isArray(members) ? members : []);
+      },
+    );
   }, [familyId, fetchFamilyMembers]);
 
-  const displayedFamilyMember =
-    familyMembers && familyMembers.length > 0
-      ? familyMembers.map((member) => {
+  useEffect(() => {
+    console.log(
+      "family members in user menu are ",
+      JSON.stringify(familyMembersList, null, 2),
+    );
+  }, [familyMembersList]);
+
+  const mappedFamilyMembers =
+    familyMembersList.length > 0
+      ? familyMembersList.map((member) => {
+          const anyMember = member as any;
           const fullName = `${member.firstName ?? ""} ${member.lastName ?? ""}`
             .trim()
             .replace(/\s+/g, " ");
 
+          const imageSource =
+            anyMember.imageUrl ??
+            anyMember.file?.url ??
+            anyMember.fileUrl ??
+            "";
+
           return {
+            id: anyMember.id ?? anyMember.dentallyId ?? "", // Ensure id is included
             name: fullName,
-            image: HarryKaneImage,
+            image: imageSource || HarryKaneImage,
+            _fileKey: imageSource,
           };
         })
+      : [];
+
+  const displayedFamilyMember =
+    role?.toLowerCase() === "patient"
+      ? mappedFamilyMembers.length > 0
+        ? mappedFamilyMembers
+        : []
       : users;
+
+  const handleFamilyMemberClick = async (member: {
+    id: string;
+    name: string;
+    image: any;
+  }) => {
+    setOpen(false);
+
+    await signOut({ redirect: false });
+
+    const nextParams = new URLSearchParams();
+    nextParams.set("familyMemberId", member.id);
+
+    router.push(`/patient/login?${nextParams.toString()}`);
+  };
+
+  // enriched members with resolved image urls (S3File-like or string)
+  const [enrichedMembers, setEnrichedMembers] = useState<
+    {
+      id: string;
+      name: string;
+      image: any;
+    }[]
+  >(displayedFamilyMember as { id: string; name: string; image: any }[]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function resolveImages() {
+      if (!mappedFamilyMembers || mappedFamilyMembers.length === 0) {
+        setEnrichedMembers(displayedFamilyMember as any);
+        return;
+      }
+
+      const results: { id: string; name: string; image: any }[] = [];
+
+      for (const m of mappedFamilyMembers) {
+        const fileKey = (m as any)._fileKey;
+        let imageResolved: any = m.image ?? HarryKaneImage;
+
+        try {
+          if (typeof fileKey === "string" && fileKey.length > 0) {
+            // If it's already an absolute URL, use it directly
+            if (/^https?:\/\//i.test(fileKey)) {
+              imageResolved = fileKey;
+            } else {
+              const upload = await getAMedia(fileKey);
+              const s3File = upload?.files?.[0] ?? null;
+              imageResolved = s3File?.url ?? HarryKaneImage;
+            }
+          }
+        } catch (err) {
+          imageResolved = HarryKaneImage;
+        }
+
+        results.push({ id: m.id, name: m.name, image: imageResolved });
+      }
+
+      if (mounted) setEnrichedMembers(results);
+    }
+
+    void resolveImages();
+
+    return () => {
+      mounted = false;
+    };
+  }, [familyMembersList, role]);
 
   return (
     <div className="relative" ref={menuRef}>
@@ -77,15 +178,23 @@ export function UserMenu({ profileLink, onLogout  }: UserMenuProps) {
           <ul className="flex flex-col py-1">
             <li className="px-3 py-2">
               <div className="flex flex-col gap-2">
-                {displayedFamilyMember.map((user) => (
-                  <div key={user.name} className="flex items-center gap-2">
+                {(role?.toLowerCase() === "patient"
+                  ? enrichedMembers
+                  : displayedFamilyMember
+                ).map((user) => (
+                  <button
+                    key={user.name}
+                    type="button"
+                    onClick={() => handleFamilyMemberClick(user)}
+                    className="flex items-center gap-2 text-left cursor-pointer rounded-md px-1 py-1 hover:bg-gray-50"
+                  >
                     <Image
                       src={user.image}
                       alt={user.name}
                       className="w-7 h-7 rounded-full object-cover"
                     />
                     <span className="text-sm text-gray-700">{user.name}</span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </li>

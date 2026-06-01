@@ -1,4 +1,9 @@
-import { axiosInstance, axiosDentallyInstance, ENDPOINTS, DENTALLY_ENDPOINTS } from "@/config/api-config";
+import {
+  axiosInstance,
+  axiosDentallyInstance,
+  ENDPOINTS,
+  DENTALLY_ENDPOINTS,
+} from "@/config/api-config";
 import { Response } from "@/types/common";
 import { TPatient, TPatientCreate } from "@/types/patient";
 import { useMutation } from "@tanstack/react-query";
@@ -8,7 +13,7 @@ export const useCreateUser = () => {
     mutationFn: async ({ patientData }: { patientData: TPatientCreate }) => {
       const response = await axiosInstance.post(
         ENDPOINTS.auth.register,
-        patientData
+        patientData,
       );
       const respons = response.data.data;
       return respons;
@@ -28,7 +33,7 @@ export const usePatchPatient = () => {
         partialPatient,
       );
 
-      const patient: TPatient = response.data.data;
+      const patient: TPatient = response.data.data?.patient ?? response.data.data;
       return patient;
     },
   });
@@ -76,9 +81,11 @@ type TFamilyMember = {
 
 export const useGetFamilyMembers = () => {
   return useMutation({
-    mutationFn: async ({ familyId }: { familyId: string }) => {
+    mutationFn: async ({ familyId }: { familyId?: string } = {}) => {
       const response = await axiosInstance.get(
-        ENDPOINTS.patient.familyMember(familyId),
+        familyId
+          ? ENDPOINTS.patient.familyMember(familyId)
+          : "/api/patient/family-member",
       );
 
       const responseData: Response<TFamilyMember[]> = response.data;
@@ -89,15 +96,8 @@ export const useGetFamilyMembers = () => {
 
 export const getPatientById = async (patientId: string) => {
   const response = await axiosDentallyInstance.get(
-    DENTALLY_ENDPOINTS.patient.get(patientId)
+    DENTALLY_ENDPOINTS.patient.get(patientId),
   );
   const responseData: Response<TPatient> = response.data;
   return responseData.data;
-}
-
-
-
-
-
-
- 
+};

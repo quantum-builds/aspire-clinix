@@ -61,16 +61,16 @@ export default async function ReferralHistoryDetail({
     email: assignedDentist?.email,
     gdcNo: assignedDentist?.gdcNo,
   };
+  const referralService =
+    referralForm.cbctApp || referralForm.dentalSpecialty || "";
+  const referralDeatilsText = referralService
+    ? referralForm.other
+      ? `${referralService}, ${referralForm.other}`
+      : referralService
+    : referralForm.other || "No referral details provided";
+
   const referralFormDetails = {
-    referralDeatils: referralForm.other
-      ? referralForm.referralDetails
-          .map((disease) => toTitleCase(disease))
-          .join(", ") +
-        ", " +
-        referralForm.other
-      : referralForm.referralDetails
-          .map((disease) => toTitleCase(disease))
-          .join(", "),
+    referralDeatils: referralDeatilsText,
     treatmentDetails: referralForm.treatmentDetails,
     attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
     medicalHistoryPDF: referralForm.medicalHistoryPdf,
@@ -92,7 +92,12 @@ export default async function ReferralHistoryDetail({
         patientDetials={patientDetails}
         assignedDentistDetails={assignedDentistDetails}
       />
-      {appointment && <AssignedAppointmentCard appointment={appointment} />}
+      {appointment && (
+        <AssignedAppointmentCard
+          appointment={appointment}
+          buttonHref={`/dentist/appointments/${appointment.id}/reports`}
+        />
+      )}
     </div>
   );
 }

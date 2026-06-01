@@ -8,6 +8,23 @@ import { getPatient } from "@/dentallyHelpers/patient";
 import sendgrid from "@/config/sendgrid-config";
 import buildReferralHtml from "@/utils/referalEmailDentsit";
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+function createCorsJson(body: unknown, init: ResponseInit = {}) {
+  return NextResponse.json(body, {
+    headers: CORS_HEADERS,
+    ...init,
+  });
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+}
+
 /**
  * @swagger
  * /api/referrals:
@@ -155,13 +172,20 @@ export async function POST(req: NextRequest) {
   let isPatientRegistered = true;
   let isReferralDentistRegistered = true;
 
+  const cbctOptions = new Set([
+    "Single Tooth (≤5×5 cm)",
+    "Quadrant (8×5 cm)",
+    "Single Jaw (8×8 cm)",
+    "Both Jaws (>8×8 cm)",
+  ]);
+
   const referralForm = await req.json();
   try {
     const patientFirstName = referralForm.patientFirstName;
     const patientLastName = referralForm.patientLastName;
 
     if (!patientFirstName || !patientLastName) {
-      return NextResponse.json(
+      return createCorsJson(
         createResponse(false, "Patient first and last name is required", null),
         { status: 400 },
       );
@@ -171,11 +195,11 @@ export async function POST(req: NextRequest) {
       firstName: patientFirstName,
       lastName: patientLastName,
     });
-
     if (response.isError) {
-      return NextResponse.json(createResponse(false, "Dentally Error", null), {
-        status: 400,
-      });
+      return createCorsJson(
+        createResponse(false, "Failed to get response from dentally", null),
+        { status: 400 },
+      );
     }
 
     const activePatients = (response.response.patients ?? []).filter(
@@ -190,7 +214,7 @@ export async function POST(req: NextRequest) {
     if (referralForm.patientDateOfBirth) {
       const parsedDateOfBirth = new Date(referralForm.patientDateOfBirth);
       if (Number.isNaN(parsedDateOfBirth.getTime())) {
-        return NextResponse.json(
+        return createCorsJson(
           createResponse(false, "Patient date of birth is invalid", null),
           { status: 400 },
         );
@@ -199,22 +223,65 @@ export async function POST(req: NextRequest) {
       referralForm.patientDateOfBirth = parsedDateOfBirth;
     }
 
-    if (!Array.isArray(referralForm.referralDetails)) {
-      return NextResponse.json(
-        createResponse(false, "Referral details must be an array", null),
+    const incomingDentalSpecialty =
+      typeof referralForm.dentalSpecialty === "string"
+        ? referralForm.dentalSpecialty.trim()
+        : "";
+    const incomingCbctApp =
+      typeof referralForm.cbctApp === "string"
+        ? referralForm.cbctApp.trim()
+        : "";
+
+    if (incomingDentalSpecialty && incomingCbctApp) {
+      return createCorsJson(
+        createResponse(
+          false,
+          "Please select only one option from Dental Specialty or CBCT",
+          null,
+        ),
         { status: 400 },
       );
     }
 
+    const legacyReferralDetails = Array.isArray(referralForm.referralDetails)
+      ? referralForm.referralDetails
+          .map((value: unknown) =>
+            typeof value === "string" ? value.trim() : "",
+          )
+          .filter(Boolean)
+      : [];
+
+    const selectedService =
+      incomingDentalSpecialty ||
+      incomingCbctApp ||
+      legacyReferralDetails[0] ||
+      "";
+
+    if (!selectedService) {
+      return createCorsJson(
+        createResponse(false, "Please select one referral option", null),
+        { status: 400 },
+      );
+    }
+
+    if (cbctOptions.has(selectedService)) {
+      referralForm.cbctApp = selectedService;
+      referralForm.dentalSpecialty = null;
+    } else {
+      referralForm.dentalSpecialty = selectedService;
+      referralForm.cbctApp = null;
+    }
+
+    delete referralForm.referralDetails;
+
     if (activePatients.length === 1) {
       try {
         const active = activePatients[0];
-        console.log("1")
+        console.log("1");
         let dbPatient = await prisma.patient.findUnique({
           where: { dentallyId: active.id },
           select: { id: true },
         });
-        console.log("2")
 
         if (!dbPatient) {
           dbPatient = await prisma.patient.create({
@@ -239,14 +306,17 @@ export async function POST(req: NextRequest) {
     } else if (activePatients.length === 0) {
       isPatientRegistered = false;
     } else {
-      return NextResponse.json(
-        createResponse(false, "Multiple accounts registered under this Patient. Contact with Aspire to resolve this issue", null),
+      return createCorsJson(
+        createResponse(
+          false,
+          "Multiple accounts registered under this Patient. Contact with Aspire to resolve this issue",
+          null,
+        ),
         { status: 400 },
       );
     }
 
     const referralEmail = referralForm.referralEmail;
-        console.log("3")
 
     const referralDentist = await prisma.dentist.findFirst({
       where: { email: referralEmail, role: DentistRole.REFERRING_DENTIST },
@@ -313,13 +383,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json(
+    return createCorsJson(
       createResponse(true, "Form created successfully.", referral),
       { status: 201 },
     );
   } catch (error) {
     console.error("Error creating referral form:", error);
-    return NextResponse.json(
+    return createCorsJson(
       createResponse(false, "Unable to create referral form", null),
       { status: 500 },
     );
@@ -331,7 +401,7 @@ export async function GET(req: NextRequest) {
     const token = await getToken({ req });
 
     if (!token) {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+      return createCorsJson(createResponse(false, "Unauthorized", null), {
         status: 401,
       });
     }
@@ -340,7 +410,7 @@ export async function GET(req: NextRequest) {
       token.role === TokenRoles.PATIENT ||
       token.role === TokenRoles.DENTALLY_PRACTITIONER
     ) {
-      return NextResponse.json(createResponse(false, "Forbidden", null), {
+      return createCorsJson(createResponse(false, "Forbidden", null), {
         status: 403,
       });
     }
@@ -349,19 +419,19 @@ export async function GET(req: NextRequest) {
     if (token.role === TokenRoles.REFERRING_DENTIST) {
       dentistId = token.sub;
     }
-      
+
     const referralForms = await prisma.referralForm.findMany({
       where: { referralDentistId: dentistId },
     });
 
     if (referralForms.length === 0) {
-      return NextResponse.json(
+      return createCorsJson(
         createResponse(false, "Dentist don't have any referrel form", null),
         { status: 404 },
       );
     }
 
-    return NextResponse.json(
+    return createCorsJson(
       createResponse(
         true,
         "Referral forms fetched successfully.",
@@ -371,7 +441,7 @@ export async function GET(req: NextRequest) {
     );
   } catch (error) {
     console.error("Error fetching referral forms:", error);
-    return NextResponse.json(
+    return createCorsJson(
       createResponse(false, "Unable to fetch referral forms", null),
       { status: 500 },
     );

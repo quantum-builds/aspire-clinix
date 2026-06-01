@@ -14,8 +14,8 @@ import { getServerSession } from "next-auth";
 import { toTitleCase } from "@/utils/formatWords";
 import { authOptions } from "@/lib/auth";
 import TopBarWrapper from "../../components/TopBarWrapper";
-import { getPatient } from "@/services/patient/patientQuery"; 
-
+import prisma from "@/lib/db";
+import { getAMedia } from "@/services/s3/s3Query";
 
 const SIDEBAR_CONTENT: SidebarPage[] = [
   {
@@ -47,23 +47,27 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
     name: "Consent",
     icon: ConsentIcon,
     href: "/patient/consent",
-  }
+  },
 ];
 
 export default async function PatientLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-   const response = await getPatient();
-    const patient = response?.data ?? null;
-    const role = "patient";
-    // const name = patient?.fullName ?? "";
-    const profilePic = patient?.file?? null;
-
   const session = await getServerSession(authOptions);
-
-  // const role = session?.user.role;
+  const role = "patient";
   const name = session?.user.name;
-  
+  const patientDentallyId = Number(session?.user.id ?? "");
+
+  const patient = Number.isFinite(patientDentallyId)
+    ? await prisma.patient.findUnique({
+        where: { dentallyId: patientDentallyId },
+      })
+    : null;
+
+  const profilePic = patient?.imageUrl
+    ? (await getAMedia(patient.imageUrl))?.files?.[0] ?? null
+    : null;
+  const familyId = patient?.familyId ?? "";
 
   return (
     <div
@@ -79,6 +83,7 @@ export default async function PatientLayout({
           role={toTitleCase(role || "")}
           profileLink="/patient/profile"
           profilePic={profilePic}
+          familyId={familyId}
         />
       </div>
 

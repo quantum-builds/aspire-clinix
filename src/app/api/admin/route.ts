@@ -6,6 +6,7 @@ import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
 import { getPatient } from "@/dentallyHelpers/patient";
 import { getPractitioners } from "@/dentallyHelpers/practitioners";
+import { capitalize } from "@/utils/formatWords";
 // removed external dentally helpers; uniqueness checks restricted to Admin table
 
 /**
@@ -190,26 +191,26 @@ export async function POST(req: NextRequest) {
     const existingDbPatient = await prisma.patient.findFirst({
       where: { OR: [{ email }, { mobileNumber: phoneNumber }] },
     });
-    const respose = await getPatient({
+    const response = await getPatient({
       emailAddress: email,
       mobilePhone: phoneNumber,
     });
 
-    if (respose.isError) {
-      return NextResponse.json(
-        createResponse(false, "Failed to get dentally patients", null),
-        { status: 400 },
-      );
-    }
+  if (response.isError) {
+        return NextResponse.json(
+          createResponse(false, "Failed to get response from dentally", null),
+          { status: 400 },
+        );
+      }
     const existingPatient = respose.response.patients ?? [];
 
     const practitionersResponse = await getPractitioners();
-    if (practitionersResponse.isError) {
-      return NextResponse.json(
-        createResponse(false, "Failed to dentally practitioner", null),
-        { status: 400 },
-      );
-    }
+   if (practitionersResponse.isError) {
+        return NextResponse.json(
+          createResponse(false, "Failed to get response from dentally", null),
+          { status: 400 },
+        );
+      }
     const practitioners = practitionersResponse.response.practitioners ?? [];
     const existingPractitioner = practitioners.find(
       (p: any) => p.user.email === email || p.user.mobilePhone === phoneNumber,
@@ -228,10 +229,12 @@ export async function POST(req: NextRequest) {
     }
 
     const hashedPassword = await bcrypt.hash(admin.password, 10);
+    const normalizedFullName = capitalize(admin.fullName.trim());
 
     const newPatient = await prisma.admin.create({
       data: {
         ...admin,
+        fullName: normalizedFullName,
         password: hashedPassword,
       },
     });
