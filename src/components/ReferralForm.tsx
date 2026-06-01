@@ -24,7 +24,13 @@ import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import CustomPopover from "@/app/(dashboards)/components/custom-components/Popover";
 import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 import { useSendEmail } from "@/services/EmailService";
-import { referralAdminEmail, referralRegisteredDentistEmail, referralRegisteredPatientEmail, referralUnregisteredDentistEmail, referralUnRegisteredPatientEmail } from "@/constants/EmailTemplates";
+import {
+  referralAdminEmail,
+  referralRegisteredDentistEmail,
+  referralRegisteredPatientEmail,
+  referralUnregisteredDentistEmail,
+  referralUnRegisteredPatientEmail,
+} from "@/constants/EmailTemplates";
 import { UserRoles } from "@/types/common";
 
 export const referralSchema = z.object({
@@ -32,18 +38,19 @@ export const referralSchema = z.object({
     .string()
     .min(2, "Full name must be at least 2 characters")
     .max(100, "Full name must be less than 100 characters"),
-  patientDateOfBirth: z.preprocess(
-    (val) => {
-      if (typeof val === "string" && val) {
-        return new Date(val);
-      }
-      return val === "" ? undefined : val;
-    },
-    z.date({
-      required_error: "Date of birth is required",
-      invalid_type_error: "Please select a valid date",
-    })
-  )
+  patientDateOfBirth: z
+    .preprocess(
+      (val) => {
+        if (typeof val === "string" && val) {
+          return new Date(val);
+        }
+        return val === "" ? undefined : val;
+      },
+      z.date({
+        required_error: "Date of birth is required",
+        invalid_type_error: "Please select a valid date",
+      }),
+    )
     .refine((date) => {
       if (!date) return false;
       const today = new Date();
@@ -61,14 +68,14 @@ export const referralSchema = z.object({
     .string()
     .regex(
       /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
-      "Please enter a valid UK mobile phone number"
+      "Please enter a valid UK mobile phone number",
     )
     .refine(
       (val) => {
         const digitsOnly = val.replace(/\s+/g, "");
         return digitsOnly.length >= 10 && digitsOnly.length <= 15;
       },
-      { message: "Phone number must be between 10 and 15 digits" }
+      { message: "Phone number must be between 10 and 15 digits" },
     )
     .transform((val) => val.replace(/\s+/g, "")),
   referralName: z
@@ -87,14 +94,14 @@ export const referralSchema = z.object({
     .string()
     .regex(
       /^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/,
-      "Please enter a valid UK mobile phone number"
+      "Please enter a valid UK mobile phone number",
     )
     .refine(
       (val) => {
         const digitsOnly = val.replace(/\s+/g, "");
         return digitsOnly.length >= 10 && digitsOnly.length <= 15;
       },
-      { message: "Phone number must be between 10 and 15 digits" }
+      { message: "Phone number must be between 10 and 15 digits" },
     )
     .transform((val) => val.replace(/\s+/g, "")),
   referralEmail: z
@@ -103,39 +110,56 @@ export const referralSchema = z.object({
     .min(1, "Email is required"),
   other: z.string().optional(),
   treatmentDetails: z.string().optional(),
-  referralDetails: z.array(z.string()),
+  dentalSpecialty: z.string().optional(),
+  cbct: z.string().optional(),
   attendTreatment: z.string(),
 
   medicalHistoryPdfUrl: z
     .any()
-    .refine((file) => file instanceof File, {
+    .optional()
+    .refine((file) => !file || file instanceof File, {
       message: "Please upload a PDF file",
     })
     .refine(
       (file) =>
         !file ||
         (file.type === "application/pdf" && file.size <= 5 * 1024 * 1024),
-      { message: "Only PDF files under 5MB are allowed" }
-    )
-    .optional(),
+      { message: "Only PDF files under 5MB are allowed" },
+    ),
 });
 
 export type FormData = z.infer<typeof referralSchema>;
 
+const CBCT_OPTIONS = new Set([
+  "Single Tooth (≤5×5 cm)",
+  "Quadrant (8×5 cm)",
+  "Single Jaw (8×8 cm)",
+  "Both Jaws (>8×8 cm)",
+]);
+
 const REFERRAL_DETAIL = {
   name: "referralDetails",
   options: [
-    { label: "Implants", value: "implants" },
-    { label: "Periodontology", value: "periodontology" },
-    { label: "Oral Surgery", value: "oralSurgery" },
-    { label: "Dentures", value: "dentures" },
-    { label: "Root Canal", value: "rootCanal" },
-    { label: "Paediatric Dentistry", value: "paediatricDentistry" },
-    { label: "Orthodontics", value: "orthodontics" },
+    { label: "Implants", value: "Implants" },
+    { label: "Periodontology", value: "Periodontology" },
+    { label: "Oral Surgery", value: "Oral Surgery" },
+    { label: "Dentures", value: "Dentures" },
+    { label: "Root Canal", value: "Root Canal" },
+    { label: "Paediatric Dentistry", value: "Paediatric Dentistry" },
+    { label: "Orthodontics", value: "Orthodontics" },
     {
-      label: "Treatment planning & Advice",
-      value: "treatmentPlanningAndAdvice",
+      label: "Treatment Planning & Advice",
+      value: "Treatment Planning & Advice",
     },
+  ],
+};
+
+const CBCT_DETAIL = {
+  options: [
+    { label: "Single Tooth (≤5×5 cm)", value: "Single Tooth (≤5×5 cm)" },
+    { label: "Quadrant (8×5 cm)", value: "Quadrant (8×5 cm)" },
+    { label: "Single Jaw (8×8 cm)", value: "Single Jaw (8×8 cm)" },
+    { label: "Both Jaws (>8×8 cm)", value: "Both Jaws (>8×8 cm)" },
   ],
 };
 
@@ -181,29 +205,88 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
       referralPracticeNameAddress: "",
       referralPhoneNumber: "",
       referralEmail: "",
-      referralDetails: [],
+      dentalSpecialty: undefined,
+      cbct: undefined,
       attendTreatment: "yes",
       medicalHistoryPdfUrl: undefined,
+      other: "",
+      treatmentDetails: "",
     },
   });
 
+  const handleReferralDetailChange = (value: string) => {
+    if (CBCT_OPTIONS.has(value)) {
+      setValue("cbct", value);
+      setValue("dentalSpecialty", undefined);
+    } else {
+      setValue("dentalSpecialty", value);
+      setValue("cbct", undefined);
+    }
+  };
+
   const handleUploadClick = () => fileInputRef.current?.click();
 
-  const { mutate: sendEmailWithAttachment, isPending } = useSendEmail()
+  const { mutate: sendEmailWithAttachment, isPending } = useSendEmail();
 
   const onSubmit = async (formData: FormData) => {
-    console.log(formData);
+    console.log("Form submission started with data:", formData);
+
+    // Validate that exactly one of cbct or dentalSpecialty is selected
+    if (!formData.cbct && !formData.dentalSpecialty) {
+      console.log(
+        "Validation error: Neither cbct nor dentalSpecialty selected",
+      );
+      showToast(
+        "error",
+        "Please select one referral option (Dental Specialty or CBCT)",
+      );
+      return;
+    }
+
+    if (formData.cbct && formData.dentalSpecialty) {
+      console.log("Validation error: Both cbct and dentalSpecialty selected");
+      showToast(
+        "error",
+        "Please select only one option from Dental Specialty or CBCT",
+      );
+      return;
+    }
+
+    console.log("Validation passed, uploading file...");
+
     let fileUrl = undefined;
     if (formData.medicalHistoryPdfUrl) {
-      const imageUploaded = await uploadFile({
-        selectedFile: formData.medicalHistoryPdfUrl,
-        fileType: ResoucrceType.PDF,
-      });
+      try {
+        const imageUploaded = await uploadFile({
+          selectedFile: formData.medicalHistoryPdfUrl,
+          fileType: ResoucrceType.PDF,
+        });
 
-      fileUrl = `uploads/aspire-clinic/letters/${imageUploaded.name}`;
+        fileUrl = `uploads/aspire-clinic/letters/${imageUploaded.name}`;
+        console.log("File uploaded successfully:", fileUrl);
+      } catch (error) {
+        console.error("File upload error:", error);
+        showToast("error", "Failed to upload medical history file");
+        return;
+      }
     }
-    const referralDetail: TCreateReferralForm = {
-      patientName: formData.patientName,
+
+    // Split patient name into first and last name
+    const nameParts = formData.patientName.trim().split(/\s+/);
+    const patientFirstName = nameParts[0] || "";
+    const patientLastName = nameParts.slice(1).join(" ") || "";
+
+    console.log("Patient name split:", { patientFirstName, patientLastName });
+
+    if (!patientFirstName || !patientLastName) {
+      console.log("Validation error: Missing first or last name");
+      showToast("error", "Please enter both first and last name");
+      return;
+    }
+
+    const referralDetail = {
+      patientFirstName,
+      patientLastName,
       patientDateOfBirth: formData.patientDateOfBirth,
       patientEmail: formData.patientEmail,
       patientPhoneNumber: formData.patientPhoneNumber,
@@ -213,11 +296,15 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
       referralPracticeNameAddress: formData.referralPracticeNameAddress,
       referralPhoneNumber: formData.referralPhoneNumber,
       referralEmail: formData.referralEmail,
-      referralDetails: formData.referralDetails,
+      dentalSpecialty: formData.dentalSpecialty,
+      cbct: formData.cbct,
       attendTreatment: formData.attendTreatment,
       treatmentDetails: formData.treatmentDetails,
       medicalHistoryPdfUrl: fileUrl,
+      other: formData.other,
     };
+
+    console.log("Calling createReferralForm with payload:", referralDetail);
 
     createReferralForm(
       {
@@ -225,24 +312,39 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
       },
       {
         onError: (error) => {
+          console.error("Mutation error caught:", error);
           const err = getAxiosErrorMessage(error);
+          console.error("Formatted error message:", err);
           showToast("error", err);
         },
         onSuccess: async (data) => {
+          console.log("Mutation success, received data:", data);
           const adminEmailHtml = referralAdminEmail(formData);
-          let patientEmailHtml = ""
-          let referralDentistEmailHtml = ""
+          let patientEmailHtml = "";
+          let referralDentistEmailHtml = "";
 
           if (data.patientId && data.patient) {
-            patientEmailHtml = referralRegisteredPatientEmail(formData, process.env.NEXT_PUBLIC_API_BASE_URL || "")
+            patientEmailHtml = referralRegisteredPatientEmail(
+              formData,
+              process.env.NEXT_PUBLIC_API_BASE_URL || "",
+            );
           } else {
-            patientEmailHtml = referralUnRegisteredPatientEmail(formData, process.env.NEXT_PUBLIC_API_BASE_URL || "")
+            patientEmailHtml = referralUnRegisteredPatientEmail(
+              formData,
+              process.env.NEXT_PUBLIC_API_BASE_URL || "",
+            );
           }
 
           if (data.referralDentistId && data.referralDentist) {
-            referralDentistEmailHtml = referralRegisteredDentistEmail(formData, process.env.NEXT_PUBLIC_API_BASE_URL || "")
+            referralDentistEmailHtml = referralRegisteredDentistEmail(
+              formData,
+              process.env.NEXT_PUBLIC_API_BASE_URL || "",
+            );
           } else {
-            referralDentistEmailHtml = referralUnregisteredDentistEmail(formData, process.env.NEXT_PUBLIC_API_BASE_URL || "")
+            referralDentistEmailHtml = referralUnregisteredDentistEmail(
+              formData,
+              process.env.NEXT_PUBLIC_API_BASE_URL || "",
+            );
           }
 
           // Convert PDF to base64 if it exists
@@ -251,7 +353,8 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
 
           if (formData.medicalHistoryPdfUrl) {
             try {
-              const arrayBuffer = await formData.medicalHistoryPdfUrl.arrayBuffer();
+              const arrayBuffer =
+                await formData.medicalHistoryPdfUrl.arrayBuffer();
               pdfBase64 = Buffer.from(arrayBuffer).toString("base64");
               pdfFileName = formData.medicalHistoryPdfUrl.name;
             } catch (error) {
@@ -317,7 +420,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
           showToast("success", "Referral submitted successfully");
           reset();
         },
-      }
+      },
     );
   };
 
@@ -406,7 +509,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
                       onClick={() => setIsCalendarOpen(!isCalendarOpen)}
                       className={cn(
                         "relative w-full text-left font-normal bg-transparent p-3  rounded-[10px] border border-solid border-black",
-                        !field.value && "text-muted-foreground"
+                        !field.value && "text-muted-foreground",
                       )}
                     >
                       {field.value ? (
@@ -565,18 +668,44 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
 
           <div>
             <h3 className="font-opus text-[20px] md:text-[30px] mt-16">
-              Referral Details
+              Dental Specialty
             </h3>
             <div className="grid mt-4 justify-center items-start md:grid-cols-2 gap-1 lg:gap-2 lg:gap-x-20 min-w-max">
               {REFERRAL_DETAIL.options.map((option) => (
-                <CheckboxInput
-                  type="checkbox"
+                <label
                   key={option.value}
-                  name={REFERRAL_DETAIL.name}
-                  label={option.label}
-                  value={option.value}
-                  control={control}
-                />
+                  className="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    name="referralService"
+                    value={option.value}
+                    onChange={(e) => handleReferralDetailChange(e.target.value)}
+                    className="w-5 h-5"
+                  />
+                  <span className="text-lg">{option.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-opus text-[20px] md:text-[30px] mt-16">CBCT</h3>
+            <div className="grid mt-4 justify-center items-start md:grid-cols-2 gap-1 lg:gap-2 lg:gap-x-20 min-w-max">
+              {CBCT_DETAIL.options.map((option) => (
+                <label
+                  key={option.value}
+                  className="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    name="cbctService"
+                    value={option.value}
+                    onChange={(e) => handleReferralDetailChange(e.target.value)}
+                    className="w-5 h-5"
+                  />
+                  <span className="text-lg">{option.label}</span>
+                </label>
               ))}
             </div>
           </div>
@@ -674,8 +803,6 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
                 marginTop="50px"
                 padding="13px"
               />
-
-
             </div>
 
             {/* <div className="mt-[50px] flex flex-col gap-2">
@@ -751,7 +878,9 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
           <div className=" my-20 flex md:justify-end justify-center items-center md:items-start gap-2">
             <CustomButton
               text="Cancel"
-              disabled={creatingReferralFormLoader || uplaodFileLoader || isPending}
+              disabled={
+                creatingReferralFormLoader || uplaodFileLoader || isPending
+              }
               handleOnClick={() => reset()}
               className="text-[#A3A3A3] bg-gray  shadow-none hover:bg-lightGray font-medium text-2xl  h-14"
             />
@@ -759,8 +888,12 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
               text={"Submit Form"}
               type="submit"
               className="text-2xl font-medium h-14"
-              disabled={creatingReferralFormLoader || uplaodFileLoader || isPending}
-              loading={creatingReferralFormLoader || uplaodFileLoader || isPending}
+              disabled={
+                creatingReferralFormLoader || uplaodFileLoader || isPending
+              }
+              loading={
+                creatingReferralFormLoader || uplaodFileLoader || isPending
+              }
             />
           </div>
         </form>
