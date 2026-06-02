@@ -94,7 +94,8 @@ export default async function AssignedWrapper({
       : toTitleCase(referralForm.dentalSpecialty ?? ""),
     treatmentDetails: referralForm.treatmentDetails,
     attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
-    medicalHistoryPDF: referralForm.medicalHistoryPdf,
+    medicalHistoryPDF:
+      referralForm.medicalHistoryPdf ?? referralForm.medicalHistoryPdfUrl,
   };
 
   return (

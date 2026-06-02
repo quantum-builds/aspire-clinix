@@ -125,8 +125,38 @@
   }
 
   input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(0.6);
+    opacity: 0;
     cursor: pointer;
+  }
+
+  input[type="date"]::-webkit-inner-spin-button,
+  input[type="date"]::-webkit-clear-button {
+    display: none;
+  }
+
+  .date-field {
+    position: relative;
+  }
+
+  .date-field input[type="date"] {
+    padding-right: 42px;
+    cursor: pointer;
+  }
+
+  .date-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 16px 16px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f1b17' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2' ry='2'/%3E%3Cpath d='M8 3v4M16 3v4M3 10h18'/%3E%3C/svg%3E");
+    pointer-events: auto;
+    cursor: pointer;
+    opacity: 0.95;
   }
 
   textarea {
@@ -143,6 +173,7 @@
   .phone-field {
     display: flex;
     gap: 0;
+    align-items: stretch;
   }
 
   .phone-field select {
@@ -156,7 +187,9 @@
     font-size: 13px;
     outline: none;
     cursor: pointer;
-    min-width: 70px;
+    min-width: 92px;
+    width: 92px;
+    flex: 0 0 92px;
   }
 
   .phone-field select:focus {
@@ -165,7 +198,10 @@
 
   .phone-field input {
     border-radius: 0 var(--radius) var(--radius) 0;
-    flex: 1;
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
+    cursor: text;
   }
 
   select {
@@ -383,30 +419,29 @@
   }
   .cs-trigger.invalid-trigger { border-color: var(--error) !important; }
 
-  .cs-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    flex-shrink: 0;
-    background: var(--surface2);
-    color: var(--accent);
-    transition: background 0.2s;
-  }
-
   .cs-text { flex: 1; min-width: 0; }
   .cs-label { font-size: 13px; color: var(--text); line-height: 1.2; }
   .cs-label.placeholder { color: var(--text-muted); opacity: 0.7; }
 
   .cs-arrow {
-    font-size: 16px;
+    width: 10px;
+    height: 10px;
+    position: relative;
     color: var(--text-muted);
-    transition: transform 0.2s;
+    transition: transform 0.2s, color 0.2s;
     flex-shrink: 0;
   }
+  .cs-arrow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transform-origin: center;
+  }
+  .cs-trigger:hover .cs-arrow,
+  .cs-trigger.open .cs-arrow { color: var(--text); }
   .cs-trigger.open .cs-arrow { transform: rotate(180deg); }
 
   .cs-dropdown {
@@ -445,18 +480,37 @@
   .cs-option:focus { background: var(--accent-subtle); outline: none; }
   .cs-option.selected { background: var(--accent-glow); }
 
-  .cs-opt-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
+  .cs-opt-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
     flex-shrink: 0;
-    background: var(--surface2);
+    border: 2px solid var(--border);
+    background: transparent;
+    position: relative;
+    margin-left: 2px;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
   }
-  .cs-option.selected .cs-opt-icon { background: rgba(201,169,110,0.2); }
+  .cs-opt-circle::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: inherit;
+    background: transparent;
+    transform: scale(0.55);
+    opacity: 0;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .cs-option.selected .cs-opt-circle {
+    border-color: var(--accent);
+    background: rgba(201,169,110,0.08);
+    box-shadow: 0 0 0 3px rgba(201,169,110,0.08);
+  }
+  .cs-option.selected .cs-opt-circle::after {
+    opacity: 1;
+    transform: scale(1);
+    background: var(--accent);
+  }
 
   .cs-opt-body { flex: 1; min-width: 0; }
   .cs-opt-name { font-size: 13px; color: var(--text); font-weight: 400; }
@@ -480,6 +534,7 @@
     color: var(--accent);
     flex-shrink: 0;
     opacity: 0;
+    margin-left: auto;
   }
   .cs-option.selected .cs-check { opacity: 1; }
 
@@ -563,7 +618,10 @@
 
     <div class="field">
       <label>Date of Birth <span class="req">*</span></label>
-      <input type="date" id="dob" />
+      <div class="date-field">
+        <input type="date" id="dob" max="" inputmode="none" onkeydown="return false" onpaste="return false" />
+        <span class="date-icon" aria-hidden="true" onclick="openDobPicker(event)"></span>
+      </div>
       <div class="field-error" id="err-dob"></div>
     </div>
 
@@ -583,7 +641,7 @@
             <option value="+91">IN +91</option>
             <option value="+61">AU +61</option>
           </select>
-          <input type="tel" id="mobileNumber" placeholder="3001234567" />
+            <input type="tel" id="mobileNumber" placeholder="3001234567" inputmode="numeric" autocomplete="tel-national" pattern="[0-9]*" />
         </div>
         <div class="field-error" id="err-mobileNumber"></div>
       </div>
@@ -623,11 +681,10 @@
                onclick="toggleDropdown('specialty')"
                onkeydown="handleKeydown(event,'specialty')"
                role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select dental specialty">
-            <div class="cs-icon" id="specialty-icon">🦷</div>
             <div class="cs-text">
               <div class="cs-label placeholder" id="specialty-label">Select dental specialty</div>
             </div>
-            <span class="cs-arrow">⌄</span>
+            <span class="cs-arrow" aria-hidden="true"></span>
           </div>
           <div class="cs-dropdown" id="specialty-dropdown" role="listbox"></div>
         </div>
@@ -647,11 +704,10 @@
                onclick="toggleDropdown('cbct')"
                onkeydown="handleKeydown(event,'cbct')"
                role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select CBCT scan type">
-            <div class="cs-icon" id="cbct-icon">🔬</div>
             <div class="cs-text">
               <div class="cs-label placeholder" id="cbct-label">Select CBCT scan type</div>
             </div>
-            <span class="cs-arrow">⌄</span>
+            <span class="cs-arrow" aria-hidden="true"></span>
           </div>
           <div class="cs-dropdown" id="cbct-dropdown" role="listbox"></div>
         </div>
@@ -666,9 +722,9 @@
         <label for="fileUpload" style="cursor:pointer;display:block;">
           <span class="upload-icon">📁</span>
           <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
-          <div class="upload-text" style="margin-top:4px;font-size:11px">Images, PDF, Radiographs</div>
+          <div class="upload-text" style="margin-top:4px;font-size:11px">PDF </div>
         </label>
-        <input type="file" id="fileUpload" multiple accept="image/*,.pdf,.dcm" />
+        <input type="file" id="fileUpload" accept="application/pdf,.pdf" />
       </div>
       <div id="file-list"></div>
     </div>
@@ -706,7 +762,7 @@
           <option value="+91">IN +91</option>
           <option value="+61">AU +61</option>
         </select>
-        <input type="tel" id="referralPhone" placeholder="3001234567" />
+        <input type="tel" id="referralPhone" placeholder="3001234567" inputmode="numeric" autocomplete="tel-national" pattern="[0-9]*" />
       </div>
       <div class="field-error" id="err-referralPhone"></div>
     </div>
@@ -752,7 +808,7 @@
           <option value="+91">IN +91</option>
           <option value="+61">AU +61</option>
         </select>
-        <input type="tel" id="practicePhone" placeholder="3001234567" />
+        <input type="tel" id="practicePhone" placeholder="3001234567" inputmode="numeric" autocomplete="tel-national" pattern="[0-9]*" />
       </div>
       <div class="field-error" id="err-practicePhone"></div>
     </div>
@@ -766,14 +822,14 @@
 <script>
   /* ─── CUSTOM DROPDOWN DATA ─── */
   var specialtyOptions = [
-    { value: 'Implants',                    icon: '🪛', label: 'Implants',                    desc: 'Surgical placement & restoration' },
-    { value: 'Periodontology',              icon: '🦠', label: 'Periodontology',              desc: 'Gum disease treatment & care' },
-    { value: 'Oral Surgery',                icon: '⚕️', label: 'Oral Surgery',               desc: 'Extractions & surgical procedures' },
-    { value: 'Dentures',                    icon: '🦷', label: 'Dentures',                    desc: 'Full & partial prosthetics' },
-    { value: 'Root Canal',                  icon: '🔩', label: 'Root Canal',                  desc: 'Endodontic therapy' },
-    { value: 'Paediatric Dentistry',        icon: '👶', label: 'Paediatric Dentistry',        desc: "Children's dental care" },
-    { value: 'Orthodontics',                icon: '🔗', label: 'Orthodontics',               desc: 'Braces, aligners & bite correction' },
-    { value: 'Treatment Planning & Advice', icon: '📋', label: 'Treatment Planning & Advice', desc: 'Consultation & clinical guidance' }
+    { value: 'Implants',                    label: 'Implants',                    desc: 'Surgical placement & restoration' },
+    { value: 'Periodontology',              label: 'Periodontology',              desc: 'Gum disease treatment & care' },
+    { value: 'Oral Surgery',                label: 'Oral Surgery',               desc: 'Extractions & surgical procedures' },
+    { value: 'Dentures',                    label: 'Dentures',                    desc: 'Full & partial prosthetics' },
+    { value: 'Root Canal',                  label: 'Root Canal',                  desc: 'Endodontic therapy' },
+    { value: 'Paediatric Dentistry',        label: 'Paediatric Dentistry',        desc: "Children's dental care" },
+    { value: 'Orthodontics',                label: 'Orthodontics',               desc: 'Braces, aligners & bite correction' },
+    { value: 'Treatment Planning & Advice', label: 'Treatment Planning & Advice', desc: 'Consultation & clinical guidance' }
   ];
 
   var cbctOptions = [
@@ -785,13 +841,48 @@
 
   var CBCT_VALUES = cbctOptions.map(function(o) { return o.value; });
   var dropdownState = { specialty: null, cbct: null };
+  var dobPickerOpen = false;
+
+  function setDobMaxDate() {
+    var dob = document.getElementById('dob');
+    if (!dob) return;
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    dob.max = today.toISOString().split('T')[0];
+  }
+
+  function openDobPicker(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    var dob = document.getElementById('dob');
+    if (!dob) return;
+
+    if (dobPickerOpen) {
+      dob.blur();
+      dobPickerOpen = false;
+      return;
+    }
+
+    dob.focus({ preventScroll: true });
+    if (typeof dob.showPicker === 'function') {
+      dob.showPicker();
+      dobPickerOpen = true;
+      return;
+    }
+
+    dob.click();
+    dobPickerOpen = true;
+  }
 
   /* ─── BUILD DROPDOWNS ─── */
   function buildDropdown(id, options) {
     var dd = document.getElementById(id + '-dropdown');
     dd.innerHTML = options.map(function(opt) {
       return '<div class="cs-option" tabindex="0" role="option" data-value="' + opt.value + '">' +
-        '<div class="cs-opt-icon">' + opt.icon + '</div>' +
+        '<div class="cs-opt-circle" aria-hidden="true"></div>' +
         '<div class="cs-opt-body">' +
           '<div class="cs-opt-name">' + opt.label + '</div>' +
           '<div class="cs-opt-desc">' + opt.desc + '</div>' +
@@ -849,17 +940,13 @@
 
     /* update trigger display */
     var labelEl = document.getElementById(id + '-label');
-    var iconEl  = document.getElementById(id + '-icon');
     labelEl.textContent = opt.label;
     labelEl.classList.remove('placeholder');
-    iconEl.textContent = opt.icon;
 
     /* reset other trigger */
     var otherLabelEl = document.getElementById(other + '-label');
-    var otherIconEl  = document.getElementById(other + '-icon');
     otherLabelEl.textContent = other === 'specialty' ? 'Select dental specialty' : 'Select CBCT scan type';
     otherLabelEl.classList.add('placeholder');
-    otherIconEl.textContent = other === 'specialty' ? '🦷' : '🔬';
 
     /* selected states */
     document.getElementById(id + '-dropdown').querySelectorAll('.cs-option').forEach(function(el) {
@@ -886,7 +973,6 @@
     var l = document.getElementById('specialty-label');
     l.textContent = 'Select dental specialty';
     l.classList.add('placeholder');
-    document.getElementById('specialty-icon').textContent = '🦷';
     document.getElementById('specialty-dropdown').querySelectorAll('.cs-option').forEach(function(el) { el.classList.remove('selected'); });
     document.getElementById('specialty-clear').style.display = 'none';
   }
@@ -896,7 +982,6 @@
     var l = document.getElementById('cbct-label');
     l.textContent = 'Select CBCT scan type';
     l.classList.add('placeholder');
-    document.getElementById('cbct-icon').textContent = '🔬';
     document.getElementById('cbct-dropdown').querySelectorAll('.cs-option').forEach(function(el) { el.classList.remove('selected'); });
     document.getElementById('cbct-clear').style.display = 'none';
   }
@@ -921,7 +1006,18 @@
     var input = document.getElementById('fileUpload');
     var list  = document.getElementById('file-list');
     if (!input.files || input.files.length === 0) { list.textContent = ''; return; }
-    list.textContent = Array.from(input.files).map(function(f) { return '📎 ' + f.name; }).join('  ·  ');
+
+    var files = Array.from(input.files).filter(function(f) {
+      return f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
+    });
+
+    if (files.length !== input.files.length) {
+      list.textContent = 'Only PDF files are allowed.';
+      input.value = '';
+      return;
+    }
+
+    list.textContent = files.map(function(f) { return '📎 ' + f.name; }).join('  ·  ');
   }
 
   var uploadArea = document.getElementById('uploadArea');
@@ -935,10 +1031,32 @@
     uploadArea.style.borderColor = '';
     var fileInput = document.getElementById('fileUpload');
     var dt = new DataTransfer();
-    Array.from(e.dataTransfer.files).forEach(function(file) { dt.items.add(file); });
+    Array.from(e.dataTransfer.files).forEach(function(file) {
+      if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
+        dt.items.add(file);
+      }
+    });
     fileInput.files = dt.files;
     updateFileList();
   });
+
+  setDobMaxDate();
+
+  var dobInput = document.getElementById('dob');
+  if (dobInput) {
+    dobInput.addEventListener('blur', function() {
+      dobPickerOpen = false;
+    });
+    dobInput.addEventListener('change', function() {
+      dobPickerOpen = false;
+    });
+    dobInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        dobPickerOpen = false;
+        dobInput.blur();
+      }
+    });
+  }
 
   /* ─── TOAST ─── */
   function showToast(msg, type) {
@@ -982,6 +1100,16 @@
     req('patientFirstName', 'First name is required');
     req('patientLastName',  'Last name is required');
     req('dob',              'Date of birth is required');
+    var dobEl = document.getElementById('dob');
+    if (dobEl && dobEl.value) {
+      var selectedDob = new Date(dobEl.value);
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (selectedDob > today) {
+        setError('dob', 'Future dates are not allowed');
+        ok = false;
+      }
+    }
     req('mobileNumber',     'Mobile number is required');
     req('patientEmail',     'Email is required');
     email('patientEmail');
@@ -1077,10 +1205,11 @@
       var file = (fileInput.files && fileInput.files.length > 0) ? fileInput.files[0] : null;
 
       if (file) {
-        var fileTypeParam = 'others';
-        if (file.type === 'application/pdf') fileTypeParam = 'pdf';
-        else if (file.type.startsWith('image/')) fileTypeParam = 'images';
-        else if (file.type.startsWith('video/')) fileTypeParam = 'video';
+        if (!(file.type === 'application/pdf' || /\.pdf$/i.test(file.name))) {
+          throw new Error('Only PDF files are allowed.');
+        }
+
+        var fileTypeParam = 'pdf';
 
         var params = new URLSearchParams({
           fileName: file.name,
@@ -1089,7 +1218,7 @@
           fileSize: String(file.size)
         });
 
-        var signedRes = await fetch('http://localhost:3000/api/s3?' + params.toString());
+        var signedRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + params.toString());
         var signedJson = null;
         var ct = signedRes.headers.get('content-type') || '';
 
@@ -1112,7 +1241,7 @@
         payload.medicalHistoryPdfUrl = u.pathname.replace(/^\//, '');
       }
 
-      var res = await fetch('http://localhost:3000/api/referrals', {
+      var res = await fetch('https://aspire-clinix.vercel.app/api/referrals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
