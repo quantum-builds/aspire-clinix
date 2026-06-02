@@ -48,7 +48,7 @@ export default async function ReferralRequestDetail({
   const appointment = referralRequestResponse.data.appointment;
 
   const patientDetails = {
-    name: `${referralForm.patientFirstName} ${referralForm.patientLastName}`,
+    name: referralForm.patientName,
     phone: referralForm.patientPhoneNumber,
     email: referralForm.patientEmail,
     address: referralForm.patientAddress,
