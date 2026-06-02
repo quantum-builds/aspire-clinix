@@ -44,9 +44,7 @@ export function referralAdminEmail(formData: FormData) {
     
                   <h2 style="font-size: 18px; color: #264653; margin-bottom: 10px;">Referral Details</h2>
                   <table style="width: 100%; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-                    <tr><td><strong>Details:</strong></td><td>${formData.referralDetails?.length
-      ? formData.referralDetails.join(", ")
-      : "None"
+                    <tr><td><strong>Details:</strong></td><td>${formData.cbct || formData.dentalSpecialty || "N/A"
     }</td></tr>
                     <tr><td><strong>Other:</strong></td><td>${formData.other || "N/A"
     }</td></tr>

@@ -46,7 +46,7 @@ export default async function ReferralHistoryDetail({
   const appointment = referralRequestResponse.data.appointment;
 
   const patientDetails = {
-    name: referralForm.patientName,
+    name: `${referralForm.patientFirstName} ${referralForm.patientLastName}`,
     phone: referralForm.patientPhoneNumber,
     email: referralForm.patientEmail,
     address: referralForm.patientAddress,
@@ -63,14 +63,8 @@ export default async function ReferralHistoryDetail({
   };
   const referralFormDetails = {
     referralDeatils: referralForm.other
-      ? referralForm.referralDetails
-          .map((disease) => toTitleCase(disease))
-          .join(", ") +
-        ", " +
-        referralForm.other
-      : referralForm.referralDetails
-          .map((disease) => toTitleCase(disease))
-          .join(", "),
+      ? `${toTitleCase(referralForm.cbct ?? "")}, ${referralForm.other}`
+      : toTitleCase(referralForm.dentalSpecialty ?? ""),
     treatmentDetails: referralForm.treatmentDetails,
     attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
     medicalHistoryPDF: referralForm.medicalHistoryPdf,

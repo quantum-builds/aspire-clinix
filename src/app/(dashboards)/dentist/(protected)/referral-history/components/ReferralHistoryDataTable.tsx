@@ -103,7 +103,7 @@ export function ReferralHistoryDataTable({ entries }: ReferralHistoryDataTablePr
               </TableCell>
 
               <TableCell className="px-6 py-4">
-                {entry.referralForm.patientName}
+                {entry.referralForm.patientFirstName} {entry.referralForm.patientLastName}
               </TableCell>
 
 
