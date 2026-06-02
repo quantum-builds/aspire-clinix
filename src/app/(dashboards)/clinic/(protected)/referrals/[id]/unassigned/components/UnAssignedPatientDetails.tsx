@@ -125,15 +125,17 @@ export default function UnAssignedPatientDetails({
               />
             )}
           </div>
-          <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-start">
-            <div className="flex-1 space-y-1">
-              <p className="font-medium text-dashboardTextBlack">
-                Referral Details
+          <div className="flex flex-col text-lg space-y-2">
+            <div className="flex flex-row items-start">
+              <p className="font-medium text-dashboardTextBlack w-40 shrink-0">
+                Referral Details:
               </p>
               <p>{referralFormDetails.referralDeatils}</p>
             </div>
-            <div className="flex-1 space-y-1 max-1xl50:mt-3">
-              <p className="font-medium text-dashboardTextBlack">Description</p>
+            <div className="flex flex-row items-start">
+              <p className="font-medium text-dashboardTextBlack w-40 shrink-0">
+                Description:
+              </p>
               <p>
                 {referralFormDetails.treatmentDetails ? (
                   referralFormDetails.treatmentDetails
