@@ -1,7 +1,6 @@
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { NextRequest, NextResponse } from "next/server";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import s3 from "@/config/s3-config";
 
 /**
  * @swagger
@@ -49,6 +48,30 @@ import s3 from "@/config/s3-config";
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   try {
+    const region = process.env.AWS_REGION;
+    const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+    const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+    const bucket = process.env.AWS_BUCKET_NAME;
+
+    if (!region || !accessKeyId || !secretAccessKey || !bucket) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "S3 upload is not configured on this deployment. Missing AWS environment variables.",
+        },
+        { status: 500 },
+      );
+    }
+
+    const s3 = new S3Client({
+      region,
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+    });
+
     const fileName = searchParams.get("fileName");
     const fileType = searchParams.get("fileType");
     const mimeType = searchParams.get("mimeType");
@@ -79,7 +102,7 @@ export async function GET(req: NextRequest) {
       Key: string;
       ContentType?: string;
     } = {
-      Bucket: process.env.AWS_BUCKET_NAME!,
+      Bucket: bucket,
       Key: `${folder}/${fileName}`,
     };
     if (mimeType) {
