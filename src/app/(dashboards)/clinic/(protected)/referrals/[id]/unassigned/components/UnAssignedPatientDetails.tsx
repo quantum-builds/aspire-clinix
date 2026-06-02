@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
-import ReferralFormDetailModal from "@/app/(dashboards)/components/ReferralFormDetailModal";
 import BindAppointmentModal from "./BindAppointmentModal";
-import { usePathname, useRouter } from "next/navigation";
-import { log } from "console";
+import PdfModal from "@/app/(dashboards)/components/ViewPdfModal";
+import { ReadOnlyCheckbox } from "@/components/ReadOnlyCheckBox";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { UploadPDFIcon } from "@/assets";
 
 interface PatientReferralDetailsProps {
   id: string;
@@ -45,9 +47,7 @@ export default function UnAssignedPatientDetails({
   referralDentistDetails,
   referralRequestId,
 }: PatientReferralDetailsProps) {
-  const pathname = usePathname();
   const router = useRouter();
-  const modalUrl = `${pathname}?showModal=true`;
 
   const [isBindModalOpen, setIsBindModalOpen] = useState(false);
 
@@ -67,11 +67,6 @@ export default function UnAssignedPatientDetails({
             text="Bind with Appointment"
             style="primary"
             handleOnClick={() => setIsBindModalOpen(true)}
-          />
-          <CustomButton
-            text="See Referral Form Details"
-            style="secondary"
-            href={modalUrl}
           />
         </div>
       </div>
@@ -113,10 +108,58 @@ export default function UnAssignedPatientDetails({
             <p>Practice Address: {referralDentistDetails.address}</p>
           </div>
         </div>
+        <div className="bg-gray p-6 1xl50:space-y-5 space-y-0 rounded-2xl">
+          <div className="flex justify-between items-center">
+            <p className="text-green font-medium text-2xl max-1xl50:mb-3">
+              Referral Form Details
+            </p>
+            {referralFormDetails.medicalHistoryPDF && (
+              <PdfModal
+                pdfUrl={referralFormDetails.medicalHistoryPDF}
+                trigger={
+                  <div className="flex items-center gap-3 cursor-pointer">
+                    <Image src={UploadPDFIcon} alt="PDF Icon" />
+                    <p className="underline text-green">See Document</p>
+                  </div>
+                }
+              />
+            )}
+          </div>
+          <div className="flex flex-col text-lg space-y-2">
+            <div className="flex flex-row items-start">
+              <p className="font-medium text-dashboardTextBlack w-40 shrink-0">
+                Referral Details:
+              </p>
+              <p>{referralFormDetails.referralDeatils}</p>
+            </div>
+            <div className="flex flex-row items-start">
+              <p className="font-medium text-dashboardTextBlack w-40 shrink-0">
+                Description:
+              </p>
+              <p>
+                {referralFormDetails.treatmentDetails ? (
+                  referralFormDetails.treatmentDetails
+                ) : (
+                  <span className="italic">NO Description Added</span>
+                )}
+              </p>
+            </div>
+          </div>
+          <div className="flex justify-between items-center text-lg max-1xl50:pt-3">
+            <div className="space-y-1">
+              <p className="font-medium text-dashboardTextBlack">
+                Would referral dentist like to attend the treatment appointment
+                with the patient and shadow the dentist?
+              </p>
+              {referralFormDetails.attendTreatment === "yes" ? (
+                <ReadOnlyCheckbox label="Yes" checked={true} />
+              ) : (
+                <ReadOnlyCheckbox label="No" checked={true} />
+              )}
+            </div>
+          </div>
+        </div>
       </div>
-      {showModel && (
-        <ReferralFormDetailModal referralFormDetails={referralFormDetails} />
-      )}
 
       <BindAppointmentModal
         isOpen={isBindModalOpen}

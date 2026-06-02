@@ -1218,7 +1218,7 @@
           fileSize: String(file.size)
         });
 
-        var signedRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + params.toString());
+        var signedRes = await fetch('http://localhost:3000/api/s3?' + params.toString());
         var signedJson = null;
         var ct = signedRes.headers.get('content-type') || '';
 
@@ -1241,7 +1241,7 @@
         payload.medicalHistoryPdfUrl = u.pathname.replace(/^\//, '');
       }
 
-      var res = await fetch('https://aspire-clinix.vercel.app/api/referrals', {
+      var res = await fetch('http://localhost:3000/api/referrals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
