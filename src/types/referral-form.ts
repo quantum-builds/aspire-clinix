@@ -39,8 +39,8 @@ export interface UpdateReferralForm {
 }
 
 export type TCreateReferralForm = {
-  patientFirstName: string;
-  patientLastName: string;
+  patientName: string;
+  
   patientPhoneNumber: string;
   patientEmail: string;
   patientDateOfBirth: Date;

@@ -64,7 +64,7 @@ export function ReferralRequestDataTable({ entries }: ReferralRequestDataTablePr
                 {entry.id.slice(0, 8)}
               </TableCell>
               <TableCell className="px-6 py-4">
-                {entry.referralForm.patientFirstName} {entry.referralForm.patientLastName}
+               {entry.referralForm.patientName}
               </TableCell>
               <TableCell className="px-6 py-4">
                 {entry.referralForm.referralName}

@@ -285,8 +285,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
     }
 
     const referralDetail = {
-      patientFirstName,
-      patientLastName,
+      patientName: `{patientFirstName} ${patientLastName}`,
       patientDateOfBirth: formData.patientDateOfBirth,
       patientEmail: formData.patientEmail,
       patientPhoneNumber: formData.patientPhoneNumber,
