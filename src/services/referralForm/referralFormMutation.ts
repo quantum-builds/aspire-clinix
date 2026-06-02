@@ -9,12 +9,25 @@ export const useCreateReferralForm = () => {
     }: {
       referralForm: TCreateReferralForm;
     }) => {
-      const response = await axiosInstance.post(
-        ENDPOINTS.referralForm.create,
-        referralForm
-      );
-      const data:TReferralForm=response.data.data
-      return data;
+      console.log("Submitting referral form:", referralForm);
+      console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+      console.log("Endpoint:", ENDPOINTS.referralForm.create);
+
+      try {
+        const response = await axiosInstance.post(
+          ENDPOINTS.referralForm.create,
+          referralForm,
+        );
+        console.log("Response:", response);
+        const data: TReferralForm = response.data.data;
+        return data;
+      } catch (error) {
+        console.error("Mutation error details:", {
+          message: error instanceof Error ? error.message : String(error),
+          error: error,
+        });
+        throw error;
+      }
     },
   });
 };

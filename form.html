@@ -18,6 +18,8 @@
     --text-muted: #9e9488;
     --accent: #c9a96e;
     --accent-dark: #a8883f;
+    --accent-subtle: rgba(201,169,110,0.10);
+    --accent-glow: rgba(201,169,110,0.18);
     --error: #e07070;
     --success: #6ebd9a;
     --radius: 6px;
@@ -114,7 +116,7 @@
   input[type="date"]:focus,
   textarea:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(201,169,110,0.12);
+    box-shadow: 0 0 0 3px var(--accent-glow);
   }
 
   input::placeholder, textarea::placeholder {
@@ -166,52 +168,31 @@
     flex: 1;
   }
 
-  /* Checkboxes */
-  .checkbox-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 24px;
-    margin-top: 4px;
-  }
-
-  .checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    padding: 9px 12px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
+  select {
+    width: 100%;
     background: var(--bg);
-    transition: border-color 0.2s, background 0.2s;
-    user-select: none;
-    text-transform: none;
-    letter-spacing: 0;
-    font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
     color: var(--text);
-    font-weight: 400;
-    margin-bottom: 0;
-  }
-
-  .checkbox-label:hover {
-    border-color: var(--accent);
-    background: rgba(201,169,110,0.06);
-  }
-
-  .checkbox-label input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--accent);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
     cursor: pointer;
-    flex-shrink: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
 
-  .checkbox-label.checked {
+  select:focus {
     border-color: var(--accent);
-    background: rgba(201,169,110,0.1);
+    box-shadow: 0 0 0 3px var(--accent-glow);
   }
 
-  /* Radio as checkbox style */
+  select option {
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  /* Radio */
   .radio-row {
     display: flex;
     gap: 12px;
@@ -230,11 +211,14 @@
     user-select: none;
     font-size: 13px;
     color: var(--text);
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
   }
 
   .radio-label:hover {
     border-color: var(--accent);
-    background: rgba(201,169,110,0.06);
+    background: var(--accent-subtle);
   }
 
   .radio-label input[type="radio"] {
@@ -325,11 +309,7 @@
   }
 
   .btn-submit:active { transform: scale(0.98); }
-
-  .btn-submit:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-  }
+  .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
 
   /* Toast */
   #toast {
@@ -367,8 +347,196 @@
     border-color: var(--error) !important;
   }
 
+  /* ─── HELPER TEXT ─── */
+  .helper-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    line-height: 1.6;
+    padding: 10px 14px;
+    background: rgba(201,169,110,0.06);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+
+  /* ─── CUSTOM SELECT ─── */
+  .custom-select { position: relative; user-select: none; }
+
+  .cs-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 11px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .cs-trigger:hover { border-color: #7a7060; }
+  .cs-trigger.open,
+  .cs-trigger:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .cs-trigger.invalid-trigger { border-color: var(--error) !important; }
+
+  .cs-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    background: var(--surface2);
+    color: var(--accent);
+    transition: background 0.2s;
+  }
+
+  .cs-text { flex: 1; min-width: 0; }
+  .cs-label { font-size: 13px; color: var(--text); line-height: 1.2; }
+  .cs-label.placeholder { color: var(--text-muted); opacity: 0.7; }
+
+  .cs-arrow {
+    font-size: 16px;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .cs-trigger.open .cs-arrow { transform: rotate(180deg); }
+
+  .cs-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 200;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition: opacity 0.18s, transform 0.18s;
+  }
+  .cs-dropdown.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .cs-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid rgba(90,84,73,0.4);
+  }
+  .cs-option:last-child { border-bottom: none; }
+  .cs-option:hover,
+  .cs-option:focus { background: var(--accent-subtle); outline: none; }
+  .cs-option.selected { background: var(--accent-glow); }
+
+  .cs-opt-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    background: var(--surface2);
+  }
+  .cs-option.selected .cs-opt-icon { background: rgba(201,169,110,0.2); }
+
+  .cs-opt-body { flex: 1; min-width: 0; }
+  .cs-opt-name { font-size: 13px; color: var(--text); font-weight: 400; }
+  .cs-option.selected .cs-opt-name { color: var(--accent); font-weight: 500; }
+  .cs-opt-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .cs-opt-badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 50px;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+    background: var(--surface2);
+    color: var(--text-muted);
+  }
+  .cs-option.selected .cs-opt-badge { background: rgba(201,169,110,0.18); color: var(--accent); }
+
+  .cs-check {
+    font-size: 14px;
+    color: var(--accent);
+    flex-shrink: 0;
+    opacity: 0;
+  }
+  .cs-option.selected .cs-check { opacity: 1; }
+
+  .or-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0 18px;
+  }
+  .or-divider::before, .or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .or-divider span {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .mutually-exclusive-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 6px;
+    opacity: 0.7;
+  }
+
+  .label-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 7px;
+  }
+  .label-row label { margin-bottom: 0; flex: 1; }
+
+  .clear-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 3px 8px;
+    border-radius: 50px;
+    border: 1px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+  .clear-btn:hover { color: var(--accent); border-color: var(--border); }
+
   @media (max-width: 540px) {
-    .row-2, .checkbox-grid { grid-template-columns: 1fr; }
+    .row-2 { grid-template-columns: 1fr; }
     .page-title { font-size: 2rem; }
   }
 </style>
@@ -431,30 +599,72 @@
       <textarea id="medicalHistory" placeholder="Relevant medical history, allergies, medications..."></textarea>
     </div>
 
+    <!-- TREATMENT / SERVICE SELECTION -->
     <div class="field">
-      <!-- FIX 1: Replaced &amp; with & inside label text (safe in HTML content) -->
-      <label>I am referring for <span class="req">*</span></label>
-      <div class="checkbox-grid" id="referralServices">
-        <label class="checkbox-label"><input type="checkbox" value="Implants" /> Implants</label>
-        <label class="checkbox-label"><input type="checkbox" value="Periodontology" /> Periodontology</label>
-        <label class="checkbox-label"><input type="checkbox" value="Oral Surgery" /> Oral Surgery</label>
-        <label class="checkbox-label"><input type="checkbox" value="Dentures" /> Dentures</label>
-        <label class="checkbox-label"><input type="checkbox" value="Root Canal" /> Root Canal</label>
-        <label class="checkbox-label"><input type="checkbox" value="Paediatric Dentistry" /> Paediatric Dentistry</label>
-        <label class="checkbox-label"><input type="checkbox" value="Orthodontics" /> Orthodontics</label>
-        <!-- FIX 2: &amp; is correct in HTML attribute/text content — kept as-is here -->
-        <label class="checkbox-label"><input type="checkbox" value="Treatment Planning & Advice" /> Treatment Planning &amp; Advice</label>
+      <label style="margin-bottom:10px;">
+        Please describe the treatment required in as much detail as possible
+        <small style="text-transform:none;letter-spacing:0;font-weight:300;display:block;margin-top:2px;color:var(--text-muted);">
+          For CBCT Scans please state which teeth require the scan and provide justification.
+        </small>
+      </label>
+
+      <div class="helper-text">
+        Select either a <strong>dental specialty</strong> or a <strong>CBCT scan type</strong> — not both. Choosing one will automatically clear the other.
       </div>
-      <div class="field-error" id="err-services"></div>
+
+      <!-- Dental Specialty -->
+      <div class="field" style="margin-bottom:8px;">
+        <div class="label-row">
+          <label>Dental Specialty <span class="req">*</span></label>
+          <span id="specialty-clear" class="clear-btn" onclick="clearSpecialty()" style="display:none;">&#x2715; Clear</span>
+        </div>
+        <div class="custom-select" id="specialty-select">
+          <div class="cs-trigger" id="specialty-trigger" tabindex="0"
+               onclick="toggleDropdown('specialty')"
+               onkeydown="handleKeydown(event,'specialty')"
+               role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select dental specialty">
+            <div class="cs-icon" id="specialty-icon">🦷</div>
+            <div class="cs-text">
+              <div class="cs-label placeholder" id="specialty-label">Select dental specialty</div>
+            </div>
+            <span class="cs-arrow">⌄</span>
+          </div>
+          <div class="cs-dropdown" id="specialty-dropdown" role="listbox"></div>
+        </div>
+        <div class="field-error" id="err-services"></div>
+      </div>
+
+      <div class="or-divider"><span>or</span></div>
+
+      <!-- CBCT -->
+      <div class="field" style="margin-bottom:0;">
+        <div class="label-row">
+          <label>CBCT Scan</label>
+          <span id="cbct-clear" class="clear-btn" onclick="clearCbct()" style="display:none;">&#x2715; Clear</span>
+        </div>
+        <div class="custom-select" id="cbct-select">
+          <div class="cs-trigger" id="cbct-trigger" tabindex="0"
+               onclick="toggleDropdown('cbct')"
+               onkeydown="handleKeydown(event,'cbct')"
+               role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select CBCT scan type">
+            <div class="cs-icon" id="cbct-icon">🔬</div>
+            <div class="cs-text">
+              <div class="cs-label placeholder" id="cbct-label">Select CBCT scan type</div>
+            </div>
+            <span class="cs-arrow">⌄</span>
+          </div>
+          <div class="cs-dropdown" id="cbct-dropdown" role="listbox"></div>
+        </div>
+        <p class="mutually-exclusive-note" style="margin-top:8px;">Selecting a CBCT type will clear the dental specialty selection</p>
+      </div>
     </div>
 
+    <!-- File Upload -->
     <div class="field">
       <label>Upload Supporting Documents <small style="text-transform:none;letter-spacing:0">(Photographs, Radiographs)</small></label>
-      <!-- FIX 3: Removed onclick from div; using a proper label-for pattern instead -->
       <div class="upload-area" id="uploadArea">
         <label for="fileUpload" style="cursor:pointer;display:block;">
           <span class="upload-icon">📁</span>
-          <!-- FIX 4: &amp; is correct in HTML text — kept -->
           <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
           <div class="upload-text" style="margin-top:4px;font-size:11px">Images, PDF, Radiographs</div>
         </label>
@@ -479,7 +689,6 @@
       <input type="text" id="gdcNumber" placeholder="e.g. 123456" />
       <div class="field-error" id="err-gdcNumber"></div>
     </div>
-    
 
     <div class="field">
       <label>Referral Email</label>
@@ -510,7 +719,6 @@
       </div>
       <div class="field-error" id="err-shadow"></div>
     </div>
-
   </div>
 
   <!-- PRACTICE DETAILS -->
@@ -548,7 +756,6 @@
       </div>
       <div class="field-error" id="err-practicePhone"></div>
     </div>
-
   </div>
 
   <button class="btn-submit" id="submitBtn" onclick="submitForm()">Submit Referral</button>
@@ -557,51 +764,183 @@
 <div id="toast"></div>
 
 <script>
-  // Checkbox visual state
-  document.querySelectorAll('.checkbox-label input[type="checkbox"]').forEach(function(cb) {
-    cb.addEventListener('change', function() {
-      cb.closest('.checkbox-label').classList.toggle('checked', cb.checked);
+  /* ─── CUSTOM DROPDOWN DATA ─── */
+  var specialtyOptions = [
+    { value: 'Implants',                    icon: '🪛', label: 'Implants',                    desc: 'Surgical placement & restoration' },
+    { value: 'Periodontology',              icon: '🦠', label: 'Periodontology',              desc: 'Gum disease treatment & care' },
+    { value: 'Oral Surgery',                icon: '⚕️', label: 'Oral Surgery',               desc: 'Extractions & surgical procedures' },
+    { value: 'Dentures',                    icon: '🦷', label: 'Dentures',                    desc: 'Full & partial prosthetics' },
+    { value: 'Root Canal',                  icon: '🔩', label: 'Root Canal',                  desc: 'Endodontic therapy' },
+    { value: 'Paediatric Dentistry',        icon: '👶', label: 'Paediatric Dentistry',        desc: "Children's dental care" },
+    { value: 'Orthodontics',                icon: '🔗', label: 'Orthodontics',               desc: 'Braces, aligners & bite correction' },
+    { value: 'Treatment Planning & Advice', icon: '📋', label: 'Treatment Planning & Advice', desc: 'Consultation & clinical guidance' }
+  ];
+
+  var cbctOptions = [
+    { value: 'Single Tooth (≤5×5 cm)', icon: '◾', label: 'Single Tooth', badge: '≤5×5 cm', desc: 'Localised single tooth FOV' },
+    { value: 'Quadrant (8×5 cm)',       icon: '◽', label: 'Quadrant',     badge: '8×5 cm',  desc: 'One quadrant of the arch' },
+    { value: 'Single Jaw (8×8 cm)',     icon: '🟫', label: 'Single Jaw',  badge: '8×8 cm',  desc: 'Full upper or lower arch' },
+    { value: 'Both Jaws (>8×8 cm)',     icon: '⬛', label: 'Both Jaws',   badge: '>8×8 cm', desc: 'Full maxillofacial volume' }
+  ];
+
+  var CBCT_VALUES = cbctOptions.map(function(o) { return o.value; });
+  var dropdownState = { specialty: null, cbct: null };
+
+  /* ─── BUILD DROPDOWNS ─── */
+  function buildDropdown(id, options) {
+    var dd = document.getElementById(id + '-dropdown');
+    dd.innerHTML = options.map(function(opt) {
+      return '<div class="cs-option" tabindex="0" role="option" data-value="' + opt.value + '">' +
+        '<div class="cs-opt-icon">' + opt.icon + '</div>' +
+        '<div class="cs-opt-body">' +
+          '<div class="cs-opt-name">' + opt.label + '</div>' +
+          '<div class="cs-opt-desc">' + opt.desc + '</div>' +
+        '</div>' +
+        (opt.badge ? '<span class="cs-opt-badge">' + opt.badge + '</span>' : '') +
+        '<span class="cs-check">✓</span>' +
+      '</div>';
+    }).join('');
+
+    dd.querySelectorAll('.cs-option').forEach(function(el) {
+      el.addEventListener('click', function() { selectOption(id, el.dataset.value); });
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectOption(id, el.dataset.value); }
+        if (e.key === 'Escape') closeDropdown(id);
+      });
+    });
+  }
+
+  buildDropdown('specialty', specialtyOptions);
+  buildDropdown('cbct', cbctOptions);
+
+  /* ─── DROPDOWN LOGIC ─── */
+  function toggleDropdown(id) {
+    var trigger = document.getElementById(id + '-trigger');
+    var isOpen = trigger.classList.contains('open');
+    var other = id === 'specialty' ? 'cbct' : 'specialty';
+    closeDropdown(other);
+    if (isOpen) { closeDropdown(id); } else { openDropdown(id); }
+  }
+
+  function openDropdown(id) {
+    var trigger = document.getElementById(id + '-trigger');
+    var dd = document.getElementById(id + '-dropdown');
+    trigger.classList.add('open');
+    trigger.setAttribute('aria-expanded', 'true');
+    dd.classList.add('visible');
+  }
+
+  function closeDropdown(id) {
+    var trigger = document.getElementById(id + '-trigger');
+    var dd = document.getElementById(id + '-dropdown');
+    trigger.classList.remove('open');
+    trigger.setAttribute('aria-expanded', 'false');
+    dd.classList.remove('visible');
+  }
+
+  function selectOption(id, value) {
+    var options = id === 'specialty' ? specialtyOptions : cbctOptions;
+    var opt = options.find(function(o) { return o.value === value; });
+    if (!opt) return;
+
+    var other = id === 'specialty' ? 'cbct' : 'specialty';
+    dropdownState[id] = value;
+    dropdownState[other] = null;
+
+    /* update trigger display */
+    var labelEl = document.getElementById(id + '-label');
+    var iconEl  = document.getElementById(id + '-icon');
+    labelEl.textContent = opt.label;
+    labelEl.classList.remove('placeholder');
+    iconEl.textContent = opt.icon;
+
+    /* reset other trigger */
+    var otherLabelEl = document.getElementById(other + '-label');
+    var otherIconEl  = document.getElementById(other + '-icon');
+    otherLabelEl.textContent = other === 'specialty' ? 'Select dental specialty' : 'Select CBCT scan type';
+    otherLabelEl.classList.add('placeholder');
+    otherIconEl.textContent = other === 'specialty' ? '🦷' : '🔬';
+
+    /* selected states */
+    document.getElementById(id + '-dropdown').querySelectorAll('.cs-option').forEach(function(el) {
+      el.classList.toggle('selected', el.dataset.value === value);
+    });
+    document.getElementById(other + '-dropdown').querySelectorAll('.cs-option').forEach(function(el) {
+      el.classList.remove('selected');
+    });
+
+    /* clear buttons */
+    document.getElementById(id + '-clear').style.display = '';
+    document.getElementById(other + '-clear').style.display = 'none';
+
+    /* remove validation error */
+    document.getElementById('specialty-trigger').classList.remove('invalid-trigger');
+    document.getElementById('cbct-trigger').classList.remove('invalid-trigger');
+    document.getElementById('err-services').textContent = '';
+
+    closeDropdown(id);
+  }
+
+  function clearSpecialty() {
+    dropdownState.specialty = null;
+    var l = document.getElementById('specialty-label');
+    l.textContent = 'Select dental specialty';
+    l.classList.add('placeholder');
+    document.getElementById('specialty-icon').textContent = '🦷';
+    document.getElementById('specialty-dropdown').querySelectorAll('.cs-option').forEach(function(el) { el.classList.remove('selected'); });
+    document.getElementById('specialty-clear').style.display = 'none';
+  }
+
+  function clearCbct() {
+    dropdownState.cbct = null;
+    var l = document.getElementById('cbct-label');
+    l.textContent = 'Select CBCT scan type';
+    l.classList.add('placeholder');
+    document.getElementById('cbct-icon').textContent = '🔬';
+    document.getElementById('cbct-dropdown').querySelectorAll('.cs-option').forEach(function(el) { el.classList.remove('selected'); });
+    document.getElementById('cbct-clear').style.display = 'none';
+  }
+
+  function handleKeydown(e, id) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDropdown(id); }
+    if (e.key === 'Escape') closeDropdown(id);
+  }
+
+  /* close on outside click */
+  document.addEventListener('click', function(e) {
+    ['specialty', 'cbct'].forEach(function(id) {
+      var sel = document.getElementById(id + '-select');
+      if (sel && !sel.contains(e.target)) closeDropdown(id);
     });
   });
 
-  // FIX 5: File input change listener attached via JS (not inline onchange)
+  /* ─── FILE UPLOAD ─── */
   document.getElementById('fileUpload').addEventListener('change', updateFileList);
 
   function updateFileList() {
     var input = document.getElementById('fileUpload');
-    var list = document.getElementById('file-list');
-    if (!input.files || input.files.length === 0) {
-      list.textContent = '';
-      return;
-    }
-    list.textContent = Array.from(input.files).map(function(f) { return '\uD83D\uDCCE ' + f.name; }).join('  \u00B7  ');
+    var list  = document.getElementById('file-list');
+    if (!input.files || input.files.length === 0) { list.textContent = ''; return; }
+    list.textContent = Array.from(input.files).map(function(f) { return '📎 ' + f.name; }).join('  ·  ');
   }
 
-  // FIX 6: Drag & drop — input.files is read-only, use a DataTransfer object to assign files
   var uploadArea = document.getElementById('uploadArea');
-
   uploadArea.addEventListener('dragover', function(e) {
     e.preventDefault();
     uploadArea.style.borderColor = 'var(--accent)';
   });
-
-  uploadArea.addEventListener('dragleave', function() {
-    uploadArea.style.borderColor = '';
-  });
-
+  uploadArea.addEventListener('dragleave', function() { uploadArea.style.borderColor = ''; });
   uploadArea.addEventListener('drop', function(e) {
     e.preventDefault();
     uploadArea.style.borderColor = '';
     var fileInput = document.getElementById('fileUpload');
-    // FIX: Cannot assign e.dataTransfer.files directly; use DataTransfer to copy files
     var dt = new DataTransfer();
-    Array.from(e.dataTransfer.files).forEach(function(file) {
-      dt.items.add(file);
-    });
+    Array.from(e.dataTransfer.files).forEach(function(file) { dt.items.add(file); });
     fileInput.files = dt.files;
     updateFileList();
   });
 
+  /* ─── TOAST ─── */
   function showToast(msg, type) {
     type = type || 'success';
     var t = document.getElementById('toast');
@@ -610,6 +949,7 @@
     setTimeout(function() { t.className = ''; }, 4000);
   }
 
+  /* ─── VALIDATION ─── */
   function setError(id, msg) {
     var el = document.getElementById('err-' + id);
     if (el) el.textContent = msg;
@@ -620,6 +960,8 @@
   function clearErrors() {
     document.querySelectorAll('.field-error').forEach(function(e) { e.textContent = ''; });
     document.querySelectorAll('.invalid').forEach(function(e) { e.classList.remove('invalid'); });
+    document.getElementById('specialty-trigger').classList.remove('invalid-trigger');
+    document.getElementById('cbct-trigger').classList.remove('invalid-trigger');
   }
 
   function validate() {
@@ -638,18 +980,22 @@
     }
 
     req('patientFirstName', 'First name is required');
-    req('patientLastName', 'Last name is required');
-    req('dob', 'Date of birth is required');
-    req('mobileNumber', 'Mobile number is required');
-    req('patientEmail', 'Email is required');
+    req('patientLastName',  'Last name is required');
+    req('dob',              'Date of birth is required');
+    req('mobileNumber',     'Mobile number is required');
+    req('patientEmail',     'Email is required');
     email('patientEmail');
 
-    var services = Array.from(document.querySelectorAll('#referralServices input:checked'));
-    if (services.length === 0) { setError('services', 'Please select at least one service'); ok = false; }
+    if (!dropdownState.specialty && !dropdownState.cbct) {
+      document.getElementById('err-services').textContent = 'Please select either a Dental Specialty or CBCT';
+      document.getElementById('specialty-trigger').classList.add('invalid-trigger');
+      document.getElementById('cbct-trigger').classList.add('invalid-trigger');
+      ok = false;
+    }
 
-    req('dentistName', 'Dentist name is required');
-    req('gdcNumber', 'GDC number is required');
-    req('practiceName', 'Practice name is required');
+    req('dentistName',   'Dentist name is required');
+    req('gdcNumber',     'GDC number is required');
+    req('practiceName',  'Practice name is required');
     req('practiceEmail', 'Practice email is required');
     email('practiceEmail');
     email('referralEmail');
@@ -674,20 +1020,14 @@
       var el = document.getElementById(id);
       if (el) el.value = '';
     });
-
     document.getElementById('fileUpload').value = '';
     document.getElementById('file-list').textContent = '';
-
-    document.querySelectorAll('#referralServices input[type="checkbox"]').forEach(function(cb) {
-      cb.checked = false;
-      cb.closest('.checkbox-label').classList.remove('checked');
-    });
-
-    document.querySelectorAll('input[name="shadow"]').forEach(function(radio) {
-      radio.checked = false;
-    });
+    clearSpecialty();
+    clearCbct();
+    document.querySelectorAll('input[name="shadow"]').forEach(function(r) { r.checked = false; });
   }
 
+  /* ─── SUBMIT ─── */
   async function submitForm() {
     clearErrors();
     if (!validate()) {
@@ -696,38 +1036,35 @@
       return;
     }
 
-    var services = Array.from(document.querySelectorAll('#referralServices input:checked')).map(function(c) { return c.value; });
+    var isCbct = !!dropdownState.cbct;
     var shadowEl = document.querySelector('input[name="shadow"]:checked');
     var shadow = shadowEl ? shadowEl.value : '';
 
     var payload = {
-      patientFirstName: document.getElementById('patientFirstName').value.trim(),
-      patientLastName: document.getElementById('patientLastName').value.trim(),
-      patientName: (document.getElementById('patientFirstName').value.trim() + ' ' + document.getElementById('patientLastName').value.trim()).trim(),
-      patientDateOfBirth: document.getElementById('dob').value
-        ? new Date(document.getElementById('dob').value).toISOString()
-        : null,
-      patientAddress: document.getElementById('address').value.trim(),
-      patientPhoneNumber: document.getElementById('mobileCountry').value + document.getElementById('mobileNumber').value.trim(),
-      patientEmail: document.getElementById('patientEmail').value.trim(),
-      treatmentDetails: document.getElementById('medicalHistory').value.trim(),
-      referralDetails: services,
-      referralName: document.getElementById('dentistName').value.trim(),
-      referralGDC: document.getElementById('gdcNumber').value.trim(),
+      patientFirstName:         document.getElementById('patientFirstName').value.trim(),
+      patientLastName:          document.getElementById('patientLastName').value.trim(),
+      patientName:              (document.getElementById('patientFirstName').value.trim() + ' ' + document.getElementById('patientLastName').value.trim()).trim(),
+      patientDateOfBirth:       document.getElementById('dob').value ? new Date(document.getElementById('dob').value).toISOString() : null,
+      patientAddress:           document.getElementById('address').value.trim(),
+      patientPhoneNumber:       document.getElementById('mobileCountry').value + document.getElementById('mobileNumber').value.trim(),
+      patientEmail:             document.getElementById('patientEmail').value.trim(),
+      treatmentDetails:         document.getElementById('medicalHistory').value.trim(),
+      dentalSpecialty:          isCbct ? null : dropdownState.specialty,
+      cbct:                     isCbct ? dropdownState.cbct : null,
+      referralName:             document.getElementById('dentistName').value.trim(),
+      referralGDC:              document.getElementById('gdcNumber').value.trim(),
       referralPracticeNameAddress: document.getElementById('practiceName').value.trim() +
-        (document.getElementById('practiceAddress').value ? ' - ' + document.getElementById('practiceAddress').value.trim() : ''),
-      referralEmail: (document.getElementById('referralEmail') && document.getElementById('referralEmail').value.trim())
-        ? document.getElementById('referralEmail').value.trim()
-        : document.getElementById('practiceEmail').value.trim(),
-      referralPhoneNumber: (document.getElementById('referralPhone') && document.getElementById('referralPhone').value.trim())
-        ? document.getElementById('referralCountry').value + document.getElementById('referralPhone').value.trim()
-        : document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
-      practiceName: document.getElementById('practiceName').value.trim(),
-      practiceEmail: document.getElementById('practiceEmail').value.trim(),
-      practicePhoneNumber: document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
-      attendTreatment: shadow === 'yes' ? 'Yes' : 'No',
-      medicalHistoryPdfUrl: null,
-      other: ''
+                                   (document.getElementById('practiceAddress').value ? ' - ' + document.getElementById('practiceAddress').value.trim() : ''),
+      referralEmail:            (document.getElementById('referralEmail').value.trim()) || document.getElementById('practiceEmail').value.trim(),
+      referralPhoneNumber:      (document.getElementById('referralPhone').value.trim())
+                                  ? document.getElementById('referralCountry').value + document.getElementById('referralPhone').value.trim()
+                                  : document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
+      practiceName:             document.getElementById('practiceName').value.trim(),
+      practiceEmail:            document.getElementById('practiceEmail').value.trim(),
+      practicePhoneNumber:      document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
+      attendTreatment:          shadow === 'yes' ? 'Yes' : 'No',
+      medicalHistoryPdfUrl:     null,
+      other:                    ''
     };
 
     var btn = document.getElementById('submitBtn');
@@ -752,46 +1089,30 @@
           fileSize: String(file.size)
         });
 
-        var signedRes = await fetch(' https://aspire-clinix.vercel.app/api/s3?' + params.toString());
-
+        var signedRes = await fetch('http://localhost:3000/api/s3?' + params.toString());
         var signedJson = null;
         var ct = signedRes.headers.get('content-type') || '';
+
         if (ct.includes('application/json')) {
-          try {
-            signedJson = await signedRes.json();
-          } catch (parseErr) {
-            var text = await signedRes.text();
-            console.error('Failed to parse JSON from /api/s3:', parseErr, text);
-            throw new Error('Upload service returned invalid JSON response');
-          }
+          try { signedJson = await signedRes.json(); }
+          catch (parseErr) { throw new Error('Upload service returned invalid JSON response'); }
         } else {
           var text = await signedRes.text();
-          console.error('Non-JSON response from /api/s3:', text);
-          throw new Error('Upload service returned non-JSON response: ' + (text ? text.slice(0,200) : ''));
+          throw new Error('Upload service returned non-JSON response: ' + (text ? text.slice(0, 200) : ''));
         }
 
         if (!signedRes.ok || !signedJson || !signedJson.success || !signedJson.url) {
-          console.error('Signed URL response:', signedRes.status, signedJson);
           throw new Error('Failed to obtain upload URL');
         }
 
-        var signedUrl = signedJson.url;
-        var put = await fetch(signedUrl, {
-          method: 'PUT',
-          body: file,
-          headers: { 'Content-Type': file.type }
-        });
+        var put = await fetch(signedJson.url, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
         if (!put.ok) throw new Error('Failed to upload file to storage');
 
-        console.log('url', signedUrl);
-        var u = new URL(signedUrl);
-        var key = u.pathname.replace(/^\//, '');
-        console.log('key', key);
-
-        payload.medicalHistoryPdfUrl = key;
+        var u = new URL(signedJson.url);
+        payload.medicalHistoryPdfUrl = u.pathname.replace(/^\//, '');
       }
 
-      var res = await fetch(' https://aspire-clinix.vercel.app/api/referrals', {
+      var res = await fetch('http://localhost:3000/api/referrals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

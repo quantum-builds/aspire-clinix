@@ -10,7 +10,8 @@ datasource db {
 model ReferralForm {
   id                          String           @id @default(cuid())
   createdAt                   DateTime         @default(now())
-  referralDetails             String[]
+  cbct                        String?
+  dentalSpecialty             String?
   treatmentDetails            String?
   other                       String?
   referralEmail               String

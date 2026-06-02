@@ -66,7 +66,7 @@ export default async function AssignedWrapper({
   const appointment = referralRequestResponse.data.appointment;
 
   const patientDetails = {
-    name: referralForm.patientName,
+    name: `${referralForm.patientFirstName} ${referralForm.patientLastName}`,
     phone: referralForm.patientPhoneNumber,
     email: referralForm.patientEmail,
     address: referralForm.patientAddress,
@@ -90,21 +90,12 @@ export default async function AssignedWrapper({
 
   const referralFormDetails = {
     referralDeatils: referralForm.other
-      ? referralForm.referralDetails
-          .map((disease) => toTitleCase(disease))
-          .join(", ") +
-        ", " +
-        referralForm.other
-      : referralForm.referralDetails
-          .map((disease) => toTitleCase(disease))
-          .join(", "),
+      ? `${toTitleCase(referralForm.cbct ?? "")}, ${referralForm.other}`
+      : toTitleCase(referralForm.dentalSpecialty ?? ""),
     treatmentDetails: referralForm.treatmentDetails,
     attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
     medicalHistoryPDF: referralForm.medicalHistoryPdf,
   };
-
-  console.log("[ASSIGNED] patient details ", patientDetails);
-  console.log("[ASSIGNED] dentist details ", dentistDetails);
 
   return (
     <div className="min-h-screen flex flex-col gap-5">
