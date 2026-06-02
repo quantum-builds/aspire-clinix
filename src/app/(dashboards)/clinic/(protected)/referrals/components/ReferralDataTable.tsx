@@ -124,7 +124,7 @@ export function ClinicReferralDataTable({
                 {index + 1}
               </TableCell>
               <TableCell className="px-6 py-4">
-                {`${entry.referralForm.patientFirstName} ${entry.referralForm.patientLastName}`}
+                {entry.referralForm.patientName}
               </TableCell>
               <TableCell className="px-6 py-4">
                 {entry.referralForm.referralName}
