@@ -231,7 +231,7 @@ export async function GET(req: NextRequest) {
       if (respose.isError) {
         return respose.response;
       }
-      patient = respose.response;
+      patient = respose.response.patient;
     }
 
     return NextResponse.json(

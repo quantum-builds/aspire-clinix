@@ -35,5 +35,5 @@ export async function patchPractitionerById(
     DENTALLY_ENDPOINTS.practitioner.edit(practitionerId),
     partialPractitioner,
   );
-  return dentallyErrorHelper(response, DATA_TYPE.PRACTITIONER);
+  return dentallyErrorHelper(response.data, DATA_TYPE.PRACTITIONER);
 }

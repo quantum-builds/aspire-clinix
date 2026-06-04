@@ -41,7 +41,7 @@ export async function getPatients() {
   const response = await axiosDentallyInstance.get(
     DENTALLY_ENDPOINTS.patient.list(),
   );
-  return dentallyErrorHelper(response, DATA_TYPE.PATIENTS);
+  return dentallyErrorHelper(response.data, DATA_TYPE.PATIENTS);
 }
 
 export async function createPatient(patientData: TPatientCreate) {

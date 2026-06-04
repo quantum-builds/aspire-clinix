@@ -52,6 +52,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "aspire-media.s3.eu-west-2.amazonaws.com",
       },
+      {
+        protocol: "https",
+        hostname: "www.gravatar.com",
+      },
     ],
   },
 };

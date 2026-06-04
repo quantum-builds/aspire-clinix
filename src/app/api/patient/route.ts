@@ -96,13 +96,25 @@ export async function GET(req: NextRequest) {
       if (respose.isError) {
         return respose.response;
       }
-      const patient = respose.response;
+      const patient = respose.response.patient;
 
       if (!patient) {
         return NextResponse.json(
-          createResponse(false, "No Patient found", patient),
+          createResponse(false, "No Patient found", null),
           { status: 404 },
         );
+      }
+
+      // Merge our Prisma-stored fields over Dentally's response
+      const dbPatient = await prisma.patient.findUnique({
+        where: { dentallyId: Number(patientDentallyId) },
+        select: { imageUrl: true, familyId: true },
+      });
+      if (dbPatient?.imageUrl) {
+        patient.imageUrl = dbPatient.imageUrl;
+      }
+      if (dbPatient?.familyId) {
+        patient.familyId = dbPatient.familyId;
       }
 
       return NextResponse.json(
@@ -120,17 +132,17 @@ export async function GET(req: NextRequest) {
         if (respose.isError) {
           return respose.response;
         }
-        const patient = respose.response;
+        const patients = respose.response.patients;
 
-        if (!patient) {
+        if (!patients || patients.length < 1) {
           return NextResponse.json(
-            createResponse(false, "No Patient found", patient),
+            createResponse(false, "No Patient found", null),
             { status: 404 },
           );
         }
 
         return NextResponse.json(
-          createResponse(true, "Patiensts fetched successfully", patient),
+          createResponse(true, "Patiensts fetched successfully", patients),
           { status: 200 },
         );
       } else {
@@ -138,7 +150,7 @@ export async function GET(req: NextRequest) {
         if (respose.isError) {
           return respose.response;
         }
-        const patients = respose.response;
+        const patients = respose.response.patients ?? [];
 
         if (patients.length < 1) {
           return NextResponse.json(
@@ -193,61 +205,41 @@ export async function PATCH(req: NextRequest) {
         return respose.response;
       }
 
-      const patient = respose.response;
+      const patientData = respose.response.patient;
 
-      if (!patient) {
+      if (!patientData) {
         return NextResponse.json(
-          createResponse(false, "No Patient found", patient),
+          createResponse(false, "No Patient found", null),
           { status: 404 },
         );
       }
 
-      const patientId = token.sub;
+      const name = [patientData.firstName, patientData.lastName].filter(Boolean).join(" ").trim();
+      const email = patientData.emailAddress || patientData.email || "";
+      const mobileNumber = patientData.mobilePhone || "";
 
-      const {
-        firstName,
-        lastName,
-        emailAddress,
-        mobilePhone,
-        gender,
-        gdcNumber,
-        addressLine1,
-        postCode,
-        dateOfBirth,
-        imageUrl,
-      } = patient as {
-        firstName?: string;
-        lastName?: string;
-        emailAddress?: string;
-        mobilePhone?: string;
-        title?: string;
-        gender?: string;
-        gdcNumber?: string;
-        addressLine1?: string;
-        postCode?: string;
-        dateOfBirth?: string;
-        imageUrl?: string;
-      };
+      const prismaData: Record<string, any> = {};
+      if (name) prismaData.name = name;
+      if (email) prismaData.email = email;
+      if (mobileNumber) prismaData.mobileNumber = mobileNumber;
+      if (patientData.dateOfBirth) prismaData.dateOfBirth = patientData.dateOfBirth;
+      // Use our S3 key from the payload — Dentally returns its own CDN URL,
+      // not our S3 key, so we can't use patientData.imageUrl
+      if (payload.fileUrl) prismaData.imageUrl = payload.fileUrl;
 
-      const updated = await prisma.patient.update({
-        where: { id: patientId },
-        data: {
-          ...(firstName ? { firstName } : {}),
-          ...(lastName ? { lastName } : {}),
-          ...(emailAddress ? { emailAddress } : {}),
-          ...(mobilePhone ? { mobilePhone } : {}),
-          ...(title ? { title } : {}),
-          ...(gender ? { gender } : {}),
-          ...(gdcNumber ? { gdcNumber } : {}),
-          ...(addressLine1 ? { addressLine1 } : {}),
-          ...(postCode ? { postCode } : {}),
-          ...(dateOfBirth ? { dateOfBirth } : {}),
-          ...(imageUrl ? { imageUrl } : {}),
-        },
+      await prisma.patient.update({
+        where: { dentallyId: Number(patientDentallyId) },
+        data: prismaData,
       });
 
+      // Enrich response so the frontend can display the updated image immediately
+      const responseData = {
+        ...patientData,
+        fileUrl: payload.fileUrl || patientData.fileUrl || "",
+      };
+
       return NextResponse.json(
-        createResponse(true, "Patient updated successfully", respose.response),
+        createResponse(true, "Patient updated successfully", responseData),
         { status: 200 },
       );
     }

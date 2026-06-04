@@ -72,17 +72,32 @@ type TFamilyMember = {
   firstName?: string;
   lastName?: string;
   familyId?: string;
+  imageUrl?: string;
 };
 
 export const useGetFamilyMembers = () => {
   return useMutation({
     mutationFn: async ({ familyId }: { familyId: string }) => {
+      console.log("useGetFamilyMembers mutation called with familyId:", familyId);
       const response = await axiosInstance.get(
         ENDPOINTS.patient.familyMember(familyId),
       );
+      console.log("coming from our api:", JSON.stringify(response?.data?.data, null, 2));
 
       const responseData: Response<TFamilyMember[]> = response.data;
       return responseData.data;
+    },
+  });
+};
+
+export const useSwitchFamilyMember = () => {
+  return useMutation({
+    mutationFn: async ({ targetDentallyId }: { targetDentallyId: string }) => {
+      const response = await axiosInstance.post(
+        ENDPOINTS.patient.switchFamilyMember,
+        { targetDentallyId },
+      );
+      return response.data;
     },
   });
 };

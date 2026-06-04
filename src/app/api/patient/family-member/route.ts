@@ -1,6 +1,6 @@
 import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
-import { getPatient } from "@/dentallyHelpers/patient";
+import { getPatientById } from "@/dentallyHelpers/patient";
 import prisma from "@/lib/db";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
@@ -67,6 +67,7 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const familyId = searchParams.get("familyId")?.trim() || "";
+    console.log("Fetching family members for familyId:", familyId);
 
     if (!familyId) {
       return NextResponse.json(
@@ -77,52 +78,42 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const response = await getPatient({
-      familyId,
+    const familyPatients = await prisma.patient.findMany({
+      where: { familyId },
+      select: { dentallyId: true },
     });
 
-    if (response.isError) {
-      return response.response;
-    }
-
-    const activePatients = (response.response.patients ?? []).filter(
-      (patient: any) => patient.active && !patient.archivedReason,
-    );
-    
-    if (activePatients.length === 0) {
+    if (familyPatients.length === 0) {
       throw new Error("No account found");
     }
 
-    await Promise.all(
-      activePatients.map(async (activePatient: any) => {
-        const existingPatient = await prisma.patient.findFirst({
-          where: {
-            dentallyId: activePatient?.dentallyId,
-          },
-        });
-        const fullname = `${activePatient.firstName} + ${activePatient.lastName}`
+    const familyMembers = (
+      await Promise.all(
+        familyPatients.map(async (fp) => {
+          if (!fp.dentallyId) return null;
+          const res = await getPatientById(String(fp.dentallyId));
+          if (res.isError) return null;
+          const patient = res.response.patient;
+          if (
+            !patient ||
+            patient.archivedReason ||
+            patient.familyId !== familyId
+          )
+            return null;
+          return patient;
+        }),
+      )
+    ).filter(Boolean);
 
-        if (!existingPatient) {
-          await prisma.patient.create({
-            data: {
-              uuid: activePatient?.uuid,
-              dentallyId: activePatient?.id,
-              email: activePatient.email,
-              mobileNumber: activePatient.mobilePhone,
-              name: fullname,
-              dateOfBirth: activePatient.dateOfBirth,
-              familyId
-            },
-          });
-        }
-      }),
-    );
+    if (familyMembers.length === 0) {
+      throw new Error("No account found");
+    }
 
     return NextResponse.json(
       createResponse(
         true,
         "Family members fetched successfully",
-        activePatients,
+        familyMembers,
       ),
       {
         status: 200,

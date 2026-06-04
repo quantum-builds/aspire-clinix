@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
     });
 
     console.log("Dentally API response:", response);
-   
+
     if (response.isError) {
       return NextResponse.json(
         createResponse(false, `Error in fetching data from dentally`, null),
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
 
     console.log("Active patients found:", activePatients.length);
     console.log("Active patients details:", activePatients);
-    
+
     if (activePatients.length === 0 || activePatients.length > 1) {
       return NextResponse.json(
         createResponse(false, "No Account found", null),
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
     }
 
     let active = activePatients[0];
-    
+
     const fullName =
       `${active?.firstName ?? firstName} ${active?.lastName ?? lastName}`.trim();
     let patient = null;

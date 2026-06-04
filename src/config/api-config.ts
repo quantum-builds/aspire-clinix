@@ -20,6 +20,7 @@ export const ENDPOINTS = {
     familyMember: (familyId: string) =>
       `/api/patient/family-member?familyId=${familyId}`,
     getPatientByDentallyId: `/api/patient`,
+    switchFamilyMember: `/api/patient/switch-family-member`,
   },
 
   dentist: {

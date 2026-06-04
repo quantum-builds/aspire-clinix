@@ -7,7 +7,7 @@ export async function createAppointment(appointmentData: CreateAppointment) {
     DENTALLY_ENDPOINTS.appointment.create,
     appointmentData,
   );
-  return dentallyErrorHelper(response, DATA_TYPE.APPOINTMENT);
+  return dentallyErrorHelper(response.data, DATA_TYPE.APPOINTMENT);
 }
 
 export async function editAppointment(
@@ -40,7 +40,7 @@ export async function deleteAppointment(id: string) {
   const response = await axiosDentallyInstance.delete(
     DENTALLY_ENDPOINTS.appointment.delete(id),
   );
-  return dentallyErrorHelper(response);
+  return dentallyErrorHelper(response.data);
 }
 
 export function buildAppointmentQuery(params?: ListAppointment): string {
