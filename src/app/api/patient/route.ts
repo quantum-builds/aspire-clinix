@@ -199,12 +199,23 @@ export async function PATCH(req: NextRequest) {
         );
       }
 
-      const respose = await patchPatientById(patientDentallyId, payload);
-      if (respose.isError) {
-        return respose.response;
-      }
+      const { fileUrl, ...dentallyPayload } = payload;
 
-      const patientData = respose.response.patient;
+      let patientData;
+
+      if (Object.keys(dentallyPayload).length > 0) {
+        const respose = await patchPatientById(patientDentallyId, dentallyPayload);
+        if (respose.isError) {
+          return respose.response;
+        }
+        patientData = respose.response.patient;
+      } else {
+        const fetchRes = await getPatientById(patientDentallyId);
+        if (fetchRes.isError) {
+          return fetchRes.response;
+        }
+        patientData = fetchRes.response.patient;
+      }
 
       if (!patientData) {
         return NextResponse.json(
@@ -222,7 +233,7 @@ export async function PATCH(req: NextRequest) {
       if (email) prismaData.email = email;
       if (mobileNumber) prismaData.mobileNumber = mobileNumber;
       if (patientData.dateOfBirth) prismaData.dateOfBirth = patientData.dateOfBirth;
-      if (payload.fileUrl) prismaData.imageUrl = payload.fileUrl;
+      if (fileUrl) prismaData.imageUrl = fileUrl;
 
       await prisma.patient.update({
         where: { dentallyId: Number(patientDentallyId) },
@@ -231,7 +242,7 @@ export async function PATCH(req: NextRequest) {
 
       const responseData = {
         ...patientData,
-        fileUrl: payload.fileUrl || patientData.fileUrl || "",
+        fileUrl: fileUrl || patientData.fileUrl || "",
       };
 
       return NextResponse.json(

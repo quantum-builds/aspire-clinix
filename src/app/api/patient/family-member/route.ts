@@ -1,6 +1,7 @@
 import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
 import { getPatientById } from "@/dentallyHelpers/patient";
+import { getAMedia } from "@/services/s3/s3Query";
 import prisma from "@/lib/db";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
@@ -108,6 +109,22 @@ export async function GET(req: NextRequest) {
     if (familyMembers.length === 0) {
       throw new Error("No account found");
     }
+
+    const memberDentallyIds = familyMembers.map((m: any) => Number(m.id));
+    const dbPatients = await prisma.patient.findMany({
+      where: { dentallyId: { in: memberDentallyIds } },
+      select: { dentallyId: true, imageUrl: true },
+    });
+    const imageMap = new Map(dbPatients.map((p) => [p.dentallyId, p.imageUrl]));
+    await Promise.all(
+      familyMembers.map(async (member: any) => {
+        const localImage = imageMap.get(Number(member.id));
+        if (!localImage) return;
+        const media = await getAMedia(localImage);
+        const resolvedUrl = media?.files?.[0]?.url;
+        if (resolvedUrl) member.imageUrl = resolvedUrl;
+      }),
+    );
 
     return NextResponse.json(
       createResponse(
