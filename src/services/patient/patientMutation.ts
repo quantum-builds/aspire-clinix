@@ -1,7 +1,7 @@
 import { axiosInstance, axiosDentallyInstance, ENDPOINTS, DENTALLY_ENDPOINTS } from "@/config/api-config";
 import { Response } from "@/types/common";
 import { TPatient, TPatientCreate } from "@/types/patient";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useCreateUser = () => {
   return useMutation({
@@ -75,10 +75,11 @@ type TFamilyMember = {
   imageUrl?: string;
 };
 
-export const useGetFamilyMembers = () => {
-  return useMutation({
-    mutationFn: async ({ familyId }: { familyId: string }) => {
-      console.log("useGetFamilyMembers mutation called with familyId:", familyId);
+export const getfamilyfembers = (familyId: string) => {
+  return useQuery({
+    queryKey: ["family-members", familyId],
+    queryFn: async () => {
+      console.log("useGetFamilyMembers query called with familyId:", familyId);
       const response = await axiosInstance.get(
         ENDPOINTS.patient.familyMember(familyId),
       );
@@ -87,8 +88,11 @@ export const useGetFamilyMembers = () => {
       const responseData: Response<TFamilyMember[]> = response.data;
       return responseData.data;
     },
+    enabled: !!familyId,
   });
 };
+
+
 
 export const useSwitchFamilyMember = () => {
   return useMutation({

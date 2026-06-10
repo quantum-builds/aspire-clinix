@@ -9,10 +9,8 @@ import {
   LogoutIcon,
   HarryKaneImage,
 } from "@/assets";
-import {
-  useGetFamilyMembers,
-  useSwitchFamilyMember,
-} from "@/services/patient/patientMutation";
+import { useSwitchFamilyMember } from "@/services/patient/patientMutation";
+import { getfamilyfembers } from "@/services/patient/patientMutation";
 
 interface UserMenuProps {
   profileLink: string;
@@ -27,13 +25,17 @@ type DisplayedFamilyMember = {
   dentallyId: string;
 };
 
-export function UserMenu({ profileLink, onLogout, familyId, currentPatientId }: UserMenuProps) {
+export function UserMenu({
+  profileLink,
+  onLogout,
+  familyId,
+  currentPatientId,
+}: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const [switchingId, setSwitchingId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const { mutateAsync: fetchFamilyMembers, data: familyMembers } =
-    useGetFamilyMembers();
+  const { data: familyMembers } = getfamilyfembers(familyId);
   const { mutateAsync: switchFamilyMember } = useSwitchFamilyMember();
 
   useEffect(() => {
@@ -45,12 +47,6 @@ export function UserMenu({ profileLink, onLogout, familyId, currentPatientId }: 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    if (!familyId) return;
-    console.log("UserMenu: triggering fetchFamilyMembers with familyId:", familyId);
-    void fetchFamilyMembers({ familyId });
-  }, [familyId, fetchFamilyMembers]);
 
   const handleSwitch = async (targetDentallyId: string) => {
     setSwitchingId(targetDentallyId);
@@ -67,9 +63,10 @@ export function UserMenu({ profileLink, onLogout, familyId, currentPatientId }: 
     familyMembers && familyMembers.length > 0
       ? familyMembers
           .map((member) => {
-            const fullName = `${member.firstName ?? ""} ${member.lastName ?? ""}`
-              .trim()
-              .replace(/\s+/g, " ");
+            const fullName =
+              `${member.firstName ?? ""} ${member.lastName ?? ""}`
+                .trim()
+                .replace(/\s+/g, " ");
 
             return {
               name: fullName,
@@ -115,7 +112,9 @@ export function UserMenu({ profileLink, onLogout, familyId, currentPatientId }: 
                       className="w-7 h-7 rounded-full object-cover"
                     />
                     <span className="text-sm text-gray-700">
-                      {switchingId === user.dentallyId ? "Switching..." : user.name}
+                      {switchingId === user.dentallyId
+                        ? "Switching..."
+                        : user.name}
                     </span>
                   </button>
                 ))}
