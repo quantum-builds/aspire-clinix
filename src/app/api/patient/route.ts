@@ -105,7 +105,6 @@ export async function GET(req: NextRequest) {
         );
       }
 
-      // Merge our Prisma-stored fields over Dentally's response
       const dbPatient = await prisma.patient.findUnique({
         where: { dentallyId: Number(patientDentallyId) },
         select: { imageUrl: true, familyId: true },
@@ -223,8 +222,6 @@ export async function PATCH(req: NextRequest) {
       if (email) prismaData.email = email;
       if (mobileNumber) prismaData.mobileNumber = mobileNumber;
       if (patientData.dateOfBirth) prismaData.dateOfBirth = patientData.dateOfBirth;
-      // Use our S3 key from the payload — Dentally returns its own CDN URL,
-      // not our S3 key, so we can't use patientData.imageUrl
       if (payload.fileUrl) prismaData.imageUrl = payload.fileUrl;
 
       await prisma.patient.update({
@@ -232,7 +229,6 @@ export async function PATCH(req: NextRequest) {
         data: prismaData,
       });
 
-      // Enrich response so the frontend can display the updated image immediately
       const responseData = {
         ...patientData,
         fileUrl: payload.fileUrl || patientData.fileUrl || "",

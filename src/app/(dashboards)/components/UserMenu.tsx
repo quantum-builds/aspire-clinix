@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image, { StaticImageData } from "next/image";
-import { axiosInstance, ENDPOINTS } from "@/config/api-config";
 import {
   DropDownIcon,
   ProfileIcon,
@@ -11,6 +10,7 @@ import {
   HarryKaneImage,
 } from "@/assets";
 import {
+  useGetPatient,
   useGetFamilyMembers,
   useSwitchFamilyMember,
 } from "@/services/patient/patientMutation";
@@ -30,8 +30,10 @@ export function UserMenu({ profileLink, onLogout }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const [switchingId, setSwitchingId] = useState<string | null>(null);
   const [familyId, setFamilyId] = useState("");
+  const [currentPatientId, setCurrentPatientId] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const { mutateAsync: getPatient } = useGetPatient();
   const { mutateAsync: fetchFamilyMembers, data: familyMembers } =
     useGetFamilyMembers();
   const { mutateAsync: switchFamilyMember } = useSwitchFamilyMember();
@@ -49,18 +51,22 @@ export function UserMenu({ profileLink, onLogout }: UserMenuProps) {
   useEffect(() => {
     const fetchPatientFamilyId = async () => {
       try {
-        const res = await axiosInstance.get(ENDPOINTS.patient.getPatientByDentallyId);
-        const familyId = res?.data?.data?.familyId;
-        console.log("UserMenu: patient familyId from API:", familyId);
-        if (familyId) {
-          setFamilyId(familyId);
+        const patient = await getPatient();
+        const patientFamilyId = patient?.familyId;
+        const patientId = patient?.id;
+        console.log("UserMenu: patient familyId:", patientFamilyId, "patientId:", patientId);
+        if (patientFamilyId) {
+          setFamilyId(patientFamilyId);
+        }
+        if (patientId) {
+          setCurrentPatientId(Number(patientId));
         }
       } catch (err) {
         console.error("UserMenu: failed to fetch patient familyId", err);
       }
     };
     fetchPatientFamilyId();
-  }, []);
+  }, [getPatient]);
 
   useEffect(() => {
     if (!familyId) return;
@@ -81,17 +87,19 @@ export function UserMenu({ profileLink, onLogout }: UserMenuProps) {
 
   const displayedFamilyMember: DisplayedFamilyMember[] =
     familyMembers && familyMembers.length > 0
-      ? familyMembers.map((member) => {
-          const fullName = `${member.firstName ?? ""} ${member.lastName ?? ""}`
-            .trim()
-            .replace(/\s+/g, " ");
+      ? familyMembers
+          .map((member) => {
+            const fullName = `${member.firstName ?? ""} ${member.lastName ?? ""}`
+              .trim()
+              .replace(/\s+/g, " ");
 
-          return {
-            name: fullName,
-            image: member.imageUrl || HarryKaneImage,
-            dentallyId: String(member.dentallyId ?? member.id ?? ""),
-          };
-        })
+            return {
+              name: fullName,
+              image: member.imageUrl || HarryKaneImage,
+              dentallyId: String(member.dentallyId ?? member.id ?? ""),
+            };
+          })
+          .filter((m) => Number(m.dentallyId) !== currentPatientId)
       : [];
 
   return (
