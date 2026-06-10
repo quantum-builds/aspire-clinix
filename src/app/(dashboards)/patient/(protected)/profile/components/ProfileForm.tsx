@@ -20,15 +20,10 @@ import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 
 const profileFormSchema = z.object({
   title: z.string().optional(),
-
   firstName: z.string().min(1, "First name is required").max(50),
-
   lastName: z.string().min(1, "Last name is required").max(50),
-
   gender: z.string().optional(),
-
   emailAddress: z.string().email("Please enter a valid email address"),
-
   mobilePhone: z
     .string()
     .regex(
@@ -45,11 +40,8 @@ const profileFormSchema = z.object({
     .transform((val) => val.replace(/\s+/g, "")),
 
   addressLine1: z.string().optional(),
-
   postCode: z.string().optional(),
-
   dateOfBirth: z.string().optional(),
-
   profileImage: z.union([
     z
       .instanceof(File)
@@ -300,77 +292,71 @@ export default function ProfileForm({ patient }: PatientFormProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
-          <div className="space-y-2">
-            <div>
-              <Label htmlFor="title" className="text-lg font-medium">
-                Title
-              </Label>
+          <div className="space-y-1">
+            <Label htmlFor="title" className="text-lg font-medium">
+              Title
+            </Label>
 
-              <Controller
-                name="title"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    id="title"
-                    placeholder="e.g. Mr, Ms, Dr"
-                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-                  />
-                )}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="firstName" className="text-lg font-medium">
-                First Name
-                <span className="text-red-500 text-sm ml-1">*</span>
-              </Label>
-
-              <Controller
-                name="firstName"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    id="firstName"
-                    placeholder="Enter first name"
-                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-                  />
-                )}
-              />
-
-              {errors.firstName && (
-                <p className="text-sm text-red-500">
-                  {errors.firstName.message}
-                </p>
+            <Controller
+              name="title"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="title"
+                  placeholder="e.g. Mr, Ms, Dr"
+                  className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                />
               )}
-            </div>
+            />
+          </div>
 
-            <div>
-              <Label htmlFor="lastName" className="text-lg font-medium">
-                Last Name
-                <span className="text-red-500 text-sm ml-1">*</span>
-              </Label>
+          <div className="space-y-1">
+            <Label htmlFor="firstName" className="text-lg font-medium">
+              First Name
+              <span className="text-red-500 text-sm ml-1">*</span>
+            </Label>
 
-              <Controller
-                name="lastName"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    id="lastName"
-                    placeholder="Enter last name"
-                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-                  />
-                )}
-              />
-
-              {errors.lastName && (
-                <p className="text-sm text-red-500">
-                  {errors.lastName.message}
-                </p>
+            <Controller
+              name="firstName"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="firstName"
+                  placeholder="Enter first name"
+                  className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                />
               )}
-            </div>
+            />
+
+            {errors.firstName && (
+              <p className="text-sm text-red-500">{errors.firstName.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="lastName" className="text-lg font-medium">
+              Last Name
+              <span className="text-red-500 text-sm ml-1">*</span>
+            </Label>
+
+            <Controller
+              name="lastName"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="lastName"
+                  placeholder="Enter last name"
+                  className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                />
+              )}
+            />
+
+            {errors.lastName && (
+              <p className="text-sm text-red-500">{errors.lastName.message}</p>
+            )}
           </div>
 
           <div className="space-y-1">
@@ -441,33 +427,6 @@ export default function ProfileForm({ patient }: PatientFormProps) {
               </p>
             )}
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4 mt-4">
-          <div className="space-y-1">
-            <Label htmlFor="addressLine1" className="text-lg font-medium">
-              Address Line 1
-            </Label>
-
-            <Controller
-              name="addressLine1"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="addressLine1"
-                  placeholder="Enter address"
-                  className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-                />
-              )}
-            />
-
-            {errors.addressLine1 && (
-              <p className="text-sm text-red-500">
-                {errors.addressLine1.message}
-              </p>
-            )}
-          </div>
 
           <div className="space-y-1">
             <Label htmlFor="dateOfBirth" className="text-lg font-medium">
@@ -495,6 +454,31 @@ export default function ProfileForm({ patient }: PatientFormProps) {
           </div>
 
           <div className="space-y-1">
+            <Label htmlFor="addressLine1" className="text-lg font-medium">
+              Address Line 1
+            </Label>
+
+            <Controller
+              name="addressLine1"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="addressLine1"
+                  placeholder="Enter address"
+                  className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                />
+              )}
+            />
+
+            {errors.addressLine1 && (
+              <p className="text-sm text-red-500">
+                {errors.addressLine1.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-1">
             <Label htmlFor="postCode" className="text-lg font-medium">
               Postcode
             </Label>
@@ -517,7 +501,7 @@ export default function ProfileForm({ patient }: PatientFormProps) {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label className="text-lg font-medium">
               Gender
               <span className="text-red-500">*</span>

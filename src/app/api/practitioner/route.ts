@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
       if (respose.isError) {
         return respose.response;
       }
-      const practitioner = respose.response;
+      const practitioner = respose.response.practitioner;
 
       if (!practitioner) {
         return NextResponse.json(

@@ -7,12 +7,16 @@ interface TopBarWrapperProps {
   profilePic: S3File | string | null;
   role: string;
   profileLink: string;
+  familyId?: string;
+  currentPatientId?: number;
 }
 export default async function TopBarWrapper({
   name,
   profilePic,
   role,
   profileLink,
+  familyId,
+  currentPatientId,
 }: TopBarWrapperProps) {
 
   console.log("profile pic in wrapper is ", JSON.stringify(profilePic, null, 2));
@@ -22,6 +26,8 @@ export default async function TopBarWrapper({
       role={role}
       profilePic={profilePic}
       profileLink={profileLink}
+      familyId={familyId}
+      currentPatientId={currentPatientId}
     />
   );
 }

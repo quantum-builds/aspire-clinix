@@ -9,13 +9,9 @@ import {
   StoreIcon,
 } from "@/assets";
 import Sidebar from "../../components/SideBar";
-import TopBar from "../../components/TopBar";
-import { getServerSession } from "next-auth";
 import { toTitleCase } from "@/utils/formatWords";
-import { authOptions } from "@/lib/auth";
 import TopBarWrapper from "../../components/TopBarWrapper";
-import { getPatient } from "@/services/patient/patientQuery"; 
-
+import { getPatient } from "@/services/patient/patientQuery";
 
 const SIDEBAR_CONTENT: SidebarPage[] = [
   {
@@ -47,23 +43,25 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
     name: "Consent",
     icon: ConsentIcon,
     href: "/patient/consent",
-  }
+  },
 ];
 
 export default async function PatientLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-   const response = await getPatient();
-    const patient = response?.data ?? null;
-    const role = "patient";
-    // const name = patient?.fullName ?? "";
-    const profilePic = patient?.file?? null;
+  const response = await getPatient();
+  const patient = response?.data ?? null;
+  const role = "patient";
+  // const name = patient?.fullName ?? "";
+  const profilePic = patient?.file ?? null;
 
-  const session = await getServerSession(authOptions);
+  // Derive name from fresh patient data, not the stale session token
+  const name = patient
+    ? [patient.firstName, patient.lastName].filter(Boolean).join(" ").trim()
+    : "";
 
-  // const role = session?.user.role;
-  const name = session?.user.name;
-  
+  const familyId = patient?.familyId ?? "";
+  const currentPatientId = patient?.id ? Number(patient.id) : undefined;
 
   return (
     <div
@@ -79,6 +77,8 @@ export default async function PatientLayout({
           role={toTitleCase(role || "")}
           profileLink="/patient/profile"
           profilePic={profilePic}
+          familyId={familyId}
+          currentPatientId={currentPatientId}
         />
       </div>
 

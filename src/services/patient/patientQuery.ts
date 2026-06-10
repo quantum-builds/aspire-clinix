@@ -1,9 +1,10 @@
-import { ENDPOINTS } from "@/config/api-config";
 import { createServerAxios } from "@/lib/server-axios";
 import { Response } from "@/types/common";
 import { getAMedia } from "../s3/s3Query";
 import axios from "axios";
 import { TPatient } from "@/types/patient";
+import { useQuery } from "@tanstack/react-query";
+import { axiosInstance, axiosDentallyInstance, ENDPOINTS, DENTALLY_ENDPOINTS } from "@/config/api-config";
 
 export async function getPatient() {
   try {
@@ -11,7 +12,6 @@ export async function getPatient() {
     const response = await serverAxios.get(ENDPOINTS.patient.getPatientByDentallyId);
     const responseData: Response<any> = response.data;
     
-    // Extract patient from wrapper { patient: ..., meta: ..., file: ... } if it exists
     let patient: any = responseData.data?.patient || responseData.data;
 
     if (patient) {
@@ -70,3 +70,4 @@ export async function getPatient() {
     }
   }
 }
+

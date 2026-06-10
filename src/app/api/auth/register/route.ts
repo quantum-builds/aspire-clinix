@@ -164,7 +164,7 @@ export async function POST(req: NextRequest) {
           { status: 400 },
         );
 
-      const patientData = createRes.response;
+      const patientData = createRes.response.patient;
       const fullName = `${firstName} ${lastName}`
 
       console.log('patient response is ', JSON.stringify(patientData))

@@ -26,6 +26,8 @@ interface TopBarProps {
   profilePic: S3File | string | null;
   role: string;
   profileLink: string;
+  familyId?: string;
+  currentPatientId?: number;
 }
 
 export default function TopBar({
@@ -33,6 +35,8 @@ export default function TopBar({
   profilePic,
   role,
   profileLink,
+  familyId,
+  currentPatientId,
 }: TopBarProps) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { mutate: signOut, isPending } = signOutMutation();
@@ -119,6 +123,8 @@ export default function TopBar({
         <UserMenu
           profileLink={profileLink}
           onLogout={() => setIsCancelModalOpen(true)}
+          familyId={familyId ?? ""}
+          currentPatientId={currentPatientId ?? 0}
         />
       </Suspense>
 
