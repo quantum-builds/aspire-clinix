@@ -102,16 +102,6 @@ export const useSwitchFamilyMember = () => {
   });
 };
 
-export const useGetPatient = () => {
-  return useMutation({
-    mutationFn: async () => {
-      const response = await axiosInstance.get(ENDPOINTS.patient.getPatientByDentallyId);
-      const responseData: Response<any> = response.data;
-      return responseData.data;
-    },
-  });
-};
-
 export const getPatientById = async (patientId: string) => {
   const response = await axiosDentallyInstance.get(
     DENTALLY_ENDPOINTS.patient.get(patientId)

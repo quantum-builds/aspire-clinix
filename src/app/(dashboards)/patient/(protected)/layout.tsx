@@ -60,6 +60,9 @@ export default async function PatientLayout({
     ? [patient.firstName, patient.lastName].filter(Boolean).join(" ").trim()
     : "";
 
+  const familyId = patient?.familyId ?? "";
+  const currentPatientId = patient?.id ? Number(patient.id) : undefined;
+
   return (
     <div
       className={`font-inter text-dashboardTextBlack bg-dashboardBackground min-h-full grid grid-cols-[320px_1fr] grid-rows-[90px_1fr] overflow-hidden `}
@@ -74,6 +77,8 @@ export default async function PatientLayout({
           role={toTitleCase(role || "")}
           profileLink="/patient/profile"
           profilePic={profilePic}
+          familyId={familyId}
+          currentPatientId={currentPatientId}
         />
       </div>
 

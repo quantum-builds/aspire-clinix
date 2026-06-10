@@ -11,7 +11,6 @@ export async function getPatient() {
     const response = await serverAxios.get(ENDPOINTS.patient.getPatientByDentallyId);
     const responseData: Response<any> = response.data;
     
-    // Extract patient from wrapper { patient: ..., meta: ..., file: ... } if it exists
     let patient: any = responseData.data?.patient || responseData.data;
 
     if (patient) {

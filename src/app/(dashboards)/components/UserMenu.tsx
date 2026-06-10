@@ -10,7 +10,6 @@ import {
   HarryKaneImage,
 } from "@/assets";
 import {
-  useGetPatient,
   useGetFamilyMembers,
   useSwitchFamilyMember,
 } from "@/services/patient/patientMutation";
@@ -18,6 +17,8 @@ import {
 interface UserMenuProps {
   profileLink: string;
   onLogout: () => void;
+  familyId: string;
+  currentPatientId: number;
 }
 
 type DisplayedFamilyMember = {
@@ -26,14 +27,11 @@ type DisplayedFamilyMember = {
   dentallyId: string;
 };
 
-export function UserMenu({ profileLink, onLogout }: UserMenuProps) {
+export function UserMenu({ profileLink, onLogout, familyId, currentPatientId }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const [switchingId, setSwitchingId] = useState<string | null>(null);
-  const [familyId, setFamilyId] = useState("");
-  const [currentPatientId, setCurrentPatientId] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const { mutateAsync: getPatient } = useGetPatient();
   const { mutateAsync: fetchFamilyMembers, data: familyMembers } =
     useGetFamilyMembers();
   const { mutateAsync: switchFamilyMember } = useSwitchFamilyMember();
@@ -47,26 +45,6 @@ export function UserMenu({ profileLink, onLogout }: UserMenuProps) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    const fetchPatientFamilyId = async () => {
-      try {
-        const patient = await getPatient();
-        const patientFamilyId = patient?.familyId;
-        const patientId = patient?.id;
-        console.log("UserMenu: patient familyId:", patientFamilyId, "patientId:", patientId);
-        if (patientFamilyId) {
-          setFamilyId(patientFamilyId);
-        }
-        if (patientId) {
-          setCurrentPatientId(Number(patientId));
-        }
-      } catch (err) {
-        console.error("UserMenu: failed to fetch patient familyId", err);
-      }
-    };
-    fetchPatientFamilyId();
-  }, [getPatient]);
 
   useEffect(() => {
     if (!familyId) return;
