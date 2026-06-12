@@ -96,6 +96,8 @@ export default async function AssignedWrapper({
     attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
     medicalHistoryPDF:
       referralForm.medicalHistoryPdf ?? referralForm.medicalHistoryPdfUrl,
+    cbctReportPdfUrl:
+      referralForm.cbctReportPdf ?? referralForm.cbctReportPdfUrl,
   };
 
   return (
