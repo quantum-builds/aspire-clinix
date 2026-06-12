@@ -47,6 +47,7 @@ export type TCreateReferralForm = {
   patientAddress: string;
 
   medicalHistoryPdfUrl?: string;
+  cbctReportPdfUrl?: string;
   cbct?: string;
   dentalSpecialty?: string;
   other?: string;
@@ -71,6 +72,7 @@ export type TReferralForm = TCreateReferralForm & {
   cbct ?: string;
 
   medicalHistoryPdf?: string;
+  cbctReportPdf?: string;
   referralDentistId?: string;
   patientId?: string;
   referralDentist?: TDentist;

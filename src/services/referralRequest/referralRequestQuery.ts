@@ -80,6 +80,13 @@ export async function getReferralRequest(id: string) {
       : null;
 
     referralForm.medicalHistoryPdf = upload?.files?.[0]?.url;
+
+    const cbctUpload = referralForm.cbctReportPdfUrl
+      ? await getAMedia(referralForm.cbctReportPdfUrl)
+      : null;
+
+    referralForm.cbctReportPdf = cbctUpload?.files?.[0]?.url;
+
     responseData.data.referralForm = referralForm;
     return responseData;
   } catch (error) {

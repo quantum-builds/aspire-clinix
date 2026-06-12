@@ -125,6 +125,10 @@ export function buildReferralHtml(
     treatLines.push(
       `<strong>Medical history:</strong> <a href="${referralForm.medicalHistoryPdfUrl}">View document</a>`,
     );
+  if (referralForm.cbctReportPdfUrl)
+    treatLines.push(
+      `<strong>CBCT report:</strong> <a href="${referralForm.cbctReportPdfUrl}">View document</a>`,
+    );
 
   // Other
   if (referralForm.other) wrap("Other notes", referralForm.other);

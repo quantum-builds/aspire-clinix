@@ -315,6 +315,7 @@ export async function POST(req: NextRequest) {
       isReferralDentistRegistered = false;
     }
 
+    console.log("Fields being sent to Prisma:", Object.keys(referralForm));
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({
         data: referralForm,
@@ -377,8 +378,11 @@ export async function POST(req: NextRequest) {
     );
   } catch (error) {
     console.error("Error creating referral form:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : "";
+    console.error("Error details:", { errorMessage, errorStack, referralFormFields: Object.keys(referralForm) });
     return createCorsJson(
-      createResponse(false, "Unable to create referral form", null),
+      createResponse(false, `Unable to create referral form: ${errorMessage}`, null),
       { status: 500 },
     );
   }

@@ -215,18 +215,6 @@ export async function POST(req: NextRequest) {
       (p: any) => p.user.email === email || p.user.mobilePhone === phoneNumber,
     );
 
-    if (
-      existingDbDentist ||
-      existingDbPatient ||
-      existingPatient.length > 0 ||
-      existingPractitioner
-    ) {
-      return NextResponse.json(
-        createResponse(false, `Email or Phone Number already registered`, null),
-        { status: 400 },
-      );
-    }
-
     const hashedPassword = await bcrypt.hash(admin.password, 10);
 
     const newPatient = await prisma.admin.create({

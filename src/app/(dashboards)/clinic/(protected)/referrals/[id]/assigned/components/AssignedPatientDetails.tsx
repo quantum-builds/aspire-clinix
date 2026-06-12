@@ -36,6 +36,8 @@ interface PatientReferralDetailsProps {
     treatmentDetails?: string;
     attendTreatment: string;
     medicalHistoryPDF?: string;
+    cbctReportPdfUrl?: string | null;
+    
   };
 }
 
@@ -121,17 +123,7 @@ export default function AssignedPatientDetails({
             <p className="text-green font-medium text-2xl max-1xl50:mb-3">
               Referral Form Details
             </p>
-            {referralFormDetails.medicalHistoryPDF && (
-              <PdfModal
-                pdfUrl={referralFormDetails.medicalHistoryPDF}
-                trigger={
-                  <div className="flex items-center gap-3 cursor-pointer">
-                    <Image src={UploadPDFIcon} alt="PDF Icon" />
-                    <p className="underline text-green">See Document</p>
-                  </div>
-                }
-              />
-            )}
+           
           </div>
           <div className="flex flex-col text-lg space-y-2">
             <div className="flex flex-row items-start">
@@ -166,6 +158,44 @@ export default function AssignedPatientDetails({
               )}
             </div>
           </div>
+           <div className="flex gap-24">
+                      {referralFormDetails.medicalHistoryPDF && (
+                        <div className="flex flex-col">
+                          <h3 className="font-medium text-dashboardTextBlack mb-2">
+                            Medical History
+                          </h3>
+          
+                          <PdfModal
+                            pdfUrl={referralFormDetails.medicalHistoryPDF}
+                            trigger={
+                              <div className="flex items-center gap-3 cursor-pointer">
+                                <Image src={UploadPDFIcon} alt="PDF Icon" />
+                                <p className="underline text-green">See Document</p>
+                              </div>
+                            }
+                          />
+                        </div>
+                      )}
+          
+                      {referralFormDetails.cbctReportPdfUrl && (
+                        <div className="flex flex-col">
+                          <h3 className="font-medium text-dashboardTextBlack mb-2">
+                            CBCT Report
+                          </h3>
+          
+                          <PdfModal
+                            pdfUrl={referralFormDetails.cbctReportPdfUrl}
+                            trigger={
+                              <div className="flex items-center gap-3 cursor-pointer">
+                                <Image src={UploadPDFIcon} alt="PDF Icon" />
+                                <p className="underline text-green">See Document</p>
+                              </div>
+                            }
+                          />
+                        </div>
+                      )}
+                    </div>
+          
         </div>
       </div>
     </div>

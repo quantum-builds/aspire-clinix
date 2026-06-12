@@ -18,6 +18,15 @@ export async function getPatientById(patientId: string) {
 }
 
 export async function getPatient(query: patientQuery) {
+  console.log("=== DENTALLY DEBUG ===");
+  console.log("TOKEN:", process.env.DENTALLY_TOKEN);
+  console.log("ENDPOINT:", process.env.DENTALLY_ENDPOINT);
+  console.log("QUERY:", query);
+  console.log(
+    "FULL URL:",
+    `${process.env.DENTALLY_ENDPOINT}patients?query=${query}`,
+  );
+
   // Priority: email → phone → name
   const dentallyQuery =
     query.emailAddress ||
@@ -26,15 +35,18 @@ export async function getPatient(query: patientQuery) {
       .filter(Boolean)
       .join(" ");
 
-      console.log("dentallyQuery", dentallyQuery);
+  console.log("dentallyQuery", dentallyQuery);
 
   const response = await axiosDentallyInstance.get(
     DENTALLY_ENDPOINTS.patient.list(dentallyQuery),
   );
-  console.log("response from dentally is ", response)
-  const patientsResponse = dentallyErrorHelper(response.data, DATA_TYPE.PATIENTS);
+  console.log("response from dentally is ", response);
+  const patientsResponse = dentallyErrorHelper(
+    response.data,
+    DATA_TYPE.PATIENTS,
+  );
 
-  return patientsResponse
+  return patientsResponse;
 }
 
 export async function getPatients() {
@@ -45,10 +57,13 @@ export async function getPatients() {
 }
 
 export async function createPatient(patientData: TPatientCreate) {
-  console.log("patient is ", JSON.stringify(patientData))
-  const response = await axiosDentallyInstance.post(DENTALLY_ENDPOINTS.patient.create, patientData)
-  console.log("respons in dentally is ", response)
-  return dentallyErrorHelper(response.data, DATA_TYPE.PATIENT)
+  console.log("patient is ", JSON.stringify(patientData));
+  const response = await axiosDentallyInstance.post(
+    DENTALLY_ENDPOINTS.patient.create,
+    patientData,
+  );
+  console.log("respons in dentally is ", response);
+  return dentallyErrorHelper(response.data, DATA_TYPE.PATIENT);
 }
 
 export async function patchPatientById(patientId: string, partialPatient: any) {
@@ -65,5 +80,3 @@ export async function deletePatientById(patientId: string) {
   );
   return dentallyErrorHelper(response.data, DATA_TYPE.PATIENT);
 }
-
-
