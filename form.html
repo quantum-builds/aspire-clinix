@@ -1139,7 +1139,7 @@
         }
       }
 
-      var res = await fetch('https://aspire-clinix.vercel.app/referrals', {
+      var res = await fetch('https://aspire-clinix.vercel.app/api/referrals', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
       });
       var data = null;

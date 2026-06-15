@@ -252,8 +252,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (CBCT_OPTIONS.has(incomingCbct)) {
-      referralForm.cbct = incomingCbct;
+    const REPORT_REQUIRED_SUFFIX = " [Report Required]";
+
+    const cleanCbct = incomingCbct.endsWith(REPORT_REQUIRED_SUFFIX)
+      ? incomingCbct.slice(0, -REPORT_REQUIRED_SUFFIX.length)
+      : incomingCbct;
+
+    if (CBCT_OPTIONS.has(cleanCbct)) {
+      referralForm.cbct = cleanCbct; 
       referralForm.dentalSpecialty = null;
     } else {
       referralForm.dentalSpecialty = incomingDentalSpecialty;
@@ -268,7 +274,6 @@ export async function POST(req: NextRequest) {
           where: { dentallyId: active.id },
           select: { id: true },
         });
-        console.log("2");
 
         if (!dbPatient) {
           dbPatient = await prisma.patient.create({
@@ -315,7 +320,6 @@ export async function POST(req: NextRequest) {
       isReferralDentistRegistered = false;
     }
 
-    console.log("Fields being sent to Prisma:", Object.keys(referralForm));
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({
         data: referralForm,
@@ -380,9 +384,17 @@ export async function POST(req: NextRequest) {
     console.error("Error creating referral form:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : "";
-    console.error("Error details:", { errorMessage, errorStack, referralFormFields: Object.keys(referralForm) });
+    console.error("Error details:", {
+      errorMessage,
+      errorStack,
+      referralFormFields: Object.keys(referralForm),
+    });
     return createCorsJson(
-      createResponse(false, `Unable to create referral form: ${errorMessage}`, null),
+      createResponse(
+        false,
+        `Unable to create referral form: ${errorMessage}`,
+        null,
+      ),
       { status: 500 },
     );
   }

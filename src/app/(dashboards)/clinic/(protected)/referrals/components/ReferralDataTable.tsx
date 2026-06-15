@@ -93,6 +93,9 @@ export function ClinicReferralDataTable({
               Referral Dentist Name
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
+              Referral Details
+            </TableHead>
+            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Status
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
@@ -129,6 +132,12 @@ export function ClinicReferralDataTable({
               <TableCell className="px-6 py-4">
                 {entry.referralForm.referralName}
               </TableCell>
+              <TableCell className="px-6 py-4">
+                {entry.referralForm.cbct
+                  ? entry.referralForm.cbct
+                  : entry.referralForm.dentalSpecialty}
+              </TableCell>
+              
               <TableCell className="px-6 py-4">
                 <div className="flex gap-2 items-center">
                   <div
