@@ -35,7 +35,6 @@ export default function UpcomingAppointmentCard({
       },
       {
         onSuccess: (data) => {
-          console.log("updated appointment ", data);
           refresh();
           setIsCancelModalOpen(false);
         },

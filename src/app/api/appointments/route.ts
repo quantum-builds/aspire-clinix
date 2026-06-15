@@ -158,11 +158,10 @@ export async function GET(req: NextRequest) {
       ...(state && { state: state as AppointmentState }),
     };
 
-    console.log("appointment param ", appointmentParams)
+  
     const response = await listAppointment(appointmentParams);
-    console.log("response form dentally is ", response)
     if (response.isError) return response.response;
-    console.log("real respons eis ", response)
+   
 
     const appointments = (response.response.appointments ?? []) as Appointment[];
 

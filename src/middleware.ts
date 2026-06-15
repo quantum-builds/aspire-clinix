@@ -7,7 +7,7 @@ const secret = process.env.NEXTAUTH_SECRET; // required for getToken
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  console.log("pathname ", pathname)
+
   // Define public routes
   const patientPublic = ["/patient/login", "/patient/otp-verify", "/patient/register"];
   const dentistPublic = ["/dentist/login", "/dentist/otp-verify", "/dentist/register"];
@@ -113,7 +113,7 @@ export async function middleware(request: NextRequest) {
     const allowedRoutes = dentistAllowedRoutes[role] || [];
 
     const isAllowed = allowedRoutes.some((route) => pathname.startsWith(route));
-    console.log("is allowed ", isAllowed)
+   
     if (!isAllowed) {
       return NextResponse.redirect(new URL("/403", request.url));
     }

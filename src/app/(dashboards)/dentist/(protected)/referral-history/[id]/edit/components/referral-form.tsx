@@ -110,7 +110,7 @@ export default function ReferralForm() {
   }, [watchedValues]);
 
   const onSubmit = (data: FormData) => {
-    console.log("Form submitted:", data);
+   
     setHasChanges(false);
   };
 

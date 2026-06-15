@@ -148,7 +148,7 @@ export default function PracticeForm() {
 
 
   const onSubmit = async (data: FormData) => {
-    console.log("Practice form submitted:", data);
+   
 
     let fileUrl = undefined;
     if (data.logo instanceof File) {

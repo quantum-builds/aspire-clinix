@@ -18,15 +18,7 @@ export async function getPatientById(patientId: string) {
 }
 
 export async function getPatient(query: patientQuery) {
-  console.log("=== DENTALLY DEBUG ===");
-  console.log("TOKEN:", process.env.DENTALLY_TOKEN);
-  console.log("ENDPOINT:", process.env.DENTALLY_ENDPOINT);
-  console.log("QUERY:", query);
-  console.log(
-    "FULL URL:",
-    `${process.env.DENTALLY_ENDPOINT}patients?query=${query}`,
-  );
-
+  
   // Priority: email → phone → name
   const dentallyQuery =
     query.emailAddress ||
@@ -35,12 +27,11 @@ export async function getPatient(query: patientQuery) {
       .filter(Boolean)
       .join(" ");
 
-  console.log("dentallyQuery", dentallyQuery);
+
 
   const response = await axiosDentallyInstance.get(
     DENTALLY_ENDPOINTS.patient.list(dentallyQuery),
   );
-  console.log("response from dentally is ", response);
   const patientsResponse = dentallyErrorHelper(
     response.data,
     DATA_TYPE.PATIENTS,

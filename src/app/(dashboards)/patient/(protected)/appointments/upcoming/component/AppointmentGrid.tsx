@@ -29,7 +29,6 @@ export default async function AppointmentGridWrapper({
     after,
   });
 
-  console.log("Respinse in frontend ", response)
 
   if (
     !response.status ||
@@ -47,7 +46,6 @@ export default async function AppointmentGridWrapper({
   }
 
   const appointments = response.data.appointments;
-  console.log("appointment is ", appointments)
 
   return (
     <>

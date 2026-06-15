@@ -65,7 +65,7 @@ export default function ContactForm() {
   });
 
   const onSubmit = (data: any) => {
-    console.log("Form Data:", data);
+   
   };
 
   return (

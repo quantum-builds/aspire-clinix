@@ -98,24 +98,27 @@ export async function POST(req: NextRequest) {
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedGdcNumber = gdcNumber.trim().toLowerCase();
 
-    const filteredPractitioners = (response.response.practitioners ?? []).filter(
+    const filteredPractitioners = (
+      response.response.practitioners ?? []
+    ).filter(
       (practitioner: any) =>
         practitioner?.user?.email?.trim?.().toLowerCase?.() ===
-        normalizedEmail &&
+          normalizedEmail &&
         practitioner?.gdcNumber?.trim?.().toLowerCase?.() ===
-        normalizedGdcNumber,
+          normalizedGdcNumber,
     );
 
     let dbDentist = null;
 
     // check if the dentist is REFERRAL_DENTIST
     if (filteredPractitioners.length === 0) {
-      console.log("[Practitioner Verify] email ", email)
-      console.log("[Practitioner Verify] gdcNumber ", gdcNumber)
-
-      dbDentist = await prisma.dentist.findUnique({ where: { email: email, gdcNo: gdcNumber, role: TokenRoles.REFERRING_DENTIST } })
-
-      console.log("[Practitioner Verify] dbDentist ", dbDentist)
+      dbDentist = await prisma.dentist.findUnique({
+        where: {
+          email: email,
+          gdcNo: gdcNumber,
+          role: TokenRoles.REFERRING_DENTIST,
+        },
+      });
 
       if (!dbDentist) {
         return NextResponse.json(
@@ -133,7 +136,6 @@ export async function POST(req: NextRequest) {
         },
       });
     } else {
-      console.log("[Practitioner Verify] filteredPractitioners ", filteredPractitioners)
       if (filteredPractitioners.length > 1) {
         return NextResponse.json(
           createResponse(
@@ -146,7 +148,10 @@ export async function POST(req: NextRequest) {
       }
 
       const matchedPractitioner = filteredPractitioners[0];
-      console.log("[Practitioner Verify] matchedPractitioner ", matchedPractitioner)
+      console.log(
+        "[Practitioner Verify] matchedPractitioner ",
+        matchedPractitioner,
+      );
 
       const existingDentist = await prisma.dentist.findUnique({
         where: {
@@ -154,11 +159,11 @@ export async function POST(req: NextRequest) {
           gdcNo: normalizedGdcNumber,
         },
       });
-      
+
       console.log("existingDentist", existingDentist);
 
-      console.log("dentist is ", JSON.stringify(matchedPractitioner))
-      
+      console.log("dentist is ", JSON.stringify(matchedPractitioner));
+
       if (!existingDentist) {
         dbDentist = await prisma.dentist.create({
           data: {
@@ -183,7 +188,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const fullName = `${dbDentist.firstName} ${dbDentist.lastName}`
+    const fullName = `${dbDentist.firstName} ${dbDentist.lastName}`;
 
     const html = `
             <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">

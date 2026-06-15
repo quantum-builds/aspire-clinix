@@ -6,7 +6,6 @@ import ReportGridWrapperSkeleton from "./components/skeleton/ReportGridWrapper";
 
 export default async function NewReport(props: { params: { id: string } }) {
   const { id } = props.params;
-  console.log("id is ", id);
   return (
     <div className="flex flex-col gap-5 min-h-[103vh]">
       <PageTopBar

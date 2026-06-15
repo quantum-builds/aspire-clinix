@@ -47,7 +47,7 @@ export default async function ResourceWrapper({
     }
     const resources = response.data.resources.pdfs;
     const total = response.data.pagination.pdf.totalPages
-    console.log("total page ", total)
+
 
     return (
         <>

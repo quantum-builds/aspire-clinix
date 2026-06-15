@@ -68,7 +68,7 @@ export default function AddProductForm() {
   });
 
   const onSubmit = (data: FormData) => {
-    console.log("Product form submitted:", data);
+   
   };
 
   const handleUploadClick = () => {

@@ -47,7 +47,7 @@ export default async function AppointmentGridWrapper({
   const appointments = response.data.appointments;
 
   const total = response.data.meta.totalPages;
-  console.log("reposnse ", response.data)
+ 
 
   return (
     <>

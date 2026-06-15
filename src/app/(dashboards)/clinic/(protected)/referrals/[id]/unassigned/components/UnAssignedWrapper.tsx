@@ -42,7 +42,7 @@ export default async function UnAssignedWrapper({
   const referralForm = referralRequestResponse.data.referralForm;
   const referralRequest = referralRequestResponse.data;
 
-  console.log(referralForm.patientDateOfBirth);
+
   const patientDetails = {
     name: referralForm.patientName,
     phone: referralForm.patientPhoneNumber,

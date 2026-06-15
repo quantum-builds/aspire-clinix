@@ -129,12 +129,10 @@ export default function CartGrid({ cartProducts }: CartGridProps) {
       {
         onError: (error) => {
           // toast.error(error.message || "Checkout failed");
-          console.log("error is ", error);
         },
         onSuccess: (data) => {
           // toast.success("Redirecting to checkout...");
           // clearCart();
-          console.log("data is ", data);
         },
       }
     );

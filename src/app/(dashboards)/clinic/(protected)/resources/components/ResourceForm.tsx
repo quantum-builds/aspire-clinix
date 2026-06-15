@@ -98,7 +98,7 @@ export default function AddResourceForm({ type }: AddResourceFormProps) {
       return;
     }
 
-    console.log("in component ", type)
+  
     const uploaded = await uploadFile({
       selectedFile: data.videoFile,
       fileType: type,

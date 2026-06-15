@@ -47,7 +47,7 @@ export default function PlanSubscriptionForm({
   }, [values, defaultValues]);
 
   const onSubmit = (data: FormData) => {
-    console.log(`${type} form submitted:`, data);
+   
   };
 
   const capitalizedType = type.charAt(0).toUpperCase() + type.slice(1);

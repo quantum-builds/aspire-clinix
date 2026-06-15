@@ -10,7 +10,6 @@ type PageProps = {
 export default async function ReferralDetailsPage({ params }: PageProps) {
   const referralId = params.id;
 
-  console.log(referralId);
 
   return (
     <div className=" w-full h-full flex flex-col gap-7">

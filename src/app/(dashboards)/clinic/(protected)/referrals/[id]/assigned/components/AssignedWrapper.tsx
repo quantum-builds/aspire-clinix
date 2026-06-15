@@ -20,7 +20,7 @@ export default async function AssignedWrapper({
 }: AssignedWrapperProps) {
   const referralRequestResponse: Response<TReferralRequest> =
     await getReferralRequest(id);
-  console.log("[ASSIGNED] referralRequestResponse ", referralRequestResponse);
+
   const session = await getServerSession(authOptions);
   const role = session?.user.role;
 

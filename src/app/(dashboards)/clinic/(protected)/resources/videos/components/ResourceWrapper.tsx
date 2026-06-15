@@ -47,7 +47,7 @@ export default async function ResourceWrapper({
     }
     const resources = response.data.resources.videos;
     const total = response.data.pagination.video.totalPages
-    console.log("total page ", total)
+    
 
     return (
         <>

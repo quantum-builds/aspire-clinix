@@ -98,12 +98,6 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { role } = body;
 
-  console.log("=== REGISTER ROUTE HIT ===");
-  console.log("ROLE:", role);
-  console.log("DENTALLY_TOKEN:", process.env.DENTALLY_TOKEN);
-  console.log("DENTALLY_ENDPOINT:", process.env.DENTALLY_ENDPOINT);
-  console.log("PAYMENT_PLAN:", process.env.PAYMENT_PLAN);
-
   if (!role) {
     return NextResponse.json({ message: "Role are required" }, { status: 400 });
   }
@@ -127,17 +121,10 @@ export async function POST(req: NextRequest) {
         paymentPlanId = process.env.PAYMENT_PLAN,
       } = body;
 
-      console.log("=== CALLING getPatient ===");
-      console.log("firstName:", firstName, "lastName:", lastName);
-
       const response = await getPatient({
         firstName,
         lastName,
       });
-
-      console.log("=== getPatient RESPONSE ===");
-      console.log("isError:", response.isError);
-      console.log("response:", JSON.stringify(response.response));
 
       if (response.isError)
         return NextResponse.json(
@@ -182,7 +169,6 @@ export async function POST(req: NextRequest) {
       const patientData = createRes.response.patient;
       const fullName = `${firstName} ${lastName}`;
 
-      console.log("patient response is ", JSON.stringify(patientData));
       await prisma.patient.create({
         data: {
           uuid: patientData.uuid,
@@ -208,11 +194,10 @@ export async function POST(req: NextRequest) {
 
       // Check if email or GDC number exists in Dentally practitioners
       const practitioners = practitionersResponse.response.practitioners || [];
-      console.log("preactitioners are ", practitionersResponse.response.meta);
+
       const existingPractitioner = practitioners.find(
         (p: any) => p.user.email === email || p.gdcNumber === gdcNo,
       );
-      console.log("existing practioner ", existingPractitioner);
 
       if (existingPractitioner) {
         return NextResponse.json(
