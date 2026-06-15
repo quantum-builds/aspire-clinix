@@ -43,7 +43,9 @@ export default function PdfModal({ pdfUrl, trigger }: PdfModalProps) {
       }
 
       try {
-        const endpoint = `/api/s3-file?fileName=${encodeURIComponent(pdfUrl)}`;
+        const endpoint = `/api/s3-file?fileName=${decodeURIComponent(pdfUrl)}`;
+        console.log("Resolving PDF URL from endpoint:", endpoint);
+        
         const response = await fetch(endpoint, {
           method: "GET",
           credentials: "include",
