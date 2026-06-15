@@ -99,10 +99,7 @@ export async function POST(req: NextRequest) {
   const { role } = body;
 
   if (!role) {
-    return NextResponse.json(
-      { message: "Role are required" },
-      { status: 400 },
-    );
+    return NextResponse.json({ message: "Role are required" }, { status: 400 });
   }
 
   if (role !== TokenRoles.REFERRING_DENTIST && role !== TokenRoles.PATIENT) {
@@ -121,7 +118,7 @@ export async function POST(req: NextRequest) {
         postCode,
         dateOfBirth,
         gender,
-        paymentPlanId = process.env.PAYMENT_PLAN
+        paymentPlanId = process.env.PAYMENT_PLAN,
       } = body;
 
       const response = await getPatient({
@@ -135,12 +132,14 @@ export async function POST(req: NextRequest) {
           { status: 400 },
         );
 
-      if (Array.isArray(response.response.patients) && response.response.patients.length > 0)
+      if (
+        Array.isArray(response.response.patients) &&
+        response.response.patients.length > 0
+      )
         return NextResponse.json(
           { message: "Account with these names already exist" },
           { status: 409 },
         );
-
 
       const patientDataToCreate = {
         title,
@@ -152,9 +151,12 @@ export async function POST(req: NextRequest) {
         postCode,
         dateOfBirth,
         gender,
-        paymentPlanId
+        paymentPlanId,
       };
-      console.log("[API Route] Patient data before sending to Dentally:", JSON.stringify(patientDataToCreate));
+      console.log(
+        "[API Route] Patient data before sending to Dentally:",
+        JSON.stringify(patientDataToCreate),
+      );
 
       const createRes = await createPatient(patientDataToCreate);
 
@@ -165,9 +167,8 @@ export async function POST(req: NextRequest) {
         );
 
       const patientData = createRes.response.patient;
-      const fullName = `${firstName} ${lastName}`
+      const fullName = `${firstName} ${lastName}`;
 
-      console.log('patient response is ', JSON.stringify(patientData))
       await prisma.patient.create({
         data: {
           uuid: patientData.uuid,
@@ -180,12 +181,7 @@ export async function POST(req: NextRequest) {
         },
       });
     } else if (role === TokenRoles.REFERRING_DENTIST) {
-      const {
-        gdcNo,
-        firstName,
-        lastName,
-        email,
-      } = body;
+      const { gdcNo, firstName, lastName, email } = body;
 
       const practitionersResponse = await getPractitioners();
 
@@ -198,11 +194,10 @@ export async function POST(req: NextRequest) {
 
       // Check if email or GDC number exists in Dentally practitioners
       const practitioners = practitionersResponse.response.practitioners || [];
-      console.log("preactitioners are ", practitionersResponse.response.meta)
+
       const existingPractitioner = practitioners.find(
-        (p: any) => p.user.email === email || p.gdcNumber === gdcNo
+        (p: any) => p.user.email === email || p.gdcNumber === gdcNo,
       );
-      console.log("existing practioner ", existingPractitioner)
 
       if (existingPractitioner) {
         return NextResponse.json(

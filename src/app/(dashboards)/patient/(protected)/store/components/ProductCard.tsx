@@ -34,7 +34,6 @@ export default function ProductCard({ product }: ProductCardProps) {
       },
       {
         onSuccess: (data) => {
-          console.log("data is ", data);
           // const params = new URLSearchParams(searchParams);
           // params.set("count", String(data.data));
           // replace(`${pathname}?${params.toString()}`);
@@ -43,7 +42,6 @@ export default function ProductCard({ product }: ProductCardProps) {
         onError: (error) => {
           const msg = getAxiosErrorMessage(error);
           showToast("error", msg);
-          console.log("error is ", error.message);
         },
       }
     );

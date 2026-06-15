@@ -19,7 +19,6 @@ export default async function TopBarWrapper({
   currentPatientId,
 }: TopBarWrapperProps) {
 
-  console.log("profile pic in wrapper is ", JSON.stringify(profilePic, null, 2));
   return (
     <TopBar
       name={name}

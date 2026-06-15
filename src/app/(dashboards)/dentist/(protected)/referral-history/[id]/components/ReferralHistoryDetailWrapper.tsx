@@ -20,7 +20,6 @@ export default async function ReferralHistoryDetail({
 }: ReferralHistoryDetailProps) {
   const referralRequestResponse: Response<TReferralRequest> =
     await getReferralRequest(id);
-  console.log("show modal is ", showModel);
   if (
     !referralRequestResponse ||
     !referralRequestResponse.status ||
@@ -68,6 +67,7 @@ export default async function ReferralHistoryDetail({
     treatmentDetails: referralForm.treatmentDetails,
     attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
     medicalHistoryPDF: referralForm.medicalHistoryPdf,
+    cbctReportPdfUrl: referralForm.cbctReportPdf,
   };
 
   return (

@@ -25,7 +25,6 @@ export default async function ReportGridWrapper({
 }: ResourceGridWrapperProps) {
   const response: Response<TAppointmentDetail> = await getAppointment(appointmentId);
 
-  console.log("reposne is ", response)
   if (
     !response.status ||
     (!response.data.reports.pdfs && !response.data.reports.videos) ||

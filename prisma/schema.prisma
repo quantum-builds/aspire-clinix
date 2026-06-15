@@ -10,8 +10,6 @@ datasource db {
 model ReferralForm {
   id                          String           @id @default(cuid())
   createdAt                   DateTime         @default(now())
-  cbct                        String?
-  dentalSpecialty             String?
   treatmentDetails            String?
   other                       String?
   referralEmail               String
@@ -31,6 +29,9 @@ model ReferralForm {
   practiceEmail               String?
   practiceName                String?
   practicePhoneNumber         String?
+  dentalSpecialty             String?
+  cbct                        String?
+  cbctReportPdfUrl            String?
   patient                     Patient?         @relation(fields: [patientId], references: [id])
   referralDentist             Dentist?         @relation(fields: [referralDentistId], references: [id])
   referralRequest             ReferralRequest?

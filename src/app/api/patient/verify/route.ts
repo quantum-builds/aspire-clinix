@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
       emailAddress: email,
     });
 
-    console.log("Dentally API response:", response);
+ 
 
     if (response.isError) {
       return NextResponse.json(
@@ -119,9 +119,7 @@ export async function POST(req: NextRequest) {
       (patient: any) => patient.active && !patient.archivedReason,
     );
 
-    console.log("Active patients found:", activePatients.length);
-    console.log("Active patients details:", activePatients);
-
+   
     if (activePatients.length === 0 || activePatients.length > 1) {
       return NextResponse.json(
         createResponse(false, "No Account found", null),

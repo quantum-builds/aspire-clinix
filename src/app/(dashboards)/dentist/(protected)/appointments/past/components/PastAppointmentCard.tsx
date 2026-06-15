@@ -56,7 +56,6 @@ export default function PastAppointmentCard({
       },
       {
         onSuccess: (data) => {
-          console.log("updated appointment ", data);
           refresh();
           setIsConfirmModalOpen(false);
           setMenuOpen(false);

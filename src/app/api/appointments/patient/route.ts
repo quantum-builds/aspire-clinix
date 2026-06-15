@@ -78,7 +78,6 @@ import { getPatient } from "@/dentallyHelpers/patient";
  */
 export async function GET(req: NextRequest) {
 
-  console.log("in ednpoint ")
   try {
     const token = await getToken({ req });
 

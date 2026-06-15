@@ -12,7 +12,7 @@ interface SideBarProps {
   sideBarContnent: SidebarPage[];
 }
 export default function Sidebar({ sideBarContnent }: SideBarProps) {
-  console.log(sideBarContnent)
+
   const pathname = usePathname();
   const router = useRouter();
 
@@ -27,9 +27,7 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
       if (section.pages) {
         section.pages.forEach((page) => {
           if (page.href && pathname.startsWith(page.href)) {
-            console.log("page href ", page.href)
-            console.log("pathname ", pathname)
-
+           
             setActiveSection(section.name);
             setOpenSection(section.name);
             setActivePage(page.name);
@@ -37,13 +35,10 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
           }
         });
 
-        console.log("section href ", section.href)
-        console.log("matched ", matched)
-        console.log("pathname ", pathname)
-
+      
         // to show black bg when on reports page
         if (section.href && !matched && !pathname.includes("/profile") && pathname.includes(section.href)) {
-          console.log("path name include ", pathname.includes(section.href))
+         
           setActiveSection(section.name);
           setOpenSection(null);
           setActivePage(null);
@@ -58,7 +53,7 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
     });
 
     if (!matched) {
-      console.log("in not matched");
+  
       setActiveSection(null);
       setOpenSection(null);
       setActivePage(null);

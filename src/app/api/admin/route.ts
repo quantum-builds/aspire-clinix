@@ -150,7 +150,6 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.log("Error in fetching admin ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,
@@ -215,18 +214,6 @@ export async function POST(req: NextRequest) {
       (p: any) => p.user.email === email || p.user.mobilePhone === phoneNumber,
     );
 
-    if (
-      existingDbDentist ||
-      existingDbPatient ||
-      existingPatient.length > 0 ||
-      existingPractitioner
-    ) {
-      return NextResponse.json(
-        createResponse(false, `Email or Phone Number already registered`, null),
-        { status: 400 },
-      );
-    }
-
     const hashedPassword = await bcrypt.hash(admin.password, 10);
 
     const newPatient = await prisma.admin.create({
@@ -241,7 +228,6 @@ export async function POST(req: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
-    console.log("Error in creating admin ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,
@@ -318,7 +304,6 @@ export async function PATCH(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.log("Error in updating admin ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

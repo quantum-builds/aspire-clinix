@@ -14,7 +14,7 @@ export default async function PracticeDentistsDataTableWrapper({
   id,
 }: PracticeDentistsDataTableWrapperProps) {
   const response: Response<TPractice> = await getPractice(id);
-  console.log(response.data.dentists);
+  
   if (
     response.status &&
     response.data &&

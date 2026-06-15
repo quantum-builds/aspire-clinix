@@ -81,7 +81,6 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
-    console.log("Token: ", token);
 
     if (!token) {
       return NextResponse.json(createResponse(false, "Unauthorized", null), {
@@ -125,7 +124,6 @@ export async function GET(req: NextRequest) {
       const emailParam = searchParams.get("email") || "";
 
       const email = decodeURIComponent(emailParam);
-      console.log("email is ", email);
       if (email.trim().length > 0) {
         const respose = await getPatient({ emailAddress: email });
         if (respose.isError) {
@@ -169,7 +167,6 @@ export async function GET(req: NextRequest) {
       });
     }
   } catch (error) {
-    console.log("Error in fetching patients ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,
@@ -204,7 +201,10 @@ export async function PATCH(req: NextRequest) {
       let patientData;
 
       if (Object.keys(dentallyPayload).length > 0) {
-        const respose = await patchPatientById(patientDentallyId, dentallyPayload);
+        const respose = await patchPatientById(
+          patientDentallyId,
+          dentallyPayload,
+        );
         if (respose.isError) {
           return respose.response;
         }
@@ -224,7 +224,10 @@ export async function PATCH(req: NextRequest) {
         );
       }
 
-      const name = [patientData.firstName, patientData.lastName].filter(Boolean).join(" ").trim();
+      const name = [patientData.firstName, patientData.lastName]
+        .filter(Boolean)
+        .join(" ")
+        .trim();
       const email = patientData.emailAddress || patientData.email || "";
       const mobileNumber = patientData.mobilePhone || "";
 
@@ -232,7 +235,8 @@ export async function PATCH(req: NextRequest) {
       if (name) prismaData.name = name;
       if (email) prismaData.email = email;
       if (mobileNumber) prismaData.mobileNumber = mobileNumber;
-      if (patientData.dateOfBirth) prismaData.dateOfBirth = patientData.dateOfBirth;
+      if (patientData.dateOfBirth)
+        prismaData.dateOfBirth = patientData.dateOfBirth;
       if (fileUrl) prismaData.imageUrl = fileUrl;
 
       await prisma.patient.update({
@@ -255,7 +259,6 @@ export async function PATCH(req: NextRequest) {
       status: 403,
     });
   } catch (error) {
-    console.log("Error in updating patient ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

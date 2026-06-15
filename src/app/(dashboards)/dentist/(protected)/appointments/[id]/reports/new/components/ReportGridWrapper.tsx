@@ -15,8 +15,7 @@ export default async function ReportGridWrapper({
 }: ReportGridGridWrapperProps) {
   const response: Response<TAppointmentDetail> = await getAppointment(id);
 
-  console.log("response is ", response)
-  console.log(response);
+
   if (!response.status || !response.data) {
     return (
       // <NoContent title="Resources" placeholder="Enter Appointment Number" />
