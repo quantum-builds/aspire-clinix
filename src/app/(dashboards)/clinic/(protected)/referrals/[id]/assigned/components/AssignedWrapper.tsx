@@ -98,6 +98,7 @@ export default async function AssignedWrapper({
       referralForm.medicalHistoryPdf ?? referralForm.medicalHistoryPdfUrl,
     cbctReportPdfUrl:
       referralForm.cbctReportPdf ?? referralForm.cbctReportPdfUrl,
+    prescriptionDetails: referralForm.prescriptionDetails,
   };
 
   return (

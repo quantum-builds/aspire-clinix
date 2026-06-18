@@ -11,6 +11,7 @@ interface ReferralFormDetailModalProps {
     referralFormDetails: {
         referralDeatils: string;
         treatmentDetails?: string;
+        prescriptionDetails?: string;
         attendTreatment: string;
         medicalHistoryPDF?: string;
     };
@@ -57,6 +58,15 @@ export default function ReferralFormDetailModal({
                         </p>
                         <p>{referralFormDetails.treatmentDetails ?referralFormDetails.treatmentDetails: <span className="italic">NO Description Added</span>}</p>
                     </div>
+
+                    {referralFormDetails.prescriptionDetails && (
+                        <div className="space-y-2">
+                            <p className="text-xl font-semibold text-green mb-3">
+                                Prescription Details:
+                            </p>
+                            <p>{referralFormDetails.prescriptionDetails}</p>
+                        </div>
+                    )}
 
                     {referralFormDetails.medicalHistoryPDF && (
                         <PdfModal
