@@ -25,9 +25,11 @@ interface PatientReferralDetailsProps {
   referralFormDetails: {
     referralDeatils: string;
     treatmentDetails?: string;
+    prescriptionDetails?: string;
     attendTreatment: string;
     medicalHistoryPDF?: string;
     cbctReportPdfUrl?: string | null
+    
     
   };
 }
@@ -103,16 +105,36 @@ export default function PatientReferralDetails({
             </div>
             <div className="flex flex-row items-start">
               <p className="font-medium text-dashboardTextBlack w-40 shrink-0">
-                Description:
+                Medical History:
               </p>
               <p>
                 {referralFormDetails.treatmentDetails ? (
                   referralFormDetails.treatmentDetails
                 ) : (
-                  <span className="italic">NO Description Added</span>
+                  <span className="italic">No Medical History </span>
                 )}
               </p>
             </div>
+             <div className="flex flex-row items-start">
+              <p className="font-medium text-dashboardTextBlack w-40 shrink-0">
+                Prescription:
+              </p>
+              <p>
+                {referralFormDetails.prescriptionDetails ? (
+                  referralFormDetails.prescriptionDetails
+                ) : (
+                  <span className="italic">No Prescription Details </span>
+                )}
+              </p>
+            </div>
+            {referralFormDetails.prescriptionDetails && (
+              <div className="flex flex-row items-start">
+                <p className="font-medium text-dashboardTextBlack w-40 shrink-0">
+                  Prescription Details:
+                </p>
+                <p>{referralFormDetails.prescriptionDetails}</p>
+              </div>
+            )}
           </div>
           <div className="flex justify-between items-center text-lg max-1xl50:pt-3">
             <div className="space-y-1">

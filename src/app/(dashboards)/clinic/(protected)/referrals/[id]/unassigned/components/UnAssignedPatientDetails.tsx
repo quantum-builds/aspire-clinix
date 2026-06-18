@@ -35,6 +35,7 @@ interface PatientReferralDetailsProps {
     attendTreatment: string;
     medicalHistoryPDF?: string;
     cbctReportPdfUrl?: string | null;
+    prescriptionDetails?: string;
   };
 
   referralRequestId: string;
@@ -124,13 +125,25 @@ export default function UnAssignedPatientDetails({
             </div>
             <div className="flex flex-row items-start">
               <p className="font-medium text-dashboardTextBlack w-40 shrink-0">
-                Description:
+                Medical History:
               </p>
               <p>
                 {referralFormDetails.treatmentDetails ? (
                   referralFormDetails.treatmentDetails
                 ) : (
-                  <span className="italic">NO Description Added</span>
+                  <span className="italic">No Description </span>
+                )}
+              </p>
+            </div>
+            <div className="flex flex-row items-start">
+              <p className="font-medium text-dashboardTextBlack w-40 shrink-0">
+                Prescription:
+              </p>
+              <p>
+                {referralFormDetails.prescriptionDetails ? (
+                  referralFormDetails.prescriptionDetails
+                ) : (
+                  <span className="italic">No Prescription Details </span>
                 )}
               </p>
             </div>

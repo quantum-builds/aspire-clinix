@@ -32,6 +32,7 @@ model ReferralForm {
   dentalSpecialty             String?
   cbct                        String?
   cbctReportPdfUrl            String?
+  prescriptionDetails         String?
   patient                     Patient?         @relation(fields: [patientId], references: [id])
   referralDentist             Dentist?         @relation(fields: [referralDentistId], references: [id])
   referralRequest             ReferralRequest?

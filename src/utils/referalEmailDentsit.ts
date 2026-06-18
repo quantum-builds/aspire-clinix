@@ -130,6 +130,12 @@ export function buildReferralHtml(
       `<strong>CBCT report:</strong> <a href="${referralForm.cbctReportPdfUrl}">View document</a>`,
     );
 
+  // Prescription details
+  if (referralForm.prescriptionDetails)
+    treatLines.push(
+      `<strong>Prescription details:</strong> ${referralForm.prescriptionDetails}`,
+    );
+
   // Other
   if (referralForm.other) wrap("Other notes", referralForm.other);
 

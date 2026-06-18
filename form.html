@@ -248,6 +248,7 @@
   .upload-text { font-size: 13px; color: var(--text-muted); font-weight: 300; }
   .upload-text span { color: var(--accent); font-weight: 400; }
   #file-list { margin-top: 10px; font-size: 12px; color: var(--text-muted); }
+  #cbct-report-list { margin-top: 10px; font-size: 12px; color: var(--text-muted); }
 
   /* ── Submit button ── */
   .submit-row { margin-top: 4px; }
@@ -493,7 +494,7 @@
         <label>Mobile Number <span class="req">*</span></label>
         <div class="phone-field">
           <select id="mobileCountry">
-            <option value="+44">GB +44</option>
+            <option value="+44">UK +44</option>
             <option value="+92">PK +92</option>
             <option value="+1">US +1</option>
             <option value="+91">IN +91</option>
@@ -581,9 +582,9 @@
           <label for="cbctReportUpload" style="cursor:pointer;display:block;">
             <span class="upload-icon">📁</span>
             <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
-            <div class="upload-text" style="margin-top:4px;font-size:11px;">PDF only</div>
+            <div class="upload-text" style="margin-top:4px;font-size:11px;">Document</div>
           </label>
-          <input type="file" id="cbctReportUpload" accept="application/pdf,.pdf" />
+          <input type="file" id="cbctReportUpload" accept=".pdf,.doc,.docx" />
         </div>
         <div id="cbct-report-list"></div>
         <div class="field-error" id="err-cbctReportUpload"></div>
@@ -594,12 +595,22 @@
           <label for="fileUpload" style="cursor:pointer;display:block;">
             <span class="upload-icon">📁</span>
             <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
-            <div class="upload-text" style="margin-top:4px;font-size:11px;">PDF only</div>
+            <div class="upload-text" style="margin-top:4px;font-size:11px;">Documents</div>
           </label>
-          <input type="file" id="fileUpload" accept="application/pdf,.pdf" />
+          <input type="file" id="fileUpload" accept=".pdf,.doc,.docx" />
         </div>
         <div id="file-list"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- PRESCRIPTION DETAILS -->
+  <div class="card">
+    <div class="section-title">Prescription Details</div>
+    <div class="field">
+      <label>Prescription Details</label>
+      <textarea id="prescriptionDetails" placeholder="Enter prescription details, dosage, duration, or any other relevant instructions..."></textarea>
+      <div class="field-error" id="err-prescriptionDetails"></div>
     </div>
   </div>
 
@@ -629,7 +640,7 @@
       <label>Referral Phone Number</label>
       <div class="phone-field">
         <select id="referralCountry">
-          <option value="+44">GB +44</option>
+          <option value="+44">UK +44</option>
           <option value="+92">PK +92</option>
           <option value="+1">US +1</option>
           <option value="+91">IN +91</option>
@@ -675,7 +686,7 @@
       <label>Practice Phone Number <span class="req">*</span></label>
       <div class="phone-field">
         <select id="practiceCountry">
-          <option value="+44">GB +44</option>
+          <option value="+44">UK +44</option>
           <option value="+92">PK +92</option>
           <option value="+1">US +1</option>
           <option value="+91">IN +91</option>
@@ -896,10 +907,10 @@
     var list  = document.getElementById('file-list');
     if (!input.files || input.files.length === 0) { list.textContent = ''; return; }
     var files = Array.from(input.files).filter(function(f) {
-      return f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
+      return /\.(pdf|doc|docx)$/i.test(f.name);
     });
     if (files.length !== input.files.length) {
-      list.textContent = 'Only PDF files are allowed.'; input.value = ''; return;
+      list.textContent = 'Only PDF or Word files are allowed.'; input.value = ''; return;
     }
     list.textContent = files.map(function(f) { return '📎 ' + f.name; }).join('  ·  ');
   }
@@ -912,7 +923,7 @@
     var fileInput = document.getElementById('fileUpload');
     var dt = new DataTransfer();
     Array.from(e.dataTransfer.files).forEach(function(file) {
-      if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) dt.items.add(file);
+      if (/\.(pdf|doc|docx)$/i.test(file.name)) dt.items.add(file);
     });
     fileInput.files = dt.files; updateFileList();
   });
@@ -925,10 +936,10 @@
     var list  = document.getElementById('cbct-report-list');
     if (!input.files || input.files.length === 0) { list.textContent = ''; return; }
     var files = Array.from(input.files).filter(function(f) {
-      return f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
+      return /\.(pdf|doc|docx)$/i.test(f.name);
     });
     if (files.length !== input.files.length) {
-      list.textContent = 'Only PDF files are allowed.'; input.value = ''; return;
+      list.textContent = 'Only PDF or Word files are allowed.'; input.value = ''; return;
     }
     list.textContent = files.map(function(f) { return '📎 ' + f.name; }).join('  ·  ');
   }
@@ -941,7 +952,7 @@
     var fileInput = document.getElementById('cbctReportUpload');
     var dt = new DataTransfer();
     Array.from(e.dataTransfer.files).forEach(function(file) {
-      if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) dt.items.add(file);
+      if (/\.(pdf|doc|docx)$/i.test(file.name)) dt.items.add(file);
     });
     fileInput.files = dt.files; updateCbctReportList();
   });
@@ -1033,7 +1044,7 @@
 
   function clearForm() {
     ['patientFirstName','patientLastName','dob','address','mobileNumber','patientEmail',
-     'medicalHistory','dentistName','gdcNumber','practiceName','practiceAddress',
+     'medicalHistory','prescriptionDetails','dentistName','gdcNumber','practiceName','practiceAddress',
      'practiceEmail','practicePhone','referralEmail','referralPhone'].forEach(function(id) {
       var el = document.getElementById(id); if (el) el.value = '';
     });
@@ -1088,6 +1099,7 @@
       attendTreatment:             shadow === 'yes' ? 'Yes' : 'No',
       medicalHistoryPdfUrl:        null,
       cbctReportPdfUrl:            null,
+      prescriptionDetails:         document.getElementById('prescriptionDetails').value.trim(),
       other:                       ''
     };
 
@@ -1101,8 +1113,9 @@
       var file = (fileInput.files && fileInput.files.length > 0) ? fileInput.files[0] : null;
 
       if (file) {
-        if (!(file.type === 'application/pdf' || /\.pdf$/i.test(file.name))) throw new Error('Only PDF files are allowed.');
-        var params = new URLSearchParams({ fileName: file.name, fileType: 'pdf', mimeType: file.type, fileSize: String(file.size) });
+        if (!/\.(pdf|doc|docx)$/i.test(file.name)) throw new Error('Only PDF or Word files are allowed.');
+        var fileType = /\.pdf$/i.test(file.name) ? 'pdf' : 'document';
+        var params = new URLSearchParams({ fileName: file.name, fileType: fileType, mimeType: file.type, fileSize: String(file.size) });
         var signedRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + params.toString());
         var signedJson = null;
         var ct = signedRes.headers.get('content-type') || '';
@@ -1123,8 +1136,9 @@
         var cbctInput = document.getElementById('cbctReportUpload');
         var cbctFile = (cbctInput.files && cbctInput.files.length > 0) ? cbctInput.files[0] : null;
         if (cbctFile) {
-          if (!(cbctFile.type === 'application/pdf' || /\.pdf$/i.test(cbctFile.name))) throw new Error('CBCT report must be a PDF.');
-          var cParams = new URLSearchParams({ fileName: cbctFile.name, fileType: 'pdf', mimeType: cbctFile.type, fileSize: String(cbctFile.size) });
+          if (!/\.(pdf|doc|docx)$/i.test(cbctFile.name)) throw new Error('CBCT report must be a PDF or Word file.');
+          var cFileType = /\.pdf$/i.test(cbctFile.name) ? 'pdf' : 'document';
+          var cParams = new URLSearchParams({ fileName: cbctFile.name, fileType: cFileType, mimeType: cbctFile.type, fileSize: String(cbctFile.size) });
           var cRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + cParams.toString());
           var cJson = null;
           var cCt = cRes.headers.get('content-type') || '';

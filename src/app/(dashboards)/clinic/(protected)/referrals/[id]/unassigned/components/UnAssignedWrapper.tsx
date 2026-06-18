@@ -76,6 +76,7 @@ export default async function UnAssignedWrapper({
     medicalHistoryPDF:
       referralForm.medicalHistoryPdf ?? referralForm.medicalHistoryPdfUrl,
     cbctReportPdfUrl: referralForm.cbctReportPdfUrl ?? null,
+    prescriptionDetails: referralForm.prescriptionDetails,
   };
 
   return (

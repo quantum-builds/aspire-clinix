@@ -65,6 +65,7 @@ export default async function ReferralHistoryDetail({
       ? `${toTitleCase(referralForm.cbct ?? "")}, ${referralForm.other}`
       : toTitleCase(referralForm.dentalSpecialty ?? ""),
     treatmentDetails: referralForm.treatmentDetails,
+    prescriptionDetails: referralForm.prescriptionDetails,
     attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
     medicalHistoryPDF: referralForm.medicalHistoryPdf,
     cbctReportPdfUrl: referralForm.cbctReportPdf,

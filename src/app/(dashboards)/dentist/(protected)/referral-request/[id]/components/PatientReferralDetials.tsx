@@ -24,6 +24,7 @@ interface PatientReferralDetailsProps {
   referralFormDetails: {
     referralDeatils: string;
     treatmentDetails?: string;
+    prescriptionDetails?: string;
     attendTreatment: string;
     medicalHistoryPDF?: string;
   };
