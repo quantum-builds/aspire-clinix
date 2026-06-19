@@ -43,9 +43,8 @@ export default function BindAppointmentModal({
         onSuccess: (data) => {
           if (data.status) {
             showToast("success", "Appointment bound successfully");
-            onAppointmentBound();
             onClose();
-            router.replace(`/clinic/referrals?ts=${Date.now()}`)
+            onAppointmentBound();
           } else {
             showToast("error", data.message || "Failed to bind appointment");
           }

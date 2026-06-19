@@ -938,9 +938,9 @@
             <label for="cbctReportUpload" style="cursor:pointer;display:block;">
               <span class="upload-icon">📁</span>
               <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
-              <div class="upload-text" style="margin-top:4px;font-size:11px;">Document</div>
+              <div class="upload-text" style="margin-top:4px;font-size:11px;">PDF, Word or Image</div>
             </label>
-            <input type="file" id="cbctReportUpload" accept=".pdf,.doc,.docx" />
+            <input type="file" id="cbctReportUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.svg" />
           </div>
           <div id="cbct-report-list"></div>
           <div class="field-error" id="err-cbctReportUpload"></div>
@@ -951,9 +951,9 @@
             <label for="fileUpload" style="cursor:pointer;display:block;">
               <span class="upload-icon">📁</span>
               <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
-              <div class="upload-text" style="margin-top:4px;font-size:11px;">Documents</div>
+              <div class="upload-text" style="margin-top:4px;font-size:11px;">PDF, Word or Image</div>
             </label>
-            <input type="file" id="fileUpload" accept=".pdf,.doc,.docx" />
+            <input type="file" id="fileUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.svg" />
           </div>
           <div id="file-list"></div>
         </div>
@@ -1262,10 +1262,10 @@
       var list = document.getElementById('file-list');
       if (!input.files || input.files.length === 0) { list.textContent = ''; return; }
       var files = Array.from(input.files).filter(function (f) {
-        return /\.(pdf|doc|docx)$/i.test(f.name);
+        return /\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(f.name);
       });
       if (files.length !== input.files.length) {
-        list.textContent = 'Only PDF or Word files are allowed.'; input.value = ''; return;
+        list.textContent = 'Only PDF, Word, or image files are allowed.'; input.value = ''; return;
       }
       list.textContent = files.map(function (f) { return '📎 ' + f.name; }).join('  ·  ');
     }
@@ -1278,7 +1278,7 @@
       var fileInput = document.getElementById('fileUpload');
       var dt = new DataTransfer();
       Array.from(e.dataTransfer.files).forEach(function (file) {
-        if (/\.(pdf|doc|docx)$/i.test(file.name)) dt.items.add(file);
+        if (/\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(file.name)) dt.items.add(file);
       });
       fileInput.files = dt.files; updateFileList();
     });
@@ -1291,10 +1291,10 @@
       var list = document.getElementById('cbct-report-list');
       if (!input.files || input.files.length === 0) { list.textContent = ''; return; }
       var files = Array.from(input.files).filter(function (f) {
-        return /\.(pdf|doc|docx)$/i.test(f.name);
+        return /\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(f.name);
       });
       if (files.length !== input.files.length) {
-        list.textContent = 'Only PDF or Word files are allowed.'; input.value = ''; return;
+        list.textContent = 'Only PDF, Word, or image files are allowed.'; input.value = ''; return;
       }
       list.textContent = files.map(function (f) { return '📎 ' + f.name; }).join('  ·  ');
     }
@@ -1307,7 +1307,7 @@
       var fileInput = document.getElementById('cbctReportUpload');
       var dt = new DataTransfer();
       Array.from(e.dataTransfer.files).forEach(function (file) {
-        if (/\.(pdf|doc|docx)$/i.test(file.name)) dt.items.add(file);
+        if (/\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(file.name)) dt.items.add(file);
       });
       fileInput.files = dt.files; updateCbctReportList();
     });
@@ -1468,8 +1468,11 @@
         var file = (fileInput.files && fileInput.files.length > 0) ? fileInput.files[0] : null;
 
         if (file) {
-          if (!/\.(pdf|doc|docx)$/i.test(file.name)) throw new Error('Only PDF or Word files are allowed.');
-          var fileType = /\.pdf$/i.test(file.name) ? 'pdf' : 'document';
+          if (!/\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(file.name)) throw new Error('Only PDF, Word, or image files are allowed.');
+          var fileType;
+          if (/\.pdf$/i.test(file.name)) fileType = 'pdf';
+          else if (/\.(doc|docx)$/i.test(file.name)) fileType = 'document';
+          else fileType = 'images';
           var params = new URLSearchParams({ fileName: file.name, fileType: fileType, mimeType: file.type, fileSize: String(file.size) });
           var signedRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + params.toString());
           var signedJson = null;
@@ -1491,8 +1494,11 @@
           var cbctInput = document.getElementById('cbctReportUpload');
           var cbctFile = (cbctInput.files && cbctInput.files.length > 0) ? cbctInput.files[0] : null;
           if (cbctFile) {
-            if (!/\.(pdf|doc|docx)$/i.test(cbctFile.name)) throw new Error('CBCT report must be a PDF or Word file.');
-            var cFileType = /\.pdf$/i.test(cbctFile.name) ? 'pdf' : 'document';
+            if (!/\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(cbctFile.name)) throw new Error('CBCT report must be a PDF, Word, or image file.');
+            var cFileType;
+            if (/\.pdf$/i.test(cbctFile.name)) cFileType = 'pdf';
+            else if (/\.(doc|docx)$/i.test(cbctFile.name)) cFileType = 'document';
+            else cFileType = 'images';
             var cParams = new URLSearchParams({ fileName: cbctFile.name, fileType: cFileType, mimeType: cbctFile.type, fileSize: String(cbctFile.size) });
             var cRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + cParams.toString());
             var cJson = null;

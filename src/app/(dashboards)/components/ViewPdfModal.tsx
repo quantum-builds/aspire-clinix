@@ -14,11 +14,13 @@ export default function PdfModal({ pdfUrl, trigger }: PdfModalProps) {
   const [resolvedUrl, setResolvedUrl] = useState("");
   const [resolveError, setResolveError] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [isImage, setIsImage] = useState(false);
 
   async function handleOpen(e: React.MouseEvent) {
     e.preventDefault();
     setLoading(true);
     setResolveError("");
+    setIsImage(false);
 
     if (!pdfUrl) {
       setResolvedUrl("");
@@ -43,6 +45,12 @@ export default function PdfModal({ pdfUrl, trigger }: PdfModalProps) {
           `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`,
           "_blank"
         );
+        return;
+      }
+
+      if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext)) {
+        setIsImage(true);
+        setIsOpen(true);
         return;
       }
 
@@ -77,6 +85,12 @@ export default function PdfModal({ pdfUrl, trigger }: PdfModalProps) {
           `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`,
           "_blank"
         );
+        return;
+      }
+
+      if (fileInfo?.type === "image") {
+        setIsImage(true);
+        setIsOpen(true);
         return;
       }
 
@@ -118,12 +132,22 @@ export default function PdfModal({ pdfUrl, trigger }: PdfModalProps) {
               </div>
             )}
 
-            {!resolveError && resolvedUrl && (
+            {!resolveError && resolvedUrl && !isImage && (
               <div className="max-w-[900px] h-[90vh]">
                 <iframe
                   src={resolvedUrl || undefined}
                   className="w-full h-full"
                   title="Document preview"
+                />
+              </div>
+            )}
+
+            {!resolveError && resolvedUrl && isImage && (
+              <div className="max-w-[900px] h-[90vh] flex items-center justify-center p-4">
+                <img
+                  src={resolvedUrl}
+                  className="max-w-full max-h-full object-contain"
+                  alt="Uploaded image"
                 />
               </div>
             )}

@@ -202,9 +202,19 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const activePatients = (response.response.patients ?? []).filter(
+    let activePatients = (response.response.patients ?? []).filter(
       (patient: any) => patient.active && !patient.archivedReason,
     );
+   
+    if (activePatients.length > 1) {
+      const matchingPatients = activePatients.filter(
+        (patient: any) =>
+          patient.firstName === patientFirstName &&
+          patient.lastName === patientLastName,
+      );
+
+      activePatients = matchingPatients;
+    }
 
     const patientFullName = `${patientFirstName} ${patientLastName}`;
     referralForm.patientName = patientFullName;
@@ -259,7 +269,7 @@ export async function POST(req: NextRequest) {
       : incomingCbct;
 
     if (CBCT_OPTIONS.has(cleanCbct)) {
-      referralForm.cbct = cleanCbct; 
+      referralForm.cbct = cleanCbct;
       referralForm.dentalSpecialty = null;
     } else {
       referralForm.dentalSpecialty = incomingDentalSpecialty;

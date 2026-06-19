@@ -55,6 +55,7 @@ export default function UnAssignedPatientDetails({
 
   const handleAppointmentBound = () => {
     // Refresh the page to show updated data
+    router.back();
     router.refresh();
   };
 

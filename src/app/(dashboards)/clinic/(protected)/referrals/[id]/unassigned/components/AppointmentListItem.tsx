@@ -60,8 +60,16 @@ export default function AppointmentListItem({
 
       {/* Select Button */}
       <button
-        onClick={() => onSelect(String(appointment.id), appointment.practitionerId)}
         disabled={isLoading}
+        onClick={async () => {
+          if (isLoading) return;
+
+          try {
+            onSelect(String(appointment.id), appointment.practitionerId);
+          } catch (error) {
+            console.error("Error completing process:", error);
+          }
+        }}
         className="ml-4 px-4 py-2 bg-green text-dashboardBarBackground rounded-full text-sm font-medium hover:bg-greenHover transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
       >
         {isLoading ? "Binding..." : "Select"}
