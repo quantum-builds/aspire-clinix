@@ -117,9 +117,17 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const activePatients = (response.response.patients ?? []).filter(
+    let activePatients = (response.response.patients ?? []).filter(
       (patient: any) => patient.active && !patient.archivedReason,
     );
+    if (activePatients.length > 0) {
+      const matchingPatients = activePatients.filter(
+        (patient: any) =>
+          patient.firstName === firstName && patient.lastName === lastName,
+      );
+
+      activePatients = matchingPatients;
+    }
 
     if (activePatients.length === 0 || activePatients.length > 1) {
       return NextResponse.json(

@@ -132,10 +132,21 @@ export async function POST(req: NextRequest) {
           { status: 400 },
         );
 
-      if (
-        Array.isArray(response.response.patients) &&
-        response.response.patients.length > 0
-      )
+      let activePatients = (response.response.patients ?? []).filter(
+        (patient: any) => patient.active && !patient.archivedReason,
+      );
+
+      if(activePatients.length > 0) {
+        const matchingPatients = activePatients.filter(
+          (patient: any) =>
+            patient.firstName === firstName &&
+            patient.lastName === lastName,
+        );
+
+        activePatients = matchingPatients;
+      }
+
+      if (Array.isArray(activePatients) && activePatients.length > 0)
         return NextResponse.json(
           { message: "Account with these names already exist" },
           { status: 409 },

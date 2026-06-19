@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
       emailAddress: email,
     });
 
- 
+
 
     if (response.isError) {
       return NextResponse.json(
@@ -115,9 +115,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const activePatients = (response.response.patients ?? []).filter(
+    let activePatients = (response.response.patients ?? []).filter(
       (patient: any) => patient.active && !patient.archivedReason,
     );
+     if (activePatients.length > 1) {
+      const matchingPatients = activePatients.filter(
+        (patient: any) =>
+          patient.firstName === firstName &&
+          patient.lastName === lastName,
+      );
+
+      activePatients = matchingPatients;
+    }
 
    
     if (activePatients.length === 0 || activePatients.length > 1) {

@@ -18,7 +18,6 @@ export async function getPatientById(patientId: string) {
 }
 
 export async function getPatient(query: patientQuery) {
-  
   // Priority: email → phone → name
   const dentallyQuery =
     query.emailAddress ||
@@ -27,7 +26,7 @@ export async function getPatient(query: patientQuery) {
       .filter(Boolean)
       .join(" ");
 
-
+  console.log("dentally query is ", dentallyQuery);
 
   const response = await axiosDentallyInstance.get(
     DENTALLY_ENDPOINTS.patient.list(dentallyQuery),

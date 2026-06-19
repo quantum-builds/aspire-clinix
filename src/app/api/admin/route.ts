@@ -183,12 +183,7 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-    const existingDbDentist = await prisma.dentist.findFirst({
-      where: { email: email },
-    });
-    const existingDbPatient = await prisma.patient.findFirst({
-      where: { OR: [{ email }, { mobileNumber: phoneNumber }] },
-    });
+
     const respose = await getPatient({
       emailAddress: email,
       mobilePhone: phoneNumber,
@@ -200,7 +195,6 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-    const existingPatient = respose.response.patients ?? [];
 
     const practitionersResponse = await getPractitioners();
     if (practitionersResponse.isError) {
@@ -209,10 +203,6 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-    const practitioners = practitionersResponse.response.practitioners ?? [];
-    const existingPractitioner = practitioners.find(
-      (p: any) => p.user.email === email || p.user.mobilePhone === phoneNumber,
-    );
 
     const hashedPassword = await bcrypt.hash(admin.password, 10);
 
