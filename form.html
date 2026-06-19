@@ -1,1177 +1,1533 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Patient Referral Form</title>
-<style>
-  @font-face {
-    font-family: 'Opus Pro';
-    src: local('Opus Pro');
-  }
-  @font-face {
-    font-family: 'Gill Sans Nova Book';
-    src: local('Gill Sans Nova Book'), local('Gill Sans MT'), local('Gill Sans');
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patient Referral Form</title>
+  <style>
+    @font-face {
+      font-family: 'Opus Pro';
+      src: local('Opus Pro');
+    }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    @font-face {
+      font-family: 'Gill Sans Nova Book';
+      src: local('Gill Sans Nova Book'), local('Gill Sans MT'), local('Gill Sans');
+    }
 
-  :root {
-    /* ── Aspire Clinic palette ── */
-    --bg:           #141412;
-    --surface:      #1e1d1a;
-    --surface2:     #272521;
-    --border:       #383530;
-    --border-focus: #E3DFD3;
-    --text:         #e9e4db;
-    --text-muted:   #897f70;
-    --accent:       #E3DFD3;
-    --accent-dark:  #cfc9bb;
-    --accent-subtle:rgba(227,223,211,0.08);
-    --accent-glow:  rgba(227,223,211,0.14);
-    --error:        #c97070;
-    --success:      #6ebd9a;
-    --radius:       5px;
-  }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Gill Sans Nova Book', sans-serif;
-    font-weight: 300;
-    font-size: 14px;
-    min-height: 100vh;
-    padding: 48px 20px 90px;
-    letter-spacing: 0.01em;
-    line-height: 1.6;
-  }
+    :root {
+      /* ── Aspire Clinic palette ── */
+      --bg: #141412;
+      --surface: #1e1d1a;
+      --surface2: #272521;
+      --border: #383530;
+      --border-focus: #E3DFD3;
+      --text: #e9e4db;
+      --text-muted: #897f70;
+      --accent: #E3DFD3;
+      --accent-dark: #cfc9bb;
+      --accent-subtle: rgba(227, 223, 211, 0.08);
+      --accent-glow: rgba(227, 223, 211, 0.14);
+      --error: #c97070;
+      --success: #6ebd9a;
+      --radius: 5px;
+    }
 
-  .container { max-width: 720px; margin: 0 auto; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Gill Sans Nova Book', sans-serif;
+      font-weight: 300;
+      font-size: 14px;
+      min-height: 100vh;
+      padding: 48px 20px 90px;
+      letter-spacing: 0.01em;
+      line-height: 1.6;
+    }
 
-  /* ── Header ── */
-  .page-header {
-    margin-bottom: 48px;
-  }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
 
-  .page-eyebrow {
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 12px;
-    font-weight: 400;
-  }
+    /* ── Header ── */
+    .page-header {
+      margin-bottom: 48px;
+    }
 
-  .page-title {
-    font-family: 'Opus Pro', serif;
-    font-size: 3rem;
-    font-weight: 300;
-    color: var(--text);
-    line-height: 1.1;
-    letter-spacing: -0.5px;
-    margin-bottom: 14px;
-  }
+    .page-eyebrow {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 400;
+    }
 
-  .page-title em {
-    font-style: italic;
-    color: var(--accent);
-  }
+    .page-title {
+      font-family: 'Opus Pro', serif;
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
 
-  .page-subtitle {
-    color: var(--text-muted);
-    font-size: 13.5px;
-    max-width: 520px;
-    line-height: 1.7;
-    font-weight: 300;
-  }
+    .page-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
 
-  /* ── Section cards ── */
-  .section-title {
-    font-family: 'Opus Pro', serif;
-    font-size: 1.25rem;
-    font-weight: 400;
-    color: var(--text);
-    margin-bottom: 22px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-    letter-spacing: 0.3px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      max-width: 520px;
+      line-height: 1.7;
+      font-weight: 300;
+    }
 
-  .section-num {
-    font-family: 'Opus Pro', serif;
-    font-size: 0.9rem;
-    color: var(--accent);
-    font-style: italic;
-    opacity: 0.8;
-  }
+    /* ── Section cards ── */
+    .section-title {
+      font-family: 'Opus Pro', serif;
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 22px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 28px 30px;
-    margin-bottom: 20px;
-  }
+    .section-num {
+      font-family: 'Opus Pro', serif;
+      font-size: 0.9rem;
+      color: var(--accent);
+      font-style: italic;
+      opacity: 0.8;
+    }
 
-  /* ── Fields ── */
-  .field { margin-bottom: 20px; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 28px 30px;
+      margin-bottom: 20px;
+    }
 
-  label {
-    display: block;
-    font-size: 11px;
-    font-weight: 400;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 7px;
-  }
+    /* ── Fields ── */
+    .field {
+      margin-bottom: 20px;
+    }
 
-  label .req { color: var(--error); margin-left: 3px; }
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 7px;
+    }
 
-  input[type="text"],
-  input[type="email"],
-  input[type="tel"],
-  input[type="date"],
-  textarea {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px 14px;
-    color: var(--text);
-    font-family: 'Gill Sans Nova Book', sans-serif;
-    font-size: 13.5px;
-    font-weight: 300;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
+    label .req {
+      color: var(--error);
+      margin-left: 3px;
+    }
 
-  input[type="text"]:focus,
-  input[type="email"]:focus,
-  input[type="tel"]:focus,
-  input[type="date"]:focus,
-  textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-glow);
-  }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: 'Gill Sans Nova Book', sans-serif;
+      font-size: 13.5px;
+      font-weight: 300;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
 
-  input::placeholder, textarea::placeholder {
-    color: var(--text-muted);
-    opacity: 0.5;
-    font-weight: 300;
-  }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
+    input[type="date"]:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
 
-  input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0; cursor: pointer; }
-  input[type="date"]::-webkit-inner-spin-button,
-  input[type="date"]::-webkit-clear-button { display: none; }
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--text-muted);
+      opacity: 0.5;
+      font-weight: 300;
+    }
 
-  .date-field { position: relative; }
-  .date-field input[type="date"] { padding-right: 42px; cursor: pointer; }
-  .date-icon {
-    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-    width: 16px; height: 16px; background-repeat: no-repeat;
-    background-position: center; background-size: 16px 16px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23897f70' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2' ry='2'/%3E%3Cpath d='M8 3v4M16 3v4M3 10h18'/%3E%3C/svg%3E");
-    pointer-events: auto; cursor: pointer;
-  }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      opacity: 0;
+      cursor: pointer;
+    }
 
-  textarea { resize: vertical; min-height: 96px; }
+    input[type="date"]::-webkit-inner-spin-button,
+    input[type="date"]::-webkit-clear-button {
+      display: none;
+    }
 
-  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .date-field {
+      position: relative;
+    }
 
-  /* ── Phone field ── */
-  .phone-field { display: flex; gap: 0; align-items: stretch; }
+    .date-field input[type="date"] {
+      padding-right: 42px;
+      cursor: pointer;
+    }
 
-  .phone-field select {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-right: none;
-    border-radius: var(--radius) 0 0 var(--radius);
-    color: var(--text);
-    padding: 10px 10px;
-    font-family: 'Gill Sans Nova Book', sans-serif;
-    font-size: 13px;
-    font-weight: 300;
-    outline: none;
-    cursor: pointer;
-    min-width: 92px; width: 92px; flex: 0 0 92px;
-  }
+    .date-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 16px 16px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23897f70' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2' ry='2'/%3E%3Cpath d='M8 3v4M16 3v4M3 10h18'/%3E%3C/svg%3E");
+      pointer-events: auto;
+      cursor: pointer;
+    }
 
-  .phone-field select:focus { border-color: var(--accent); }
-  .phone-field input { border-radius: 0 var(--radius) var(--radius) 0; width: auto; flex: 1 1 0; min-width: 0; }
+    textarea {
+      resize: vertical;
+      min-height: 96px;
+    }
 
-  select {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px 14px;
-    color: var(--text);
-    font-family: 'Gill Sans Nova Book', sans-serif;
-    font-size: 13.5px;
-    outline: none;
-    cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
 
-  select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-  select option { background: var(--surface); color: var(--text); }
+    /* ── Phone field ── */
+    .phone-field {
+      display: flex;
+      gap: 0;
+      align-items: stretch;
+    }
 
-  /* ── Radio ── */
-  .radio-row { display: flex; gap: 10px; }
+    .phone-field select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: var(--radius) 0 0 var(--radius);
+      color: var(--text);
+      padding: 10px 10px;
+      font-family: 'Gill Sans Nova Book', sans-serif;
+      font-size: 13px;
+      font-weight: 300;
+      outline: none;
+      cursor: pointer;
+      min-width: 92px;
+      width: 92px;
+      flex: 0 0 92px;
+    }
 
-  .radio-label {
-    display: flex; align-items: center; gap: 8px;
-    cursor: pointer; padding: 9px 18px;
-    border-radius: var(--radius); border: 1px solid var(--border);
-    background: var(--bg);
-    transition: border-color 0.2s, background 0.2s;
-    user-select: none; font-size: 13.5px; color: var(--text);
-    text-transform: none; letter-spacing: 0; font-weight: 300;
-  }
+    .phone-field select:focus {
+      border-color: var(--accent);
+    }
 
-  .radio-label:hover { border-color: var(--accent); background: var(--accent-subtle); }
-  .radio-label input[type="radio"] { accent-color: var(--accent); cursor: pointer; }
+    .phone-field input {
+      border-radius: 0 var(--radius) var(--radius) 0;
+      width: auto;
+      flex: 1 1 0;
+      min-width: 0;
+    }
 
-  /* ── File Upload ── */
-  .upload-area {
-    border: 1px dashed var(--border); border-radius: var(--radius);
-    padding: 22px; text-align: center; cursor: pointer;
-    transition: border-color 0.2s, background 0.2s; background: var(--bg);
-  }
-  .upload-area:hover { border-color: var(--accent); background: rgba(227,223,211,0.03); }
-  .upload-area input[type="file"] { display: none; }
-  .upload-icon { font-size: 20px; margin-bottom: 6px; display: block; opacity: 0.7; }
-  .upload-text { font-size: 13px; color: var(--text-muted); font-weight: 300; }
-  .upload-text span { color: var(--accent); font-weight: 400; }
-  #file-list { margin-top: 10px; font-size: 12px; color: var(--text-muted); }
-  #cbct-report-list { margin-top: 10px; font-size: 12px; color: var(--text-muted); }
+    select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: 'Gill Sans Nova Book', sans-serif;
+      font-size: 13.5px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
 
-  /* ── Submit button ── */
-  .submit-row { margin-top: 4px; }
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
 
-  .btn-submit {
-    background: transparent;
-    color: var(--accent);
-    border: 1px solid var(--accent);
-    border-radius: 24px;
-    padding: 13px 48px;
-    font-family: 'Opus Pro', serif;
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.25s, color 0.25s, box-shadow 0.25s;
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    min-width: 200px;
-  }
+    select option {
+      background: var(--surface);
+      color: var(--text);
+    }
 
-  .btn-loader {
-    width: 13px; height: 13px;
-    border: 1.5px solid rgba(227,223,211,0.25);
-    border-top-color: var(--accent);
-    border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block;
-  }
+    /* ── Radio ── */
+    .radio-row {
+      display: flex;
+      gap: 10px;
+    }
 
-  @keyframes spin { to { transform: rotate(360deg); } }
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 9px 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      transition: border-color 0.2s, background 0.2s;
+      user-select: none;
+      font-size: 13.5px;
+      color: var(--text);
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 300;
+    }
 
-  .btn-submit:hover {
-    background: var(--accent); color: #0f0e0c;
-    box-shadow: 0 4px 24px rgba(227,223,211,0.22);
-  }
-  .btn-submit:active { opacity: 0.88; }
-  .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+    .radio-label:hover {
+      border-color: var(--accent);
+      background: var(--accent-subtle);
+    }
 
-  /* ── Toast ── */
-  #toast {
-    position: fixed; bottom: 28px; right: 28px;
-    padding: 13px 22px; border-radius: 4px;
-    font-size: 13px; font-weight: 400;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.3s, transform 0.3s;
-    transform: translateY(10px); z-index: 999; max-width: 320px;
-  }
-  #toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-  #toast.success { background: var(--success); color: #0f2a1e; }
-  #toast.error   { background: var(--error);   color: #2a0f0f; }
+    .radio-label input[type="radio"] {
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
 
-  /* ── Validation ── */
-  .field-error { font-size: 11px; color: var(--error); margin-top: 4px; letter-spacing: 0.2px; }
-  input.invalid, textarea.invalid { border-color: var(--error) !important; }
+    /* ── File Upload ── */
+    .upload-area {
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: var(--bg);
+    }
 
-  /* ── Helper text ── */
-  .helper-text {
-    font-size: 12px; color: var(--text-muted);
-    margin-bottom: 18px; line-height: 1.65;
-    padding: 10px 14px;
-    background: rgba(227,223,211,0.05);
-    border-left: 1px solid var(--accent);
-    border-radius: 0 var(--radius) var(--radius) 0;
-  }
+    .upload-area:hover {
+      border-color: var(--accent);
+      background: rgba(227, 223, 211, 0.03);
+    }
 
-  /* ── Custom select ── */
-  .custom-select { position: relative; user-select: none; }
+    .upload-area input[type="file"] {
+      display: none;
+    }
 
-  .cs-trigger {
-    display: flex; align-items: center; gap: 10px; width: 100%;
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 10px 14px;
-    cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; outline: none;
-  }
-  .cs-trigger:hover { border-color: #504a3f; }
-  .cs-trigger.open, .cs-trigger:focus-within {
-    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow);
-  }
-  .cs-trigger.invalid-trigger { border-color: var(--error) !important; }
+    .upload-icon {
+      font-size: 20px;
+      margin-bottom: 6px;
+      display: block;
+      opacity: 0.7;
+    }
 
-  .cs-text { flex: 1; min-width: 0; }
-  .cs-label { font-size: 13.5px; color: var(--text); line-height: 1.2; font-weight: 300; }
-  .cs-label.placeholder { color: var(--text-muted); opacity: 0.55; }
+    .upload-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 300;
+    }
 
-  .cs-arrow {
-    width: 9px; height: 9px; position: relative;
-    color: var(--text-muted); transition: transform 0.2s, color 0.2s; flex-shrink: 0;
-  }
-  .cs-arrow::before {
-    content: ''; position: absolute; inset: 0;
-    border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
-    transform: rotate(45deg); transform-origin: center;
-  }
-  .cs-trigger:hover .cs-arrow, .cs-trigger.open .cs-arrow { color: var(--text); }
-  .cs-trigger.open .cs-arrow { transform: rotate(180deg); }
+    .upload-text span {
+      color: var(--accent);
+      font-weight: 400;
+    }
 
-  .cs-dropdown {
-    position: absolute; top: calc(100% + 5px); left: 0; right: 0;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; overflow: hidden; z-index: 200;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    opacity: 0; transform: translateY(-5px); pointer-events: none;
-    transition: opacity 0.16s, transform 0.16s;
-  }
-  .cs-dropdown.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    #file-list {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
 
-  .cs-option {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 14px; cursor: pointer;
-    transition: background 0.12s;
-    border-bottom: 1px solid rgba(56,53,48,0.5);
-  }
-  .cs-option:last-child { border-bottom: none; }
-  .cs-option:hover, .cs-option:focus { background: var(--accent-subtle); outline: none; }
-  .cs-option.selected { background: var(--accent-glow); }
+    #cbct-report-list {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
 
-  .cs-opt-circle {
-    width: 15px; height: 15px; border-radius: 999px; flex-shrink: 0;
-    border: 1.5px solid var(--border); background: transparent;
-    position: relative; transition: border-color 0.15s, background 0.15s;
-  }
-  .cs-opt-circle::after {
-    content: ''; position: absolute; inset: 3px; border-radius: inherit;
-    background: transparent; transform: scale(0.5); opacity: 0;
-    transition: opacity 0.15s, transform 0.15s;
-  }
-  .cs-option.selected .cs-opt-circle { border-color: var(--accent); }
-  .cs-option.selected .cs-opt-circle::after { opacity: 1; transform: scale(1); background: var(--accent); }
+    /* ── Submit button ── */
+    .submit-row {
+      margin-top: 4px;
+    }
 
-  .cs-opt-body { flex: 1; min-width: 0; }
-  .cs-opt-name { font-size: 13.5px; color: var(--text); font-weight: 300; }
-  .cs-option.selected .cs-opt-name { color: var(--accent); font-weight: 400; }
-  .cs-opt-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .btn-submit {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 24px;
+      padding: 13px 48px;
+      font-family: 'Opus Pro', serif;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 200px;
+    }
 
-  .cs-opt-badge {
-    font-size: 10px; font-weight: 400; padding: 2px 8px;
-    border-radius: 2px; letter-spacing: 0.3px; flex-shrink: 0;
-    background: var(--surface2); color: var(--text-muted);
-  }
-  .cs-option.selected .cs-opt-badge { background: rgba(227,223,211,0.15); color: var(--accent); }
+    .btn-loader {
+      width: 13px;
+      height: 13px;
+      border: 1.5px solid rgba(227, 223, 211, 0.25);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
 
-  .cs-check { font-size: 13px; color: var(--accent); flex-shrink: 0; opacity: 0; margin-left: auto; }
-  .cs-option.selected .cs-check { opacity: 1; }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
-  /* ── Report required checkbox inside CBCT options ── */
-  .cs-report-wrap {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-    padding: 0 2px;
-  }
+    .btn-submit:hover {
+      background: var(--accent);
+      color: #0f0e0c;
+      box-shadow: 0 4px 24px rgba(227, 223, 211, 0.22);
+    }
 
-  .cs-report-wrap input[type="checkbox"] {
-    accent-color: var(--accent);
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
+    .btn-submit:active {
+      opacity: 0.88;
+    }
 
-  .cs-report-label {
-    font-size: 10.5px;
-    color: var(--text-muted);
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-    transition: color 0.15s;
-  }
+    .btn-submit:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
 
-  .cs-option.selected .cs-report-label { color: var(--accent); }
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      padding: 13px 22px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 400;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      transform: translateY(10px);
+      z-index: 999;
+      max-width: 320px;
+    }
 
-  /* ── OR divider ── */
-  .or-divider { display: flex; align-items: center; gap: 12px; margin: 6px 0 20px; }
-  .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .or-divider span {
-    font-size: 10px; color: var(--text-muted); letter-spacing: 1px;
-    text-transform: uppercase; font-weight: 400;
-  }
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
 
-  .mutually-exclusive-note {
-    font-size: 11px; color: var(--text-muted); text-align: center;
-    margin-top: 8px; opacity: 0.65; letter-spacing: 0.2px;
-  }
+    #toast.success {
+      background: var(--success);
+      color: #0f2a1e;
+    }
 
-  .label-row { display: flex; align-items: center; margin-bottom: 7px; }
-  .label-row label { margin-bottom: 0; flex: 1; }
+    #toast.error {
+      background: var(--error);
+      color: #2a0f0f;
+    }
 
-  .clear-btn {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 11px; color: var(--text-muted); cursor: pointer;
-    padding: 3px 8px; border-radius: 2px; border: 1px solid transparent;
-    transition: color 0.15s, border-color 0.15s;
-    text-transform: none; letter-spacing: 0; font-weight: 300;
-  }
-  .clear-btn:hover { color: var(--accent); border-color: var(--border); }
+    /* ── Validation ── */
+    .field-error {
+      font-size: 11px;
+      color: var(--error);
+      margin-top: 4px;
+      letter-spacing: 0.2px;
+    }
 
-  /* ── Thin rule between cards ── */
-  .card + .card { border-top: none; }
+    input.invalid,
+    textarea.invalid {
+      border-color: var(--error) !important;
+    }
 
-  @media (max-width: 540px) {
-    .row-2 { grid-template-columns: 1fr; }
-    .page-title { font-size: 2.2rem; }
-    .card { padding: 22px 18px; }
-  }
-</style>
+    /* ── Helper text ── */
+    .helper-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      line-height: 1.65;
+      padding: 10px 14px;
+      background: rgba(227, 223, 211, 0.05);
+      border-left: 1px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    /* ── Custom select ── */
+    .custom-select {
+      position: relative;
+      user-select: none;
+    }
+
+    .cs-trigger {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    .cs-trigger:hover {
+      border-color: #504a3f;
+    }
+
+    .cs-trigger.open,
+    .cs-trigger:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .cs-trigger.invalid-trigger {
+      border-color: var(--error) !important;
+    }
+
+    .cs-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cs-label {
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.2;
+      font-weight: 300;
+    }
+
+    .cs-label.placeholder {
+      color: var(--text-muted);
+      opacity: 0.55;
+    }
+
+    .cs-arrow {
+      width: 9px;
+      height: 9px;
+      position: relative;
+      color: var(--text-muted);
+      transition: transform 0.2s, color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .cs-arrow::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-right: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      transform: rotate(45deg);
+      transform-origin: center;
+    }
+
+    .cs-trigger:hover .cs-arrow,
+    .cs-trigger.open .cs-arrow {
+      color: var(--text);
+    }
+
+    .cs-trigger.open .cs-arrow {
+      transform: rotate(180deg);
+    }
+
+    .cs-dropdown {
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      z-index: 200;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transform: translateY(-5px);
+      pointer-events: none;
+      transition: opacity 0.16s, transform 0.16s;
+    }
+
+    .cs-dropdown.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .cs-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: background 0.12s;
+      border-bottom: 1px solid rgba(56, 53, 48, 0.5);
+    }
+
+    .cs-option:last-child {
+      border-bottom: none;
+    }
+
+    .cs-option:hover,
+    .cs-option:focus {
+      background: var(--accent-subtle);
+      outline: none;
+    }
+
+    .cs-option.selected {
+      background: var(--accent-glow);
+    }
+
+    .cs-opt-circle {
+      width: 15px;
+      height: 15px;
+      border-radius: 999px;
+      flex-shrink: 0;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      position: relative;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .cs-opt-circle::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: inherit;
+      background: transparent;
+      transform: scale(0.5);
+      opacity: 0;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    .cs-option.selected .cs-opt-circle {
+      border-color: var(--accent);
+    }
+
+    .cs-option.selected .cs-opt-circle::after {
+      opacity: 1;
+      transform: scale(1);
+      background: var(--accent);
+    }
+
+    .cs-opt-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cs-opt-name {
+      font-size: 13.5px;
+      color: var(--text);
+      font-weight: 300;
+    }
+
+    .cs-option.selected .cs-opt-name {
+      color: var(--accent);
+      font-weight: 400;
+    }
+
+    .cs-opt-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .cs-opt-badge {
+      font-size: 10px;
+      font-weight: 400;
+      padding: 2px 8px;
+      border-radius: 2px;
+      letter-spacing: 0.3px;
+      flex-shrink: 0;
+      background: var(--surface2);
+      color: var(--text-muted);
+    }
+
+    .cs-option.selected .cs-opt-badge {
+      background: rgba(227, 223, 211, 0.15);
+      color: var(--accent);
+    }
+
+    .cs-check {
+      font-size: 13px;
+      color: var(--accent);
+      flex-shrink: 0;
+      opacity: 0;
+      margin-left: auto;
+    }
+
+    .cs-option.selected .cs-check {
+      opacity: 1;
+    }
+
+    /* ── Report required checkbox inside CBCT options ── */
+    .cs-report-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      padding: 0 2px;
+    }
+
+    .cs-report-wrap input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 13px;
+      height: 13px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .cs-report-label {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s;
+    }
+
+    .cs-option.selected .cs-report-label {
+      color: var(--accent);
+    }
+
+    /* ── OR divider ── */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 6px 0 20px;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .or-divider span {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    .mutually-exclusive-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 8px;
+      opacity: 0.65;
+      letter-spacing: 0.2px;
+    }
+
+    .label-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 7px;
+    }
+
+    .label-row label {
+      margin-bottom: 0;
+      flex: 1;
+    }
+
+    .clear-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 3px 8px;
+      border-radius: 2px;
+      border: 1px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 300;
+    }
+
+    .clear-btn:hover {
+      color: var(--accent);
+      border-color: var(--border);
+    }
+
+    /* ── Thin rule between cards ── */
+    .card+.card {
+      border-top: none;
+    }
+
+    @media (max-width: 540px) {
+      .row-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .page-title {
+        font-size: 2.2rem;
+      }
+
+      .card {
+        padding: 22px 18px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="container">
+  <div class="container">
 
-   <!-- PATIENT DETAILS -->
-  <div class="card">
-    <div class="section-title"> Patient Details</div>
+    <!-- PATIENT DETAILS -->
+    <div class="card">
+      <div class="section-title"> Patient Details</div>
 
-    <div class="row-2">
+      <div class="row-2">
+        <div class="field">
+          <label>First Name <span class="req">*</span></label>
+          <input type="text" id="patientFirstName" placeholder="First name" />
+          <div class="field-error" id="err-patientFirstName"></div>
+        </div>
+        <div class="field">
+          <label>Last Name <span class="req">*</span></label>
+          <input type="text" id="patientLastName" placeholder="Last name" />
+          <div class="field-error" id="err-patientLastName"></div>
+        </div>
+      </div>
+
       <div class="field">
-        <label>First Name <span class="req">*</span></label>
-        <input type="text" id="patientFirstName" placeholder="First name" />
-        <div class="field-error" id="err-patientFirstName"></div>
+        <label>Date of Birth <span class="req">*</span></label>
+        <div class="date-field">
+          <input type="date" id="dob" max="" inputmode="none" onkeydown="return false" onpaste="return false" />
+          <span class="date-icon" aria-hidden="true" onclick="openDobPicker(event)"></span>
+        </div>
+        <div class="field-error" id="err-dob"></div>
+      </div>
+
+      <div class="field">
+        <label>Address</label>
+        <input type="text" id="address" placeholder="Street, city, postcode" />
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label>Mobile Number <span class="req">*</span></label>
+          <div class="phone-field">
+            <select id="mobileCountry">
+              <option value="+44">UK +44</option>
+              <option value="+92">PK +92</option>
+              <option value="+1">US +1</option>
+              <option value="+91">IN +91</option>
+              <option value="+61">AU +61</option>
+            </select>
+            <input type="tel" id="mobileNumber" placeholder="7700 900123" inputmode="numeric"
+              autocomplete="tel-national" pattern="[0-9]*" />
+          </div>
+          <div class="field-error" id="err-mobileNumber"></div>
+        </div>
+        <div class="field">
+          <label>Email Address <span class="req">*</span></label>
+          <input type="email" id="patientEmail" placeholder="patient@email.com" />
+          <div class="field-error" id="err-patientEmail"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Medical History</label>
+        <textarea id="medicalHistory" placeholder="Relevant medical history, allergies, medications..."></textarea>
+      </div>
+
+      <!-- TREATMENT / SERVICE SELECTION -->
+      <div class="field">
+        <label style="margin-bottom:10px;">
+          Treatment Required <span class="req">*</span>
+          <small
+            style="text-transform:none;letter-spacing:0;font-weight:300;display:block;margin-top:3px;color:var(--text-muted);font-size:11px;">
+            Please describe in as much detail as possible. For CBCT scans, state which teeth require the scan and
+            provide justification.
+          </small>
+        </label>
+
+        <div class="helper-text">
+          Select either a <strong style="font-weight:500;color:var(--text);">dental specialty</strong> or a <strong
+            style="font-weight:500;color:var(--text);">CBCT scan type</strong> — not both. Choosing one will
+          automatically clear the other.
+        </div>
+
+        <!-- Dental Specialty -->
+        <div class="field" style="margin-bottom:8px;">
+          <div class="label-row">
+            <label>Dental Specialty <span class="req">*</span></label>
+            <span id="specialty-clear" class="clear-btn" onclick="clearSpecialty()" style="display:none;">&#x2715;
+              Clear</span>
+          </div>
+          <div class="custom-select" id="specialty-select">
+            <div class="cs-trigger" id="specialty-trigger" tabindex="0" onclick="toggleDropdown('specialty')"
+              onkeydown="handleKeydown(event,'specialty')" role="combobox" aria-haspopup="listbox" aria-expanded="false"
+              aria-label="Select dental specialty">
+              <div class="cs-text">
+                <div class="cs-label placeholder" id="specialty-label">Select dental specialty</div>
+              </div>
+              <span class="cs-arrow" aria-hidden="true"></span>
+            </div>
+            <div class="cs-dropdown" id="specialty-dropdown" role="listbox"></div>
+          </div>
+          <div class="field-error" id="err-services"></div>
+        </div>
+
+        <div class="or-divider"><span>or</span></div>
+
+        <!-- CBCT -->
+        <div class="field" style="margin-bottom:0;">
+          <div class="label-row">
+            <label>CBCT Scan</label>
+            <span id="cbct-clear" class="clear-btn" onclick="clearCbct()" style="display:none;">&#x2715; Clear</span>
+          </div>
+          <div class="custom-select" id="cbct-select">
+            <div class="cs-trigger" id="cbct-trigger" tabindex="0" onclick="toggleDropdown('cbct')"
+              onkeydown="handleKeydown(event,'cbct')" role="combobox" aria-haspopup="listbox" aria-expanded="false"
+              aria-label="Select CBCT scan type">
+              <div class="cs-text">
+                <div class="cs-label placeholder" id="cbct-label">Select CBCT scan type</div>
+              </div>
+              <span class="cs-arrow" aria-hidden="true"></span>
+            </div>
+            <div class="cs-dropdown" id="cbct-dropdown" role="listbox"></div>
+          </div>
+          <p class="mutually-exclusive-note">Selecting a CBCT type will clear the dental specialty selection</p>
+        </div>
+      </div>
+
+      <!-- File Uploads (row) -->
+      <div style="display:flex;gap:16px;">
+        <div class="field" id="cbct-report-field" style="display:none;flex:1;">
+          <label>CBCT Report </label>
+          <div class="upload-area" id="cbctUploadArea">
+            <label for="cbctReportUpload" style="cursor:pointer;display:block;">
+              <span class="upload-icon">📁</span>
+              <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
+              <div class="upload-text" style="margin-top:4px;font-size:11px;">Document</div>
+            </label>
+            <input type="file" id="cbctReportUpload" accept=".pdf,.doc,.docx" />
+          </div>
+          <div id="cbct-report-list"></div>
+          <div class="field-error" id="err-cbctReportUpload"></div>
+        </div>
+        <div class="field" style="flex:1;">
+          <label>Supporting Documents </label>
+          <div class="upload-area" id="uploadArea">
+            <label for="fileUpload" style="cursor:pointer;display:block;">
+              <span class="upload-icon">📁</span>
+              <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
+              <div class="upload-text" style="margin-top:4px;font-size:11px;">Documents</div>
+            </label>
+            <input type="file" id="fileUpload" accept=".pdf,.doc,.docx" />
+          </div>
+          <div id="file-list"></div>
+        </div>
       </div>
       <div class="field">
-        <label>Last Name <span class="req">*</span></label>
-        <input type="text" id="patientLastName" placeholder="Last name" />
-        <div class="field-error" id="err-patientLastName"></div>
+        <label>Prescription Details</label>
+        <textarea id="prescriptionDetails"
+          placeholder="Enter prescription details, dosage, duration, or any other relevant instructions..."></textarea>
+        <div class="field-error" id="err-prescriptionDetails"></div>
       </div>
     </div>
 
-    <div class="field">
-      <label>Date of Birth <span class="req">*</span></label>
-      <div class="date-field">
-        <input type="date" id="dob" max="" inputmode="none" onkeydown="return false" onpaste="return false" />
-        <span class="date-icon" aria-hidden="true" onclick="openDobPicker(event)"></span>
-      </div>
-      <div class="field-error" id="err-dob"></div>
-    </div>
+    <!-- REFERRING DENTIST DETAILS -->
+    <div class="card">
+      <div class="section-title"> Referring Dentist Details</div>
 
-    <div class="field">
-      <label>Address</label>
-      <input type="text" id="address" placeholder="Street, city, postcode" />
-    </div>
-
-    <div class="row-2">
       <div class="field">
-        <label>Mobile Number <span class="req">*</span></label>
+        <label>Name of Dentist <span class="req">*</span></label>
+        <input type="text" id="dentistName" placeholder="Dr. Full Name" />
+        <div class="field-error" id="err-dentistName"></div>
+      </div>
+
+      <div class="field">
+        <label>GDC Number <span class="req">*</span></label>
+        <input type="text" id="gdcNumber" placeholder="e.g. 123456" />
+        <div class="field-error" id="err-gdcNumber"></div>
+      </div>
+
+      <div class="field">
+        <label>Referral Email</label>
+        <input type="email" id="referralEmail" placeholder="referral@contact.com" />
+        <div class="field-error" id="err-referralEmail"></div>
+      </div>
+
+      <div class="field">
+        <label>Referral Phone Number</label>
         <div class="phone-field">
-          <select id="mobileCountry">
+          <select id="referralCountry">
             <option value="+44">UK +44</option>
             <option value="+92">PK +92</option>
             <option value="+1">US +1</option>
             <option value="+91">IN +91</option>
             <option value="+61">AU +61</option>
           </select>
-          <input type="tel" id="mobileNumber" placeholder="7700 900123" inputmode="numeric" autocomplete="tel-national" pattern="[0-9]*" />
+          <input type="tel" id="referralPhone" placeholder="7700 900123" inputmode="numeric" autocomplete="tel-national"
+            pattern="[0-9]*" />
         </div>
-        <div class="field-error" id="err-mobileNumber"></div>
+        <div class="field-error" id="err-referralPhone"></div>
       </div>
+
       <div class="field">
-        <label>Email Address <span class="req">*</span></label>
-        <input type="email" id="patientEmail" placeholder="patient@email.com" />
-        <div class="field-error" id="err-patientEmail"></div>
+        <label>Would you like to attend the treatment appointment and shadow the dentist? <span
+            class="req">*</span></label>
+        <div class="radio-row">
+          <label class="radio-label"><input type="radio" name="shadow" value="yes" /> Yes</label>
+          <label class="radio-label"><input type="radio" name="shadow" value="no" /> No</label>
+        </div>
+        <div class="field-error" id="err-shadow"></div>
       </div>
     </div>
 
-    <div class="field">
-      <label>Medical History</label>
-      <textarea id="medicalHistory" placeholder="Relevant medical history, allergies, medications..."></textarea>
-    </div>
+    <!-- PRACTICE DETAILS -->
+    <div class="card">
+      <div class="section-title"> Practice Details</div>
 
-    <!-- TREATMENT / SERVICE SELECTION -->
-    <div class="field">
-      <label style="margin-bottom:10px;">
-        Treatment Required <span class="req">*</span>
-        <small style="text-transform:none;letter-spacing:0;font-weight:300;display:block;margin-top:3px;color:var(--text-muted);font-size:11px;">
-          Please describe in as much detail as possible. For CBCT scans, state which teeth require the scan and provide justification.
-        </small>
-      </label>
-
-      <div class="helper-text">
-        Select either a <strong style="font-weight:500;color:var(--text);">dental specialty</strong> or a <strong style="font-weight:500;color:var(--text);">CBCT scan type</strong> — not both. Choosing one will automatically clear the other.
+      <div class="field">
+        <label>Practice Name <span class="req">*</span></label>
+        <input type="text" id="practiceName" placeholder="Dental Practice Name" />
+        <div class="field-error" id="err-practiceName"></div>
       </div>
 
-      <!-- Dental Specialty -->
-      <div class="field" style="margin-bottom:8px;">
-        <div class="label-row">
-          <label>Dental Specialty <span class="req">*</span></label>
-          <span id="specialty-clear" class="clear-btn" onclick="clearSpecialty()" style="display:none;">&#x2715; Clear</span>
-        </div>
-        <div class="custom-select" id="specialty-select">
-          <div class="cs-trigger" id="specialty-trigger" tabindex="0"
-               onclick="toggleDropdown('specialty')"
-               onkeydown="handleKeydown(event,'specialty')"
-               role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select dental specialty">
-            <div class="cs-text">
-              <div class="cs-label placeholder" id="specialty-label">Select dental specialty</div>
-            </div>
-            <span class="cs-arrow" aria-hidden="true"></span>
-          </div>
-          <div class="cs-dropdown" id="specialty-dropdown" role="listbox"></div>
-        </div>
-        <div class="field-error" id="err-services"></div>
+      <div class="field">
+        <label>Practice Address</label>
+        <input type="text" id="practiceAddress" placeholder="Street, city, postcode" />
       </div>
 
-      <div class="or-divider"><span>or</span></div>
+      <div class="field">
+        <label>Practice Email Address <span class="req">*</span></label>
+        <input type="email" id="practiceEmail" placeholder="practice@clinic.com" />
+        <div class="field-error" id="err-practiceEmail"></div>
+      </div>
 
-      <!-- CBCT -->
-      <div class="field" style="margin-bottom:0;">
-        <div class="label-row">
-          <label>CBCT Scan</label>
-          <span id="cbct-clear" class="clear-btn" onclick="clearCbct()" style="display:none;">&#x2715; Clear</span>
+      <div class="field">
+        <label>Practice Phone Number <span class="req">*</span></label>
+        <div class="phone-field">
+          <select id="practiceCountry">
+            <option value="+44">UK +44</option>
+            <option value="+92">PK +92</option>
+            <option value="+1">US +1</option>
+            <option value="+91">IN +91</option>
+            <option value="+61">AU +61</option>
+          </select>
+          <input type="tel" id="practicePhone" placeholder="7700 900123" inputmode="numeric" autocomplete="tel-national"
+            pattern="[0-9]*" />
         </div>
-        <div class="custom-select" id="cbct-select">
-          <div class="cs-trigger" id="cbct-trigger" tabindex="0"
-               onclick="toggleDropdown('cbct')"
-               onkeydown="handleKeydown(event,'cbct')"
-               role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select CBCT scan type">
-            <div class="cs-text">
-              <div class="cs-label placeholder" id="cbct-label">Select CBCT scan type</div>
-            </div>
-            <span class="cs-arrow" aria-hidden="true"></span>
-          </div>
-          <div class="cs-dropdown" id="cbct-dropdown" role="listbox"></div>
-        </div>
-        <p class="mutually-exclusive-note">Selecting a CBCT type will clear the dental specialty selection</p>
+        <div class="field-error" id="err-practicePhone"></div>
       </div>
     </div>
 
-    <!-- File Uploads (row) -->
-    <div style="display:flex;gap:16px;">
-      <div class="field" id="cbct-report-field" style="display:none;flex:1;">
-        <label>CBCT Report </label>
-        <div class="upload-area" id="cbctUploadArea">
-          <label for="cbctReportUpload" style="cursor:pointer;display:block;">
-            <span class="upload-icon">📁</span>
-            <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
-            <div class="upload-text" style="margin-top:4px;font-size:11px;">Document</div>
-          </label>
-          <input type="file" id="cbctReportUpload" accept=".pdf,.doc,.docx" />
-        </div>
-        <div id="cbct-report-list"></div>
-        <div class="field-error" id="err-cbctReportUpload"></div>
-      </div>
-      <div class="field" style="flex:1;">
-        <label>Supporting Documents </label>
-        <div class="upload-area" id="uploadArea">
-          <label for="fileUpload" style="cursor:pointer;display:block;">
-            <span class="upload-icon">📁</span>
-            <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
-            <div class="upload-text" style="margin-top:4px;font-size:11px;">Documents</div>
-          </label>
-          <input type="file" id="fileUpload" accept=".pdf,.doc,.docx" />
-        </div>
-        <div id="file-list"></div>
-      </div>
+    <div class="submit-row">
+      <button class="btn-submit" id="submitBtn" onclick="submitForm()">Submit Referral</button>
     </div>
   </div>
 
-  <!-- PRESCRIPTION DETAILS -->
-  <div class="card">
-    <div class="section-title">Prescription Details</div>
-    <div class="field">
-      <label>Prescription Details</label>
-      <textarea id="prescriptionDetails" placeholder="Enter prescription details, dosage, duration, or any other relevant instructions..."></textarea>
-      <div class="field-error" id="err-prescriptionDetails"></div>
-    </div>
-  </div>
+  <div id="toast"></div>
 
-  <!-- REFERRING DENTIST DETAILS -->
-  <div class="card">
-    <div class="section-title"> Referring Dentist Details</div>
+  <script>
+    /* ─── DATA ─── */
+    var specialtyOptions = [
+      { value: 'Implants', label: 'Implants', desc: 'Surgical placement & restoration' },
+      { value: 'Periodontology', label: 'Periodontology', desc: 'Gum disease treatment & care' },
+      { value: 'Oral Surgery', label: 'Oral Surgery', desc: 'Extractions & surgical procedures' },
+      { value: 'Dentures', label: 'Dentures', desc: 'Full & partial prosthetics' },
+      { value: 'Root Canal', label: 'Root Canal', desc: 'Endodontic therapy' },
+      { value: 'Paediatric Dentistry', label: 'Paediatric Dentistry', desc: "Children's dental care" },
+      { value: 'Orthodontics', label: 'Orthodontics', desc: 'Braces, aligners & bite correction' },
+      { value: 'Treatment Planning & Advice', label: 'Treatment Planning & Advice', desc: 'Consultation & clinical guidance' }
+    ];
 
-    <div class="field">
-      <label>Name of Dentist <span class="req">*</span></label>
-      <input type="text" id="dentistName" placeholder="Dr. Full Name" />
-      <div class="field-error" id="err-dentistName"></div>
-    </div>
+    var cbctOptions = [
+      { value: 'Single Tooth (≤5×5 cm)', label: 'Single Tooth', badge: '≤5×5 cm', desc: 'Localised single tooth FOV' },
+      { value: 'Quadrant (8×5 cm)', label: 'Quadrant', badge: '8×5 cm', desc: 'One quadrant of the arch' },
+      { value: 'Single Jaw (8×8 cm)', label: 'Single Jaw', badge: '8×8 cm', desc: 'Full upper or lower arch' },
+      { value: 'Both Jaws (>8×8 cm)', label: 'Both Jaws', badge: '>8×8 cm', desc: 'Full maxillofacial volume' }
+    ];
 
-    <div class="field">
-      <label>GDC Number <span class="req">*</span></label>
-      <input type="text" id="gdcNumber" placeholder="e.g. 123456" />
-      <div class="field-error" id="err-gdcNumber"></div>
-    </div>
+    /* track which cbct options have "report required" ticked */
+    var cbctReportRequired = {};
 
-    <div class="field">
-      <label>Referral Email</label>
-      <input type="email" id="referralEmail" placeholder="referral@contact.com" />
-      <div class="field-error" id="err-referralEmail"></div>
-    </div>
+    var dropdownState = { specialty: null, cbct: null };
+    var dobPickerOpen = false;
 
-    <div class="field">
-      <label>Referral Phone Number</label>
-      <div class="phone-field">
-        <select id="referralCountry">
-          <option value="+44">UK +44</option>
-          <option value="+92">PK +92</option>
-          <option value="+1">US +1</option>
-          <option value="+91">IN +91</option>
-          <option value="+61">AU +61</option>
-        </select>
-        <input type="tel" id="referralPhone" placeholder="7700 900123" inputmode="numeric" autocomplete="tel-national" pattern="[0-9]*" />
-      </div>
-      <div class="field-error" id="err-referralPhone"></div>
-    </div>
+    /* ─── DOB ─── */
+    function setDobMaxDate() {
+      var dob = document.getElementById('dob');
+      if (!dob) return;
+      var today = new Date(); today.setHours(0, 0, 0, 0);
+      dob.max = today.toISOString().split('T')[0];
+    }
 
-    <div class="field">
-      <label>Would you like to attend the treatment appointment and shadow the dentist? <span class="req">*</span></label>
-      <div class="radio-row">
-        <label class="radio-label"><input type="radio" name="shadow" value="yes" /> Yes</label>
-        <label class="radio-label"><input type="radio" name="shadow" value="no" /> No</label>
-      </div>
-      <div class="field-error" id="err-shadow"></div>
-    </div>
-  </div>
+    function openDobPicker(event) {
+      if (event) { event.preventDefault(); event.stopPropagation(); }
+      var dob = document.getElementById('dob');
+      if (!dob) return;
+      if (dobPickerOpen) { dob.blur(); dobPickerOpen = false; return; }
+      dob.focus({ preventScroll: true });
+      if (typeof dob.showPicker === 'function') { dob.showPicker(); dobPickerOpen = true; return; }
+      dob.click(); dobPickerOpen = true;
+    }
 
-  <!-- PRACTICE DETAILS -->
-  <div class="card">
-    <div class="section-title"> Practice Details</div>
-
-    <div class="field">
-      <label>Practice Name <span class="req">*</span></label>
-      <input type="text" id="practiceName" placeholder="Dental Practice Name" />
-      <div class="field-error" id="err-practiceName"></div>
-    </div>
-
-    <div class="field">
-      <label>Practice Address</label>
-      <input type="text" id="practiceAddress" placeholder="Street, city, postcode" />
-    </div>
-
-    <div class="field">
-      <label>Practice Email Address <span class="req">*</span></label>
-      <input type="email" id="practiceEmail" placeholder="practice@clinic.com" />
-      <div class="field-error" id="err-practiceEmail"></div>
-    </div>
-
-    <div class="field">
-      <label>Practice Phone Number <span class="req">*</span></label>
-      <div class="phone-field">
-        <select id="practiceCountry">
-          <option value="+44">UK +44</option>
-          <option value="+92">PK +92</option>
-          <option value="+1">US +1</option>
-          <option value="+91">IN +91</option>
-          <option value="+61">AU +61</option>
-        </select>
-        <input type="tel" id="practicePhone" placeholder="7700 900123" inputmode="numeric" autocomplete="tel-national" pattern="[0-9]*" />
-      </div>
-      <div class="field-error" id="err-practicePhone"></div>
-    </div>
-  </div>
-
-  <div class="submit-row">
-    <button class="btn-submit" id="submitBtn" onclick="submitForm()">Submit Referral</button>
-  </div>
-</div>
-
-<div id="toast"></div>
-
-<script>
-  /* ─── DATA ─── */
-  var specialtyOptions = [
-    { value: 'Implants',                    label: 'Implants',                    desc: 'Surgical placement & restoration' },
-    { value: 'Periodontology',              label: 'Periodontology',              desc: 'Gum disease treatment & care' },
-    { value: 'Oral Surgery',                label: 'Oral Surgery',                desc: 'Extractions & surgical procedures' },
-    { value: 'Dentures',                    label: 'Dentures',                    desc: 'Full & partial prosthetics' },
-    { value: 'Root Canal',                  label: 'Root Canal',                  desc: 'Endodontic therapy' },
-    { value: 'Paediatric Dentistry',        label: 'Paediatric Dentistry',        desc: "Children's dental care" },
-    { value: 'Orthodontics',                label: 'Orthodontics',                desc: 'Braces, aligners & bite correction' },
-    { value: 'Treatment Planning & Advice', label: 'Treatment Planning & Advice', desc: 'Consultation & clinical guidance' }
-  ];
-
-  var cbctOptions = [
-    { value: 'Single Tooth (≤5×5 cm)', label: 'Single Tooth', badge: '≤5×5 cm', desc: 'Localised single tooth FOV' },
-    { value: 'Quadrant (8×5 cm)',       label: 'Quadrant',     badge: '8×5 cm',  desc: 'One quadrant of the arch' },
-    { value: 'Single Jaw (8×8 cm)',     label: 'Single Jaw',   badge: '8×8 cm',  desc: 'Full upper or lower arch' },
-    { value: 'Both Jaws (>8×8 cm)',     label: 'Both Jaws',    badge: '>8×8 cm', desc: 'Full maxillofacial volume' }
-  ];
-
-  /* track which cbct options have "report required" ticked */
-  var cbctReportRequired = {};
-
-  var dropdownState = { specialty: null, cbct: null };
-  var dobPickerOpen = false;
-
-  /* ─── DOB ─── */
-  function setDobMaxDate() {
-    var dob = document.getElementById('dob');
-    if (!dob) return;
-    var today = new Date(); today.setHours(0,0,0,0);
-    dob.max = today.toISOString().split('T')[0];
-  }
-
-  function openDobPicker(event) {
-    if (event) { event.preventDefault(); event.stopPropagation(); }
-    var dob = document.getElementById('dob');
-    if (!dob) return;
-    if (dobPickerOpen) { dob.blur(); dobPickerOpen = false; return; }
-    dob.focus({ preventScroll: true });
-    if (typeof dob.showPicker === 'function') { dob.showPicker(); dobPickerOpen = true; return; }
-    dob.click(); dobPickerOpen = true;
-  }
-
-  /* ─── BUILD DROPDOWNS ─── */
-  function buildDropdown(id, options) {
-    var dd = document.getElementById(id + '-dropdown');
-    dd.innerHTML = options.map(function(opt) {
-      var isCbct = (id === 'cbct');
-      var reportHtml = isCbct
-        ? '<div class="cs-report-wrap" onclick="handleReportClick(event,\'' + opt.value + '\')">' +
-            '<input type="checkbox" id="report-' + opt.value.replace(/[^a-zA-Z0-9]/g,'_') + '" ' +
-            'onclick="handleReportClick(event,\'' + opt.value + '\')" />' +
-            '<label class="cs-report-label" for="report-' + opt.value.replace(/[^a-zA-Z0-9]/g,'_') + '">Report required</label>' +
+    /* ─── BUILD DROPDOWNS ─── */
+    function buildDropdown(id, options) {
+      var dd = document.getElementById(id + '-dropdown');
+      dd.innerHTML = options.map(function (opt) {
+        var isCbct = (id === 'cbct');
+        var reportHtml = isCbct
+          ? '<div class="cs-report-wrap" onclick="handleReportClick(event,\'' + opt.value + '\')">' +
+          '<input type="checkbox" id="report-' + opt.value.replace(/[^a-zA-Z0-9]/g, '_') + '" ' +
+          'onclick="handleReportClick(event,\'' + opt.value + '\')" />' +
+          '<label class="cs-report-label" for="report-' + opt.value.replace(/[^a-zA-Z0-9]/g, '_') + '">Report required</label>' +
           '</div>'
-        : '';
-      return '<div class="cs-option" tabindex="0" role="option" data-value="' + opt.value + '">' +
-        '<div class="cs-opt-circle" aria-hidden="true"></div>' +
-        '<div class="cs-opt-body">' +
+          : '';
+        return '<div class="cs-option" tabindex="0" role="option" data-value="' + opt.value + '">' +
+          '<div class="cs-opt-circle" aria-hidden="true"></div>' +
+          '<div class="cs-opt-body">' +
           '<div class="cs-opt-name">' + opt.label + '</div>' +
           '<div class="cs-opt-desc">' + opt.desc + '</div>' +
-        '</div>' +
-        (opt.badge ? '<span class="cs-opt-badge">' + opt.badge + '</span>' : '') +
-        reportHtml +
-        '<span class="cs-check">✓</span>' +
-      '</div>';
-    }).join('');
+          '</div>' +
+          (opt.badge ? '<span class="cs-opt-badge">' + opt.badge + '</span>' : '') +
+          reportHtml +
+          '<span class="cs-check">✓</span>' +
+          '</div>';
+      }).join('');
 
-    dd.querySelectorAll('.cs-option').forEach(function(el) {
-      el.addEventListener('click', function(e) {
-        if (e.target.closest('.cs-report-wrap')) return;
-        selectOption(id, el.dataset.value);
+      dd.querySelectorAll('.cs-option').forEach(function (el) {
+        el.addEventListener('click', function (e) {
+          if (e.target.closest('.cs-report-wrap')) return;
+          selectOption(id, el.dataset.value);
+        });
+        el.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectOption(id, el.dataset.value); }
+          if (e.key === 'Escape') closeDropdown(id);
+        });
       });
-      el.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectOption(id, el.dataset.value); }
-        if (e.key === 'Escape') closeDropdown(id);
-      });
-    });
-  }
-
-  function handleReportClick(event, value) {
-    event.stopPropagation();
-    var safeId = value.replace(/[^a-zA-Z0-9]/g,'_');
-    var cb = document.getElementById('report-' + safeId);
-    if (event.target !== cb) {
-      cb.checked = !cb.checked;
     }
-    cbctReportRequired[value] = cb.checked;
-    toggleCbctReportField();
-  }
 
-  function toggleCbctReportField() {
-    var field = document.getElementById('cbct-report-field');
-    var show = dropdownState.cbct && cbctReportRequired[dropdownState.cbct];
-    field.style.display = show ? 'block' : 'none';
-    if (!show) {
-      document.getElementById('cbctReportUpload').value = '';
-      document.getElementById('cbct-report-list').textContent = '';
+    function handleReportClick(event, value) {
+      event.stopPropagation();
+      var safeId = value.replace(/[^a-zA-Z0-9]/g, '_');
+      var cb = document.getElementById('report-' + safeId);
+      if (event.target !== cb) {
+        cb.checked = !cb.checked;
+      }
+      cbctReportRequired[value] = cb.checked;
+      toggleCbctReportField();
     }
-  }
 
-  buildDropdown('specialty', specialtyOptions);
-  buildDropdown('cbct', cbctOptions);
-
-  /* ─── DROPDOWN LOGIC ─── */
-  function toggleDropdown(id) {
-    var trigger = document.getElementById(id + '-trigger');
-    var isOpen = trigger.classList.contains('open');
-    var other = id === 'specialty' ? 'cbct' : 'specialty';
-    closeDropdown(other);
-    if (isOpen) { closeDropdown(id); } else { openDropdown(id); }
-  }
-
-  function openDropdown(id) {
-    var trigger = document.getElementById(id + '-trigger');
-    var dd = document.getElementById(id + '-dropdown');
-    trigger.classList.add('open');
-    trigger.setAttribute('aria-expanded', 'true');
-    dd.classList.add('visible');
-  }
-
-  function closeDropdown(id) {
-    var trigger = document.getElementById(id + '-trigger');
-    var dd = document.getElementById(id + '-dropdown');
-    trigger.classList.remove('open');
-    trigger.setAttribute('aria-expanded', 'false');
-    dd.classList.remove('visible');
-  }
-
-  function selectOption(id, value) {
-    var options = id === 'specialty' ? specialtyOptions : cbctOptions;
-    var opt = options.find(function(o) { return o.value === value; });
-    if (!opt) return;
-
-    var other = id === 'specialty' ? 'cbct' : 'specialty';
-    dropdownState[id] = value;
-    dropdownState[other] = null;
-
-    var labelEl = document.getElementById(id + '-label');
-    labelEl.textContent = opt.label + (id === 'cbct' && opt.badge ? ' — ' + opt.badge : '');
-    labelEl.classList.remove('placeholder');
-
-    var otherLabelEl = document.getElementById(other + '-label');
-    otherLabelEl.textContent = other === 'specialty' ? 'Select dental specialty' : 'Select CBCT scan type';
-    otherLabelEl.classList.add('placeholder');
-
-    document.getElementById(id + '-dropdown').querySelectorAll('.cs-option').forEach(function(el) {
-      el.classList.toggle('selected', el.dataset.value === value);
-    });
-    document.getElementById(other + '-dropdown').querySelectorAll('.cs-option').forEach(function(el) {
-      el.classList.remove('selected');
-    });
-
-    document.getElementById(id + '-clear').style.display = '';
-    document.getElementById(other + '-clear').style.display = 'none';
-
-    document.getElementById('specialty-trigger').classList.remove('invalid-trigger');
-    document.getElementById('cbct-trigger').classList.remove('invalid-trigger');
-    document.getElementById('err-services').textContent = '';
-
-    closeDropdown(id);
-    toggleCbctReportField();
-  }
-
-  function clearSpecialty() {
-    dropdownState.specialty = null;
-    var l = document.getElementById('specialty-label');
-    l.textContent = 'Select dental specialty'; l.classList.add('placeholder');
-    document.getElementById('specialty-dropdown').querySelectorAll('.cs-option').forEach(function(el) { el.classList.remove('selected'); });
-    document.getElementById('specialty-clear').style.display = 'none';
-  }
-
-  function clearCbct() {
-    dropdownState.cbct = null;
-    var l = document.getElementById('cbct-label');
-    l.textContent = 'Select CBCT scan type';
-    l.classList.add('placeholder');
-    document.getElementById('cbct-dropdown').querySelectorAll('.cs-option').forEach(function(el) { el.classList.remove('selected'); });
-    document.getElementById('cbct-clear').style.display = 'none';
-    toggleCbctReportField();
-  }
-
-  function handleKeydown(e, id) {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDropdown(id); }
-    if (e.key === 'Escape') closeDropdown(id);
-  }
-
-  document.addEventListener('click', function(e) {
-    ['specialty', 'cbct'].forEach(function(id) {
-      var sel = document.getElementById(id + '-select');
-      if (sel && !sel.contains(e.target)) closeDropdown(id);
-    });
-  });
-
-  /* ─── FILE UPLOAD ─── */
-  document.getElementById('fileUpload').addEventListener('change', updateFileList);
-
-  function updateFileList() {
-    var input = document.getElementById('fileUpload');
-    var list  = document.getElementById('file-list');
-    if (!input.files || input.files.length === 0) { list.textContent = ''; return; }
-    var files = Array.from(input.files).filter(function(f) {
-      return /\.(pdf|doc|docx)$/i.test(f.name);
-    });
-    if (files.length !== input.files.length) {
-      list.textContent = 'Only PDF or Word files are allowed.'; input.value = ''; return;
-    }
-    list.textContent = files.map(function(f) { return '📎 ' + f.name; }).join('  ·  ');
-  }
-
-  var uploadArea = document.getElementById('uploadArea');
-  uploadArea.addEventListener('dragover', function(e) { e.preventDefault(); uploadArea.style.borderColor = 'var(--accent)'; });
-  uploadArea.addEventListener('dragleave', function() { uploadArea.style.borderColor = ''; });
-  uploadArea.addEventListener('drop', function(e) {
-    e.preventDefault(); uploadArea.style.borderColor = '';
-    var fileInput = document.getElementById('fileUpload');
-    var dt = new DataTransfer();
-    Array.from(e.dataTransfer.files).forEach(function(file) {
-      if (/\.(pdf|doc|docx)$/i.test(file.name)) dt.items.add(file);
-    });
-    fileInput.files = dt.files; updateFileList();
-  });
-
-  /* CBCT report upload */
-  document.getElementById('cbctReportUpload').addEventListener('change', updateCbctReportList);
-
-  function updateCbctReportList() {
-    var input = document.getElementById('cbctReportUpload');
-    var list  = document.getElementById('cbct-report-list');
-    if (!input.files || input.files.length === 0) { list.textContent = ''; return; }
-    var files = Array.from(input.files).filter(function(f) {
-      return /\.(pdf|doc|docx)$/i.test(f.name);
-    });
-    if (files.length !== input.files.length) {
-      list.textContent = 'Only PDF or Word files are allowed.'; input.value = ''; return;
-    }
-    list.textContent = files.map(function(f) { return '📎 ' + f.name; }).join('  ·  ');
-  }
-
-  var cbctUploadArea = document.getElementById('cbctUploadArea');
-  cbctUploadArea.addEventListener('dragover', function(e) { e.preventDefault(); cbctUploadArea.style.borderColor = 'var(--accent)'; });
-  cbctUploadArea.addEventListener('dragleave', function() { cbctUploadArea.style.borderColor = ''; });
-  cbctUploadArea.addEventListener('drop', function(e) {
-    e.preventDefault(); cbctUploadArea.style.borderColor = '';
-    var fileInput = document.getElementById('cbctReportUpload');
-    var dt = new DataTransfer();
-    Array.from(e.dataTransfer.files).forEach(function(file) {
-      if (/\.(pdf|doc|docx)$/i.test(file.name)) dt.items.add(file);
-    });
-    fileInput.files = dt.files; updateCbctReportList();
-  });
-
-  setDobMaxDate();
-
-  var dobInput = document.getElementById('dob');
-  if (dobInput) {
-    dobInput.addEventListener('blur', function() { dobPickerOpen = false; });
-    dobInput.addEventListener('change', function() { dobPickerOpen = false; });
-    dobInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { dobPickerOpen = false; dobInput.blur(); }
-    });
-  }
-
-  /* ─── TOAST ─── */
-  function showToast(msg, type) {
-    type = type || 'success';
-    var t = document.getElementById('toast');
-    t.textContent = msg; t.className = 'show ' + type;
-    setTimeout(function() { t.className = ''; }, 4000);
-  }
-
-  /* ─── VALIDATION ─── */
-  function setError(id, msg) {
-    var el = document.getElementById('err-' + id);
-    if (el) el.textContent = msg;
-    var input = document.getElementById(id);
-    if (input) input.classList.toggle('invalid', !!msg);
-  }
-
-  function clearErrors() {
-    document.querySelectorAll('.field-error').forEach(function(e) { e.textContent = ''; });
-    document.querySelectorAll('.invalid').forEach(function(e) { e.classList.remove('invalid'); });
-    document.getElementById('specialty-trigger').classList.remove('invalid-trigger');
-    document.getElementById('cbct-trigger').classList.remove('invalid-trigger');
-  }
-
-  function validate() {
-    var ok = true;
-    function req(id, msg) {
-      var el = document.getElementById(id);
-      if (!el || !el.value.trim()) { setError(id, msg); ok = false; }
-    }
-    function email(id) {
-      var el = document.getElementById(id);
-      if (el && el.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value)) {
-        setError(id, 'Enter a valid email address'); ok = false;
+    function toggleCbctReportField() {
+      var field = document.getElementById('cbct-report-field');
+      var show = dropdownState.cbct && cbctReportRequired[dropdownState.cbct];
+      field.style.display = show ? 'block' : 'none';
+      if (!show) {
+        document.getElementById('cbctReportUpload').value = '';
+        document.getElementById('cbct-report-list').textContent = '';
       }
     }
-    req('patientFirstName', 'First name is required');
-    req('patientLastName',  'Last name is required');
-    req('dob',              'Date of birth is required');
-    var dobEl = document.getElementById('dob');
-    if (dobEl && dobEl.value) {
-      var selectedDob = new Date(dobEl.value); var today = new Date(); today.setHours(0,0,0,0);
-      if (selectedDob > today) { setError('dob', 'Future dates are not allowed'); ok = false; }
-    }
-    req('mobileNumber',   'Mobile number is required');
-    req('patientEmail',   'Email is required');
-    email('patientEmail');
-    if (!dropdownState.specialty && !dropdownState.cbct) {
-      document.getElementById('err-services').textContent = 'Please select either a Dental Specialty or CBCT';
-      document.getElementById('specialty-trigger').classList.add('invalid-trigger');
-      document.getElementById('cbct-trigger').classList.add('invalid-trigger');
-      ok = false;
-    }
-    req('dentistName',   'Dentist name is required');
-    req('gdcNumber',     'GDC number is required');
-    req('practiceName',  'Practice name is required');
-    req('practiceEmail', 'Practice email is required');
-    email('practiceEmail');
-    email('referralEmail');
-    req('practicePhone', 'Practice phone is required');
-    var shadow = document.querySelector('input[name="shadow"]:checked');
-    if (!shadow) { setError('shadow', 'Please select an option'); ok = false; }
-    if (dropdownState.cbct && cbctReportRequired[dropdownState.cbct]) {
-      var cbctFile = document.getElementById('cbctReportUpload');
-      if (!cbctFile.files || cbctFile.files.length === 0) { setError('cbctReportUpload', 'CBCT report PDF is required'); ok = false; }
-    }
-    return ok;
-  }
 
-  function setInputsDisabled(disabled) {
-    document.querySelectorAll('input:not(#submitBtn), select, textarea').forEach(function(input) {
-      input.disabled = disabled;
+    buildDropdown('specialty', specialtyOptions);
+    buildDropdown('cbct', cbctOptions);
+
+    /* ─── DROPDOWN LOGIC ─── */
+    function toggleDropdown(id) {
+      var trigger = document.getElementById(id + '-trigger');
+      var isOpen = trigger.classList.contains('open');
+      var other = id === 'specialty' ? 'cbct' : 'specialty';
+      closeDropdown(other);
+      if (isOpen) { closeDropdown(id); } else { openDropdown(id); }
+    }
+
+    function openDropdown(id) {
+      var trigger = document.getElementById(id + '-trigger');
+      var dd = document.getElementById(id + '-dropdown');
+      trigger.classList.add('open');
+      trigger.setAttribute('aria-expanded', 'true');
+      dd.classList.add('visible');
+    }
+
+    function closeDropdown(id) {
+      var trigger = document.getElementById(id + '-trigger');
+      var dd = document.getElementById(id + '-dropdown');
+      trigger.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+      dd.classList.remove('visible');
+    }
+
+    function selectOption(id, value) {
+      var options = id === 'specialty' ? specialtyOptions : cbctOptions;
+      var opt = options.find(function (o) { return o.value === value; });
+      if (!opt) return;
+
+      var other = id === 'specialty' ? 'cbct' : 'specialty';
+      dropdownState[id] = value;
+      dropdownState[other] = null;
+
+      var labelEl = document.getElementById(id + '-label');
+      labelEl.textContent = opt.label + (id === 'cbct' && opt.badge ? ' — ' + opt.badge : '');
+      labelEl.classList.remove('placeholder');
+
+      var otherLabelEl = document.getElementById(other + '-label');
+      otherLabelEl.textContent = other === 'specialty' ? 'Select dental specialty' : 'Select CBCT scan type';
+      otherLabelEl.classList.add('placeholder');
+
+      document.getElementById(id + '-dropdown').querySelectorAll('.cs-option').forEach(function (el) {
+        el.classList.toggle('selected', el.dataset.value === value);
+      });
+      document.getElementById(other + '-dropdown').querySelectorAll('.cs-option').forEach(function (el) {
+        el.classList.remove('selected');
+      });
+
+      document.getElementById(id + '-clear').style.display = '';
+      document.getElementById(other + '-clear').style.display = 'none';
+
+      document.getElementById('specialty-trigger').classList.remove('invalid-trigger');
+      document.getElementById('cbct-trigger').classList.remove('invalid-trigger');
+      document.getElementById('err-services').textContent = '';
+
+      closeDropdown(id);
+      toggleCbctReportField();
+    }
+
+    function clearSpecialty() {
+      dropdownState.specialty = null;
+      var l = document.getElementById('specialty-label');
+      l.textContent = 'Select dental specialty'; l.classList.add('placeholder');
+      document.getElementById('specialty-dropdown').querySelectorAll('.cs-option').forEach(function (el) { el.classList.remove('selected'); });
+      document.getElementById('specialty-clear').style.display = 'none';
+    }
+
+    function clearCbct() {
+      dropdownState.cbct = null;
+      var l = document.getElementById('cbct-label');
+      l.textContent = 'Select CBCT scan type';
+      l.classList.add('placeholder');
+      document.getElementById('cbct-dropdown').querySelectorAll('.cs-option').forEach(function (el) { el.classList.remove('selected'); });
+      document.getElementById('cbct-clear').style.display = 'none';
+      toggleCbctReportField();
+    }
+
+    function handleKeydown(e, id) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDropdown(id); }
+      if (e.key === 'Escape') closeDropdown(id);
+    }
+
+    document.addEventListener('click', function (e) {
+      ['specialty', 'cbct'].forEach(function (id) {
+        var sel = document.getElementById(id + '-select');
+        if (sel && !sel.contains(e.target)) closeDropdown(id);
+      });
     });
-  }
 
-  function clearForm() {
-    ['patientFirstName','patientLastName','dob','address','mobileNumber','patientEmail',
-     'medicalHistory','prescriptionDetails','dentistName','gdcNumber','practiceName','practiceAddress',
-     'practiceEmail','practicePhone','referralEmail','referralPhone'].forEach(function(id) {
-      var el = document.getElementById(id); if (el) el.value = '';
-    });
-    document.getElementById('fileUpload').value = '';
-    document.getElementById('file-list').textContent = '';
-    clearSpecialty(); clearCbct();
-    document.querySelectorAll('input[name="shadow"]').forEach(function(r) { r.checked = false; });
-    cbctReportRequired = {};
-    document.querySelectorAll('.cs-report-wrap input[type="checkbox"]').forEach(function(cb) { cb.checked = false; });
-  }
+    /* ─── FILE UPLOAD ─── */
+    document.getElementById('fileUpload').addEventListener('change', updateFileList);
 
-  /* ─── SUBMIT ─── */
-  async function submitForm() {
-    clearErrors();
-    if (!validate()) {
-      showToast('Please fix the errors above.', 'error');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
+    function updateFileList() {
+      var input = document.getElementById('fileUpload');
+      var list = document.getElementById('file-list');
+      if (!input.files || input.files.length === 0) { list.textContent = ''; return; }
+      var files = Array.from(input.files).filter(function (f) {
+        return /\.(pdf|doc|docx)$/i.test(f.name);
+      });
+      if (files.length !== input.files.length) {
+        list.textContent = 'Only PDF or Word files are allowed.'; input.value = ''; return;
+      }
+      list.textContent = files.map(function (f) { return '📎 ' + f.name; }).join('  ·  ');
     }
 
-    var isCbct = !!dropdownState.cbct;
-    var shadowEl = document.querySelector('input[name="shadow"]:checked');
-    var shadow = shadowEl ? shadowEl.value : '';
-
-    var cbctValue = dropdownState.cbct;
-    if (cbctValue && cbctReportRequired[cbctValue]) {
-      cbctValue = cbctValue + ' [Report Required]';
-    }
-
-    var payload = {
-      patientFirstName:            document.getElementById('patientFirstName').value.trim(),
-      patientLastName:             document.getElementById('patientLastName').value.trim(),
-      patientName:                 (document.getElementById('patientFirstName').value.trim() + ' ' + document.getElementById('patientLastName').value.trim()).trim(),
-      patientDateOfBirth:          document.getElementById('dob').value ? new Date(document.getElementById('dob').value).toISOString() : null,
-      patientAddress:              document.getElementById('address').value.trim(),
-      patientPhoneNumber:          document.getElementById('mobileCountry').value + document.getElementById('mobileNumber').value.trim(),
-      patientEmail:                document.getElementById('patientEmail').value.trim(),
-      treatmentDetails:            document.getElementById('medicalHistory').value.trim(),
-      dentalSpecialty:             isCbct ? null : dropdownState.specialty,
-      cbct:                        isCbct ? cbctValue : null,
-      referralName:                document.getElementById('dentistName').value.trim(),
-      referralGDC:                 document.getElementById('gdcNumber').value.trim(),
-      referralPracticeNameAddress: document.getElementById('practiceName').value.trim() +
-                                   (document.getElementById('practiceAddress').value ? ' - ' + document.getElementById('practiceAddress').value.trim() : ''),
-      referralEmail:               (document.getElementById('referralEmail').value.trim()) || document.getElementById('practiceEmail').value.trim(),
-      referralPhoneNumber:         (document.getElementById('referralPhone').value.trim())
-                                     ? document.getElementById('referralCountry').value + document.getElementById('referralPhone').value.trim()
-                                     : document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
-      practiceName:                document.getElementById('practiceName').value.trim(),
-      practiceEmail:               document.getElementById('practiceEmail').value.trim(),
-      practicePhoneNumber:         document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
-      attendTreatment:             shadow === 'yes' ? 'Yes' : 'No',
-      medicalHistoryPdfUrl:        null,
-      cbctReportPdfUrl:            null,
-      prescriptionDetails:         document.getElementById('prescriptionDetails').value.trim(),
-      other:                       ''
-    };
-
-    var btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="btn-loader"></span> Submitting…';
-    setInputsDisabled(true);
-
-    try {
+    var uploadArea = document.getElementById('uploadArea');
+    uploadArea.addEventListener('dragover', function (e) { e.preventDefault(); uploadArea.style.borderColor = 'var(--accent)'; });
+    uploadArea.addEventListener('dragleave', function () { uploadArea.style.borderColor = ''; });
+    uploadArea.addEventListener('drop', function (e) {
+      e.preventDefault(); uploadArea.style.borderColor = '';
       var fileInput = document.getElementById('fileUpload');
-      var file = (fileInput.files && fileInput.files.length > 0) ? fileInput.files[0] : null;
-
-      if (file) {
-        if (!/\.(pdf|doc|docx)$/i.test(file.name)) throw new Error('Only PDF or Word files are allowed.');
-        var fileType = /\.pdf$/i.test(file.name) ? 'pdf' : 'document';
-        var params = new URLSearchParams({ fileName: file.name, fileType: fileType, mimeType: file.type, fileSize: String(file.size) });
-        var signedRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + params.toString());
-        var signedJson = null;
-        var ct = signedRes.headers.get('content-type') || '';
-        if (ct.includes('application/json')) {
-          try { signedJson = await signedRes.json(); } catch(parseErr) { throw new Error('Upload service returned invalid JSON response'); }
-        } else {
-          var text = await signedRes.text();
-          throw new Error('Upload service returned non-JSON response: ' + (text ? text.slice(0, 200) : ''));
-        }
-        if (!signedRes.ok || !signedJson || !signedJson.success || !signedJson.url) throw new Error('Failed to obtain upload URL');
-        var put = await fetch(signedJson.url, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
-        if (!put.ok) throw new Error('Failed to upload file to storage');
-        var u = new URL(signedJson.url);
-        payload.medicalHistoryPdfUrl = u.pathname.replace(/^\//, '');
-      }
-
-      if (dropdownState.cbct && cbctReportRequired[dropdownState.cbct]) {
-        var cbctInput = document.getElementById('cbctReportUpload');
-        var cbctFile = (cbctInput.files && cbctInput.files.length > 0) ? cbctInput.files[0] : null;
-        if (cbctFile) {
-          if (!/\.(pdf|doc|docx)$/i.test(cbctFile.name)) throw new Error('CBCT report must be a PDF or Word file.');
-          var cFileType = /\.pdf$/i.test(cbctFile.name) ? 'pdf' : 'document';
-          var cParams = new URLSearchParams({ fileName: cbctFile.name, fileType: cFileType, mimeType: cbctFile.type, fileSize: String(cbctFile.size) });
-          var cRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + cParams.toString());
-          var cJson = null;
-          var cCt = cRes.headers.get('content-type') || '';
-          if (cCt.includes('application/json')) {
-            try { cJson = await cRes.json(); } catch(e) { throw new Error('Upload service returned invalid JSON response'); }
-          } else { throw new Error('Upload service returned non-JSON response'); }
-          if (!cRes.ok || !cJson || !cJson.success || !cJson.url) throw new Error('Failed to obtain upload URL for CBCT report');
-          var cPut = await fetch(cJson.url, { method: 'PUT', body: cbctFile, headers: { 'Content-Type': cbctFile.type } });
-          if (!cPut.ok) throw new Error('Failed to upload CBCT report to storage');
-          var cUrl = new URL(cJson.url);
-          payload.cbctReportPdfUrl = cUrl.pathname.replace(/^\//, '');
-        }
-      }
-
-      var res = await fetch('https://aspire-clinix.vercel.app/api/referrals', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+      var dt = new DataTransfer();
+      Array.from(e.dataTransfer.files).forEach(function (file) {
+        if (/\.(pdf|doc|docx)$/i.test(file.name)) dt.items.add(file);
       });
-      var data = null;
-      try { data = await res.json(); } catch(e) { data = null; }
-      if (!res.ok) throw new Error((data && data.message) || ('Server error: ' + res.status));
+      fileInput.files = dt.files; updateFileList();
+    });
 
-      showToast('Referral submitted successfully!', 'success');
-      clearForm();
+    /* CBCT report upload */
+    document.getElementById('cbctReportUpload').addEventListener('change', updateCbctReportList);
 
-    } catch (err) {
-      console.error(err);
-      showToast(err.message || 'Submission failed. Please try again.', 'error');
-    } finally {
-      setInputsDisabled(false);
-      btn.disabled = false;
-      btn.innerHTML = 'Submit Referral';
+    function updateCbctReportList() {
+      var input = document.getElementById('cbctReportUpload');
+      var list = document.getElementById('cbct-report-list');
+      if (!input.files || input.files.length === 0) { list.textContent = ''; return; }
+      var files = Array.from(input.files).filter(function (f) {
+        return /\.(pdf|doc|docx)$/i.test(f.name);
+      });
+      if (files.length !== input.files.length) {
+        list.textContent = 'Only PDF or Word files are allowed.'; input.value = ''; return;
+      }
+      list.textContent = files.map(function (f) { return '📎 ' + f.name; }).join('  ·  ');
     }
-  }
-</script>
+
+    var cbctUploadArea = document.getElementById('cbctUploadArea');
+    cbctUploadArea.addEventListener('dragover', function (e) { e.preventDefault(); cbctUploadArea.style.borderColor = 'var(--accent)'; });
+    cbctUploadArea.addEventListener('dragleave', function () { cbctUploadArea.style.borderColor = ''; });
+    cbctUploadArea.addEventListener('drop', function (e) {
+      e.preventDefault(); cbctUploadArea.style.borderColor = '';
+      var fileInput = document.getElementById('cbctReportUpload');
+      var dt = new DataTransfer();
+      Array.from(e.dataTransfer.files).forEach(function (file) {
+        if (/\.(pdf|doc|docx)$/i.test(file.name)) dt.items.add(file);
+      });
+      fileInput.files = dt.files; updateCbctReportList();
+    });
+
+    setDobMaxDate();
+
+    var dobInput = document.getElementById('dob');
+    if (dobInput) {
+      dobInput.addEventListener('blur', function () { dobPickerOpen = false; });
+      dobInput.addEventListener('change', function () { dobPickerOpen = false; });
+      dobInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { dobPickerOpen = false; dobInput.blur(); }
+      });
+    }
+
+    /* ─── TOAST ─── */
+    function showToast(msg, type) {
+      type = type || 'success';
+      var t = document.getElementById('toast');
+      t.textContent = msg; t.className = 'show ' + type;
+      setTimeout(function () { t.className = ''; }, 4000);
+    }
+
+    /* ─── VALIDATION ─── */
+    function setError(id, msg) {
+      var el = document.getElementById('err-' + id);
+      if (el) el.textContent = msg;
+      var input = document.getElementById(id);
+      if (input) input.classList.toggle('invalid', !!msg);
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.field-error').forEach(function (e) { e.textContent = ''; });
+      document.querySelectorAll('.invalid').forEach(function (e) { e.classList.remove('invalid'); });
+      document.getElementById('specialty-trigger').classList.remove('invalid-trigger');
+      document.getElementById('cbct-trigger').classList.remove('invalid-trigger');
+    }
+
+    function validate() {
+      var ok = true;
+      function req(id, msg) {
+        var el = document.getElementById(id);
+        if (!el || !el.value.trim()) { setError(id, msg); ok = false; }
+      }
+      function email(id) {
+        var el = document.getElementById(id);
+        if (el && el.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value)) {
+          setError(id, 'Enter a valid email address'); ok = false;
+        }
+      }
+      req('patientFirstName', 'First name is required');
+      req('patientLastName', 'Last name is required');
+      req('dob', 'Date of birth is required');
+      var dobEl = document.getElementById('dob');
+      if (dobEl && dobEl.value) {
+        var selectedDob = new Date(dobEl.value); var today = new Date(); today.setHours(0, 0, 0, 0);
+        if (selectedDob > today) { setError('dob', 'Future dates are not allowed'); ok = false; }
+      }
+      req('mobileNumber', 'Mobile number is required');
+      req('patientEmail', 'Email is required');
+      email('patientEmail');
+      if (!dropdownState.specialty && !dropdownState.cbct) {
+        document.getElementById('err-services').textContent = 'Please select either a Dental Specialty or CBCT';
+        document.getElementById('specialty-trigger').classList.add('invalid-trigger');
+        document.getElementById('cbct-trigger').classList.add('invalid-trigger');
+        ok = false;
+      }
+      req('dentistName', 'Dentist name is required');
+      req('gdcNumber', 'GDC number is required');
+      req('practiceName', 'Practice name is required');
+      req('practiceEmail', 'Practice email is required');
+      email('practiceEmail');
+      email('referralEmail');
+      req('practicePhone', 'Practice phone is required');
+      var shadow = document.querySelector('input[name="shadow"]:checked');
+      if (!shadow) { setError('shadow', 'Please select an option'); ok = false; }
+      if (dropdownState.cbct && cbctReportRequired[dropdownState.cbct]) {
+        var cbctFile = document.getElementById('cbctReportUpload');
+        if (!cbctFile.files || cbctFile.files.length === 0) { setError('cbctReportUpload', 'CBCT report PDF is required'); ok = false; }
+      }
+      return ok;
+    }
+
+    function setInputsDisabled(disabled) {
+      document.querySelectorAll('input:not(#submitBtn), select, textarea').forEach(function (input) {
+        input.disabled = disabled;
+      });
+    }
+
+    function clearForm() {
+      ['patientFirstName', 'patientLastName', 'dob', 'address', 'mobileNumber', 'patientEmail',
+        'medicalHistory', 'prescriptionDetails', 'dentistName', 'gdcNumber', 'practiceName', 'practiceAddress',
+        'practiceEmail', 'practicePhone', 'referralEmail', 'referralPhone'].forEach(function (id) {
+          var el = document.getElementById(id); if (el) el.value = '';
+        });
+      document.getElementById('fileUpload').value = '';
+      document.getElementById('file-list').textContent = '';
+      clearSpecialty(); clearCbct();
+      document.querySelectorAll('input[name="shadow"]').forEach(function (r) { r.checked = false; });
+      cbctReportRequired = {};
+      document.querySelectorAll('.cs-report-wrap input[type="checkbox"]').forEach(function (cb) { cb.checked = false; });
+    }
+
+    /* ─── SUBMIT ─── */
+    async function submitForm() {
+      clearErrors();
+      if (!validate()) {
+        showToast('Please fix the errors above.', 'error');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      var isCbct = !!dropdownState.cbct;
+      var shadowEl = document.querySelector('input[name="shadow"]:checked');
+      var shadow = shadowEl ? shadowEl.value : '';
+
+      var cbctValue = dropdownState.cbct;
+      if (cbctValue && cbctReportRequired[cbctValue]) {
+        cbctValue = cbctValue + ' [Report Required]';
+      }
+
+      var payload = {
+        patientFirstName: document.getElementById('patientFirstName').value.trim(),
+        patientLastName: document.getElementById('patientLastName').value.trim(),
+        patientName: (document.getElementById('patientFirstName').value.trim() + ' ' + document.getElementById('patientLastName').value.trim()).trim(),
+        patientDateOfBirth: document.getElementById('dob').value ? new Date(document.getElementById('dob').value).toISOString() : null,
+        patientAddress: document.getElementById('address').value.trim(),
+        patientPhoneNumber: document.getElementById('mobileCountry').value + document.getElementById('mobileNumber').value.trim(),
+        patientEmail: document.getElementById('patientEmail').value.trim(),
+        treatmentDetails: document.getElementById('medicalHistory').value.trim(),
+        dentalSpecialty: isCbct ? null : dropdownState.specialty,
+        cbct: isCbct ? cbctValue : null,
+        referralName: document.getElementById('dentistName').value.trim(),
+        referralGDC: document.getElementById('gdcNumber').value.trim(),
+        referralPracticeNameAddress: document.getElementById('practiceName').value.trim() +
+          (document.getElementById('practiceAddress').value ? ' - ' + document.getElementById('practiceAddress').value.trim() : ''),
+        referralEmail: (document.getElementById('referralEmail').value.trim()) || document.getElementById('practiceEmail').value.trim(),
+        referralPhoneNumber: (document.getElementById('referralPhone').value.trim())
+          ? document.getElementById('referralCountry').value + document.getElementById('referralPhone').value.trim()
+          : document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
+        practiceName: document.getElementById('practiceName').value.trim(),
+        practiceEmail: document.getElementById('practiceEmail').value.trim(),
+        practicePhoneNumber: document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
+        attendTreatment: shadow === 'yes' ? 'Yes' : 'No',
+        medicalHistoryPdfUrl: null,
+        cbctReportPdfUrl: null,
+        prescriptionDetails: document.getElementById('prescriptionDetails').value.trim(),
+        other: ''
+      };
+
+      var btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-loader"></span> Submitting…';
+      setInputsDisabled(true);
+
+      try {
+        var fileInput = document.getElementById('fileUpload');
+        var file = (fileInput.files && fileInput.files.length > 0) ? fileInput.files[0] : null;
+
+        if (file) {
+          if (!/\.(pdf|doc|docx)$/i.test(file.name)) throw new Error('Only PDF or Word files are allowed.');
+          var fileType = /\.pdf$/i.test(file.name) ? 'pdf' : 'document';
+          var params = new URLSearchParams({ fileName: file.name, fileType: fileType, mimeType: file.type, fileSize: String(file.size) });
+          var signedRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + params.toString());
+          var signedJson = null;
+          var ct = signedRes.headers.get('content-type') || '';
+          if (ct.includes('application/json')) {
+            try { signedJson = await signedRes.json(); } catch (parseErr) { throw new Error('Upload service returned invalid JSON response'); }
+          } else {
+            var text = await signedRes.text();
+            throw new Error('Upload service returned non-JSON response: ' + (text ? text.slice(0, 200) : ''));
+          }
+          if (!signedRes.ok || !signedJson || !signedJson.success || !signedJson.url) throw new Error('Failed to obtain upload URL');
+          var put = await fetch(signedJson.url, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
+          if (!put.ok) throw new Error('Failed to upload file to storage');
+          var u = new URL(signedJson.url);
+          payload.medicalHistoryPdfUrl = u.pathname.replace(/^\//, '');
+        }
+
+        if (dropdownState.cbct && cbctReportRequired[dropdownState.cbct]) {
+          var cbctInput = document.getElementById('cbctReportUpload');
+          var cbctFile = (cbctInput.files && cbctInput.files.length > 0) ? cbctInput.files[0] : null;
+          if (cbctFile) {
+            if (!/\.(pdf|doc|docx)$/i.test(cbctFile.name)) throw new Error('CBCT report must be a PDF or Word file.');
+            var cFileType = /\.pdf$/i.test(cbctFile.name) ? 'pdf' : 'document';
+            var cParams = new URLSearchParams({ fileName: cbctFile.name, fileType: cFileType, mimeType: cbctFile.type, fileSize: String(cbctFile.size) });
+            var cRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + cParams.toString());
+            var cJson = null;
+            var cCt = cRes.headers.get('content-type') || '';
+            if (cCt.includes('application/json')) {
+              try { cJson = await cRes.json(); } catch (e) { throw new Error('Upload service returned invalid JSON response'); }
+            } else { throw new Error('Upload service returned non-JSON response'); }
+            if (!cRes.ok || !cJson || !cJson.success || !cJson.url) throw new Error('Failed to obtain upload URL for CBCT report');
+            var cPut = await fetch(cJson.url, { method: 'PUT', body: cbctFile, headers: { 'Content-Type': cbctFile.type } });
+            if (!cPut.ok) throw new Error('Failed to upload CBCT report to storage');
+            var cUrl = new URL(cJson.url);
+            payload.cbctReportPdfUrl = cUrl.pathname.replace(/^\//, '');
+          }
+        }
+
+        var res = await fetch('https://aspire-clinix.vercel.app/api/referrals', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+        });
+        var data = null;
+        try { data = await res.json(); } catch (e) { data = null; }
+        if (!res.ok) throw new Error((data && data.message) || ('Server error: ' + res.status));
+
+        showToast('Referral submitted successfully!', 'success');
+        clearForm();
+
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || 'Submission failed. Please try again.', 'error');
+      } finally {
+        setInputsDisabled(false);
+        btn.disabled = false;
+        btn.innerHTML = 'Submit Referral';
+      }
+    }
+  </script>
 </body>
+
 </html>
