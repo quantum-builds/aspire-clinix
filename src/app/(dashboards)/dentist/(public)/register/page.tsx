@@ -24,7 +24,7 @@ export default async function RegisterPage() {
         </div>
         <header className="mb-8 text-start">
           <h1 className="text-pretty text-2xl font-medium tracking-tight">
-            Register Dentist
+            Register as Referring Dentist
           </h1>
           <p className="text-muted-foreground mt-2">
             Create a dentist profile with basic details and an optional profile
