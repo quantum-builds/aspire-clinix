@@ -22,7 +22,7 @@ export default function BackButton({
         "bg-dashboardBarBackground px-6 py-3 rounded-full flex items-center justify-center gap-1",
         className
       )}
-      onClick={() => (backToWebsite ? router.replace("/") : router.back())}
+      onClick={() => (backToWebsite ? router.replace("https://www.theaspireclinic.com/") : router.back())}
     >
       <Image src={BackButtonIcon} alt="back button icon" className="w-4 h-4" />
       {text ? text : "Back"}
