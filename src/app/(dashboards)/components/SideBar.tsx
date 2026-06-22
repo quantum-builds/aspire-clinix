@@ -169,7 +169,7 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
           })}
         </nav>
       </div>
-      <CustomButton text="Back to Website" icon={BackToWebsiteIcon} href="/" />
+      <CustomButton text="Back to Website" icon={BackToWebsiteIcon} href="https://www.theaspireclinic.com/" />
     </div>
   );
 }
