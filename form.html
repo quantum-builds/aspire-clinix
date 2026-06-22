@@ -137,7 +137,6 @@
       font-size: 11px;
       font-weight: 400;
       color: var(--text-muted);
-      text-transform: uppercase;
       letter-spacing: 1px;
       margin-bottom: 7px;
     }
@@ -946,23 +945,23 @@
           <div class="field-error" id="err-cbctReportUpload"></div>
         </div>
         <div class="field" style="flex:1;">
-          <label>Supporting Documents </label>
-          <div class="upload-area" id="uploadArea">
-            <label for="fileUpload" style="cursor:pointer;display:block;">
-              <span class="upload-icon">📁</span>
-              <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
-              <div class="upload-text" style="margin-top:4px;font-size:11px;">PDF, Word or Image</div>
-            </label>
-            <input type="file" id="fileUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.svg" />
-          </div>
-          <div id="file-list"></div>
+          <label>Please describe the treatment required in as much details as possible</label>
+          <textarea id="prescriptionDetails"
+            placeholder="Enter prescription details, dosage, duration, or any other relevant instructions..."></textarea>
+          <div class="field-error" id="err-prescriptionDetails"></div>
         </div>
       </div>
       <div class="field">
-        <label>Prescription Details</label>
-        <textarea id="prescriptionDetails"
-          placeholder="Enter prescription details, dosage, duration, or any other relevant instructions..."></textarea>
-        <div class="field-error" id="err-prescriptionDetails"></div>
+        <label>Supporting Documents </label>
+        <div class="upload-area" id="uploadArea">
+          <label for="fileUpload" style="cursor:pointer;display:block;">
+            <span class="upload-icon">📁</span>
+            <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
+            <div class="upload-text" style="margin-top:4px;font-size:11px;">PDF, Word or Image</div>
+          </label>
+          <input type="file" id="fileUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.svg" />
+        </div>
+        <div id="file-list"></div>
       </div>
     </div>
 
