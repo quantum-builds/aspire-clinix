@@ -26,11 +26,11 @@ model ReferralForm {
   referralPhoneNumber         String
   attendTreatment             String
   referralPracticeNameAddress String
+  cbct                        String?
+  dentalSpecialty             String?
   practiceEmail               String?
   practiceName                String?
   practicePhoneNumber         String?
-  dentalSpecialty             String?
-  cbct                        String?
   cbctReportPdfUrl            String?
   prescriptionDetails         String?
   patient                     Patient?         @relation(fields: [patientId], references: [id])
@@ -48,6 +48,8 @@ model ReferralRequest {
   requestStatus     ReferralRequestStatus
   createdAt         DateTime              @default(now())
   referralForm      ReferralForm          @relation(fields: [referralFormId], references: [id])
+
+
 }
 
 model Plan {
@@ -195,8 +197,8 @@ model Report {
   updatedAt         DateTime         @updatedAt
   appointmentId     String
   patientDentallyId String
-  recipientType     ReportRecipient?
   patientId         String?
+  recipientType     ReportRecipient?
   dentist           Dentist          @relation(fields: [dentistId], references: [id], onDelete: Cascade)
   patient           Patient?         @relation(fields: [patientId], references: [id])
 
