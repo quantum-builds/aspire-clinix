@@ -319,11 +319,12 @@ export async function POST(req: NextRequest) {
     }
 
     const referralEmail = referralForm.referralEmail;
-    console.log("3");
-
+   
     const referralDentist = await prisma.dentist.findFirst({
       where: { email: referralEmail, role: DentistRole.REFERRING_DENTIST },
     });
+
+    
     if (referralDentist) {
       referralForm.referralDentistId = referralDentist.id;
     } else {

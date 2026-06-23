@@ -136,11 +136,10 @@ export async function POST(req: NextRequest) {
         (patient: any) => patient.active && !patient.archivedReason,
       );
 
-      if(activePatients.length > 0) {
+      if (activePatients.length > 0) {
         const matchingPatients = activePatients.filter(
           (patient: any) =>
-            patient.firstName === firstName &&
-            patient.lastName === lastName,
+            patient.firstName === firstName && patient.lastName === lastName,
         );
 
         activePatients = matchingPatients;
@@ -231,7 +230,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      await prisma.dentist.create({
+      const createdDentist = await prisma.dentist.create({
         data: {
           email,
           gdcNo,
@@ -239,6 +238,10 @@ export async function POST(req: NextRequest) {
           lastName,
           role: DentistRole.REFERRING_DENTIST,
         },
+      });
+      await prisma.referralForm.updateMany({
+        where: { referralEmail: createdDentist.email },
+        data: { referralDentistId: createdDentist.id },
       });
     }
 
