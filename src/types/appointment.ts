@@ -2,6 +2,7 @@ import { Patient, TPatient } from "./patient";
 import { TReport } from "./reports";
 
 export type TAppointment = {
+  bindStatus?: "BOUND" | "UNBOUND";
   id: number;
   appointmentCancellationReasonId: number | null;
   arrivedAt: string | null;

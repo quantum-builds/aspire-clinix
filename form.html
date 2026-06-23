@@ -929,8 +929,28 @@
         </div>
       </div>
 
-      <!-- File Uploads (row) -->
+      <!-- Prescription Details - full width on top -->
+      <div class="field">
+        <label>Please describe the treatment required in as much details as possible</label>
+        <textarea id="prescriptionDetails"
+          placeholder="Enter prescription details, dosage, duration, or any other relevant instructions..."></textarea>
+        <div class="field-error" id="err-prescriptionDetails"></div>
+      </div>
+
+      <!-- Supporting Documents and CBCT Report side by side -->
       <div style="display:flex;gap:16px;">
+        <div class="field" style="flex:1;">
+          <label>Supporting Documents </label>
+          <div class="upload-area" id="uploadArea">
+            <label for="fileUpload" style="cursor:pointer;display:block;">
+              <span class="upload-icon">📁</span>
+              <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
+              <div class="upload-text" style="margin-top:4px;font-size:11px;">PDF, Word or Image</div>
+            </label>
+            <input type="file" id="fileUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.svg" />
+          </div>
+          <div id="file-list"></div>
+        </div>
         <div class="field" id="cbct-report-field" style="display:none;flex:1;">
           <label>CBCT Report </label>
           <div class="upload-area" id="cbctUploadArea">
@@ -944,24 +964,6 @@
           <div id="cbct-report-list"></div>
           <div class="field-error" id="err-cbctReportUpload"></div>
         </div>
-        <div class="field" style="flex:1;">
-          <label>Please describe the treatment required in as much details as possible</label>
-          <textarea id="prescriptionDetails"
-            placeholder="Enter prescription details, dosage, duration, or any other relevant instructions..."></textarea>
-          <div class="field-error" id="err-prescriptionDetails"></div>
-        </div>
-      </div>
-      <div class="field">
-        <label>Supporting Documents </label>
-        <div class="upload-area" id="uploadArea">
-          <label for="fileUpload" style="cursor:pointer;display:block;">
-            <span class="upload-icon">📁</span>
-            <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
-            <div class="upload-text" style="margin-top:4px;font-size:11px;">PDF, Word or Image</div>
-          </label>
-          <input type="file" id="fileUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.svg" />
-        </div>
-        <div id="file-list"></div>
       </div>
     </div>
 

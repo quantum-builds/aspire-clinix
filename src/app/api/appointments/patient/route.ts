@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { listAppointment } from "@/dentallyHelpers/appointment";
 import { Appointment, TAppointment } from "@/types/appointment";
 import { getPatient } from "@/dentallyHelpers/patient";
+import prisma from "@/lib/db";
 
 /**
  * @swagger
@@ -155,7 +156,23 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const appointments = (appointmentRes.response.appointments ?? []) as TAppointment[];
+    const appointments = (appointmentRes.response.appointments ??
+      []) as TAppointment[];
+    const appointmentIds = appointments.map((a) => String(a.id));
+
+    const referralBindings = await prisma.referralRequest.findMany({
+      where: {
+        appointmentId: {
+          in: appointmentIds,
+        },
+      },
+      select: {
+        appointmentId: true,
+      },
+    });
+    const boundAppointmentSet = new Set(
+      referralBindings.map((r) => String(r.appointmentId)),
+    );
 
     // Format appointments for the response
     const formattedAppointments = appointments.map((apt) => ({
@@ -169,11 +186,20 @@ export async function GET(req: NextRequest) {
       duration: apt.duration,
       reason: apt.reason,
       state: apt.state,
+      bindStatus: boundAppointmentSet.has(String(apt.id))
+    ? "BOUND"
+    : "UNBOUND"
     }));
 
+    console.log("[/api/appointments/patient] formattedAppointments", formattedAppointments);
+
     return NextResponse.json(
-      createResponse(true, "Appointments fetched successfully", formattedAppointments),
-      { status: 200 }
+      createResponse(
+        true,
+        "Appointments fetched successfully",
+        formattedAppointments,
+      ),
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error fetching patient appointments:", error);

@@ -348,106 +348,151 @@ export async function PATCH(req: NextRequest) {
     }
 
     const { appointmentId, requestStatus, practitionerId } = body;
-    console.log("[PATCH] practiotioner ", practitionerId)
+    console.log("[PATCH] practiotioner ", practitionerId);
 
     if (!appointmentId || !requestStatus) {
       return NextResponse.json(
-        createResponse(false, "appointmentId and requestStatus are required.", null),
+        createResponse(
+          false,
+          "Both appointmentId and requestStatus are required.",
+          null,
+        ),
         { status: 400 },
       );
     }
 
-    let assignedDentistId: string | undefined;
-
-    if (practitionerId) {
-      const existingDentist = await prisma.dentist.findFirst({
-        where: { dentallyId: Number(practitionerId) },
+    if (requestStatus === "UNASSIGNED") {
+      const targetReferral = await prisma.referralRequest.findFirst({
+        where: { appointmentId },
       });
 
-      if (existingDentist) {
-        assignedDentistId = existingDentist.id;
-      } else {
-        let firstName = "";
-        let lastName = "";
-        let email = "";
-        let gdcNo = ""
+      if (!targetReferral) {
+        return NextResponse.json(
+          createResponse(
+            false,
+            "No referral request found with this appointment ID.",
+            null,
+          ),
+          { status: 404 },
+        );
+      }
 
-        try {
-          const practitionerRes = await gettPractitionerById(String(practitionerId));
-          console.log("[PATCH] practitionerRes ", practitionerRes)
-          if (!practitionerRes.isError && practitionerRes.response?.practitioner) {
-            const prac = practitionerRes.response.practitioner;
-            firstName = prac.user.firstName || ""
-            lastName = prac.user.lastName || "";
-            email = prac.user.email || "";
-            gdcNo = prac.gdcNumber || ""
-          }
-        } catch (e) {
-          console.error("Failed to fetch practitioner from Dentally:", e);
-        }
+      const updated = await prisma.referralRequest.update({
+        where: { id: targetReferral.id },
+        data: {
+          appointmentId: null,
+          assignedDentistId: null,
+          requestStatus: ReferralRequestStatus.UNASSIGNED,
+        },
+      });
 
-        const newDentist = await prisma.dentist.create({
-          data: {
-            email: email || `dentist+${practitionerId}@aspire-clinic.com`,
-            firstName: firstName || "Unknown",
-            lastName: lastName || "",
-            gdcNo: gdcNo,
-            dentallyId: Number(practitionerId),
-            role: DentistRole.DENTALLY_PRACTITIONER,
-            otp: undefined,
-            otpInvalidationTime: undefined,
-          },
+      return NextResponse.json(
+        createResponse(true, "Appointment unbound successfully.", updated),
+        { status: 200 },
+      );
+    } else if (requestStatus === "ASSIGNED") {
+      let assignedDentistId: string | undefined;
+
+      if (practitionerId) {
+        const existingDentist = await prisma.dentist.findFirst({
+          where: { dentallyId: Number(practitionerId) },
         });
 
-        assignedDentistId = newDentist.id;
+        if (existingDentist) {
+          assignedDentistId = existingDentist.id;
+        } else {
+          let firstName = "";
+          let lastName = "";
+          let email = "";
+          let gdcNo = "";
+
+          try {
+            const practitionerRes = await gettPractitionerById(
+              String(practitionerId),
+            );
+            console.log("[PATCH] practitionerRes ", practitionerRes);
+            if (
+              !practitionerRes.isError &&
+              practitionerRes.response?.practitioner
+            ) {
+              const prac = practitionerRes.response.practitioner;
+              firstName = prac.user.firstName || "";
+              lastName = prac.user.lastName || "";
+              email = prac.user.email || "";
+              gdcNo = prac.gdcNumber || "";
+            }
+          } catch (e) {
+            console.error("Failed to fetch practitioner from Dentally:", e);
+          }
+
+          const newDentist = await prisma.dentist.create({
+            data: {
+              email: email || `dentist+${practitionerId}@aspire-clinic.com`,
+              firstName: firstName || "Unknown",
+              lastName: lastName || "",
+              gdcNo: gdcNo,
+              dentallyId: Number(practitionerId),
+              role: DentistRole.DENTALLY_PRACTITIONER,
+              otp: undefined,
+              otpInvalidationTime: undefined,
+            },
+          });
+
+          assignedDentistId = newDentist.id;
+        }
       }
-    }
 
-    const updateData: {
-      appointmentId: string;
-      requestStatus: ReferralRequestStatus;
-      assignedDentistId?: string;
-    } = {
-      appointmentId,
-      requestStatus: requestStatus as ReferralRequestStatus,
-    };
+      const updateData: {
+        appointmentId: string;
+        requestStatus: ReferralRequestStatus;
+        assignedDentistId?: string;
+      } = {
+        appointmentId,
+        requestStatus: requestStatus as ReferralRequestStatus,
+      };
 
-    if (assignedDentistId) {
-      updateData.assignedDentistId = assignedDentistId;
-    }
+      if (assignedDentistId) {
+        updateData.assignedDentistId = assignedDentistId;
+      }
 
-    const updatedReferralRequest = await prisma.referralRequest.update({
-      where: { id: referralRequestId },
-      data: updateData,
-    });
+      const updatedReferralRequest = await prisma.referralRequest.update({
+        where: { id: referralRequestId },
+        data: updateData,
+      });
 
-    const result = await prisma.referralRequest.findUnique({
-      where: { id: referralRequestId },
-      include: {
-        referralForm: {
-          include: {
-            patient: true,
-            referralDentist: true,
+      const result = await prisma.referralRequest.findUnique({
+        where: { id: referralRequestId },
+        include: {
+          referralForm: {
+            include: {
+              patient: true,
+              referralDentist: true,
+            },
           },
         },
-      },
-    });
-
-    if (result && assignedDentistId) {
-      const dentist = await prisma.dentist.findUnique({
-        where: { id: assignedDentistId },
       });
-      (result as any).assignedDentist = dentist;
-    }
 
-    return NextResponse.json(
-      createResponse(
-        true,
-        "Referral request Updated successfully.",
-        result,
-      ),
-      { status: 200 },
-    );
+      if (result && assignedDentistId) {
+        const dentist = await prisma.dentist.findUnique({
+          where: { id: assignedDentistId },
+        });
+        (result as any).assignedDentist = dentist;
+      }
+
+      return NextResponse.json(
+        createResponse(true, "Referral request Updated successfully.", result),
+        { status: 200 },
+      );
+    } else {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "Invalid requestStatus. Must be ASSIGNED or UNASSIGNED.",
+          null,
+        ),
+        { status: 400 },
+      );
+    }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {

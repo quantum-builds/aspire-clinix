@@ -6,7 +6,11 @@ import { Calendar, Clock, User, Stethoscope } from "lucide-react";
 
 interface AppointmentListItemProps {
   appointment: TAppointment;
-  onSelect: (appointmentId: string, practitionerId: number) => void;
+  onSelect: (
+    appointmentId: string,
+    practitionerId: number,
+    action: "bind" | "unbind",
+  ) => void;
   isLoading?: boolean;
 }
 
@@ -20,6 +24,8 @@ export default function AppointmentListItem({
 
   const formatDate = (date: Date) => format(date, "MMM d, yyyy");
   const formatTime = (date: Date) => format(date, "h:mm a");
+
+  const isBound = appointment.bindStatus === "BOUND";
 
   return (
     <div className="flex items-center justify-between p-4 bg-gray rounded-xl hover:bg-lightGray transition-colors border border-transparent hover:border-green">
@@ -61,18 +67,32 @@ export default function AppointmentListItem({
       {/* Select Button */}
       <button
         disabled={isLoading}
-        onClick={async () => {
+        onClick={() => {
           if (isLoading) return;
 
           try {
-            onSelect(String(appointment.id), appointment.practitionerId);
+            onSelect(
+              String(appointment.id),
+              appointment.practitionerId,
+              isBound ? "unbind" : "bind",
+            );
           } catch (error) {
             console.error("Error completing process:", error);
           }
         }}
-        className="ml-4 px-4 py-2 bg-green text-dashboardBarBackground rounded-full text-sm font-medium hover:bg-greenHover transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+        className={`ml-4 rounded-full px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 whitespace-nowrap ${
+          isBound
+            ? "bg-dashboardBackground text-dashboardTextBlack hover:bg-gray"
+            : "bg-green text-dashboardBarBackground hover:bg-greenHover"
+        }`}
       >
-        {isLoading ? "Binding..." : "Select"}
+        {isLoading
+          ? isBound
+            ? "Unbinding..."
+            : "Binding..."
+          : isBound
+            ? "Unbind"
+            : "Bind"}
       </button>
     </div>
   );
