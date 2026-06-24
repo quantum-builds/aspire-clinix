@@ -14,6 +14,7 @@ export default async function NewReport(props: { params: { id: string } }) {
         showFilters={false}
         showSearch={false}
         showBackBtn={true}
+        showDropdown={true}
       />
       <Suspense key={id} fallback={<ReportGridWrapperSkeleton/>}>
         <ReportGridWrapper id={id} />

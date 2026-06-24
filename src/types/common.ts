@@ -2,6 +2,7 @@ import { ReferralRequestStatus, ResoucrceType } from "@prisma/client";
 import { StaticImageData } from "next/image";
 
 export interface Response<T> {
+  
   status: boolean;
   message: string;
   data: T;

@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
       const patientData = createRes.response.patient;
       const fullName = `${firstName} ${lastName}`;
 
-      await prisma.patient.create({
+      const createdPatient = await prisma.patient.create({
         data: {
           uuid: patientData.uuid,
           dentallyId: patientData.id,
@@ -189,6 +189,10 @@ export async function POST(req: NextRequest) {
           dateOfBirth: dateOfBirth,
           familyId: patientData.familyId,
         },
+      });
+      await prisma.referralForm.updateMany({
+        where: { patientEmail: createdPatient.email },
+        data: { patientId: createdPatient.id },
       });
     } else if (role === TokenRoles.REFERRING_DENTIST) {
       const { gdcNo, firstName, lastName, email } = body;
@@ -240,7 +244,7 @@ export async function POST(req: NextRequest) {
         },
       });
       await prisma.referralForm.updateMany({
-        where: { referralEmail: createdDentist.email },
+        where: { patientEmail: createdDentist.email },
         data: { referralDentistId: createdDentist.id },
       });
     }

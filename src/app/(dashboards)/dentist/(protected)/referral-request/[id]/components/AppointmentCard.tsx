@@ -136,7 +136,6 @@ export default function AppointmentCard({
             }
           </div>
           <div className="flex justify-between items-end">
-            {/* <Button text="See reports" href={`/dentist/appointments/${appointment.id}/reports`} /> */}
             <div className="flex justify-between w-full">
               {appointment.state === AppointmentState.PENDING &&
                 <div className="flex items-center gap-2 w-full mt-7">

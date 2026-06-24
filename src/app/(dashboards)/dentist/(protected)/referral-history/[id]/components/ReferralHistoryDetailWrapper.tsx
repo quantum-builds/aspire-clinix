@@ -6,8 +6,8 @@ import { Response } from "@/types/common";
 import PageTopBar from "@/app/(dashboards)/components/custom-components/PageTopBar";
 import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import { calculateAge } from "@/utils/formatDateTime";
-import AssignedAppointmentCard from "@/app/(dashboards)/clinic/(protected)/referrals/[id]/assigned/components/AppointmentCard";
 import { toTitleCase } from "@/utils/formatWords";
+import AssignedAppointmentCard from "@/app/(dashboards)/clinic/(protected)/referrals/[id]/assigned/components/AppointmentCard";
 
 interface ReferralHistoryDetailProps {
   id: string;
@@ -87,7 +87,7 @@ export default async function ReferralHistoryDetail({
         patientDetials={patientDetails}
         assignedDentistDetails={assignedDentistDetails}
       />
-      {appointment && <AssignedAppointmentCard appointment={appointment} />}
+      {appointment && <AssignedAppointmentCard appointment={appointment} href={`/dentist/appointments/${appointment.id}/reports`} />}
     </div>
   );
 }

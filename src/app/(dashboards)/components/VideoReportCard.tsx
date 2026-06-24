@@ -13,8 +13,6 @@ interface VideoReportCardProps {
 export default function VideoReportCard({ report }: VideoReportCardProps) {
   return (
     <div className="flex flex-col gap-5 p-6 rounded-2xl bg-dashboardBackground">
-
-
       <div className="relative group w-full flex justify-center">
         <div className="w-full h-[200px] flex flex-col items-center justify-center rounded-2xl bg-white border-2 border-dashed border-gray-300">
           <Image src={VideoImage} alt="upload-video" width={110} height={120} />
@@ -38,18 +36,25 @@ export default function VideoReportCard({ report }: VideoReportCardProps) {
       </div>
 
       <p className="font-medium text-lg truncate w-full">{report.title}</p>
-      <div className="flex gap-3 items-center justify-start">
-        <div className="flex gap-1 items-center">
-          <Image
-            src={CalenderInputIconV2}
-            alt="calender-icon"
-            className="w-5 h-5"
-          />
-          <p className="text-lg">{formatDate(report.createdAt)}</p>
-        </div>
-        <div className="flex gap-1 items-center">
-          <Image src={TimeIconV2} alt="time-icon" className="w-5 h-5" />
-          <p className="text-lg">{formatTime(report.createdAt)}</p>
+      <div className="flex items-center justify-between w-full">
+        <p className="text-20px italic text-greenHover">
+          {report.recipientType === "PATIENT" ? "Patient" : "Referring Dentist"}
+        </p>
+
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1 items-center">
+            <Image
+              src={CalenderInputIconV2}
+              alt="calender-icon"
+              className="w-5 h-5"
+            />
+            <p className="text-lg">{formatDate(report.createdAt)}</p>
+          </div>
+
+          <div className="flex gap-1 items-center">
+            <Image src={TimeIconV2} alt="time-icon" className="w-5 h-5" />
+            <p className="text-lg">{formatTime(report.createdAt)}</p>
+          </div>
         </div>
       </div>
     </div>

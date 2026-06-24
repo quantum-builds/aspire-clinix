@@ -120,7 +120,7 @@ export default async function AssignedWrapper({
         referralDentistDetails={assignedDentistDetails}
       />
 
-      <AppointmentCard appointment={appointment} />
+      <AppointmentCard appointment={appointment} href={""} />
     </div>
   );
 }
