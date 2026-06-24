@@ -6,8 +6,10 @@ import Image from "next/image";
 
 export default function AssignedAppointmentCard({
   appointment,
+  href,
 }: {
   appointment: TAppointment;
+  href: string;
 }) {
   return (
     <div className="bg-white rounded-2xl p-6 space-y-10">
@@ -41,10 +43,7 @@ export default function AssignedAppointmentCard({
             </div>
           </div>
           <div className="flex justify-between items-end">
-            <Button
-              text="See reports"
-              href={`/clinic/appointments/${appointment.id}/reports`}
-            />
+            <Button text="See reports" href={href} />
             <p className="font-medium italic text-xl text-green">
               Assigned to {appointment.practitionerName}
             </p>

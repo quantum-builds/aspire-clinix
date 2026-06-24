@@ -37,8 +37,8 @@ export type TAppointment = {
 };
 
 export type TChangeAppointmentState = {
-  state: AppointmentState
-}
+  state: AppointmentState;
+};
 
 export type TAppointmentPagination = {
   total: number;
@@ -111,8 +111,8 @@ export interface Appointment {
 }
 
 export interface ListAppointment {
-  page?: number
-  perPage?: number
+  page?: number;
+  perPage?: number;
   on?: Date;
   before?: Date;
   after?: Date;
@@ -164,7 +164,12 @@ export enum AppointmentState {
 }
 
 export interface TAppointmentDetail {
-  appointment: TAppointment
-  reports: { pdfs?: TReport[]; videos?: TReport[] };
-  patient: Patient | null
+  appointment: TAppointment;
+
+  reports: {
+    pdfs?: TReport[];
+    videos?: TReport[];
+  };
+
+  patient: Patient | null;
 }

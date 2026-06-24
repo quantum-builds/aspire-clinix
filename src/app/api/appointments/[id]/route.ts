@@ -281,9 +281,7 @@ export async function GET(req: NextRequest) {
     let dentistDentallyId = "";
     if (token && token.role === TokenRoles.PATIENT) {
       patiendDentallyId = token.sub || "";
-    } else if (
-      token &&
-      token.role === TokenRoles.DENTALLY_PRACTITIONER) {
+    } else if (token && token.role === TokenRoles.DENTALLY_PRACTITIONER) {
       dentistDentallyId = token.sub || "";
     }
 
@@ -298,7 +296,7 @@ export async function GET(req: NextRequest) {
     const response = await getAppointment(appointmentId);
 
     if (response.isError) {
-      return response.response
+      return response.response;
     }
 
     const appointment = (response.response.appointment ?? null) as Appointment;
@@ -317,14 +315,12 @@ export async function GET(req: NextRequest) {
         where: { dentallyId: Number(patiendDentallyId) },
         select: { id: true, appointmentIds: true },
       });
-    }
-    else if (dentistDentallyId) {
+    } else if (dentistDentallyId) {
       appointmentOwner = await prisma.dentist.findFirst({
         where: { dentallyId: Number(dentistDentallyId) },
         select: { id: true, appointmentIds: true },
       });
     } else {
-      // let me check for the dentist as he will absolutely be in the db as he is the one uploading the report
       appointmentOwner = await prisma.dentist.findFirst({
         where: { dentallyId: appointment.practitionerId },
         select: { id: true, appointmentIds: true },
@@ -345,24 +341,38 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    console.log("Token role in the get appointement api:", token.role);
+
+    const recipientWhere: Record<string, any> = {};
+    if (token?.role === TokenRoles.PATIENT) {
+      recipientWhere.recipientType = "PATIENT";
+    } else if (token?.role === TokenRoles.REFERRING_DENTIST) {
+      recipientWhere.recipientType = "REFERRING_DENTIST";
+    }
 
     const [patient, videos, pdfs] = await Promise.all([
-      await prisma.patient.findUnique({ where: { dentallyId: appointment.patientId } }),
-      await prisma.report.findMany({
-        where: { appointmentId, fileType: "VIDEO" },
-        orderBy: { createdAt: "desc" },
-        include: { dentist: true }
+      await prisma.patient.findUnique({
+        where: { dentallyId: appointment.patientId },
       }),
       await prisma.report.findMany({
-        where: { appointmentId, fileType: "PDF" },
+        where: { appointmentId, fileType: "VIDEO" ,...recipientWhere},
         orderBy: { createdAt: "desc" },
-        include: { dentist: true }
-      })
-    ])
+        include: { dentist: true },
+      }),
+      await prisma.report.findMany({
+        where: { appointmentId, fileType: "PDF" ,...recipientWhere},
+        orderBy: { createdAt: "desc" },
+        include: { dentist: true },
+      }),
+    ]);
 
     if (!videos.length && !pdfs.length) {
       return NextResponse.json(
-        createResponse(true, "No reports found.", { appointment, reports: { videos: [], pdfs: [] }, patient }),
+        createResponse(true, "No reports found.", {
+          appointment,
+          reports: { videos: [], pdfs: [] },
+          patient,
+        }),
         { status: 200 },
       );
     }
@@ -371,7 +381,7 @@ export async function GET(req: NextRequest) {
       createResponse(true, "Appointment fetched successfully", {
         appointment,
         reports: { videos, pdfs },
-        patient
+        patient,
       }),
       { status: 200 },
     );
@@ -407,9 +417,7 @@ export async function DELETE(req: NextRequest) {
 
     if (token && token.role === TokenRoles.PATIENT) {
       patiendDentallyId = token.sub || "";
-    } else if (
-      token &&
-      token.role === TokenRoles.DENTALLY_PRACTITIONER) {
+    } else if (token && token.role === TokenRoles.DENTALLY_PRACTITIONER) {
       dentistDentallyId = token.sub || "";
     }
 
@@ -510,9 +518,7 @@ export async function PATCH(req: NextRequest) {
 
     if (token && token.role === TokenRoles.PATIENT) {
       patiendDentallyId = token.sub || "";
-    } else if (
-      token &&
-      token.role === TokenRoles.DENTALLY_PRACTITIONER) {
+    } else if (token && token.role === TokenRoles.DENTALLY_PRACTITIONER) {
       dentistDentallyId = token.sub || "";
     }
 
@@ -572,7 +578,7 @@ export async function PATCH(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Error editing appointment", JSON.stringify((error as any)));
+    console.error("Error editing appointment", JSON.stringify(error as any));
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,

@@ -106,8 +106,6 @@ export async function POST(req: NextRequest) {
       emailAddress: email,
     });
 
-
-
     if (response.isError) {
       return NextResponse.json(
         createResponse(false, `Error in fetching data from dentally`, null),
@@ -118,17 +116,15 @@ export async function POST(req: NextRequest) {
     let activePatients = (response.response.patients ?? []).filter(
       (patient: any) => patient.active && !patient.archivedReason,
     );
-     if (activePatients.length > 1) {
+    if (activePatients.length > 1) {
       const matchingPatients = activePatients.filter(
         (patient: any) =>
-          patient.firstName === firstName &&
-          patient.lastName === lastName,
+          patient.firstName === firstName && patient.lastName === lastName,
       );
 
       activePatients = matchingPatients;
     }
 
-   
     if (activePatients.length === 0 || activePatients.length > 1) {
       return NextResponse.json(
         createResponse(false, "No Account found", null),
@@ -176,6 +172,11 @@ export async function POST(req: NextRequest) {
           otp: generateOtp(),
           otpInvalidationTime: new Date(Date.now() + 15 * 60 * 1000),
         },
+      });
+
+      await prisma.referralForm.updateMany({
+        where: { patientEmail: existingPatient.email },
+        data: { patientId: existingPatient.id },
       });
     }
 

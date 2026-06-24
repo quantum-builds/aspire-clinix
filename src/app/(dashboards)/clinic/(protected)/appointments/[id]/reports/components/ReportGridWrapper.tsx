@@ -16,6 +16,9 @@ export default async function ReportGridWrapper({
   id,
 }: ReportGridWrapperProps) {
   const response: Response<TAppointmentDetail> = await getAppointment(id);
+ 
+
+  console.log("REPORTS FORM FRONTEND recipientType", response.data?.reports);
 
   if (
     !response.status ||

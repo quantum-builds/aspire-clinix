@@ -20,6 +20,7 @@ export type TReport = TReportCreate & {
   updatedAt: Date;
   patient?: Patient;
   dentist?: Dentist;
+  recipientType: String;
 };
 
 export type TReportResponse = {
