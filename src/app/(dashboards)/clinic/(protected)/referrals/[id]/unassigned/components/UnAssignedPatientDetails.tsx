@@ -24,7 +24,7 @@ interface PatientReferralDetailsProps {
   referralDentistDetails: {
     name: string;
     gdcNo: string;
-    phone: string;
+    phone?: string;
     email: string;
     address: string;
   };
@@ -36,6 +36,7 @@ interface PatientReferralDetailsProps {
     medicalHistoryPDF?: string;
     cbctReportPdfUrl?: string | null;
     prescriptionDetails?: string;
+    practicePhoneNumber?: string;
   };
 
   referralRequestId: string;
@@ -96,16 +97,17 @@ export default function UnAssignedPatientDetails({
         <div className="bg-gray p-6 1xl50:space-y-5 space-y-0 rounded-2xl">
           <div className="flex justify-between items-center">
             <p className="text-green font-medium text-2xl max-1xl50:mb-3">
-              Referral Dentist
+              Referral Dentist and Practice
             </p>
           </div>
           <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
             <p className="flex-1">Name: {referralDentistDetails.name}</p>
-            <p className="flex-1">GDC no.: {referralDentistDetails.gdcNo}</p>
+            <p className="flex-1">GDC no: {referralDentistDetails.gdcNo}</p>
           </div>
           <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
-            <p className="flex-1">Phone: {referralDentistDetails.phone}</p>
-            <p className="flex-1">Email: {referralDentistDetails.email}</p>
+             <p className="flex-1">Email: {referralDentistDetails.email}</p>
+            <p className="flex-1">Practice Phone: {referralDentistDetails.phone}</p>
+           
           </div>
           <div className="flex justify-between items-center text-lg max-1xl50:pt-3">
             <p>Practice Address: {referralDentistDetails.address}</p>

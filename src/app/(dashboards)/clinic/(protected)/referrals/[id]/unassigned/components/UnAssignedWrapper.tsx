@@ -53,7 +53,7 @@ export default async function UnAssignedWrapper({
 
   const dentistDetails = {
     name: referralForm.referralName,
-    phone: referralForm.referralPhoneNumber,
+    phone: referralForm.practicePhoneNumber,
     email: referralForm.referralEmail,
     gdcNo: referralForm.referralGDC,
     address: referralForm.patientAddress,

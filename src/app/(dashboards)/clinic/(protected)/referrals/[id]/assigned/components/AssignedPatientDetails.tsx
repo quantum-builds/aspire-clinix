@@ -22,14 +22,16 @@ interface PatientReferralDetailsProps {
   assignedDentistDetails: {
     name: string;
     gdcNo: string;
-    phone: string;
+    phone?: string;
     email: string;
-    address: string;
+    address?: string;
   };
   referralDentistDetails: {
     name: string;
     gdcNo: string;
     email: string;
+    phone?: string;
+    address: string;
   };
   referralFormDetails: {
     referralDeatils: string;
@@ -38,6 +40,7 @@ interface PatientReferralDetailsProps {
     medicalHistoryPDF?: string;
     cbctReportPdfUrl?: string | null;
     prescriptionDetails?: string;
+    practicePhoneNumber?: string;
   };
 }
 
@@ -94,28 +97,45 @@ export default function AssignedPatientDetails({
           </div>
           <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
             <p className="flex-1">Name: {assignedDentistDetails.name}</p>
-            <p className="flex-1">GDC no.: {assignedDentistDetails.gdcNo}</p>
+            <p className="flex-1">GDC no: {assignedDentistDetails.gdcNo}</p>
           </div>
           <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
-            <p className="flex-1">Phone: {assignedDentistDetails.phone}</p>
             <p className="flex-1">Email: {assignedDentistDetails.email}</p>
           </div>
-          <div className="flex justify-between items-center text-lg max-1xl50:pt-3">
-            <p>Practice Address: {assignedDentistDetails.address}</p>
-          </div>
+          <div className="flex justify-between items-center text-lg max-1xl50:pt-3"></div>
         </div>
-        <div className="bg-gray p-6 1xl50:space-y-5 space-y-0 rounded-2xl">
-          <div className="flex justify-between items-center">
-            <p className="text-green font-medium text-2xl max-1xl50:mb-3">
-              Referral Dentist
+        <div className="bg-gray p-6 rounded-2xl space-y-5">
+          <div>
+            <p className="text-green font-medium text-2xl">
+              Referral Dentist and Practice
             </p>
           </div>
-          <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
-            <p className="flex-1">Name: {referralDentistDetails.name}</p>
-            <p className="flex-1">GDC no.: {referralDentistDetails.gdcNo}</p>
-          </div>
-          <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
-            <p className="flex-1">Email: {referralDentistDetails.email}</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg">
+            <p>
+              <span className="font-medium">Name:</span>{" "}
+              {referralDentistDetails.name}
+            </p>
+
+            <p>
+              <span className="font-medium">GDC No.:</span>{" "}
+              {referralDentistDetails.gdcNo}
+            </p>
+
+            <p>
+              <span className="font-medium">Email:</span>{" "}
+              {referralDentistDetails.email}
+            </p>
+
+            <p>
+              <span className="font-medium">Practice Phone:</span>{" "}
+              {referralDentistDetails.phone}
+            </p>
+
+            <p className="md:col-span-2">
+              <span className="font-medium">Practice Address:</span>{" "}
+              {referralDentistDetails.address}
+            </p>
           </div>
         </div>
         <div className="bg-gray p-6 1xl50:space-y-5 space-y-0 rounded-2xl">
