@@ -76,7 +76,7 @@ export default async function AssignedWrapper({
 
   const dentistDetails = {
     name: referralForm.referralName,
-    phone: referralForm.referralPhoneNumber,
+    phone: referralForm.practicePhoneNumber,
     email: referralForm.referralEmail,
     gdcNo: referralForm.referralGDC,
     address: referralForm.patientAddress,
@@ -116,8 +116,8 @@ export default async function AssignedWrapper({
         showModel={showModel}
         referralFormDetails={referralFormDetails}
         patientDetials={patientDetails}
-        assignedDentistDetails={dentistDetails}
-        referralDentistDetails={assignedDentistDetails}
+        assignedDentistDetails={assignedDentistDetails}
+        referralDentistDetails={dentistDetails}
       />
 
       <AppointmentCard appointment={appointment} href={""} />
