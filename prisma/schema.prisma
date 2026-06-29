@@ -23,8 +23,7 @@ model ReferralForm {
   patientName                 String
   patientPhoneNumber          String
   referralDentistId           String?
-  referralPhoneNumber         String
-  attendTreatment             String
+    attendTreatment             String
   referralPracticeNameAddress String
   cbct                        String?
   dentalSpecialty             String?
