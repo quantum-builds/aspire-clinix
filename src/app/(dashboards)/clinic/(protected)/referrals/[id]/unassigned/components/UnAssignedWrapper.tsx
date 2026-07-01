@@ -72,7 +72,7 @@ export default async function UnAssignedWrapper({
   const referralFormDetails = {
     referralDeatils: referralDetails,
     treatmentDetails: referralForm.treatmentDetails,
-    attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
+    attendTreatment: referralForm.attendTreatment?.toLowerCase() === "yes" ? "yes" : "no",
     medicalHistoryPDF:
       referralForm.medicalHistoryPdf ?? referralForm.medicalHistoryPdfUrl,
     cbctReportPdfUrl: referralForm.cbctReportPdfUrl ?? null,

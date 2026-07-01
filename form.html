@@ -314,8 +314,12 @@
     }
 
     .radio-label input[type="radio"] {
-      accent-color: var(--accent);
+      accent-color: #8b7d6b;
       cursor: pointer;
+    }
+
+    .radio-label:has(input:checked) {
+      border-color: #8b7d6b;
     }
 
     /* ── File Upload ── */
@@ -829,7 +833,8 @@
       <div class="field">
         <label>Date of Birth <span class="req">*</span></label>
         <div class="date-field">
-          <input type="date" id="dob" max="" inputmode="none" onkeydown="return false" onpaste="return false" />
+          <input type="text" id="dob" inputmode="numeric" placeholder="YYYY-MM-DD" autocomplete="bday" />
+          <input type="date" id="dob-picker" aria-hidden="true" tabindex="-1" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;" />
           <span class="date-icon" aria-hidden="true" onclick="openDobPicker(event)"></span>
         </div>
         <div class="field-error" id="err-dob"></div>
@@ -967,77 +972,46 @@
       </div>
     </div>
 
-    <!-- REFERRING DENTIST DETAILS -->
+    <!-- REFERRING DENTIST / PRACTICE DETAILS -->
     <div class="card">
-      <div class="section-title"> Referring Dentist Details</div>
+      <div class="section-title"> Referring Dentist / Practice Details</div>
 
       <div class="field">
-        <label>Name of Dentist <span class="req">*</span></label>
+        <label>Dentist Name <span class="req">*</span></label>
         <input type="text" id="dentistName" placeholder="Dr. Full Name" />
         <div class="field-error" id="err-dentistName"></div>
       </div>
-
-      <div class="field">
-        <label>GDC Number <span class="req">*</span></label>
+      <div class="row-2"> 
+        <div class="field">
+        
+        <label> GDC <span class="req">*</span></label>
         <input type="text" id="gdcNumber" placeholder="e.g. 123456" />
         <div class="field-error" id="err-gdcNumber"></div>
       </div>
-
-      <div class="field">
-        <label>Referral Email</label>
+       <div class="field">
+        <label>Dentist Email</label>
         <input type="email" id="referralEmail" placeholder="referral@contact.com" />
         <div class="field-error" id="err-referralEmail"></div>
       </div>
-
-      <div class="field">
-        <label>Referral Phone Number</label>
-        <div class="phone-field">
-          <select id="referralCountry">
-            <option value="+44">UK +44</option>
-            <option value="+92">PK +92</option>
-            <option value="+1">US +1</option>
-            <option value="+91">IN +91</option>
-            <option value="+61">AU +61</option>
-          </select>
-          <input type="tel" id="referralPhone" placeholder="7700 900123" inputmode="numeric" autocomplete="tel-national"
-            pattern="[0-9]*" />
-        </div>
-        <div class="field-error" id="err-referralPhone"></div>
       </div>
-
-      <div class="field">
-        <label>Would you like to attend the treatment appointment and shadow the dentist? <span
-            class="req">*</span></label>
-        <div class="radio-row">
-          <label class="radio-label"><input type="radio" name="shadow" value="yes" /> Yes</label>
-          <label class="radio-label"><input type="radio" name="shadow" value="no" /> No</label>
-        </div>
-        <div class="field-error" id="err-shadow"></div>
-      </div>
-    </div>
-
-    <!-- PRACTICE DETAILS -->
-    <div class="card">
-      <div class="section-title"> Practice Details</div>
 
       <div class="field">
         <label>Practice Name <span class="req">*</span></label>
         <input type="text" id="practiceName" placeholder="Dental Practice Name" />
         <div class="field-error" id="err-practiceName"></div>
       </div>
+      
 
-      <div class="field">
-        <label>Practice Address</label>
-        <input type="text" id="practiceAddress" placeholder="Street, city, postcode" />
-      </div>
+      
 
-      <div class="field">
-        <label>Practice Email Address <span class="req">*</span></label>
-        <input type="email" id="practiceEmail" placeholder="practice@clinic.com" />
-        <div class="field-error" id="err-practiceEmail"></div>
-      </div>
+     <div class="row-2">
+  <div class="field">
+    <label>Practice Email  <span class="req">*</span></label>
+    <input type="email" id="practiceEmail" placeholder="practice@clinic.com" />
+    <div class="field-error" id="err-practiceEmail"></div>
+  </div>
 
-      <div class="field">
+  <div class="field">
         <label>Practice Phone Number <span class="req">*</span></label>
         <div class="phone-field">
           <select id="practiceCountry">
@@ -1051,6 +1025,27 @@
             pattern="[0-9]*" />
         </div>
         <div class="field-error" id="err-practicePhone"></div>
+      </div>
+
+  
+</div>
+
+      
+      <div class="field">
+    <label>Practice Address</label>
+    <input type="text" id="practiceAddress" placeholder="Street, city, postcode" />
+  </div>
+
+     
+
+      <div class="field">
+        <label>Would you like to attend the treatment appointment and shadow the dentist? <span
+            class="req">*</span></label>
+        <div class="radio-row">
+          <label class="radio-label"><input type="radio" name="shadow" value="yes" /> Yes</label>
+          <label class="radio-label"><input type="radio" name="shadow" value="no" /> No</label>
+        </div>
+        <div class="field-error" id="err-shadow"></div>
       </div>
     </div>
 
@@ -1071,7 +1066,7 @@
       { value: 'Root Canal', label: 'Root Canal', desc: '' },
       { value: 'Paediatric Dentistry', label: 'Paediatric Dentistry', desc: "" },
       { value: 'Orthodontics', label: 'Orthodontics', desc: '' },
-      { value: 'Treatment Planning & Advice', label: 'Treatment Planning & Advice', desc: '' }
+      { value: 'Aesthetics', label: 'Aesthetics', desc: '' }
     ];
 
     var cbctOptions = [
@@ -1079,31 +1074,50 @@
       { value: 'Quadrant (8×5 cm)', label: 'Quadrant', badge: '8×5 cm', desc: '' },
       { value: 'Single Jaw (8×8 cm)', label: 'Single Jaw', badge: '8×8 cm', desc: '' },
       { value: 'Both Jaws (>8×8 cm)', label: 'Both Jaws', badge: '>8×8 cm', desc: '' },
-      { value: 'Aesthetics', label: 'Aesthetics', desc: '' }
+     
     ];
 
     /* track which cbct options have "report required" ticked */
     var cbctReportRequired = {};
 
     var dropdownState = { specialty: null, cbct: null };
-    var dobPickerOpen = false;
 
     /* ─── DOB ─── */
-    function setDobMaxDate() {
-      var dob = document.getElementById('dob');
-      if (!dob) return;
-      var today = new Date(); today.setHours(0, 0, 0, 0);
-      dob.max = today.toISOString().split('T')[0];
-    }
-
     function openDobPicker(event) {
       if (event) { event.preventDefault(); event.stopPropagation(); }
+      var picker = document.getElementById('dob-picker');
+      if (!picker) return;
+      if (typeof picker.showPicker === 'function') { picker.showPicker(); return; }
+      picker.click();
+    }
+
+    function validateDob() {
       var dob = document.getElementById('dob');
+      var err = document.getElementById('err-dob');
       if (!dob) return;
-      if (dobPickerOpen) { dob.blur(); dobPickerOpen = false; return; }
-      dob.focus({ preventScroll: true });
-      if (typeof dob.showPicker === 'function') { dob.showPicker(); dobPickerOpen = true; return; }
-      dob.click(); dobPickerOpen = true;
+      var val = dob.value.trim();
+      if (!val) { if (err) err.textContent = ''; dob.classList.remove('invalid'); return; }
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        if (err) err.textContent = 'Use YYYY-MM-DD format';
+        dob.classList.add('invalid');
+        return;
+      }
+      var parts = val.split('-');
+      var y = parseInt(parts[0], 10), m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+      var date = new Date(y, m - 1, d);
+      if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
+        if (err) err.textContent = 'Enter a valid date';
+        dob.classList.add('invalid');
+        return;
+      }
+      var today = new Date(); today.setHours(0, 0, 0, 0);
+      if (date > today) {
+        if (err) err.textContent = 'Date of Birth cannot be in the future.';
+        dob.classList.add('invalid');
+        return;
+      }
+      if (err) err.textContent = '';
+      dob.classList.remove('invalid');
     }
 
     /* ─── BUILD DROPDOWNS ─── */
@@ -1314,14 +1328,16 @@
       fileInput.files = dt.files; updateCbctReportList();
     });
 
-    setDobMaxDate();
-
     var dobInput = document.getElementById('dob');
     if (dobInput) {
-      dobInput.addEventListener('blur', function () { dobPickerOpen = false; });
-      dobInput.addEventListener('change', function () { dobPickerOpen = false; });
-      dobInput.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') { dobPickerOpen = false; dobInput.blur(); }
+      dobInput.addEventListener('blur', function () { validateDob(); });
+      dobInput.addEventListener('input', function () { validateDob(); });
+    }
+    var dobPicker = document.getElementById('dob-picker');
+    if (dobPicker) {
+      dobPicker.addEventListener('change', function () {
+        var dob = document.getElementById('dob');
+        if (dob && this.value) { dob.value = this.value; validateDob(); }
       });
     }
 
@@ -1339,6 +1355,10 @@
       if (el) el.textContent = msg;
       var input = document.getElementById(id);
       if (input) input.classList.toggle('invalid', !!msg);
+      if (id === 'shadow' && el) {
+        var parent = el.closest('.field');
+        if (parent) parent.classList.toggle('invalid', !!msg);
+      }
     }
 
     function clearErrors() {
@@ -1363,11 +1383,9 @@
       req('patientFirstName', 'First name is required');
       req('patientLastName', 'Last name is required');
       req('dob', 'Date of birth is required');
-      var dobEl = document.getElementById('dob');
-      if (dobEl && dobEl.value) {
-        var selectedDob = new Date(dobEl.value); var today = new Date(); today.setHours(0, 0, 0, 0);
-        if (selectedDob > today) { setError('dob', 'Future dates are not allowed'); ok = false; }
-      }
+      validateDob();
+      var errEl = document.getElementById('err-dob');
+      if (errEl && errEl.textContent) ok = false;
       req('mobileNumber', 'Mobile number is required');
       req('patientEmail', 'Email is required');
       email('patientEmail');
@@ -1402,9 +1420,10 @@
     function clearForm() {
       ['patientFirstName', 'patientLastName', 'dob', 'address', 'mobileNumber', 'patientEmail',
         'medicalHistory', 'prescriptionDetails', 'dentistName', 'gdcNumber', 'practiceName', 'practiceAddress',
-        'practiceEmail', 'practicePhone', 'referralEmail', 'referralPhone'].forEach(function (id) {
+        'practiceEmail', 'practicePhone', 'referralEmail'].forEach(function (id) {
           var el = document.getElementById(id); if (el) el.value = '';
         });
+      var dobPicker = document.getElementById('dob-picker'); if (dobPicker) dobPicker.value = '';
       document.getElementById('fileUpload').value = '';
       document.getElementById('file-list').textContent = '';
       clearSpecialty(); clearCbct();
@@ -1447,13 +1466,10 @@
         referralPracticeNameAddress: document.getElementById('practiceName').value.trim() +
           (document.getElementById('practiceAddress').value ? ' - ' + document.getElementById('practiceAddress').value.trim() : ''),
         referralEmail: (document.getElementById('referralEmail').value.trim()) || document.getElementById('practiceEmail').value.trim(),
-        referralPhoneNumber: (document.getElementById('referralPhone').value.trim())
-          ? document.getElementById('referralCountry').value + document.getElementById('referralPhone').value.trim()
-          : document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
         practiceName: document.getElementById('practiceName').value.trim(),
         practiceEmail: document.getElementById('practiceEmail').value.trim(),
         practicePhoneNumber: document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
-        attendTreatment: shadow === 'yes' ? 'Yes' : 'No',
+        attendTreatment: shadow === 'yes' ? 'Yes' : (shadow === 'no' ? 'No' : null),
         medicalHistoryPdfUrl: null,
         cbctReportPdfUrl: null,
         prescriptionDetails: document.getElementById('prescriptionDetails').value.trim(),
@@ -1476,7 +1492,7 @@
           else if (/\.(doc|docx)$/i.test(file.name)) fileType = 'document';
           else fileType = 'images';
           var params = new URLSearchParams({ fileName: file.name, fileType: fileType, mimeType: file.type, fileSize: String(file.size) });
-          var signedRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + params.toString());
+          var signedRes = await fetch('http://localhost:3000/api/s3?' + params.toString());
           var signedJson = null;
           var ct = signedRes.headers.get('content-type') || '';
           if (ct.includes('application/json')) {
@@ -1502,7 +1518,7 @@
             else if (/\.(doc|docx)$/i.test(cbctFile.name)) cFileType = 'document';
             else cFileType = 'images';
             var cParams = new URLSearchParams({ fileName: cbctFile.name, fileType: cFileType, mimeType: cbctFile.type, fileSize: String(cbctFile.size) });
-            var cRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + cParams.toString());
+            var cRes = await fetch('http://localhost:3000/api/s3?' + cParams.toString());
             var cJson = null;
             var cCt = cRes.headers.get('content-type') || '';
             if (cCt.includes('application/json')) {
@@ -1516,7 +1532,7 @@
           }
         }
 
-        var res = await fetch('https://aspire-clinix.vercel.app/api/referrals', {
+        var res = await fetch('http://localhost:3000/api/referrals', {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
         });
         var data = null;
