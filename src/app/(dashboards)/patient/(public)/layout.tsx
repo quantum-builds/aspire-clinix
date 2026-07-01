@@ -1,5 +1,4 @@
-import Patient from "@/app/patient-1/page";
-import TopBarWrapper from "../../components/TopBarWrapper";
+
 
 export default async function PatientLayout({
   children,
