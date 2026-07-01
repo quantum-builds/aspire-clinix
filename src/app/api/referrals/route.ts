@@ -344,48 +344,48 @@ export async function POST(req: NextRequest) {
       return newReferral;
     });
 
-    const dentsitEmail = referralForm.referralEmail;
-    if (dentsitEmail && process.env.EMAIL_FROM) {
-      try {
-        const dentistHtml = buildReferralHtml(referralForm, {
-          recipient: "dentist",
-          isRegistered: isReferralDentistRegistered,
-          referralId: referral.id,
-        });
-        await sendgrid.send({
-          from: process.env.EMAIL_FROM,
-          to: dentsitEmail,
-          subject: "New Referral Form Submitted",
-          html: dentistHtml,
-          text: undefined,
-        });
-      } catch (err) {
-        console.error("Error sending referral dentist email:", err);
-      }
-    }
+    // const dentsitEmail = referralForm.referralEmail;
+    // if (dentsitEmail && process.env.EMAIL_FROM) {
+    //   try {
+    //     const dentistHtml = buildReferralHtml(referralForm, {
+    //       recipient: "dentist",
+    //       isRegistered: isReferralDentistRegistered,
+    //       referralId: referral.id,
+    //     });
+    //     await sendgrid.send({
+    //       from: process.env.EMAIL_FROM,
+    //       to: dentsitEmail,
+    //       subject: "New Referral Form Submitted",
+    //       html: dentistHtml,
+    //       text: undefined,
+    //     });
+    //   } catch (err) {
+    //     console.error("Error sending referral dentist email:", err);
+    //   }
+    // }
 
-    const patientEmail = referralForm.patientEmail;
-    if (patientEmail && process.env.EMAIL_FROM) {
-      try {
-        const patientHtml = buildReferralHtml(referralForm, {
-          recipient: "patient",
-          isRegistered: isPatientRegistered,
-          referralId: referral.id,
-        });
-        const subject = isPatientRegistered
-          ? "Referral form received"
-          : "Complete your Aspire registration";
-        await sendgrid.send({
-          from: process.env.EMAIL_FROM,
-          to: patientEmail,
-          subject,
-          html: patientHtml,
-          text: undefined,
-        });
-      } catch (err) {
-        console.error("Error sending referral patient email:", err);
-      }
-    }
+    // const patientEmail = referralForm.patientEmail;
+    // if (patientEmail && process.env.EMAIL_FROM) {
+    //   try {
+    //     const patientHtml = buildReferralHtml(referralForm, {
+    //       recipient: "patient",
+    //       isRegistered: isPatientRegistered,
+    //       referralId: referral.id,
+    //     });
+    //     const subject = isPatientRegistered
+    //       ? "Referral form received"
+    //       : "Complete your Aspire registration";
+    //     await sendgrid.send({
+    //       from: process.env.EMAIL_FROM,
+    //       to: patientEmail,
+    //       subject,
+    //       html: patientHtml,
+    //       text: undefined,
+    //     });
+    //   } catch (err) {
+    //     console.error("Error sending referral patient email:", err);
+    //   }
+    // }
 
     return createCorsJson(
       createResponse(true, "Form created successfully.", referral),
