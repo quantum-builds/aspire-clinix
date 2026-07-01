@@ -46,9 +46,9 @@ export default function BindAppointmentModal({
   const handleSelectAppointment = (
     appointmentId: string,
     practitionerId: number,
-    action: 'bind' | 'unbind',
+    action: "bind" | "unbind",
   ) => {
-    if (action === 'unbind') {
+    if (action === "unbind") {
       setPendingUnbindData({ appointmentId, practitionerId });
       setShowConfirmDialog(true);
       return;
@@ -103,7 +103,9 @@ export default function BindAppointmentModal({
         onSuccess: (data) => {
           if (data.status) {
             showToast("success", "Appointment unbound successfully");
-            queryClient.invalidateQueries({ queryKey: ["appointments", "patient", patientName] });
+            queryClient.invalidateQueries({
+              queryKey: ["appointments", "patient", patientName],
+            });
             onClose();
             onAppointmentBound();
           } else {
@@ -160,7 +162,9 @@ export default function BindAppointmentModal({
                   Unbind Appointment
                 </h3>
                 <p className="text-sm text-gray-600 mb-6">
-                  Are you sure you want to unbind this appointment? This will remove the appointment assignment from the related referral request.
+                  Are you sure you want to unbind this appointment? This will
+                  remove the appointment assignment from the related referral
+                  request.
                 </p>
                 <div className="flex justify-end gap-3">
                   <button
@@ -189,9 +193,15 @@ export default function BindAppointmentModal({
           ) : error ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <p className="text-red-500 mb-2">
-                {error instanceof Error
-                  ? error.message
-                  : "Failed to fetch appointments"}
+                {error instanceof Error ? (
+                  <p>
+                    No appointment was found for this patient in Dentally.
+                    Please book an appointment in Dentally for this patient,
+                    then try to bind it again.
+                  </p>
+                ) : (
+                  "Failed to fetch appointments"
+                )}
               </p>
               <button
                 onClick={() => window.location.reload()}
