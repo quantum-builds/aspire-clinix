@@ -1,5 +1,5 @@
 import { axiosInstance, ENDPOINTS } from "@/config/api-config";
-import { TAdmin, TAdminCreate } from "@/types/admin";
+import { TAdmin, TAdminCreate, TAdminVerify} from "@/types/admin";
 import { useMutation } from "@tanstack/react-query";
 
 export const useCreateAdmin = () => {
@@ -31,6 +31,29 @@ export const usePatchAdmin = () => {
 
       const admin: TAdmin = response.data.data;
       return admin;
+    },
+  });
+};
+
+export const useVerifyAdmin = () => {
+  return useMutation({
+    mutationFn: async ({ verifyAdmin }: { verifyAdmin: TAdminVerify }) => {
+      const response = await axiosInstance.post(ENDPOINTS.admin.verify, {
+        verifyAdmin,
+      });
+      return response;
+    },
+  });
+};
+
+export const useToCreateAdmin = () => {
+  return useMutation({
+    mutationFn: async ({ email, otp }: { email: string; otp: string }) => {
+      const response = await axiosInstance.post(
+        ENDPOINTS.admin.createAdmin,
+        { email, otp },
+      );
+      return response.data;
     },
   });
 };

@@ -34,6 +34,7 @@ export const ENDPOINTS = {
     createAdmin: "/api/admin",
     getAdmin: "/api/admin",
     editAdmin: "/api/admin",
+    verify: "/api/admin/verify",
   },
 
   plan: {
@@ -246,7 +247,8 @@ export const DENTALLY_ENDPOINTS = {
   practitioner: {
     get: (practitionerId: string) => `practitioners/${practitionerId}`,
     edit: (practitionerId: string) => `practitioners/${practitionerId}`,
-    list: (site_id: string) => `practitioners?siteId=${site_id.toString()}&per_page=100`,
+    list: (site_id: string) =>
+      `practitioners?siteId=${site_id.toString()}&per_page=100`,
   },
   appointment: {
     create: "appointments",
