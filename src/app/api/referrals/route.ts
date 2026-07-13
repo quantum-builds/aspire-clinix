@@ -7,6 +7,7 @@ import { TokenRoles } from "@/constants/UserRoles";
 import { getPatient } from "@/dentallyHelpers/patient";
 import sendgrid from "@/config/sendgrid-config";
 import buildReferralHtml from "@/utils/referalEmailDentsit";
+import { getPractitioners } from "@/dentallyHelpers/practitioners";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -205,7 +206,7 @@ export async function POST(req: NextRequest) {
     let activePatients = (response.response.patients ?? []).filter(
       (patient: any) => patient.active && !patient.archivedReason,
     );
-   
+
     if (activePatients.length > 1) {
       const matchingPatients = activePatients.filter(
         (patient: any) =>
@@ -318,19 +319,52 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const name = referralForm.referralName?.trim();
+
+    const [firstName, ...lastNameParts] = name.split(" ");
+    const lastName = lastNameParts.join(" ");
+
     const referralEmail = referralForm.referralEmail;
-   
+    const referralGDC = referralForm.referralGDC;
+
     const referralDentist = await prisma.dentist.findFirst({
-      where: { email: referralEmail, role: DentistRole.REFERRING_DENTIST },
+      where: { email: referralEmail,gdcNo: referralGDC },
     });
 
-    
     if (referralDentist) {
       referralForm.referralDentistId = referralDentist.id;
-    } else {
-      isReferralDentistRegistered = false;
-    }
+    } else if (!referralDentist) {
+      const normalizedEmail = referralEmail.trim().toLowerCase();
+      const normalizedGdcNumber = referralGDC.trim().toLowerCase();
+      const res = await getPractitioners();
+      if (res.isError) {
+        return res.response;
+      }
 
+      const filteredPractitioners = (res.response.practitioners ?? []).filter(
+        (practitioner: any) =>
+          practitioner?.user?.email?.trim?.().toLowerCase?.() ===
+            normalizedEmail &&
+          practitioner?.gdcNumber?.trim?.().toLowerCase?.() ===
+            normalizedGdcNumber,
+      );
+      if (filteredPractitioners.length === 1) {
+        const practitioner = filteredPractitioners[0];
+        const newDentist = await prisma.dentist.create({
+          data: {
+            email: normalizedEmail,
+            gdcNo: normalizedGdcNumber,
+            dentallyId: practitioner.id,
+            firstName,
+            lastName,
+            role: TokenRoles.DENTALLY_PRACTITIONER,
+          },
+        });
+        referralForm.referralDentistId = newDentist.id;
+      } else {
+        isReferralDentistRegistered = false;
+      }
+    }
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({
         data: referralForm,

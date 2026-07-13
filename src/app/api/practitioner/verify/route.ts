@@ -87,6 +87,7 @@ export async function POST(req: NextRequest) {
     }
 
     const response = await getPractitioners();
+    console.log("getPractitioners form route", response);
 
     if (response.isError) {
       return NextResponse.json(
@@ -107,6 +108,7 @@ export async function POST(req: NextRequest) {
         practitioner?.gdcNumber?.trim?.().toLowerCase?.() ===
           normalizedGdcNumber,
     );
+    console.log("filteredPractitioners", filteredPractitioners);
 
     let dbDentist = null;
 

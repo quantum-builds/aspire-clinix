@@ -129,15 +129,21 @@ export function ClinicReferralDataTable({
               <TableCell className="px-6 py-4">
                 {entry.referralForm.patientName}
               </TableCell>
-              <TableCell className="px-6 py-4">
-                {entry.referralForm.referralName}
+              <TableCell className="relative px-6 py-4">
+                <span>{entry.referralForm.referralName}</span>
+
+                {entry.isReferringDentistFromDentally && (
+                  <span className="absolute right-14 top-2 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                    Dentally
+                  </span>
+                )}
               </TableCell>
               <TableCell className="px-6 py-4">
                 {entry.referralForm.cbct
                   ? entry.referralForm.cbct
                   : entry.referralForm.dentalSpecialty}
               </TableCell>
-              
+
               <TableCell className="px-6 py-4">
                 <div className="flex gap-2 items-center">
                   <div

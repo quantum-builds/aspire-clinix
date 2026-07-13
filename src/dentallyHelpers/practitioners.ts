@@ -23,6 +23,7 @@ export async function getPractitioners() {
     response.data,
     DATA_TYPE.PRACTITIONERS,
   );
+  console.log("PratitioberResponse form dentally Handler", practitionersResponse)
 
   return practitionersResponse;
 }

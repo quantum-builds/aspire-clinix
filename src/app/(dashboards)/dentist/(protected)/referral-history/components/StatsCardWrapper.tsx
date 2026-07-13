@@ -18,6 +18,8 @@ export default async function StatsCardWrapper() {
       pageType: DentistReferralPageTYpe.HISTORY,
     });
 
+    console.log("StatsCardWrapper response FE", response);
+
   const REFERRAL_CARDS: TReferraLRequestCards = {
     totalReferrals: {
       icon: TotalReferrals,

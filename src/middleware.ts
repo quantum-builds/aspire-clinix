@@ -21,6 +21,7 @@ export async function middleware(request: NextRequest) {
       "/dentist/appointments/past",
       "/dentist/referral-request",
       "/dentist/profile",
+      "/dentist/referral-history",
     ],
     REFERRING_DENTIST: [
       "/dentist/appointments",
