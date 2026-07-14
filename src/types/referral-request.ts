@@ -16,6 +16,8 @@ export type TReferralRequest = TCreateReferralRequest & {
   referralForm: TReferralForm;
   assignedDentist?: Dentist;
   appointment?: TAppointment;
+  isPractitioner?: boolean;
+  isReferringDentistFromDentally?: boolean;
 };
 
 export type TReferralRequestPagination = {

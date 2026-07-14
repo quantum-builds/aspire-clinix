@@ -45,6 +45,8 @@ export async function getReferralRequests({
     const responseData: Response<TReferralRequestResponse> = response.data;
     const referralRequests = responseData.data;
 
+    console.log("Referral Requests Response Data:", referralRequests.referralRequests);
+
     const upload = referralRequests.fileUrl
       ? await getAMedia(referralRequests.fileUrl)
       : null;

@@ -64,6 +64,11 @@ const RECIEVING_SIDEBAR_CONTENT: SidebarPage[] = [
       { name: "Past", icon: InActiveIcon, href: "/dentist/appointments/past" },
     ],
   },
+   {
+    name: "Referral",
+    icon: ConsentIcon,
+    href: "/dentist/referral-history",
+  },
 ];
 
 const REFERRING_SIDEBAR_CONTENT: SidebarPage[] = [

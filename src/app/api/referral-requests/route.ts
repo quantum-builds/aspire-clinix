@@ -5,8 +5,42 @@ import { calcChange } from "@/utils/calculatePercatageChnage";
 import { createResponse } from "@/utils/createResponse";
 import { Prisma, ReferralRequestStatus } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
+import type { JWT } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import { getPractitioners } from "@/dentallyHelpers/practitioners";
 
+function isJwtToken(token: string | JWT | null): token is JWT {
+  return typeof token === "object" && token !== null && !Array.isArray(token);
+}
+
+async function resolveReferralDentistId(
+  token: Awaited<ReturnType<typeof getToken>>,
+): Promise<string | null> {
+  if (!isJwtToken(token) || !token.sub) {
+    return null;
+  }
+
+  if (token.role === TokenRoles.REFERRING_DENTIST) {
+    return String(token.sub);
+  }
+
+  if (token.role === TokenRoles.DENTALLY_PRACTITIONER) {
+    const dentallyId = Number(token.sub);
+
+    if (Number.isNaN(dentallyId)) {
+      return null;
+    }
+
+    const dentist = await prisma.dentist.findFirst({
+      where: { dentallyId },
+      select: { id: true },
+    });
+
+    return dentist?.id ?? null;
+  }
+
+  return null;
+}
 /**
  * @swagger
  * /api/referral-requests:
@@ -107,10 +141,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    if (
-      token.role === TokenRoles.PATIENT ||
-      token.role === TokenRoles.DENTALLY_PRACTITIONER
-    ) {
+    if (token.role === TokenRoles.PATIENT) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
@@ -127,6 +158,7 @@ export async function GET(req: NextRequest) {
     const pageType = searchParams.get("page-type") || "";
     const statsOnlyParam = searchParams.get("stats-only");
     const statsOnly = statsOnlyParam === "true";
+    const referralDentistId = await resolveReferralDentistId(token);
 
     if (statsOnly) {
       const now = new Date();
@@ -138,17 +170,17 @@ export async function GET(req: NextRequest) {
       lastWeekStart.setDate(now.getDate() - 14);
       const lastWeekEnd = thisWeekStart;
 
-      // build where filter depending on role and pageType
       let baseWhere: Prisma.ReferralRequestWhereInput = {
         createdAt: { gte: thisWeekStart, lte: now },
       };
 
-      // if dentist or receiving dentist, and page-type=request
       if (
-        token.role === TokenRoles.REFERRING_DENTIST &&
-        searchParams.get("page-type") === DentistReferralPageTYpe.HISTORY
+        (token.role === TokenRoles.REFERRING_DENTIST ||
+          token.role === TokenRoles.DENTALLY_PRACTITIONER) &&
+        searchParams.get("page-type") === DentistReferralPageTYpe.HISTORY &&
+        referralDentistId
       ) {
-        (baseWhere.referralForm ??= {}).referralDentistId = token.sub;
+        (baseWhere.referralForm ??= {}).referralDentistId = referralDentistId;
       }
 
       const [thisWeekTotal, thisWeekAssigned, thisWeekUnassigned] =
@@ -223,6 +255,29 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    let dentallyPractitionerEmails = new Set<string>();
+
+    try {
+      const practitionersResponse = await getPractitioners();
+      if (!practitionersResponse.isError) {
+        dentallyPractitionerEmails = new Set<string>(
+          (practitionersResponse.response.practitioners || []).map(
+            (practitioner: any) =>
+              practitioner.user?.email?.trim().toLowerCase(),
+          ),
+        );
+      } else {
+        console.log(
+          "[referral-requests] Dentally practitioners lookup failed",
+          {
+            isError: practitionersResponse.isError,
+          },
+        );
+      }
+    } catch (error) {
+      console.error("Failed to fetch Dentally practitioners:", error);
+    }
+
     const limit = 10;
     const skip = (page - 1) * limit;
 
@@ -236,17 +291,10 @@ export async function GET(req: NextRequest) {
     let referringDentist = null;
     if (
       pageType === DentistReferralPageTYpe.HISTORY ||
-      token.role === TokenRoles.REFERRING_DENTIST
-    ) {
-      referringDentist = token.sub;
-    }
-
-    let recievingDentist = null;
-    if (
-      (pageType === DentistReferralPageTYpe.REQUEST ) ||
+      token.role === TokenRoles.REFERRING_DENTIST ||
       token.role === TokenRoles.DENTALLY_PRACTITIONER
     ) {
-      recievingDentist = token.sub;
+      referringDentist = referralDentistId;
     }
 
     let dateFilter: Prisma.ReferralFormWhereInput = {};
@@ -299,7 +347,6 @@ export async function GET(req: NextRequest) {
         ...(referringDentist
           ? [{ referralForm: { referralDentistId: referringDentist } }]
           : []),
-        ...(recievingDentist ? [{ assignedDentistId: recievingDentist }] : []),
         ...(status ? [{ requestStatus: status }] : []),
         ...(Object.keys(dateFilter).length
           ? [{ referralForm: dateFilter }]
@@ -313,11 +360,19 @@ export async function GET(req: NextRequest) {
         skip,
         take: limit,
         orderBy: { createdAt: "desc" },
-        include: { referralForm: true },
+        include: {
+          referralForm: {
+            include: {
+              referralDentist: true,
+            },
+          },
+        },
       }),
       prisma.referralRequest.count({ where: baseWhere }),
     ]);
 
+    console.log("Referral requests BE:", referralRequests);
+    console.log("Total count: BE", totalCount);
     if (referralRequests.length === 0) {
       return NextResponse.json(
         createResponse(false, "No referral request found", null),
@@ -325,9 +380,29 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const referralRequestsWithFlags = referralRequests.map(
+      (referralRequest) => {
+        const dentistEmail =
+          referralRequest.referralForm.referralEmail?.trim().toLowerCase() ||
+          referralRequest.referralForm.referralDentist?.email
+            ?.trim()
+            .toLowerCase() ||
+          "";
+
+        return {
+          ...referralRequest,
+          isReferringDentistFromDentally: dentistEmail
+            ? dentallyPractitionerEmails.has(dentistEmail)
+            : false,
+        };
+      },
+    );
+
+    console.log("Referral requests with flags BE", referralRequestsWithFlags);
+
     return NextResponse.json(
       createResponse(true, "Referral requests fetched successfully.", {
-        referralRequests,
+        referralRequests: referralRequestsWithFlags,
         pagination: {
           page,
           total: totalCount,

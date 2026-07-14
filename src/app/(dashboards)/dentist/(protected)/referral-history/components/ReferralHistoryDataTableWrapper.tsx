@@ -9,16 +9,18 @@ interface ReferralHistoryDataTableWrapperProps {
   query: string;
   page: number;
   status: string;
-  on: string
-  before: string
-  after: string
+  on: string;
+  before: string;
+  after: string;
 }
 
 export default async function ReferralHistoryDataTableWrapper({
   query,
   page,
   status,
-  on, before, after
+  on,
+  before,
+  after,
 }: ReferralHistoryDataTableWrapperProps) {
   const response: Response<TReferralRequestResponse> =
     await getReferralRequests({
@@ -26,8 +28,11 @@ export default async function ReferralHistoryDataTableWrapper({
       search: query,
       status: status,
       pageType: DentistReferralPageTYpe.HISTORY,
-      on: on, before: before, after: after
+      on: on,
+      before: before,
+      after: after,
     });
+  console.log("ReferralHistoryDataTableWrapper response from FE", response);
 
   if (
     !response.status ||
@@ -44,7 +49,11 @@ export default async function ReferralHistoryDataTableWrapper({
   const referralRequests = response.data.referralRequests;
   const total = response.data.pagination.totalPages;
 
-  console.log(referralRequests);
+  console.log(
+    "referralRequests FE in the ReferralHistoryDataTableWrapper ",
+    referralRequests,
+  );
+  console.log("total FE", total);
   return (
     <>
       <div className="min-w-full overflow-x-auto">
