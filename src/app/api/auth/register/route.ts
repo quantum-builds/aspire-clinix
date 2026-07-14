@@ -244,7 +244,7 @@ export async function POST(req: NextRequest) {
         },
       });
       await prisma.referralForm.updateMany({
-        where: { patientEmail: createdDentist.email },
+        where: { referralEmail: createdDentist.email },
         data: { referralDentistId: createdDentist.id },
       });
     }
