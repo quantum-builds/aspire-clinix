@@ -56,16 +56,32 @@ export function ClinicReferralDataTable({
     );
   };
 
+  const getStatusRoute = (status: string) => {
+    if (status === ReferralRequestStatus.ASSIGNED) return "assigned";
+    return "unassigned";
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case ReferralRequestStatus.ASSIGNED:
+        return "bg-green";
+      case ReferralRequestStatus.PENDING_REVIEW:
+        return "bg-blue-500";
+      case ReferralRequestStatus.ACCEPTED:
+        return "bg-emerald-400";
+      case ReferralRequestStatus.REJECTED:
+        return "bg-red-500";
+      default:
+        return "bg-[#fcd833]";
+    }
+  };
+
   const getMenuOptions = (entry: TReferralRequest) => [
     {
       label: "View",
       onClick: () => {
         router.push(
-          `/clinic/referrals/${entry.id}/${
-            entry.requestStatus === ReferralRequestStatus.ASSIGNED
-              ? ReferralRequestStatus.ASSIGNED.toLowerCase()
-              : ReferralRequestStatus.UNASSIGNED.toLowerCase()
-          }`,
+          `/clinic/referrals/${entry.id}/${getStatusRoute(entry.requestStatus)}`,
         );
       },
     },
@@ -115,11 +131,7 @@ export function ClinicReferralDataTable({
               onClick={(e) => {
                 e.stopPropagation();
                 router.push(
-                  `/clinic/referrals/${entry.id}/${
-                    entry.requestStatus === ReferralRequestStatus.ASSIGNED
-                      ? ReferralRequestStatus.ASSIGNED.toLowerCase()
-                      : ReferralRequestStatus.UNASSIGNED.toLowerCase()
-                  }`,
+                  `/clinic/referrals/${entry.id}/${getStatusRoute(entry.requestStatus)}`,
                 );
               }}
             >
@@ -147,11 +159,7 @@ export function ClinicReferralDataTable({
               <TableCell className="px-6 py-4">
                 <div className="flex gap-2 items-center">
                   <div
-                    className={`size-3 rounded-[4px] ${
-                      entry.requestStatus === ReferralRequestStatus.ASSIGNED
-                        ? "bg-green"
-                        : "bg-[#fcd833]"
-                    }`}
+                    className={`size-3 rounded-[4px] ${getStatusColor(entry.requestStatus)}`}
                   />
                   {entry.requestStatus}
                 </div>

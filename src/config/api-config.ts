@@ -78,6 +78,7 @@ export const ENDPOINTS = {
     getById: (id: string) => `/api/referral-requests/${id}`,
     patch: (id: string) => `/api/referral-requests/${id}`,
     delete: (id: string) => `/api/referral-requests/${id}`,
+    respond: (id: string) => `/api/referral-requests/${id}/respond`,
   },
 
   email: {

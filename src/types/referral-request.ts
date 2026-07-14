@@ -1,7 +1,7 @@
 import { Dentist, TDentist } from "./dentist";
 import { TAppointment } from "./appointment";
 import { TReferralForm } from "./referral-form";
-import { ReferralRequestStatus } from "@prisma/client";
+import { ReferralRequestStatus, DentistResponseStatus } from "@prisma/client";
 
 export type TCreateReferralRequest = {
   referralFormId: string;
@@ -18,6 +18,11 @@ export type TReferralRequest = TCreateReferralRequest & {
   appointment?: TAppointment;
   isPractitioner?: boolean;
   isReferringDentistFromDentally?: boolean;
+  dentistResponseStatus?: DentistResponseStatus | null;
+  dentistComments?: string | null;
+  proposedTreatmentDetails?: string | null;
+  proposedConsultationTime?: string | null;
+  respondedAt?: Date | null;
 };
 
 export type TReferralRequestPagination = {

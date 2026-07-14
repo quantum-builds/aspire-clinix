@@ -43,10 +43,15 @@ model ReferralRequest {
   id                String                @id @default(cuid())
   referralFormId    String                @unique
   assignedDentistId String?
-  appointmentId     String?               @unique
-  requestStatus     ReferralRequestStatus
-  createdAt         DateTime              @default(now())
-  referralForm      ReferralForm          @relation(fields: [referralFormId], references: [id])
+  appointmentId               String?               @unique
+  requestStatus               ReferralRequestStatus
+  dentistResponseStatus       DentistResponseStatus?
+  dentistComments             String?
+  proposedTreatmentDetails    String?
+  proposedConsultationTime    String?
+  respondedAt                 DateTime?
+  createdAt                   DateTime              @default(now())
+  referralForm                ReferralForm          @relation(fields: [referralFormId], references: [id])
 }
 
 model Plan {
@@ -372,8 +377,17 @@ enum PracticeApprovalStatus {
 }
 
 enum ReferralRequestStatus {
-  ASSIGNED
   UNASSIGNED
+  PENDING_REVIEW
+  ACCEPTED
+  REJECTED
+  ASSIGNED
+}
+
+enum DentistResponseStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 enum ReportRecipient {

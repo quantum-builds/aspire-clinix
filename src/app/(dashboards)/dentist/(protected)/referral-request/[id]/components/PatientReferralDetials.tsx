@@ -3,6 +3,8 @@
 import { usePathname } from "next/navigation";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import ReferralFormDetailModal from "@/app/(dashboards)/components/ReferralFormDetailModal";
+import ReferralProgressCard from "@/app/(dashboards)/components/ReferralProgressCard";
+import DentistResponseForm from "./DentistResponseForm";
 
 interface PatientReferralDetailsProps {
   id: string;
@@ -28,6 +30,17 @@ interface PatientReferralDetailsProps {
     attendTreatment: string;
     medicalHistoryPDF?: string;
   };
+  // New flow props
+  requestStatus: string;
+  assignedDentistId?: string | null;
+  dentistResponseStatus?: string | null;
+  dentistComments?: string | null;
+  proposedTreatmentDetails?: string | null;
+  proposedConsultationTime?: string | null;
+  respondedAt?: string | null;
+  isAssignedToMe: boolean;
+  assignedDentistName?: string | null;
+  assignedDentistEmail?: string | null;
 }
 
 export default function PatientReferralDetails({
@@ -36,9 +49,22 @@ export default function PatientReferralDetails({
   patientDetials,
   dentistDetails,
   referralFormDetails,
+  requestStatus,
+  assignedDentistId,
+  dentistResponseStatus,
+  dentistComments,
+  proposedTreatmentDetails,
+  proposedConsultationTime,
+  respondedAt,
+  isAssignedToMe,
+  assignedDentistName,
+  assignedDentistEmail,
 }: PatientReferralDetailsProps) {
   const pathname = usePathname();
   const modalUrl = `${pathname}?showModal=true`;
+
+  const hasResponded = dentistResponseStatus && dentistResponseStatus !== "PENDING";
+  const canRespond = isAssignedToMe && requestStatus === "PENDING_REVIEW" && !hasResponded;
 
   return (
     <div className="bg-dashboardBarBackground w-full rounded-2xl px-6 py-6 space-y-3">
@@ -93,6 +119,49 @@ export default function PatientReferralDetails({
           </div>
         </div>
       </div>
+
+      {/* Progress Card - shown to all dentists who can view this referral */}
+      {(hasResponded || isAssignedToMe) && (
+        <ReferralProgressCard
+          requestStatus={requestStatus}
+          assignedDentist={
+            assignedDentistName
+              ? {
+                  firstName: assignedDentistName.split(" ")[0] || "",
+                  lastName: assignedDentistName.split(" ").slice(1).join(" ") || "",
+                  email: assignedDentistEmail || "",
+                }
+              : null
+          }
+          dentistResponseStatus={dentistResponseStatus}
+          dentistComments={dentistComments}
+          proposedTreatmentDetails={proposedTreatmentDetails}
+          proposedConsultationTime={proposedConsultationTime}
+          respondedAt={respondedAt}
+        />
+      )}
+
+      {/* Response form - only for the assigned dentist who hasn't responded yet */}
+      {canRespond && (
+        <DentistResponseForm
+          referralRequestId={id}
+          existingComments={dentistComments}
+          existingTreatment={proposedTreatmentDetails}
+          existingTime={proposedConsultationTime}
+        />
+      )}
+
+      {/* Already responded notice */}
+      {hasResponded && isAssignedToMe && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+          <p className="text-blue-700 font-medium">
+            You have already responded to this referral.
+          </p>
+          <p className="text-blue-600 text-sm mt-1">
+            Your response has been recorded. You can view the progress above.
+          </p>
+        </div>
+      )}
 
       {showModel && <ReferralFormDetailModal referralFormDetails={referralFormDetails} />}
     </div>

@@ -57,3 +57,71 @@ export const useAppointmentBindingMutation = () => {
   });
 };
 
+export const useAssignDentistMutation = () => {
+  return useMutation({
+    mutationFn: async ({
+      referralRequestId,
+      practitionerId,
+    }: {
+      referralRequestId: string;
+      practitionerId: number;
+    }) => {
+      const response = await axiosInstance.patch(
+        ENDPOINTS.referralRequest.patch(referralRequestId),
+        {
+          requestStatus: "PENDING_REVIEW",
+          practitionerId,
+        }
+      );
+      return response.data;
+    },
+  });
+};
+
+export const useUnassignDentistMutation = () => {
+  return useMutation({
+    mutationFn: async ({
+      referralRequestId,
+    }: {
+      referralRequestId: string;
+    }) => {
+      const response = await axiosInstance.patch(
+        ENDPOINTS.referralRequest.patch(referralRequestId),
+        {
+          requestStatus: "UNASSIGNED",
+        }
+      );
+      return response.data;
+    },
+  });
+};
+
+export const useRespondToReferralMutation = () => {
+  return useMutation({
+    mutationFn: async ({
+      referralRequestId,
+      action,
+      comments,
+      proposedTreatmentDetails,
+      proposedConsultationTime,
+    }: {
+      referralRequestId: string;
+      action: "ACCEPTED" | "REJECTED";
+      comments?: string;
+      proposedTreatmentDetails?: string;
+      proposedConsultationTime?: string;
+    }) => {
+      const response = await axiosInstance.post(
+        ENDPOINTS.referralRequest.respond(referralRequestId),
+        {
+          action,
+          comments,
+          proposedTreatmentDetails,
+          proposedConsultationTime,
+        }
+      );
+      return response.data;
+    },
+  });
+};
+
