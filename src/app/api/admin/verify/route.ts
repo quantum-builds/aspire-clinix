@@ -8,27 +8,58 @@ import sendgrid from "@/config/sendgrid-config";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { fullName, email, mobilePhone, password } = body.verifyAdmin || body;
+    console.log("VERIFY ADMIN BODY:", body);
+    const { fullName, email, phoneNumber, password } = body;
 
-    if (!fullName || !mobilePhone || !email || !password) {
+    if (!fullName) {
       return NextResponse.json(
-        createResponse(false, "All fields are required", null),
+        createResponse(false, "Full name is required", null),
+        { status: 400 },
+      );
+    }
+    if (!phoneNumber) {
+      return NextResponse.json(
+        createResponse(false, "Phone number is required", null),
+        { status: 400 },
+      );
+    }
+    if (!email) {
+      return NextResponse.json(
+        createResponse(false, "Email is required", null),
+        { status: 400 },
+      );
+    }
+    if (!password) {
+      return NextResponse.json(
+        createResponse(false, "Password is required", null),
         { status: 400 },
       );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const opt = generateOtp();
+    const otp = generateOtp();
     const otpInvalidationTime = new Date(Date.now() + 15 * 60 * 1000);
+
+    const existingAdmin = await prisma.admin.findUnique({
+      where: { email, phoneNumber },
+
+    });
+
+    if (existingAdmin) {
+      return NextResponse.json(
+        createResponse(false, "Admin with this email and phone number already exists", null),
+        { status: 400 },
+      );
+    }
 
     const admin = await prisma.pendingAdmin.create({
       data: {
         password: hashedPassword,
         email,
-        mobilePhone,
+        phoneNumber,
         fullName,
-        opt,
+        otp,
         otpInvalidationTime,
       },
     });
@@ -50,16 +81,28 @@ export async function POST(req: NextRequest) {
       to: process.env.EMAIL_TO!,
       subject: "Your Aspire OTP code",
       html,
-      text: "",
+      text: "undefined",
     });
     return NextResponse.json(
       createResponse(true, "Admin wait the super admin approval", admin),
       { status: 201 },
     );
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(createResponse(false, errorMessage, null), {
+  } catch (error: any) {
+  console.log(
+    "SENDGRID ERROR:",
+    error?.response?.body
+  );
+
+  return NextResponse.json(
+    createResponse(
+      false,
+      error?.response?.body || error.message,
+      null
+    ),
+    {
       status: 500,
-    });
+    }
+  );
+
   }
 }

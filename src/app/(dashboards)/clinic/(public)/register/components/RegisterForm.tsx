@@ -12,7 +12,7 @@ import { z } from "zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
-import {  useVerifyAdmin } from "@/services/admin/adminMutation";
+import { useVerifyAdmin } from "@/services/admin/adminMutation";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 export const adminSchema = z.object({
@@ -44,7 +44,6 @@ export const adminSchema = z.object({
 type FormData = z.infer<typeof adminSchema>;
 
 export default function AdminRegisterForm() {
- 
   const { mutate: verifyAdmin, isPending: verifyAdminLoader } =
     useVerifyAdmin();
   const [showPassword, setShowPassword] = useState(false);
@@ -65,27 +64,26 @@ export default function AdminRegisterForm() {
     },
   });
 
-  const onSubmit = async (data: FormData) => {
-    verifyAdmin(
-      {
-        verifyAdmin: {
-          ...data,
-        },
+ const onSubmit = async (data: FormData) => {
+  verifyAdmin(
+    {
+      email: data.email,
+      fullName: data.fullName,
+      password: data.password,
+      phoneNumber: data.phoneNumber,
+    },
+    {
+      onSuccess: () => {
+        showToast("success", "OTP code sent successfully.");
+        router.replace(`/clinic/otp-verify?email=${data.email}`);
       },
-      {
-        onSuccess: () => {
-          showToast("success", "Admin Registered Successfully");
-          reset();
-          router.replace(`/clinic/otp-verify?email=${data.email}`);
-        },
-        onError: (error) => {
-          const msg = getAxiosErrorMessage(error);
-          showToast("error", msg);
-        },
+      onError: (error) => {
+        const msg = getAxiosErrorMessage(error);
+        showToast("error", msg);
       },
-    );
-  };
-
+    },
+  );
+};
   return (
     <form
       className="flex flex-col gap-10 max-w-lg"

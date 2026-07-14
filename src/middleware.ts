@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
   // Define public routes
   const patientPublic = ["/patient/login", "/patient/otp-verify", "/patient/register"];
   const dentistPublic = ["/dentist/login", "/dentist/otp-verify", "/dentist/register"];
-  const clinicPublic = ["/clinic/login", "/clinic/register"];
+  const clinicPublic = ["/clinic/login", "/clinic/register", "/clinic/otp-verify"];
 
   // Dentist role-based route permissions
   const dentistAllowedRoutes: Record<string, string[]> = {

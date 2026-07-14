@@ -15,4 +15,4 @@ export type TAdmin = Omit<TAdminCreate, "password"> & {
   file?: S3File | null;
 };
 
-export type TAdminVerify = Omit<TAdminCreate, "fileUrl">;
+
