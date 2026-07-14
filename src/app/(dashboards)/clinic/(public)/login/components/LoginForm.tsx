@@ -12,7 +12,6 @@ import Link from "next/link";
 import { loginMutation } from "@/services/LoginMutation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useRouter } from "next/navigation";
-import { UserRoles } from "@/types/common";
 import { useState } from "react";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { TokenRoles } from "@/constants/UserRoles";
@@ -53,16 +52,27 @@ export default function AdminLoginForm() {
         role: TokenRoles.ADMIN,
       },
       {
-        onSuccess: () => {
+        onSuccess: (result) => {
+          if ("pendingAdmin" in result && result.pendingAdmin) {
+            showToast(
+              "info",
+              "Please verify your OTP to complete registration",
+            );
+
+            router.replace(`/clinic/otp-verify?email=${result.email}`);
+            return;
+          }
+
           showToast("success", "Admin Logged in Successfully");
           reset();
-          router.replace(`/clinic`);
+          router.replace("/clinic/dashboard");
         },
+
         onError: (error) => {
           const msg = getAxiosErrorMessage(error);
           showToast("error", msg);
         },
-      }
+      },
     );
   };
 

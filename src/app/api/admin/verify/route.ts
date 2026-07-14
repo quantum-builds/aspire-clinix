@@ -36,22 +36,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const otp = generateOtp();
-    const otpInvalidationTime = new Date(Date.now() + 15 * 60 * 1000);
-
     const existingAdmin = await prisma.admin.findUnique({
       where: { email, phoneNumber },
-
     });
 
     if (existingAdmin) {
       return NextResponse.json(
-        createResponse(false, "Admin with this email and phone number already exists", null),
+        createResponse(
+          false,
+          "Admin with this email and phone number already exists",
+          null,
+        ),
         { status: 400 },
       );
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const otp = generateOtp();
+    const otpInvalidationTime = new Date(Date.now() + 15 * 60 * 1000);
 
     const admin = await prisma.pendingAdmin.create({
       data: {
@@ -88,21 +91,13 @@ export async function POST(req: NextRequest) {
       { status: 201 },
     );
   } catch (error: any) {
-  console.log(
-    "SENDGRID ERROR:",
-    error?.response?.body
-  );
+    console.log("SENDGRID ERROR:", error?.response?.body);
 
-  return NextResponse.json(
-    createResponse(
-      false,
-      error?.response?.body || error.message,
-      null
-    ),
-    {
-      status: 500,
-    }
-  );
-
+    return NextResponse.json(
+      createResponse(false, error?.response?.body || error.message, null),
+      {
+        status: 500,
+      },
+    );
   }
 }
