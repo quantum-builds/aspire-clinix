@@ -14,3 +14,5 @@ export type TAdmin = Omit<TAdminCreate, "password"> & {
   updatedAt: Date;
   file?: S3File | null;
 };
+
+

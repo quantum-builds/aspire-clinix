@@ -7,7 +7,7 @@ export const useCreateAdmin = () => {
     mutationFn: async ({ adminCreate }: { adminCreate: TAdminCreate }) => {
       const response = await axiosInstance.post(
         ENDPOINTS.admin.createAdmin,
-        adminCreate
+        adminCreate,
       );
 
       const patient: TAdmin = response.data.data;
@@ -26,11 +26,36 @@ export const usePatchAdmin = () => {
       console.log("patient patient is ", partialAdmin);
       const response = await axiosInstance.patch(
         ENDPOINTS.admin.editAdmin,
-        partialAdmin
+        partialAdmin,
       );
 
       const admin: TAdmin = response.data.data;
       return admin;
+    },
+  });
+};
+
+export const useVerifyAdmin = () => {
+  return useMutation({
+    mutationFn: async (verifyAdmin: TAdminCreate) => {
+      const response = await axiosInstance.post(
+        ENDPOINTS.admin.verify,
+        verifyAdmin,
+      );
+
+      return response;
+    },
+  });
+};
+
+export const useToCreateAdmin = () => {
+  return useMutation({
+    mutationFn: async ({ email, otp }: { email: string; otp: string }) => {
+      const response = await axiosInstance.post(ENDPOINTS.admin.createAdmin, {
+        email,
+        otp,
+      });
+      return response.data;
     },
   });
 };

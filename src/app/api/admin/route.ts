@@ -1,12 +1,8 @@
 import prisma from "@/lib/db";
-import bcrypt from "bcryptjs";
 import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { TokenRoles } from "@/constants/UserRoles";
-import { getPatient } from "@/dentallyHelpers/patient";
-import { getPractitioners } from "@/dentallyHelpers/practitioners";
-// removed external dentally helpers; uniqueness checks restricted to Admin table
 
 /**
  * @swagger
@@ -159,62 +155,68 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const admin = await req.json();
-    const email = admin.email;
-    const phoneNumber = admin.phoneNumber;
-    const fullName = admin.fullName;
+    const { email, otp } = await req.json();
 
-    if (!email || !phoneNumber || !fullName) {
+    if (!email || !otp) {
       return NextResponse.json(
-        createResponse(
-          false,
-          "Email, phone number, and full name are required.",
-          null,
-        ),
+        createResponse(false, "Email and OTP are required.", null),
         { status: 400 },
       );
     }
 
-    const anyAdmin = await prisma.admin.findMany({});
-
-    if (anyAdmin.length > 0) {
-      return NextResponse.json(
-        createResponse(false, "Admin already exist", null),
-        { status: 400 },
-      );
-    }
-
-    const respose = await getPatient({
-      emailAddress: email,
-      mobilePhone: phoneNumber,
+    const pendingAdmin = await prisma.pendingAdmin.findUnique({
+      where: { email },
     });
 
-    if (respose.isError) {
+     const isExistingAdmin = await prisma.admin.findUnique({
+      where: { email },
+    });
+    if (isExistingAdmin) {
       return NextResponse.json(
-        createResponse(false, "Failed to get dentally patients", null),
+        createResponse(false, "Admin with this email already exists", null),
         { status: 400 },
       );
     }
 
-    const practitionersResponse = await getPractitioners();
-    if (practitionersResponse.isError) {
+    if (!pendingAdmin) {
       return NextResponse.json(
-        createResponse(false, "Failed to dentally practitioner", null),
+        createResponse(false, "No pending registration found for this email.", null),
+        { status: 404 },
+      );
+    }
+
+    if (pendingAdmin.otp !== otp) {
+      return NextResponse.json(
+        createResponse(false, "Invalid OTP.", null),
         { status: 400 },
       );
     }
 
-    const hashedPassword = await bcrypt.hash(admin.password, 10);
+    if (
+      !pendingAdmin.otpInvalidationTime ||
+      pendingAdmin.otpInvalidationTime < new Date()
+    ) {
+      return NextResponse.json(
+        createResponse(false, "OTP has expired. Please register again.", null),
+        { status: 400 },
+      );
+    }
 
-    const newPatient = await prisma.admin.create({
-      data: {
-        ...admin,
-        password: hashedPassword,
-      },
+    const newAdmin = await prisma.$transaction(async (tx) => {
+      const created = await tx.admin.create({
+        data: {
+          fullName: pendingAdmin.fullName,
+          email: pendingAdmin.email,
+          phoneNumber: pendingAdmin.phoneNumber,
+          password: pendingAdmin.password,
+        },
+      });
+      await tx.pendingAdmin.delete({ where: { id: pendingAdmin.id } });
+      return created;
     });
 
     return NextResponse.json(
-      createResponse(true, "Admin registered successfully", newPatient),
+      createResponse(true, "Admin registered successfully", newAdmin),
       { status: 201 },
     );
   } catch (error) {
