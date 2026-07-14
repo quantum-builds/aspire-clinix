@@ -61,11 +61,7 @@ export default function AssignedPatientDetails({
         <p className="font-medium text-dashboardTextBlack text-2xl">
           Patient & Referral Dentist Details
         </p>
-        <CustomButton
-          text="See Referral Form Details"
-          style="secondary"
-          href={modalUrl}
-        />
+        
       </div>
 
       <div className="bg-gray p-6 space-y-5 rounded-2xl">

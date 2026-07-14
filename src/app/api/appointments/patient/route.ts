@@ -142,6 +142,8 @@ export async function GET(req: NextRequest) {
     }
 
     let active = activePatients[0];
+    console.log("[/api/appointments/patient] active patient is ", active)
+    console.log("[/api/appointments/patient] active patient id is ", active.id)
 
     // Fetch appointments from Dentally using the patient_id filter
     const appointmentRes = await listAppointment({
