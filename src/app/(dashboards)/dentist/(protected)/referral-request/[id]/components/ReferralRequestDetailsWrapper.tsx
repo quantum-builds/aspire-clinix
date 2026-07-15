@@ -81,15 +81,22 @@ export default async function ReferralRequestDetail({
     gdcNo: referralForm.referralGDC,
     address: referralForm.patientAddress,
   };
+   const referralType = referralForm.cbct
+    ? referralForm.cbct
+    : referralForm.dentalSpecialty
+      ? toTitleCase(referralForm.dentalSpecialty)
+      : "Not specified";
+  const referralDetails = referralForm.other
+    ? `${referralType}, ${referralForm.other}`
+    : referralType;
 
   const referralFormDetails = {
-    referralDeatils: referralForm.other
-      ? `${toTitleCase(referralForm.cbct ?? "")}, ${referralForm.other}`
-      : toTitleCase(referralForm.dentalSpecialty ?? ""),
+    referralDetails: referralDetails,
     treatmentDetails: referralForm.treatmentDetails,
     prescriptionDetails: referralForm.prescriptionDetails,
     attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
     medicalHistoryPDF: referralForm.medicalHistoryPdf,
+    cbctReportPdfUrl: referralForm.cbctReportPdfUrl 
   };
 
   const assignedDentistName = referralRequest.assignedDentist

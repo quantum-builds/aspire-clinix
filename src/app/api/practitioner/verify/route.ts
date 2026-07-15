@@ -203,24 +203,24 @@ export async function POST(req: NextRequest) {
             </div>
           `;
 
-    if (!process.env.EMAIL_FROM) {
-      return NextResponse.json(
-        createResponse(
-          false,
-          "Email configuration is missing (EMAIL_FROM is not set)",
-          null,
-        ),
-        { status: 500 },
-      );
-    }
+    // if (!process.env.EMAIL_FROM) {
+    //   return NextResponse.json(
+    //     createResponse(
+    //       false,
+    //       "Email configuration is missing (EMAIL_FROM is not set)",
+    //       null,
+    //     ),
+    //     { status: 500 },
+    //   );
+    // }
 
-    await sendgrid.send({
-      from: process.env.EMAIL_FROM,
-      to: dbDentist.email,
-      subject: "Your Aspire OTP code",
-      html,
-      text: undefined,
-    });
+    // await sendgrid.send({
+    //   from: process.env.EMAIL_FROM,
+    //   to: dbDentist.email,
+    //   subject: "Your Aspire OTP code",
+    //   html,
+    //   text: undefined,
+    // });
 
     const data = {
       id: dbDentist.id,

@@ -44,7 +44,7 @@ export function ReferralRequestDataTable({ entries }: ReferralRequestDataTablePr
         <TableHeader>
           <TableRow>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground rounded-l-full text-xl text-dashboardTextBlack font-medium">
-              ID#
+              #
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Patient Name
@@ -65,7 +65,7 @@ export function ReferralRequestDataTable({ entries }: ReferralRequestDataTablePr
         </TableHeader>
 
         <TableBody>
-          {entries.map((entry) => {
+          {entries.map((entry, index) => {
             const statusConf = statusConfig[entry.requestStatus] ?? {
               label: entry.requestStatus,
               dot: "bg-gray-400",
@@ -78,7 +78,7 @@ export function ReferralRequestDataTable({ entries }: ReferralRequestDataTablePr
                 onClick={() => router.push(`/dentist/referral-request/${entry.id}`)}
               >
                 <TableCell className="px-6 py-4 rounded-l-full">
-                  {entry.id.slice(0, 8)}
+                  {index+1}
                 </TableCell>
                 <TableCell className="px-6 py-4">
                   {entry.referralForm.patientName}

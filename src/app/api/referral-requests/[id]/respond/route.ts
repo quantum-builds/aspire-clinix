@@ -21,9 +21,11 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const referralRequestId = req.nextUrl.pathname.split("/").pop();
+    const pathname = req.nextUrl.pathname;
 
-    if (!referralRequestId || !isValidCuid(referralRequestId)) {
+    const referralRequestId = pathname.split("/")[3];
+
+    if (!referralRequestId) {
       return NextResponse.json(
         createResponse(false, "Invalid Referral Request id.", null),
         { status: 400 },
@@ -66,17 +68,18 @@ export async function POST(req: NextRequest) {
 
     if (!dentist || referral.assignedDentistId !== dentist.id) {
       return NextResponse.json(
-        createResponse(
-          false,
-          "This referral is not assigned to you.",
-          null,
-        ),
+        createResponse(false, "This referral is not assigned to you.", null),
         { status: 403 },
       );
     }
 
     const body = await req.json();
-    const { action, comments, proposedTreatmentDetails, proposedConsultationTime } = body;
+    const {
+      action,
+      comments,
+      proposedTreatmentDetails,
+      proposedConsultationTime,
+    } = body;
 
     if (!action || !["ACCEPTED", "REJECTED"].includes(action)) {
       return NextResponse.json(
@@ -109,7 +112,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(
-      createResponse(true, `Referral ${action.toLowerCase()} successfully.`, updated),
+      createResponse(
+        true,
+        `Referral ${action.toLowerCase()} successfully.`,
+        updated,
+      ),
       { status: 200 },
     );
   } catch (error) {

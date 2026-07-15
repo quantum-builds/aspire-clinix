@@ -43,7 +43,12 @@ interface PatientReferralDetailsProps {
   };
   referralRequestId: string;
   requestStatus: string;
-  assignedDentist?: { firstName: string; lastName: string; email: string } | null;
+  assignedDentist?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    dentallyId?: number | null;
+  } | null;
   dentistResponseStatus?: string | null;
   dentistComments?: string | null;
   proposedTreatmentDetails?: string | null;
@@ -96,14 +101,16 @@ export default function UnAssignedPatientDetails({
         onError: (error) => {
           showToast("error", error.message || "An error occurred");
         },
-      }
+      },
     );
   };
 
-  const showAssignBtn = requestStatus === "UNASSIGNED" || requestStatus === "REJECTED";
+  const showAssignBtn =
+    requestStatus === "UNASSIGNED" || requestStatus === "REJECTED";
   const showReassignBtn = requestStatus === "REJECTED" && assignedDentist;
   const showBindBtn = requestStatus === "ACCEPTED";
-  const showUnassignBtn = requestStatus === "PENDING_REVIEW" || requestStatus === "ACCEPTED";
+  const showUnassignBtn =
+    requestStatus === "PENDING_REVIEW" || requestStatus === "ACCEPTED";
 
   return (
     <div className="bg-white w-full rounded-2xl p-6 space-y-6">
@@ -122,9 +129,9 @@ export default function UnAssignedPatientDetails({
           {showUnassignBtn && (
             <CustomButton
               text="Unassign Referral"
-              style="secondary"
-              className="!bg-red-50 !text-red-600 hover:!bg-red-100"
-              handleOnClick={handleUnassign}
+              style="primary"
+              // handleOnClick={handleUnassign}
+              handleOnClick={() => setIsAssignModalOpen(true)}
             />
           )}
           {showBindBtn && (
@@ -168,7 +175,9 @@ export default function UnAssignedPatientDetails({
           </div>
           <div className="flex items-start text-lg flex-col 1xl50:flex-row 1xl50:items-center">
             <p className="flex-1">Email: {referralDentistDetails.email}</p>
-            <p className="flex-1">Practice Phone: {referralDentistDetails.phone}</p>
+            <p className="flex-1">
+              Practice Phone: {referralDentistDetails.phone}
+            </p>
           </div>
           <div className="flex justify-between items-center text-lg max-1xl50:pt-3">
             <p>Practice Address: {referralDentistDetails.address}</p>
@@ -284,7 +293,7 @@ export default function UnAssignedPatientDetails({
         isOpen={isAssignModalOpen}
         onClose={() => setIsAssignModalOpen(false)}
         referralRequestId={referralRequestId}
-        currentlyAssignedDentistId={assignedDentist ? "assigned" : null}
+        currentlyAssignedDentistId={assignedDentist?.dentallyId ?? null}
       />
     </div>
   );

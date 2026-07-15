@@ -82,6 +82,7 @@ export default async function UnAssignedWrapper({
         firstName: referralRequest.assignedDentist.firstName,
         lastName: referralRequest.assignedDentist.lastName,
         email: referralRequest.assignedDentist.email,
+        dentallyId: referralRequest.assignedDentist.dentallyId,
       }
     : null;
 

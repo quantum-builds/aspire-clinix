@@ -12,7 +12,7 @@ interface AssignDentistModalProps {
   isOpen: boolean;
   onClose: () => void;
   referralRequestId: string;
-  currentlyAssignedDentistId?: string | null;
+  currentlyAssignedDentistId?: number | null;
 }
 
 export default function AssignDentistModal({
@@ -140,19 +140,31 @@ export default function AssignDentistModal({
                     )}
                   </div>
                   <div className="flex gap-2">
-                    {currentlyAssignedDentistId ? (
+                    {currentlyAssignedDentistId === p.id ? (
                       <button
                         onClick={handleUnassign}
                         disabled={processingId !== null}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50 text-sm"
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-500 text-white transition-colors disabled:opacity-50 text-sm"
                       >
                         {processingId === -1 ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
-                          <UserX className="w-4 h-4" />
+                          <X className="w-4 h-4" />
                         )}
                         Unassign
                       </button>
+                    ) : currentlyAssignedDentistId ? (
+                      <button
+                        disabled
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-100  text-white bg-greenHover cursor-not-allowed text-sm"
+                      >
+                        <Check className="w-4 h-4" />
+                        Assign
+                      </button>
+
+                      
+                      
+                      
                     ) : (
                       <button
                         onClick={() => handleAssign(p.id)}
@@ -166,6 +178,7 @@ export default function AssignDentistModal({
                         )}
                         Assign
                       </button>
+                      
                     )}
                   </div>
                 </div>
