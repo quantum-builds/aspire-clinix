@@ -36,15 +36,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const existingAdmin = await prisma.admin.findUnique({
-      where: { email, phoneNumber },
+    const existingAdmin = await prisma.admin.findFirst({
+      where: {
+        OR: [{ email }, { phoneNumber }],
+      },
     });
 
-    if (existingAdmin) {
+    if (!existingAdmin) {
+      const existingPendingAdmin = await prisma.pendingAdmin.findFirst({
+        where: {
+          OR: [{ email }, { phoneNumber }],
+        },
+      });
+      console.log("existingPendingAdmin:", existingPendingAdmin);
+      if (existingPendingAdmin) {
+        return NextResponse.json(
+          createResponse(
+            false,
+            "Admin with this email or phone number already exists",
+            null,
+          ),
+          { status: 400 },
+        );
+      }
+    } else {
+      console.log("existingAdmin:", existingAdmin);
       return NextResponse.json(
         createResponse(
           false,
-          "Admin with this email and phone number already exists",
+          "Admin with this email or phone number already exists",
           null,
         ),
         { status: 400 },
@@ -76,22 +96,27 @@ export async function POST(req: NextRequest) {
           </div>
         `;
 
-    await sendgrid.send({
-      from: {
-        email: process.env.EMAIL_FROM!,
-        name: "Aspire Clinic",
-      },
-      to: process.env.EMAIL_TO!,
-      subject: "Your Aspire OTP code",
-      html,
-      text: "undefined",
-    });
+    // await sendgrid.send({
+    //   from: {
+    //     email: process.env.EMAIL_FROM!,
+    //     name: "Aspire Clinic",
+    //   },
+    //   to: process.env.EMAIL_TO!,
+    //   subject: "Your Aspire OTP code",
+    //   html,
+    //   text: "undefined",
+    // });
     return NextResponse.json(
       createResponse(true, "Admin wait the super admin approval", admin),
       { status: 201 },
     );
   } catch (error: any) {
-    console.log("SENDGRID ERROR:", error?.response?.body);
+    // console.log("SENDGRID ERROR:", error?.response?.body);
+    // console.log("SENDGRID ERROR (FULL):", error);
+    // console.log("Response:", error.response);
+    // console.log("Body:", error.response?.body);
+    // console.log("Message:", error.message);
+    // console.log("Code:", error.code);
 
     return NextResponse.json(
       createResponse(false, error?.response?.body || error.message, null),

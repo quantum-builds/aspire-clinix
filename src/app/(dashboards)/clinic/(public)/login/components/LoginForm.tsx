@@ -65,7 +65,7 @@ export default function AdminLoginForm() {
 
           showToast("success", "Admin Logged in Successfully");
           reset();
-          router.replace("/clinic/dashboard");
+          router.replace("/clinic");
         },
 
         onError: (error) => {
