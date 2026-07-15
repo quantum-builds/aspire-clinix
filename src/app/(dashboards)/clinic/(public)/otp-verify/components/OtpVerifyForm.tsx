@@ -115,7 +115,7 @@ function OtpVerificationForm() {
         <p className="text-sm text-muted-foreground mt-4">
           Didn&apos;t receive the code?{" "}
           <Link
-            href="/patient/login"
+            href="/clinic/login"
             className="font-medium text-green hover:text-greenHover transition-colors"
           >
             Go back to login

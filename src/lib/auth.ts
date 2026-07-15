@@ -58,11 +58,36 @@ export const authOptions: AuthOptions = {
           console.log("[ADMIN LOGIN DEBUG] Finding admin with email:", email);
           user = await prisma.admin.findUnique({ where: { email } });
           if (!user) {
-            console.error(
-              "[ADMIN LOGIN DEBUG] No admin account found with email:",
+            console.log(
+              "[ADMIN LOGIN DEBUG] No admin found, checking pendingAdmin table for:",
               email,
             );
-            throw new Error("No account found");
+            const pendingAdmin = await prisma.pendingAdmin.findUnique({
+              where: { email },
+            });
+            if (!pendingAdmin) {
+              console.error(
+                "[ADMIN LOGIN DEBUG] No pendingAdmin account found with email:",
+                email,
+              );
+              throw new Error("No account found");
+            }
+
+            console.log(
+              "[ADMIN LOGIN DEBUG] PendingAdmin found, verifying password",
+            );
+            const isValid = await verifyPassword(
+              password,
+              pendingAdmin.password,
+            );
+            if (!isValid) {
+              console.error(
+                "[ADMIN LOGIN DEBUG] PendingAdmin password verification failed",
+              );
+              throw new Error("Invalid credentials");
+            }
+
+            throw new Error("PENDING_ADMIN");
           }
 
           console.log("[ADMIN LOGIN DEBUG] Admin found, verifying password");
@@ -71,7 +96,6 @@ export const authOptions: AuthOptions = {
             console.error("[ADMIN LOGIN DEBUG] Password verification failed");
             throw new Error("Invalid credentials");
           }
-
 
           return {
             id: String(user.id),
@@ -249,12 +273,14 @@ export const authOptions: AuthOptions = {
           userId: user.id,
           email: user.email,
           role: user.role,
+          isPendingAdmin: user.isPendingAdmin,
         });
         token.id = user.id;
         token.email = user.email;
         token.role = user.role;
         token.name = user.name;
         token.picture = user.image;
+        token.isPendingAdmin = user.isPendingAdmin;
       }
       return token;
     },
@@ -269,6 +295,7 @@ export const authOptions: AuthOptions = {
         session.user.role = token.role as string;
         session.user.name = token.name as string;
         session.user.image = token.picture as string;
+        session.user.isPendingAdmin = token.isPendingAdmin as boolean;
       }
       return session;
     },
