@@ -180,35 +180,35 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // if (!process.env.EMAIL_FROM) {
-    //   return NextResponse.json(
-    //     createResponse(
-    //       false,
-    //       "Email configuration is missing (EMAIL_FROM is not set)",
-    //       null,
-    //     ),
-    //     { status: 500 },
-    //   );
-    // }
+    if (!process.env.EMAIL_FROM) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "Email configuration is missing (EMAIL_FROM is not set)",
+          null,
+        ),
+        { status: 500 },
+      );
+    }
 
-    // const html = `
-    //   <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
-    //     <p>Hi ${fullName},</p>
-    //     <p>Your one-time password is:</p>
-    //     <div style="font-size: 24px; font-weight: 700; letter-spacing: 4px; margin: 16px 0;">
-    //       ${patient.otp}
-    //     </div>
-    //     <p>This code expires in 15 minutes.</p>
-    //   </div>
-    // `;
+    const html = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
+        <p>Hi ${fullName},</p>
+        <p>Your one-time password is:</p>
+        <div style="font-size: 24px; font-weight: 700; letter-spacing: 4px; margin: 16px 0;">
+          ${patient.otp}
+        </div>
+        <p>This code expires in 15 minutes.</p>
+      </div>
+    `;
 
-    // await sendgrid.send({
-    //   from: process.env.EMAIL_FROM,
-    //   to: email,
-    //   subject: "Your Aspire OTP code",
-    //   html,
-    //   text: undefined,
-    // });
+    await sendgrid.send({
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: "Your Aspire OTP code",
+      html,
+      text: undefined,
+    });
 
     return NextResponse.json(
       createResponse(true, "OTP code send successfully", {
