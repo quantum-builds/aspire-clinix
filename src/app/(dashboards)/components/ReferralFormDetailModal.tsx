@@ -18,6 +18,7 @@ interface ReferralFormDetailModalProps {
 }
 
 export default function ReferralFormDetailModal({
+    
     referralFormDetails,
 }: ReferralFormDetailModalProps) {
     const router = useRouter();

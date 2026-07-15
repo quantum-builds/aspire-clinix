@@ -41,6 +41,15 @@ export default async function ReferralHistory(props: {
           {
             value: ReferralRequestStatus.UNASSIGNED,
           },
+          {
+            value: ReferralRequestStatus.PENDING_REVIEW,
+          },
+          {
+            value: ReferralRequestStatus.ACCEPTED,
+          },
+          {
+            value: ReferralRequestStatus.REJECTED,
+          },
         ]}
       />
       <Suspense fallback={<StatusCardSkeleton />}>

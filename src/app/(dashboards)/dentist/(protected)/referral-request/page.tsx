@@ -192,6 +192,15 @@ export default async function ReferralRequest(props: {
         pageHeading="Referral Request"
         statusOptions={[
           {
+            value: ReferralRequestStatus.PENDING_REVIEW,
+          },
+          {
+            value: ReferralRequestStatus.ACCEPTED,
+          },
+          {
+            value: ReferralRequestStatus.REJECTED,
+          },
+          {
             value: ReferralRequestStatus.ASSIGNED,
           },
           {

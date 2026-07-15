@@ -42,7 +42,6 @@ export default async function UnAssignedWrapper({
   const referralForm = referralRequestResponse.data.referralForm;
   const referralRequest = referralRequestResponse.data;
 
-
   const patientDetails = {
     name: referralForm.patientName,
     phone: referralForm.patientPhoneNumber,
@@ -59,7 +58,6 @@ export default async function UnAssignedWrapper({
     address: referralForm.patientAddress,
   };
 
-  // Build referral details based on which field is populated (cbct or dentalSpecialty)
   const referralType = referralForm.cbct
     ? referralForm.cbct
     : referralForm.dentalSpecialty
@@ -79,6 +77,15 @@ export default async function UnAssignedWrapper({
     prescriptionDetails: referralForm.prescriptionDetails,
   };
 
+  const assignedDentist = referralRequest.assignedDentist
+    ? {
+        firstName: referralRequest.assignedDentist.firstName,
+        lastName: referralRequest.assignedDentist.lastName,
+        email: referralRequest.assignedDentist.email,
+        dentallyId: referralRequest.assignedDentist.dentallyId,
+      }
+    : null;
+
   return (
     <div className="min-h-screen flex flex-col gap-5">
       <PageTopBar
@@ -95,6 +102,13 @@ export default async function UnAssignedWrapper({
         patientDetials={patientDetails}
         referralDentistDetails={dentistDetails}
         referralRequestId={referralRequest.id}
+        requestStatus={referralRequest.requestStatus}
+        assignedDentist={assignedDentist}
+        dentistResponseStatus={referralRequest.dentistResponseStatus}
+        dentistComments={referralRequest.dentistComments}
+        proposedTreatmentDetails={referralRequest.proposedTreatmentDetails}
+        proposedConsultationTime={referralRequest.proposedConsultationTime}
+        respondedAt={referralRequest.respondedAt ? referralRequest.respondedAt.toString() : null}
       />
     </div>
   );

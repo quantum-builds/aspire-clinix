@@ -35,6 +35,6 @@ export type Dentist = {
   gdcNo: string;
   firstName: string;
   lastName: string;
-  dentallyId?: string;
+  dentallyId?: number | null;
   role: DentistRole;
 };

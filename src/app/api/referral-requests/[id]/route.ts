@@ -3,6 +3,7 @@ import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
+import type { JWT } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { DentistRole, ReferralRequestStatus } from "@prisma/client";
 import { gettPractitionerById } from "@/dentallyHelpers/practitioners";
@@ -223,6 +224,23 @@ import { getAppointment } from "@/dentallyHelpers/appointment";
  *               message: "Internal Server Error"
  *               data: null
  */
+async function resolveDentistFromToken(token: JWT): Promise<{ localDentistId: string | null; role: string | null }> {
+  if (!token.sub) return { localDentistId: null, role: token.role as string };
+
+  if (token.role === TokenRoles.DENTALLY_PRACTITIONER) {
+    const dentallyId = Number(token.sub);
+    if (!Number.isNaN(dentallyId)) {
+      const dentist = await prisma.dentist.findFirst({
+        where: { dentallyId },
+        select: { id: true },
+      });
+      return { localDentistId: dentist?.id ?? null, role: token.role as string };
+    }
+  }
+
+  return { localDentistId: String(token.sub), role: token.role as string };
+}
+
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
@@ -233,10 +251,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    if (
-      token.role === TokenRoles.PATIENT ||
-      token.role === TokenRoles.DENTALLY_PRACTITIONER
-    ) {
+    if (token.role === TokenRoles.PATIENT) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
@@ -268,6 +283,16 @@ export async function GET(req: NextRequest) {
         createResponse(false, "Referral Request does not exist.", null),
         { status: 404 },
       );
+    }
+
+    // DENTALLY_PRACTITIONER can only view referrals assigned to them
+    if (token.role === TokenRoles.DENTALLY_PRACTITIONER) {
+      const { localDentistId } = await resolveDentistFromToken(token as JWT);
+      if (!localDentistId || existingRequest.assignedDentistId !== localDentistId) {
+        return NextResponse.json(createResponse(false, "Forbidden", null), {
+          status: 403,
+        });
+      }
     }
 
     let assignedDentist = null;
@@ -311,6 +336,56 @@ export async function GET(req: NextRequest) {
   }
 }
 
+async function findOrCreateDentistFromPractitioner(
+  practitionerId: number,
+): Promise<string> {
+  const existingDentist = await prisma.dentist.findFirst({
+    where: { dentallyId: practitionerId },
+  });
+
+  if (existingDentist) {
+    return existingDentist.id;
+  }
+
+  let firstName = "";
+  let lastName = "";
+  let email = "";
+  let gdcNo = "";
+
+  try {
+    const practitionerRes = await gettPractitionerById(
+      String(practitionerId),
+    );
+    if (
+      !practitionerRes.isError &&
+      practitionerRes.response?.practitioner
+    ) {
+      const prac = practitionerRes.response.practitioner;
+      firstName = prac.user.firstName || "";
+      lastName = prac.user.lastName || "";
+      email = prac.user.email || "";
+      gdcNo = prac.gdcNumber || "";
+    }
+  } catch (e) {
+    console.error("Failed to fetch practitioner from Dentally:", e);
+  }
+
+  const newDentist = await prisma.dentist.create({
+    data: {
+      email: email || `dentist+${practitionerId}@aspire-clinic.com`,
+      firstName: firstName || "Unknown",
+      lastName: lastName || "",
+      gdcNo: gdcNo,
+      dentallyId: practitionerId,
+      role: DentistRole.DENTALLY_PRACTITIONER,
+      otp: undefined,
+      otpInvalidationTime: undefined,
+    },
+  });
+
+  return newDentist.id;
+}
+
 export async function PATCH(req: NextRequest) {
   try {
     const token = await getToken({ req });
@@ -322,10 +397,11 @@ export async function PATCH(req: NextRequest) {
     }
 
     if (token.role !== TokenRoles.ADMIN) {
-      return NextResponse.json(createResponse(false, "FOrbidden", null), {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
     }
+
     const referralRequestId = req.nextUrl.pathname.split("/").pop();
     const body = await req.json();
 
@@ -347,115 +423,92 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const { appointmentId, requestStatus, practitionerId } = body;
-    console.log("[PATCH] practiotioner ", practitionerId);
+    const { appointmentId, requestStatus, practitionerId, assignedDentistId } = body;
 
-    if (!appointmentId || !requestStatus) {
-      return NextResponse.json(
-        createResponse(
-          false,
-          "Both appointmentId and requestStatus are required.",
-          null,
-        ),
-        { status: 400 },
-      );
-    }
+    // --- PURE ASSIGNMENT (no appointmentId) ---
+    if (requestStatus === "PENDING_REVIEW") {
+      let resolvedDentistId = assignedDentistId;
 
-    if (requestStatus === "UNASSIGNED") {
-      const targetReferral = await prisma.referralRequest.findFirst({
-        where: { appointmentId },
-      });
+      if (practitionerId && !resolvedDentistId) {
+        resolvedDentistId = await findOrCreateDentistFromPractitioner(Number(practitionerId));
+      }
 
-      if (!targetReferral) {
+      if (!resolvedDentistId) {
         return NextResponse.json(
-          createResponse(
-            false,
-            "No referral request found with this appointment ID.",
-            null,
-          ),
-          { status: 404 },
+          createResponse(false, "assignedDentistId or practitionerId is required for assignment.", null),
+          { status: 400 },
         );
       }
 
       const updated = await prisma.referralRequest.update({
-        where: { id: targetReferral.id },
+        where: { id: referralRequestId },
         data: {
+          assignedDentistId: resolvedDentistId,
+          requestStatus: ReferralRequestStatus.PENDING_REVIEW,
+          dentistResponseStatus: "PENDING",
           appointmentId: null,
-          assignedDentistId: null,
-          requestStatus: ReferralRequestStatus.UNASSIGNED,
+          dentistComments: null,
+          proposedTreatmentDetails: null,
+          proposedConsultationTime: null,
+          respondedAt: null,
         },
       });
 
       return NextResponse.json(
-        createResponse(true, "Appointment unbound successfully.", updated),
+        createResponse(true, "Referral assigned successfully.", updated),
         { status: 200 },
       );
-    } else if (requestStatus === "ASSIGNED") {
-      let assignedDentistId: string | undefined;
+    }
 
-      if (practitionerId) {
-        const existingDentist = await prisma.dentist.findFirst({
-          where: { dentallyId: Number(practitionerId) },
-        });
-
-        if (existingDentist) {
-          assignedDentistId = existingDentist.id;
-        } else {
-          let firstName = "";
-          let lastName = "";
-          let email = "";
-          let gdcNo = "";
-
-          try {
-            const practitionerRes = await gettPractitionerById(
-              String(practitionerId),
-            );
-            console.log("[PATCH] practitionerRes ", practitionerRes);
-            if (
-              !practitionerRes.isError &&
-              practitionerRes.response?.practitioner
-            ) {
-              const prac = practitionerRes.response.practitioner;
-              firstName = prac.user.firstName || "";
-              lastName = prac.user.lastName || "";
-              email = prac.user.email || "";
-              gdcNo = prac.gdcNumber || "";
-            }
-          } catch (e) {
-            console.error("Failed to fetch practitioner from Dentally:", e);
-          }
-
-          const newDentist = await prisma.dentist.create({
-            data: {
-              email: email || `dentist+${practitionerId}@aspire-clinic.com`,
-              firstName: firstName || "Unknown",
-              lastName: lastName || "",
-              gdcNo: gdcNo,
-              dentallyId: Number(practitionerId),
-              role: DentistRole.DENTALLY_PRACTITIONER,
-              otp: undefined,
-              otpInvalidationTime: undefined,
-            },
-          });
-
-          assignedDentistId = newDentist.id;
-        }
-      }
-
-      const updateData: {
-        appointmentId: string;
-        requestStatus: ReferralRequestStatus;
-        assignedDentistId?: string;
-      } = {
-        appointmentId,
-        requestStatus: requestStatus as ReferralRequestStatus,
+    // --- UNASSIGN (clear all) ---
+    if (requestStatus === "UNASSIGNED") {
+      const data: any = {
+        requestStatus: ReferralRequestStatus.UNASSIGNED,
+        assignedDentistId: null,
+        appointmentId: null,
+        dentistResponseStatus: null,
+        dentistComments: null,
+        proposedTreatmentDetails: null,
+        proposedConsultationTime: null,
+        respondedAt: null,
       };
 
-      if (assignedDentistId) {
-        updateData.assignedDentistId = assignedDentistId;
+      const updated = await prisma.referralRequest.update({
+        where: { id: referralRequestId },
+        data,
+      });
+
+      return NextResponse.json(
+        createResponse(true, "Referral unassigned successfully.", updated),
+        { status: 200 },
+      );
+    }
+
+    // --- BIND APPOINTMENT (existing flow) ---
+    if (requestStatus === "ASSIGNED") {
+      if (!appointmentId) {
+        return NextResponse.json(
+          createResponse(false, "appointmentId is required to bind an appointment.", null),
+          { status: 400 },
+        );
       }
 
-      const updatedReferralRequest = await prisma.referralRequest.update({
+      let resolvedDentistId: string | undefined;
+
+      if (practitionerId) {
+        resolvedDentistId = await findOrCreateDentistFromPractitioner(Number(practitionerId));
+      }
+
+      const updateData: any = {
+        appointmentId,
+        requestStatus: ReferralRequestStatus.ASSIGNED,
+      };
+
+      if (resolvedDentistId) {
+        updateData.assignedDentistId = resolvedDentistId;
+      }
+
+      await prisma.referralRequest.update({
         where: { id: referralRequestId },
         data: updateData,
       });
@@ -472,27 +525,29 @@ export async function PATCH(req: NextRequest) {
         },
       });
 
-      if (result && assignedDentistId) {
-        const dentist = await prisma.dentist.findUnique({
-          where: { id: assignedDentistId },
-        });
-        (result as any).assignedDentist = dentist;
-      }
+      const dentist = result?.assignedDentistId
+        ? await prisma.dentist.findUnique({
+            where: { id: result.assignedDentistId },
+          })
+        : null;
 
       return NextResponse.json(
-        createResponse(true, "Referral request Updated successfully.", result),
+        createResponse(true, "Appointment bound successfully.", {
+          ...result,
+          assignedDentist: dentist,
+        }),
         { status: 200 },
       );
-    } else {
-      return NextResponse.json(
-        createResponse(
-          false,
-          "Invalid requestStatus. Must be ASSIGNED or UNASSIGNED.",
-          null,
-        ),
-        { status: 400 },
-      );
     }
+
+    return NextResponse.json(
+      createResponse(
+        false,
+        "Invalid requestStatus. Must be PENDING_REVIEW, UNASSIGNED, or ASSIGNED.",
+        null,
+      ),
+      { status: 400 },
+    );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
