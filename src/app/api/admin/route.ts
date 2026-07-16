@@ -168,16 +168,6 @@ export async function POST(req: NextRequest) {
       where: { email },
     });
 
-     const isExistingAdmin = await prisma.admin.findUnique({
-      where: { email },
-    });
-    if (isExistingAdmin) {
-      return NextResponse.json(
-        createResponse(false, "Admin with this email already exists", null),
-        { status: 400 },
-      );
-    }
-
     if (!pendingAdmin) {
       return NextResponse.json(
         createResponse(false, "No pending registration found for this email.", null),
