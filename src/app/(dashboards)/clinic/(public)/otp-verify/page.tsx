@@ -26,7 +26,7 @@ export default function OtpVerifyPage() {
             Verify OTP
           </h1>
           <p className="text-muted-foreground mt-2">
-            Enter the OTP code sent to your email to verify your identity and access your patient portal.
+           Enter the OTP provided by your Super Admin to verify your identity and gain access to the admin portal.
           </p>
         </header>
 
