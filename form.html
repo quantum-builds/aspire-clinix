@@ -1492,7 +1492,7 @@
           else if (/\.(doc|docx)$/i.test(file.name)) fileType = 'document';
           else fileType = 'images';
           var params = new URLSearchParams({ fileName: file.name, fileType: fileType, mimeType: file.type, fileSize: String(file.size) });
-          var signedRes = await fetch('http://localhost:3000/api/s3?' + params.toString());
+          var signedRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + params.toString());
           var signedJson = null;
           var ct = signedRes.headers.get('content-type') || '';
           if (ct.includes('application/json')) {
@@ -1518,7 +1518,7 @@
             else if (/\.(doc|docx)$/i.test(cbctFile.name)) cFileType = 'document';
             else cFileType = 'images';
             var cParams = new URLSearchParams({ fileName: cbctFile.name, fileType: cFileType, mimeType: cbctFile.type, fileSize: String(cbctFile.size) });
-            var cRes = await fetch('http://localhost:3000/api/s3?' + cParams.toString());
+            var cRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + cParams.toString());
             var cJson = null;
             var cCt = cRes.headers.get('content-type') || '';
             if (cCt.includes('application/json')) {
@@ -1532,7 +1532,7 @@
           }
         }
 
-        var res = await fetch('http://localhost:3000/api/referrals', {
+        var res = await fetch('https://aspire-clinix.vercel.app/api/referrals', {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
         });
         var data = null;
