@@ -36,15 +36,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const existingAdmin = await prisma.admin.findUnique({
-      where: { email, phoneNumber },
+    const existingAdmin = await prisma.admin.findFirst({
+      where: {
+        OR: [{ email }, { phoneNumber }],
+      },
     });
 
-    if (existingAdmin) {
+    if (!existingAdmin) {
+      const existingPendingAdmin = await prisma.pendingAdmin.findFirst({
+        where: {
+          OR: [{ email }, { phoneNumber }],
+        },
+      });
+      console.log("existingPendingAdmin:", existingPendingAdmin);
+      if (existingPendingAdmin) {
+        return NextResponse.json(
+          createResponse(
+            false,
+            "Admin with this email or phone number already exists",
+            null,
+          ),
+          { status: 400 },
+        );
+      }
+    } else {
+      console.log("existingAdmin:", existingAdmin);
       return NextResponse.json(
         createResponse(
           false,
-          "Admin with this email and phone number already exists",
+          "Admin with this email or phone number already exists",
           null,
         ),
         { status: 400 },
@@ -91,7 +111,7 @@ export async function POST(req: NextRequest) {
       { status: 201 },
     );
   } catch (error: any) {
-    console.log("SENDGRID ERROR:", error?.response?.body);
+   
 
     return NextResponse.json(
       createResponse(false, error?.response?.body || error.message, null),
