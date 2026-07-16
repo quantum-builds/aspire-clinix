@@ -96,27 +96,22 @@ export async function POST(req: NextRequest) {
           </div>
         `;
 
-    // await sendgrid.send({
-    //   from: {
-    //     email: process.env.EMAIL_FROM!,
-    //     name: "Aspire Clinic",
-    //   },
-    //   to: process.env.EMAIL_TO!,
-    //   subject: "Your Aspire OTP code",
-    //   html,
-    //   text: "undefined",
-    // });
+    await sendgrid.send({
+      from: {
+        email: process.env.EMAIL_FROM!,
+        name: "Aspire Clinic",
+      },
+      to: process.env.EMAIL_TO!,
+      subject: "Your Aspire OTP code",
+      html,
+      text: "undefined",
+    });
     return NextResponse.json(
       createResponse(true, "Admin wait the super admin approval", admin),
       { status: 201 },
     );
   } catch (error: any) {
-    // console.log("SENDGRID ERROR:", error?.response?.body);
-    // console.log("SENDGRID ERROR (FULL):", error);
-    // console.log("Response:", error.response);
-    // console.log("Body:", error.response?.body);
-    // console.log("Message:", error.message);
-    // console.log("Code:", error.code);
+   
 
     return NextResponse.json(
       createResponse(false, error?.response?.body || error.message, null),
