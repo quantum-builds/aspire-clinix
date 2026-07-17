@@ -36,14 +36,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const existingAdmin = await prisma.admin.findFirst({
+   const existingAdmin = await prisma.admin.findFirst({
       where: {
         OR: [{ email }, { phoneNumber }],
       },
     });
 
     if (!existingAdmin) {
-      const existingPendingAdmin = await prisma.pendingAdmin.findFirst({
+      const  existingPendingAdmin = await prisma.pendingAdmin.findFirst({
         where: {
           OR: [{ email }, { phoneNumber }],
         },
@@ -101,6 +101,7 @@ export async function POST(req: NextRequest) {
         email: process.env.EMAIL_FROM!,
         name: "Aspire Clinic",
       },
+      
       to: process.env.EMAIL_TO!,
       subject: "Your Aspire OTP code",
       html,

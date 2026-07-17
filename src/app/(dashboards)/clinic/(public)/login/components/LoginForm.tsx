@@ -50,6 +50,7 @@ export default function AdminLoginForm() {
         email: data.email,
         password: data.password,
         role: TokenRoles.ADMIN,
+        provider: "credentials",
       },
       {
         onSuccess: (result) => {

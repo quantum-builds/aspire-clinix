@@ -8,6 +8,7 @@ import { DentistRole } from "@prisma/client";
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
+      id: "credentials",
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
@@ -106,10 +107,94 @@ export const authOptions: AuthOptions = {
           };
         }
 
-        if (role === TokenRoles.PATIENT) {
-          const { patientId, otp } = credentials;
+        console.error(
+          "[AUTH ERROR] Unhandled authorization scenario - all role checks failed. Role was:",
+          role,
+        );
+        throw new Error("Invalid credentials");
+      },
+    }),
+    CredentialsProvider({
+      id: "otp",
+      name: "OTP",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        otp: { label: "OTP", type: "text" },
+        role: { label: "Role", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+
+      async authorize(credentials) {
+        if (!credentials) {
+          throw new Error("Missing credentials");
+        }
+
+        const { email, role, otp } = credentials;
+
+        if (!email) {
+          throw new Error("Email is required");
+        }
+
+        if (!role) {
+          throw new Error("Role is required");
+        }
+
+        if (!otp) {
+          throw new Error("OTP is required");
+        }
+
+        if (role === TokenRoles.ADMIN) {
+
+          let pendingAdmin;
+          const existingAdmin = await prisma.admin.findUnique({
+            where: { email },
+          });
+          if (!existingAdmin) {
+             pendingAdmin = await prisma.pendingAdmin.findUnique({
+              where: { email },
+            });
+          }
+
+          if (!pendingAdmin) {
+            throw new Error("No pending registration found for this email.");
+          }
+
+          if (pendingAdmin.otp !== otp) {
+            throw new Error("Invalid OTP.");
+          }
+
+          if (
+            !pendingAdmin.otpInvalidationTime ||
+            pendingAdmin.otpInvalidationTime < new Date()
+          ) {
+            throw new Error("OTP has expired. Please register again.");
+          }
+
+          const newAdmin = await prisma.$transaction(async (tx) => {
+            const created = await tx.admin.create({
+              data: {
+                fullName: pendingAdmin.fullName,
+                email: pendingAdmin.email,
+                phoneNumber: pendingAdmin.phoneNumber,
+                password: pendingAdmin.password,
+              },
+            });
+            await tx.pendingAdmin.delete({ where: { id: pendingAdmin.id } });
+            return created;
+          });
+
+          return {
+            id: String(newAdmin.id),
+            email: newAdmin.email,
+            role: TokenRoles.ADMIN,
+            name: newAdmin.fullName,
+            image: null,
+            isPendingAdmin: true,
+          };
+        } else if (role === TokenRoles.PATIENT) {
+          const { email, otp } = credentials;
           console.log("[PATIENT LOGIN DEBUG] Credentials received:", {
-            patientId,
+            email,
             otp,
             role,
           });
@@ -118,11 +203,11 @@ export const authOptions: AuthOptions = {
 
           try {
             console.log(
-              "[PATIENT LOGIN DEBUG] Finding patient with ID:",
-              patientId,
+              "[PATIENT LOGIN DEBUG] Finding patient with email:",
+              email,
             );
-            patient = await prisma.patient.findUnique({
-              where: { id: patientId },
+            patient = await prisma.patient.findFirst({
+              where: { email, otp },
             });
             console.log("[PATIENT LOGIN DEBUG] Patient found:", {
               id: patient?.id,
@@ -140,8 +225,8 @@ export const authOptions: AuthOptions = {
           }
           if (!patient) {
             console.error(
-              "[PATIENT LOGIN DEBUG] No patient account found with ID:",
-              patientId,
+              "[PATIENT LOGIN DEBUG] No patient account found with email:",
+              email,
             );
             throw new Error("No account found");
           }
@@ -181,7 +266,6 @@ export const authOptions: AuthOptions = {
             image: null,
           };
         }
-
         if (role !== TokenRoles.ADMIN && role !== TokenRoles.PATIENT) {
           const { email, otp } = credentials;
           console.log("[DENTIST LOGIN DEBUG] Credentials received:", {
@@ -252,14 +336,11 @@ export const authOptions: AuthOptions = {
           };
         }
 
-        console.error(
-          "[AUTH ERROR] Unhandled authorization scenario - all role checks failed. Role was:",
-          role,
-        );
-        throw new Error("Invalid credentials");
+        throw new Error("Unsupported role");
       },
     }),
   ],
+
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,

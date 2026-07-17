@@ -40,7 +40,7 @@ function LoadingFallback() {
 function OtpVerificationForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const patientId = searchParams.get("id") ?? "";
+  const patientEmail = searchParams.get("email") ?? "";
 
   const { mutate: verifyOtp, isPending: isVerifying } = loginMutation();
 
@@ -56,14 +56,14 @@ function OtpVerificationForm() {
   });
 
   const onSubmit = async (data: FormData) => {
-    if (!patientId) {
-      showToast("error", "Patient ID is missing. Please try logging in again.");
+    if (!patientEmail) {
+      showToast("error", "Patient email is missing. Please try logging in again.");
       return;
     }
 
     verifyOtp(
       {
-        patientId,
+        email: patientEmail,
         otp: data.otp,
         role: TokenRoles.PATIENT,
       },
