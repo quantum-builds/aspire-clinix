@@ -106,11 +106,11 @@ export default function PatientLoginForm() {
       {
         onSuccess: (resData) => {
           showToast("success", "OTP sent successfully");
-          const patientId = resData?.id;
-          if (patientId) {
-            router.replace(`/patient/otp-verify?id=${patientId}`);
+          
+          if (data.email) {
+            router.replace(`/patient/otp-verify?email=${data.email}`);
           } else {
-            console.error("[LoginForm] No patient ID found in response");
+            console.error("[LoginForm] No patient email found in response");
             showToast("error", "Something went wrong. Please try again.");
           }
         },

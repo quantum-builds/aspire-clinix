@@ -12,8 +12,9 @@ import { z } from "zod";
 import { useSearchParams, useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
-import { useToCreateAdmin } from "@/services/admin/adminMutation";
 import Link from "next/link";
+import {loginMutation} from "@/services/LoginMutation";
+import { TokenRoles } from "@/constants/UserRoles";
 
 const otpSchema = z.object({
   otp: z.string().min(1, "OTP is required"),
@@ -39,7 +40,7 @@ function OtpVerificationForm() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
   const router = useRouter();
-  const { mutate: createAdmin, isPending: isCreate } = useToCreateAdmin();
+  const { mutate: login, isPending: isCreate } = loginMutation();
 
   const {
     register,
@@ -58,12 +59,12 @@ function OtpVerificationForm() {
       router.replace("/clinic/register");
       return;
     }
-    createAdmin(
-      { email, otp: data.otp },
+    login(
+      { email, otp: data.otp, role: TokenRoles.ADMIN },
       {
         onSuccess: () => {
-          showToast("success", "Admin Register successfully");
-          router.replace("/clinic/login");
+          showToast("success", "Admin Login successfully");
+          router.replace("/clinic");
         },
         onError: (error) => {
           const msg = getAxiosErrorMessage(error);

@@ -22,6 +22,7 @@ type LoginMutationVariables = {
   dateOfBirth?: string;
   role?: TokenRoles;
   isPendingAdmin?: boolean;
+  provider?:"otp"|"credentials";
 };
 
 export const loginMutation = () => {
@@ -37,8 +38,9 @@ export const loginMutation = () => {
       dateOfBirth,
       role,
       isPendingAdmin,
+      provider='otp',
     }) => {
-      const result = await signIn("credentials", {
+      const result = await signIn(provider, {
         redirect: false,
         patientId,
         email,
