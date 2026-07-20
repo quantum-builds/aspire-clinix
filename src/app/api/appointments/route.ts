@@ -187,7 +187,6 @@ export async function GET(req: NextRequest) {
         },
       });
 
-      // Create a map of appointments by patient ID for easy lookup
       const appointmentIdsByPatientId = appointments.reduce(
         (acc, appointment) => {
           const patientId = appointment.patientId;

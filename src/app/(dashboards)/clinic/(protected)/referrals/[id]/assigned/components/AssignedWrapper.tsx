@@ -139,7 +139,7 @@ export default async function AssignedWrapper({
         respondedAt={referralRequest.respondedAt ? referralRequest.respondedAt.toString() : null}
       />
 
-      <AppointmentCard appointment={appointment} href={""} />
+      <AppointmentCard appointment={appointment}  href={`/clinic/appointments/${appointment.id}/reports`} />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { createResponse } from "@/utils/createResponse";
 import { generateOtp } from "@/utils/generateOtp";
 import bcrypt from "bcryptjs";
 import sendgrid from "@/config/sendgrid-config";
+import { otpEmailHtml } from "@/constants/referralEmailTemplates";
 
 export async function POST(req: NextRequest) {
   try {
@@ -86,24 +87,16 @@ export async function POST(req: NextRequest) {
         otpInvalidationTime,
       },
     });
-    const html = `
-          <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
-            <p>Your one-time password is:</p>
-            <div style="font-size: 24px; font-weight: 700; letter-spacing: 4px; margin: 16px 0;">
-              ${admin.otp}
-            </div>
-            <p>This code expires in 15 minutes.</p>
-          </div>
-        `;
+    const html = otpEmailHtml(admin.otp);
 
     await sendgrid.send({
       from: {
         email: process.env.EMAIL_FROM!,
         name: "Aspire Clinic",
       },
-      
       to: process.env.EMAIL_TO!,
       subject: "Your Aspire OTP code",
+      replyTo: process.env.REPLAY_TO_EMAIL!,
       html,
       text: "undefined",
     });
