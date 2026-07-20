@@ -9,6 +9,8 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { Appointment } from "@/types/appointment";
 import prisma from "@/lib/db";
+import { getPatientById } from "@/dentallyHelpers/patient";
+import { notifyAppointmentStatus } from "@/notifications/appointmentNotifications";
 
 /**
  * @swagger
@@ -355,16 +357,69 @@ export async function GET(req: NextRequest) {
         where: { dentallyId: appointment.patientId },
       }),
       await prisma.report.findMany({
-        where: { appointmentId, fileType: "VIDEO" ,...recipientWhere},
+        where: { appointmentId, fileType: "VIDEO", ...recipientWhere },
         orderBy: { createdAt: "desc" },
         include: { dentist: true },
       }),
       await prisma.report.findMany({
-        where: { appointmentId, fileType: "PDF" ,...recipientWhere},
+        where: { appointmentId, fileType: "PDF", ...recipientWhere },
         orderBy: { createdAt: "desc" },
         include: { dentist: true },
       }),
     ]);
+
+    if (!patient) {
+      const patient = await getPatientById(String(appointment.patientId));
+
+      if (patient.isError) {
+        return patient.response;
+      }
+      let activePatients = (response.response.patients ?? []).filter(
+        (patient: any) => patient.active && !patient.archivedReason,
+      );
+
+      if (activePatients.length > 0) {
+        return NextResponse.json(
+          createResponse(false, "Patient not found.", null),
+          { status: 404 },
+        );
+      }
+
+      const dbpatient = await prisma.patient.findFirst({
+        where: { dentallyId: Number(appointment.patientId) },
+      });
+
+      
+
+      const patientData = patient.response.patient;
+      const name = `${patientData.firstName} ${patientData.lastName}`.trim();
+
+      if (!dbpatient) {
+        await prisma.patient.create({
+          data: {
+            uuid: patientData.uuid,
+            dentallyId: Number(patientData.id),
+            name,
+            email: patientData.emailAddress,
+            mobileNumber: patientData.mobilePhone,
+            dateOfBirth: patientData.dateOfBirth,
+          },
+        });
+      } else {
+        await prisma.patient.update({
+          where: {
+            dentallyId: Number(patientData.id),
+          },
+          data: {
+            name,
+            email: patientData.emailAddress,
+            mobileNumber: patientData.mobilePhone,
+            dateOfBirth: patientData.dateOfBirth,
+            uuid: patientData.uuid,
+          },
+        });
+      }
+    }
 
     if (!videos.length && !pdfs.length) {
       return NextResponse.json(
@@ -568,6 +623,11 @@ export async function PATCH(req: NextRequest) {
     }
 
     const response = await editAppointment(appointmentId, partialAppointment);
+
+    const status = partialAppointment.state;
+    if (status === "Confirmed" || status === "Cancelled") {
+      notifyAppointmentStatus(appointmentId, status).catch(console.error);
+    }
 
     return NextResponse.json(
       createResponse(

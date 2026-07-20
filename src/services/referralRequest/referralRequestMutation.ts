@@ -50,7 +50,7 @@ export const useAppointmentBindingMutation = () => {
     }) => {
       const response = await axiosInstance.patch(
         ENDPOINTS.referralRequest.patch(referralRequestId),
-        { appointmentId, practitionerId, requestStatus }
+        { appointmentId, practitionerId, requestStatus, actionType: "APPOINTMENT_BIND" }
       );
       return response.data;
     },
@@ -71,6 +71,7 @@ export const useAssignDentistMutation = () => {
         {
           requestStatus: "PENDING_REVIEW",
           practitionerId,
+          actionType: "DENTIST_ASSIGN",
         }
       );
       return response.data;

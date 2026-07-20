@@ -4,6 +4,7 @@ import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import { notifyReferralResponded } from "@/notifications/referralNotifications";
 
 export async function POST(req: NextRequest) {
   try {
@@ -110,6 +111,8 @@ export async function POST(req: NextRequest) {
       where: { id: referralRequestId },
       data: updateData,
     });
+
+    notifyReferralResponded(referralRequestId).catch(console.error);
 
     return NextResponse.json(
       createResponse(

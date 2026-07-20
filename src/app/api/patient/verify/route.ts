@@ -5,6 +5,7 @@ import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { generateOtp } from "@/utils/generateOtp";
 import { NextRequest, NextResponse } from "next/server";
+import { otpEmailHtml } from "@/constants/referralEmailTemplates";
 
 /**
  * @swagger
@@ -191,16 +192,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const html = `
-      <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
-        <p>Hi ${fullName},</p>
-        <p>Your one-time password is:</p>
-        <div style="font-size: 24px; font-weight: 700; letter-spacing: 4px; margin: 16px 0;">
-          ${patient.otp}
-        </div>
-        <p>This code expires in 15 minutes.</p>
-      </div>
-    `;
+    const html = otpEmailHtml(patient.otp, fullName);
 
     await sendgrid.send({
       from: process.env.EMAIL_FROM,

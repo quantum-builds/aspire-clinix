@@ -4,6 +4,7 @@ import { createResponse } from "@/utils/createResponse";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import { notifyReportsCreated } from "@/notifications/reportNotifications";
 
 /**
  * @swagger
@@ -329,6 +330,9 @@ export async function POST(req: NextRequest) {
     await prisma.report.createMany({
       data: reportsToCreate,
     });
+
+    notifyReportsCreated(reportsToCreate, dentist.id).catch(console.error);
+
     return NextResponse.json(
       createResponse(true, "Reports created successfully.", null),
       { status: 201 },
