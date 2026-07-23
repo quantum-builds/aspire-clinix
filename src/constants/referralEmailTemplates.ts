@@ -170,7 +170,7 @@ export function buildReferralHtml(
 
   const addSection = (title: string, body: string) => {
     parts.push(`
-      <h3 style="margin-bottom:8px;color:#2a9d8f;">
+      <h3 style="margin-bottom:8px;color:#B7A58D;font-size:18px;">
         ${title}
       </h3>
       <div style="margin-bottom:16px;font-size:15px;line-height:1.6;">
@@ -261,19 +261,14 @@ export function buildReferralHtml(
     }
   }
 
-
   // Patient details
   const patientLines: string[] = [];
 
   if (referralForm.patientName)
-    patientLines.push(
-      `<strong>Name:</strong> ${referralForm.patientName}`,
-    );
+    patientLines.push(`<strong>Name:</strong> ${referralForm.patientName}`);
 
   if (referralForm.patientEmail)
-    patientLines.push(
-      `<strong>Email:</strong> ${referralForm.patientEmail}`,
-    );
+    patientLines.push(`<strong>Email:</strong> ${referralForm.patientEmail}`);
 
   if (referralForm.patientPhoneNumber)
     patientLines.push(
@@ -291,12 +286,8 @@ export function buildReferralHtml(
     );
 
   if (patientLines.length) {
-    addSection(
-      "Patient Details",
-      patientLines.join("<br/>"),
-    );
+    addSection("Patient Details", patientLines.join("<br/>"));
   }
-
 
   // Referral details
   const referralLines: string[] = [];
@@ -307,14 +298,10 @@ export function buildReferralHtml(
     );
 
   if (referralForm.referralEmail)
-    referralLines.push(
-      `<strong>Email:</strong> ${referralForm.referralEmail}`,
-    );
+    referralLines.push(`<strong>Email:</strong> ${referralForm.referralEmail}`);
 
   if (referralForm.referralGDC)
-    referralLines.push(
-      `<strong>GDC:</strong> ${referralForm.referralGDC}`,
-    );
+    referralLines.push(`<strong>GDC:</strong> ${referralForm.referralGDC}`);
 
   if (referralForm.referralPracticeNameAddress)
     referralLines.push(
@@ -322,12 +309,8 @@ export function buildReferralHtml(
     );
 
   if (referralLines.length) {
-    addSection(
-      "Referral Details",
-      referralLines.join("<br/>"),
-    );
+    addSection("Referral Details", referralLines.join("<br/>"));
   }
-
 
   // Treatment details
   const treatmentLines: string[] = [];
@@ -342,13 +325,6 @@ export function buildReferralHtml(
       `<strong>Prescription:</strong> ${referralForm.prescriptionDetails}`,
     );
 
-  if (referralForm.medicalHistoryPdfUrl)
-    treatmentLines.push(
-      `<strong>Medical History:</strong>
-       <a href="${referralForm.medicalHistoryPdfUrl}">
-       View Document</a>`,
-    );
-
   if (referralForm.cbctReportPdfUrl)
     treatmentLines.push(
       `<strong>CBCT Report:</strong>
@@ -356,28 +332,16 @@ export function buildReferralHtml(
        View Document</a>`,
     );
 
-
   if (treatmentLines.length) {
-    addSection(
-      "Treatment Details",
-      treatmentLines.join("<br/>"),
-    );
+    addSection("Treatment Details", treatmentLines.join("<br/>"));
   }
-
 
   if (referralForm.other) {
-    addSection(
-      "Other Notes",
-      referralForm.other,
-    );
+    addSection("Other Notes", referralForm.other);
   }
 
-
   // Use common email wrapper
-  return wrapHtml(
-    "Referral Notification",
-    parts.join("")
-  );
+  return wrapHtml("Referral Notification", parts.join(""));
 }
 
 export default buildReferralHtml;
