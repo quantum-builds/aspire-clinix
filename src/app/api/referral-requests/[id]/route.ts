@@ -9,7 +9,10 @@ import { DentistRole, ReferralRequestStatus } from "@prisma/client";
 import { gettPractitionerById } from "@/dentallyHelpers/practitioners";
 import { getAppointment } from "@/dentallyHelpers/appointment";
 import ReferralForm from "@/components/ReferralForm";
-import { notifyReferralAppointmentBound, notifyReferralDentistAssigned } from "@/notifications/referralNotifications";
+import {
+  notifyReferralAppointmentBound,
+  notifyReferralDentistAssigned,
+} from "@/notifications/referralNotifications";
 
 /**
  * @swagger
@@ -292,12 +295,15 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // DENTALLY_PRACTITIONER can only view referrals assigned to them
+    // DENTALLY_PRACTITIONER can view referrals they were assigned to or referrals they created.
     if (token.role === TokenRoles.DENTALLY_PRACTITIONER) {
       const { localDentistId } = await resolveDentistFromToken(token as JWT);
+      const referringDentistId =
+        existingRequest.referralForm?.referralDentistId;
       if (
         !localDentistId ||
-        existingRequest.assignedDentistId !== localDentistId
+        (existingRequest.assignedDentistId !== localDentistId &&
+          referringDentistId !== localDentistId)
       ) {
         return NextResponse.json(createResponse(false, "Forbidden", null), {
           status: 403,
@@ -428,9 +434,13 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const { appointmentId, requestStatus, practitionerId, assignedDentistId, actionType } =
-      body;
-
+    const {
+      appointmentId,
+      requestStatus,
+      practitionerId,
+      assignedDentistId,
+      actionType,
+    } = body;
 
     // --- PURE ASSIGNMENT (no appointmentId) ---
     if (requestStatus === "PENDING_REVIEW") {
@@ -503,6 +513,8 @@ export async function PATCH(req: NextRequest) {
 
     // --- BIND APPOINTMENT (existing flow) ---
     if (requestStatus === "ASSIGNED") {
+       notifyReferralAppointmentBound(referralRequestId).catch(console.error);
+       
       if (!appointmentId) {
         return NextResponse.json(
           createResponse(
@@ -536,9 +548,6 @@ export async function PATCH(req: NextRequest) {
         data: updateData,
       });
 
-      
-
-      
       const result = await prisma.referralRequest.findUnique({
         where: { id: referralRequestId },
         include: {
@@ -557,9 +566,7 @@ export async function PATCH(req: NextRequest) {
           })
         : null;
 
-      if (actionType === "APPOINTMENT_BIND") {
-        notifyReferralAppointmentBound(referralRequestId).catch(console.error);
-      }
+     
 
       return NextResponse.json(
         createResponse(true, "Appointment bound successfully.", {
