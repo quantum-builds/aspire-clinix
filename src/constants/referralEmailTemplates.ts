@@ -1,3 +1,4 @@
+import { AspireDarkLogo } from "@/assets";
 export interface ReferralNotificationData {
   patientName: string;
   patientEmail: string;
@@ -51,13 +52,32 @@ export function assignedPractitionerEmail(
       `<p style="font-size:15px;line-height:1.6;">${msg}</p>`,
   );
 }
+export function bindPractitionerEmail(
+  data: ReferralNotificationData,
+): string {
+  const msg = `A Referral request created by Referring Dentist <strong>${data.referringDentistName}</strong> for Patient <strong>${data.patientName}</strong> has been bound to your appointment. Please review the appointment details in your dashboard.`
+  return wrapHtml(
+    "Referral Update",
+    `<p style="font-size:15px;line-height:1.6;">Dear ${data.practitionerName || "Practitioner"},</p>` +
+      `<p style="font-size:15px;line-height:1.6;">${msg}</p>`,
+  );
+}
 
 export function assignedReferringDentistEmail(
   data: ReferralNotificationData,
 ): string {
-  const msg = data.hasAppointment
-    ? `The referral for <strong>${data.patientName}</strong> has been bound to an appointment with ${data.practitionerName || "a specialist"}.`
-    : `The referral for <strong>${data.patientName}</strong> has been assigned to ${data.practitionerName || "a specialist"} for review.`;
+  const msg =`The referral for <strong>${data.patientName}</strong> has been assigned to Aspire Dentist ${data.practitionerName} for review.`;
+  return wrapHtml(
+    "Referral Progress",
+    `<p style="font-size:15px;line-height:1.6;">Dear ${data.referringDentistName || "Referring Dentist"},</p>` +
+      `<p style="font-size:15px;line-height:1.6;">${msg}</p>`,
+  );
+}
+
+export function bindReferringDentistEmail(
+  data: ReferralNotificationData,
+): string {
+  const msg =`The referral that you referred for <strong>${data.patientName}</strong> has been bind to Aspire Dentist ${data.practitionerName}`;
   return wrapHtml(
     "Referral Progress",
     `<p style="font-size:15px;line-height:1.6;">Dear ${data.referringDentistName || "Referring Dentist"},</p>` +
@@ -66,9 +86,17 @@ export function assignedReferringDentistEmail(
 }
 
 export function assignedPatientEmail(data: ReferralNotificationData): string {
-  const msg = data.hasAppointment
-    ? `Your appointment has been booked with ${data.practitionerName || "an Aspire dentist"}. Please check your dashboard for details.`
-    : `Your referral has been assigned to ${data.practitionerName || "an Aspire dentist"} for review. You will be notified once an appointment is booked.`;
+  const msg = `Your referral request, created by your referring dentist,has been assigned to Aspire Dentist ${data.practitionerName} for review.`;
+  return wrapHtml(
+    "Referral Update",
+    `<p style="font-size:15px;line-height:1.6;">Dear ${data.patientName},</p>` +
+      `<p style="font-size:15px;line-height:1.6;">${msg}</p>`,
+  );
+}
+
+export function bindPatientEmail(data: ReferralNotificationData): string {
+  const msg = `Your appointment has been Bind with ${data.practitionerName}. Please check your dashboard for details.`;
+
   return wrapHtml(
     "Referral Update",
     `<p style="font-size:15px;line-height:1.6;">Dear ${data.patientName},</p>` +
@@ -81,10 +109,18 @@ export function responseAdminEmail(data: ReferralNotificationData): string {
   const msg = data.comments
     ? `with the following comments: "${data.comments}"`
     : "You can view the details in the dashboard.";
+
   return wrapHtml(
     `Referral ${status}`,
     `<p style="font-size:15px;line-height:1.6;">Dear Admin,</p>` +
-      `<p style="font-size:15px;line-height:1.6;">${data.practitionerName || "A practitioner"} has <strong>${status}</strong> the referral for <strong>${data.patientName}</strong> ${msg}</p>`,
+      `<p style="font-size:15px;line-height:1.6;">
+        <strong>${data.practitionerName}</strong> has 
+        <strong>${status}</strong> the referral for 
+        <strong>${data.patientName}</strong>.
+      </p>` +
+      `<p style="font-size:15px;line-height:1.6;margin-top:20px;">
+        Comments: "${data.comments || "No comments provided"}"
+      </p>`,
   );
 }
 
@@ -116,10 +152,15 @@ export function responsePatientEmail(data: ReferralNotificationData): string {
 }
 
 export function assignedAdminEmail(data: ReferralNotificationData): string {
-  const action = data.hasAppointment ? "appointment bound" : "dentist assigned";
   return wrapHtml(
     "Referral Update",
-    `<p style="font-size:15px;line-height:1.6;">A referral for <strong>${data.patientName}</strong> has been <strong>${action}</strong> to ${data.practitionerName || "a practitioner"}.</p>`,
+    `<p style="font-size:15px;line-height:1.6;">Dear Admin,</p>
+    <p style="font-size:15px;line-height:1.6;">
+      The referral request for patient 
+      <strong>${data.patientName}</strong>, referred by Referring Dentist 
+      <strong>${data.referringDentistName}</strong>, has been assigned to 
+      Aspire Dentist <strong>${data.practitionerName}</strong>.
+    </p>`,
   );
 }
 
@@ -139,7 +180,7 @@ export function otpEmailHtml(otp: string | null, name?: string): string {
         letter-spacing:8px;
         text-align:center;
         margin:25px 0;
-        color:#2a9d8f;
+        color:#B7A58D;
       ">
         ${otp ?? ""}
       </div>

@@ -9,6 +9,9 @@ import {
   responseReferringDentistEmail,
   responsePatientEmail,
   ReferralNotificationData,
+  bindPatientEmail,
+  bindReferringDentistEmail,
+  bindPractitionerEmail,
 } from "@/constants/referralEmailTemplates";
 
 async function buildNotificationData(referralRequestId: string): Promise<ReferralNotificationData | null> {
@@ -62,23 +65,20 @@ export async function notifyReferralAppointmentBound(referralRequestId: string):
       sendEmail({
         to: data.practitionerEmail,
         subject: "Appointment booked \u2014 referral update",
-        html: assignedPractitionerEmail(data),
+        html: bindPractitionerEmail(data),
       }),
     data.referringDentistEmail &&
       sendEmail({
         to: data.referringDentistEmail,
         subject: "Appointment booked for your referral",
-        html: assignedReferringDentistEmail(data),
+        html: bindReferringDentistEmail(data),
       }),
     sendEmail({
       to: data.patientEmail,
       subject: "Your appointment has been booked",
-      html: assignedPatientEmail(data),
+      html: bindPatientEmail(data),
     }),
-    sendEmailToAdmins({
-      subject: "Referral appointment bound",
-      html: assignedAdminEmail(data),
-    }),
+   
   ]);
 }
 
