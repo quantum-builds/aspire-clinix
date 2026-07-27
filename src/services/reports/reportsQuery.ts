@@ -58,7 +58,8 @@ export async function getReports({
         ? await Promise.all(
             reports.videos.map(async (resource) => {
               if (resource.fileUrl) {
-                return await getAMedia(resource.fileUrl);
+                const response = await getAMedia(resource.fileUrl);
+                return response?.files?.[0]?.url ?? null;
               }
               return null;
             })

@@ -33,9 +33,11 @@ export async function getResources(
       resources.map(async (resource) => {
         if (resource.fileUrl) {
           const imageResponse = await getAMedia(resource.fileUrl);
-          return imageResponse;
+          return imageResponse?.files?.[0]?.url ?? null;
         }
-      })
+
+        return null;
+      }),
     );
 
     resources.forEach((resource, index) => {
