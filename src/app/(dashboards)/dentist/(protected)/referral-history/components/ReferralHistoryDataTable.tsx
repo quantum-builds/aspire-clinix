@@ -25,6 +25,14 @@ interface ReferralHistoryDataTableProps {
   entries: TReferralRequest[];
 }
 
+const statusConfig: Record<string, { label: string; dot: string }> = {
+  [ReferralRequestStatus.PENDING_REVIEW]: { label: "REVIEW PENDING", dot: "bg-blue-500" },
+  [ReferralRequestStatus.ACCEPTED]: { label: "ACCEPTED", dot: "bg-emerald-400" },
+  [ReferralRequestStatus.REJECTED]: { label: "REJECTED", dot: "bg-red-500" },
+  [ReferralRequestStatus.UNASSIGNED]: { label: "UNASSIGNED", dot: "bg-[#fcd833]" },
+  [ReferralRequestStatus.ASSIGNED]: { label: "ASSIGNED", dot: "bg-green" },
+};
+
 export function ReferralHistoryDataTable({ entries }: ReferralHistoryDataTableProps) {
   const router = useRouter();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -90,6 +98,8 @@ export function ReferralHistoryDataTable({ entries }: ReferralHistoryDataTablePr
 
         <TableBody>
           {entries.map((entry, index) => (
+
+            
             <TableRow
               key={entry.id}
               className="bg-dashboardBackground hover:bg-gray cursor-pointer text-lg text-dashboardTextBlack"
@@ -109,13 +119,18 @@ export function ReferralHistoryDataTable({ entries }: ReferralHistoryDataTablePr
 
               <TableCell className="px-6 py-4">
                 <div className="flex gap-2 items-center">
-                  <div
-                    className={`size-3 rounded-[4px] ${entry.requestStatus === ReferralRequestStatus.ASSIGNED
-                        ? "bg-green"
-                        : "bg-[#fcd833]"
-                      }`}
-                  />
-                  {entry.requestStatus}
+                  {(() => {
+                    const statusConf = statusConfig[entry.requestStatus] ?? {
+                      label: entry.requestStatus,
+                      dot: "bg-gray-400",
+                    };
+                    return (
+                      <>
+                        <div className={`size-3 rounded-[4px] ${statusConf.dot}`} />
+                        {statusConf.label}
+                      </>
+                    );
+                  })()}
                 </div>
               </TableCell>
 
