@@ -48,9 +48,15 @@ export default function UpcomingAppointmentCard({
 
   return (
     <div className="flex flex-col gap-6 p-5 rounded-2xl bg-gray">
-      <div className="flex items-center justify-between">
+      {/* <div className="flex items-center justify-between">
         <p className="italic text-green font-medium text-xl">
           Status: {appointment.state}
+        </p>
+      </div> */}
+      <div className="flex justify-between items-center">
+        <p className="italic text-green font-medium text-xl">
+          {/* Status: {appointment.state} */}
+          The Appointment as been Assigned{" "}
         </p>
       </div>
 

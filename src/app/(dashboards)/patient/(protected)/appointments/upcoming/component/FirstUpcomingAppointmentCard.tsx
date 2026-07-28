@@ -31,17 +31,18 @@ export default function FirstUpcomingAppointmentCard({
       {
         appointment: { state: AppointmentState.CANCELLED },
         id: appointment.id,
-        patientId: appointment.patientId
+        patientId: appointment.patientId,
       },
       {
         onSuccess: (data) => {
           refresh();
           setIsCancelModalOpen(false);
-        }, onError: (error) => {
+        },
+        onError: (error) => {
           const msg = getAxiosErrorMessage(error);
           showToast("error", msg);
         },
-      }
+      },
     );
   };
 
@@ -69,13 +70,16 @@ export default function FirstUpcomingAppointmentCard({
           </div>
         </div>
         <div className="flex  gap-3 items-center justify-between">
-          <p className="text-lg flex gap-1 items-center">
+          {/* <p className="text-lg flex gap-1 items-center">
             Status: <StatusBage status={appointment.state} />
+          </p> */}
+
+          <p className="italic text-green font-medium text-xl">
+            {/* Status: {appointment.state} */}
+            The Appointment as been Assigned
           </p>
 
-          <p className="text-lg italic">
-            Appointment # {appointment.id}
-          </p>
+          <p className="text-lg italic">Appointment # {appointment.id}</p>
         </div>
       </div>
       <div className="flex flex-col gap-1">
