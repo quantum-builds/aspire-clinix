@@ -10,12 +10,23 @@ export interface ReferralNotificationData {
   hasAppointment: boolean;
   action?: "ACCEPTED" | "REJECTED";
   comments?: string;
+  proposedTreatmentDetails?: string;
+  proposedConsultationTime?: string;
 }
 
 const LOGO_URL =
   "https://aspire-media.s3.eu-west-2.amazonaws.com/uploads/aspire-clinic/images/aspire-logo.png";
 
-export function wrapHtml(title: string, body: string): string {
+/**
+ * wrapHtml
+ * subtitle -> small tan/orange eyebrow label above the main title (e.g. "Patient Referral")
+ * title    -> large heading (e.g. "Referral Received")
+ */
+export function wrapHtml(
+  title: string,
+  body: string,
+  subtitle?: string,
+): string {
   return `
     <!DOCTYPE html>
     <html>
@@ -23,16 +34,27 @@ export function wrapHtml(title: string, body: string): string {
       <body style="font-family:'Segoe UI',Arial,sans-serif;background-color:#f4f4f7;margin:0;padding:20px;color:#333;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:650px;margin:auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.08);">
           <tr>
-            <td style="background:#B7A58D;padding:20px;text-align:center;color:#fff;">
-              <img src="${LOGO_URL}" alt="Aspire Clinic" style="max-width:150px;height:auto;margin-bottom:10px;display:block;margin-left:auto;margin-right:auto;" />
-              <h1 style="margin:0;font-size:22px;">${title}</h1>
+            <td style="background:#3D3630;padding:35px 20px;text-align:center;color:#fff;">
+              <img src="${LOGO_URL}" alt="Aspire Clinic" style="max-width:150px;height:auto;margin-bottom:6px;display:block;margin-left:auto;margin-right:auto;" />
+              <p style="margin:0 0 25px 0;font-size:11px;letter-spacing:2px;color:#cfc7bd;text-transform:uppercase;">
+                Dentistry &nbsp;|&nbsp; Aesthetics &nbsp;|&nbsp; Wellness
+              </p>
+              ${
+                subtitle
+                  ? `<p style="margin:0 0 6px 0;font-size:14px;letter-spacing:1px;color:#C79A6B;">${subtitle}</p>`
+                  : ""
+              }
+              <h1 style="margin:0;font-size:26px;color:#F5EFE6;">${title}</h1>
             </td>
           </tr>
           <tr><td style="padding:25px;">${body}</td></tr>
           <tr>
-            <td style="background:#f1f1f1;text-align:center;padding:15px;font-size:12px;color:#777;">
-              <img src="${LOGO_URL}" alt="Aspire Clinic" style="max-width:80px;height:auto;opacity:0.6;margin-bottom:5px;" />
-              <br/>Aspire Clinic
+            <td style="background:#3D3630;text-align:center;padding:20px;font-size:12px;color:#cfc7bd;line-height:1.6;">
+              Aspire Clinic, 29-35 Mortimer Street, Fitzrovia, London W1T 3JG, United Kingdom, 020 8081 9958
+              <br/>
+              <a href="#" style="color:#C79A6B;text-decoration:underline;">Unsubscribe</a>
+              &nbsp;·&nbsp;
+              <a href="#" style="color:#C79A6B;text-decoration:underline;">Manage preferences</a>
             </td>
           </tr>
         </table>
@@ -43,68 +65,360 @@ export function wrapHtml(title: string, body: string): string {
 export function assignedPractitionerEmail(
   data: ReferralNotificationData,
 ): string {
-  const msg = data.hasAppointment
-    ? `An appointment has been booked for your referral for <strong>${data.patientName}</strong>. Please review the appointment details in your dashboard.`
-    : `A new referral for <strong>${data.patientName}</strong> has been assigned to you. Please review the referral details and provide your response.`;
   return wrapHtml(
-    "Referral Update",
-    `<p style="font-size:15px;line-height:1.6;">Dear ${data.practitionerName || "Practitioner"},</p>` +
-      `<p style="font-size:15px;line-height:1.6;">${msg}</p>`,
+    "Referral Assigned",
+    `
+      <p style="font-size:15px;line-height:1.6;">
+        Dear ${data.practitionerName || "Practitioner"},
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        A new referral for <strong>${data.patientName}</strong> has been assigned to you.
+        Please review the referral details and provide your response.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Please find the referral details below:
+      </p>
+
+      <h3 style="margin:20px 0 10px;">
+        Referral Details
+      </h3>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Patient</strong><br/>
+        ${data.patientName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Referring Dentist</strong><br/>
+         ${data.referringDentistName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Please review the referral in your dashboard and either <strong>accept</strong> or <strong>reject</strong> 
+        the request. Also add the comments, proposed treatment details, and proposed consultation time.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Thank you for helping ensure a smooth referral process.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Kind regards,<br/>
+        <strong>Aspire Clinic Team</strong>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Eve Front of House — Aspire Dental Clinic<br/>
+        020 8081 9958 | info@theaspireclinic.com<br/>
+        29-35 Mortimer Street<br/>
+        London<br/>
+        W1T 3JG
+      </p>
+    `,
   );
 }
 export function bindPractitionerEmail(
   data: ReferralNotificationData,
 ): string {
-  const msg = `A Referral request created by Referring Dentist <strong>${data.referringDentistName}</strong> for Patient <strong>${data.patientName}</strong> has been bound to your appointment. Please review the appointment details in your dashboard.`
   return wrapHtml(
-    "Referral Update",
-    `<p style="font-size:15px;line-height:1.6;">Dear ${data.practitionerName || "Practitioner"},</p>` +
-      `<p style="font-size:15px;line-height:1.6;">${msg}</p>`,
+    "Appointment Booked",
+    `
+      <p style="font-size:15px;line-height:1.6;">
+        Dear ${data.practitionerName || "Practitioner"},
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        The referral created by Referring Dentist 
+        <strong>${data.referringDentistName}</strong> for Patient 
+        <strong>${data.patientName}</strong> has been booked with you.
+        Please review the appointment details in your dashboard.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Please find the referral details below:
+      </p>
+
+      <h3 style="margin:20px 0 10px;">
+        Referral Details
+      </h3>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Patient</strong><br/>
+        ${data.patientName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Referring Dentist</strong><br/>
+         ${data.referringDentistName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Aspire Dentist</strong><br/>
+         ${data.practitionerName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Thank you for managing this referral. Please ensure the appointment details 
+        are reviewed before the scheduled visit.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Kind regards,<br/>
+        <strong>Aspire Clinic Team</strong>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Eve Front of House — Aspire Dental Clinic<br/>
+        020 8081 9958 | info@theaspireclinic.com<br/>
+        29-35 Mortimer Street<br/>
+        London<br/>
+        W1T 3JG
+      </p>
+    `,
   );
 }
 
 export function assignedReferringDentistEmail(
   data: ReferralNotificationData,
 ): string {
-  const msg =`The referral for <strong>${data.patientName}</strong> has been assigned to Aspire Dentist ${data.practitionerName} for review.`;
   return wrapHtml(
-    "Referral Progress",
-    `<p style="font-size:15px;line-height:1.6;">Dear ${data.referringDentistName || "Referring Dentist"},</p>` +
-      `<p style="font-size:15px;line-height:1.6;">${msg}</p>`,
+    "Referral Assigned",
+    `
+      <p style="font-size:15px;line-height:1.6;">
+        Dear ${data.referringDentistName || "Referring Dentist"},
+      </p>
+
+     <p style="font-size:15px;line-height:1.6;">
+  The referral that was  created by you for <strong>${data.patientName}</strong> 
+  has been assigned to Aspire Dentist <strong> ${data.practitionerName}</strong> 
+  for review.
+</p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Please find the referral details below:
+      </p>
+
+      <h3 style="margin:20px 0 10px;">
+        Referral Details
+      </h3>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Patient</strong><br/>
+        ${data.patientName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Referring Dentist</strong><br/>
+         ${data.referringDentistName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        The assigned Aspire Dentist will now review the referral and provide a response.
+        You and the patient will be notified automatically once a decision has been made.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Thank you for helping ensure a smooth referral process.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Kind regards,<br/>
+        <strong>Aspire Clinic Team</strong>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Eve Front of House — Aspire Dental Clinic<br/>
+        020 8081 9958 | info@theaspireclinic.com<br/>
+        29-35 Mortimer Street<br/>
+        London<br/>
+        W1T 3JG
+      </p>
+    `,
   );
 }
 
 export function bindReferringDentistEmail(
   data: ReferralNotificationData,
 ): string {
-  const msg =`The referral that you referred for <strong>${data.patientName}</strong> has been bind to Aspire Dentist ${data.practitionerName}`;
   return wrapHtml(
-    "Referral Progress",
-    `<p style="font-size:15px;line-height:1.6;">Dear ${data.referringDentistName || "Referring Dentist"},</p>` +
-      `<p style="font-size:15px;line-height:1.6;">${msg}</p>`,
+    "Appointment Booked",
+    `
+      <p style="font-size:15px;line-height:1.6;">
+        Dear ${data.referringDentistName || "Referring Dentist"},
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        The referral you created for <strong>${data.patientName}</strong> has been 
+        booked with Aspire Dentist <strong>Dr. ${data.practitionerName}</strong>.
+        The appointment details have been confirmed.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Please find the referral details below:
+      </p>
+
+      <h3 style="margin:20px 0 10px;">
+        Referral Details
+      </h3>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Patient</strong><br/>
+        ${data.patientName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Referring Dentist</strong><br/>
+        Dr. ${data.referringDentistName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Aspire Dentist</strong><br/>
+        Dr. ${data.practitionerName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Thank you for referring your patient to Aspire Clinic. 
+        We will continue to keep you updated throughout the referral process.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Kind regards,<br/>
+        <strong>Aspire Clinic Team</strong>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Eve Front of House — Aspire Dental Clinic<br/>
+        020 8081 9958 | info@theaspireclinic.com<br/>
+        29-35 Mortimer Street<br/>
+        London<br/>
+        W1T 3JG
+      </p>
+    `,
   );
 }
 
-export function assignedPatientEmail(data: ReferralNotificationData): string {
-  const msg = `Your referral request, created by your referring dentist,has been assigned to Aspire Dentist ${data.practitionerName} for review.`;
+export function assignedPatientEmail(
+  data: ReferralNotificationData,
+): string {
   return wrapHtml(
-    "Referral Update",
-    `<p style="font-size:15px;line-height:1.6;">Dear ${data.patientName},</p>` +
-      `<p style="font-size:15px;line-height:1.6;">${msg}</p>`,
+    "Referral Assigned",
+    `
+      <p style="font-size:15px;line-height:1.6;">
+        Dear ${data.patientName},
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Your referral request, created by your referring dentist ${data.referringDentistName}, has been assigned 
+        to Aspire Dentist <strong>${data.practitionerName}</strong> for review.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Please find the referral details below:
+      </p>
+
+      <h3 style="margin:20px 0 10px;">
+        Referral Details
+      </h3>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Patient</strong><br/>
+        ${data.patientName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Referring Dentist</strong><br/>
+         ${data.referringDentistName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        The assigned Aspire Dentist will now review your referral. 
+        You will be notified once a decision has been made regarding your request.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Thank you for your patience while we process your referral.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Kind regards,<br/>
+        <strong>Aspire Clinic Team</strong>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Eve Front of House — Aspire Dental Clinic<br/>
+        020 8081 9958 | info@theaspireclinic.com<br/>
+        29-35 Mortimer Street<br/>
+        London<br/>
+        W1T 3JG
+      </p>
+    `,
   );
 }
 
-export function bindPatientEmail(data: ReferralNotificationData): string {
-  const msg = `Your appointment has been Bind with ${data.practitionerName}. Please check your dashboard for details.`;
-
+export function bindPatientEmail(
+  data: ReferralNotificationData,
+): string {
   return wrapHtml(
-    "Referral Update",
-    `<p style="font-size:15px;line-height:1.6;">Dear ${data.patientName},</p>` +
-      `<p style="font-size:15px;line-height:1.6;">${msg}</p>`,
+    "Appointment Booked",
+    `
+      <p style="font-size:15px;line-height:1.6;">
+        Dear ${data.patientName},
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Your appointment has been booked with Aspire Dentist 
+        <strong>${data.practitionerName}</strong>. 
+        This appointment was arranged through the referral created by your referring dentist.
+        Please check your dashboard for further details.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Please find the referral details below:
+      </p>
+
+      <h3 style="margin:20px 0 10px;">
+        Referral Details
+      </h3>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Patient</strong><br/>
+        ${data.patientName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Referring Dentist</strong><br/>
+        ${data.referringDentistName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Aspire Dentist</strong><br/>
+        Dr. ${data.practitionerName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Thank you for choosing Aspire Clinic. We look forward to seeing you at your 
+        scheduled appointment.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Kind regards,<br/>
+        <strong>Aspire Clinic Team</strong>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Eve Front of House — Aspire Dental Clinic<br/>
+        020 8081 9958 | info@theaspireclinic.com<br/>
+        29-35 Mortimer Street<br/>
+        London<br/>
+        W1T 3JG
+      </p>
+    `,
   );
 }
 
-export function responseAdminEmail(data: ReferralNotificationData): string {
+export function AdminEmail(data: ReferralNotificationData): string {
   const status = data.action === "ACCEPTED" ? "accepted" : "rejected";
   const msg = data.comments
     ? `with the following comments: "${data.comments}"`
@@ -118,7 +432,19 @@ export function responseAdminEmail(data: ReferralNotificationData): string {
         <strong>${status}</strong> the referral for 
         <strong>${data.patientName}</strong>.
       </p>` +
-      `<p style="font-size:15px;line-height:1.6;margin-top:20px;">
+      (data.proposedTreatmentDetails
+        ? `<p style="font-size:15px;line-height:1.6;margin-top:20px;">
+            <strong>Proposed Treatment:</strong><br/>
+            ${data.proposedTreatmentDetails}
+          </p>`
+        : "") +
+      (data.proposedConsultationTime
+        ? `<p style="font-size:15px;line-height:1.6;">
+            <strong>Proposed Consultation Time:</strong><br/>
+            ${data.proposedConsultationTime}
+          </p>`
+        : "") +
+      `<p style="font-size:15px;line-height:1.6;">
         Comments: "${data.comments || "No comments provided"}"
       </p>`,
   );
@@ -127,40 +453,276 @@ export function responseAdminEmail(data: ReferralNotificationData): string {
 export function responseReferringDentistEmail(
   data: ReferralNotificationData,
 ): string {
-  const status = data.action === "ACCEPTED" ? "accepted" : "rejected";
+  const isAccepted = data.action === "ACCEPTED";
+  const status = isAccepted ? "accepted" : "rejected";
+
   return wrapHtml(
-    `Referral ${status}`,
-    `<p style="font-size:15px;line-height:1.6;">Dear ${data.referringDentistName || "Referring Dentist"},</p>` +
-      `<p style="font-size:15px;line-height:1.6;">The practitioner has <strong>${status}</strong> your referral for <strong>${data.patientName}</strong>.</p>` +
-      (data.comments
-        ? `<p style="font-size:15px;line-height:1.6;">Comments: "${data.comments}"</p>`
-        : ""),
+    `Referral ${isAccepted ? "Accepted" : "Rejected"}`,
+    `
+      <p style="font-size:15px;line-height:1.6;">
+        Dear  <strong>${data.referringDentistName || "Referring Dentist"}</strong>,
+      </p>
+
+      ${
+        isAccepted
+          ? `
+            <p style="font-size:15px;line-height:1.6;">
+              Thank you for placing your trust in Aspire Clinic by referring your patient,
+              <strong>${data.patientName}</strong>, to our care.
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              We are pleased to inform you that your referral has now been
+              <strong>accepted</strong> by our Aspire Clinic dentist,
+              <strong>${data.practitionerName}</strong>, following a clinical review.
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              After carefully assessing the referral, the reviewing dentist has provided the following information:
+            </p>
+
+            <h3 style="margin:20px 0 10px;">Clinical Review</h3>
+
+            <p style="font-size:15px;line-height:1.6;">
+              <strong>Proposed Treatment</strong><br/>
+              ${data.proposedTreatmentDetails || "N/A"}
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              <strong>Proposed Consultation Time</strong><br/>
+              ${data.proposedConsultationTime || "N/A"}
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              <strong>Dentist Comments</strong><br/>
+              ${data.comments || "No additional comments provided."}
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              Our administration team will now coordinate the patient's appointment and complete the appointment binding process.
+              You will receive another notification once the appointment has been confirmed.
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              We remain committed to keeping you informed throughout your patient's treatment journey.
+              Following consultation and treatment, any relevant clinical updates will be shared with you to support the patient's ongoing care.
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              Thank you again for choosing Aspire Clinic. We sincerely appreciate your confidence and look forward to working together to provide the highest standard of patient care.
+            </p>
+          `
+          : `
+            <p style="font-size:15px;line-height:1.6;">
+              Thank you for referring your patient,
+              <strong>${data.patientName}</strong>, to Aspire Clinic.
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              Following a clinical review by
+              <strong>${data.practitionerName}</strong>,
+              we regret to inform you that this referral has been
+              <strong>rejected</strong>.
+            </p>
+
+            <h3 style=" color: green; margin:20px 0 10px;">Clinical Review</h3>
+
+            <p style="font-size:15px;line-height:1.6;">
+              <strong>Dentist Comments</strong><br/>
+              ${data.comments || "No comments provided."}
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              Should you require any clarification regarding this clinical decision,
+              please do not hesitate to contact our team.
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              Thank you for your continued trust in Aspire Clinic.
+            </p>
+          `
+      }
+
+      <p style="font-size:15px;line-height:1.6;">
+  Kind regards,<br/>
+  <strong>Aspire Clinic Team</strong><br/><br/>
+  Eve Front of House — Aspire Dental Clinic<br/>
+  020 8081 9958 | info@theaspireclinic.com<br/>
+  29-35 Mortimer Street<br/>
+  London<br/>
+  W1T 3JG
+</p>
+    `,
   );
 }
 
 export function responsePatientEmail(data: ReferralNotificationData): string {
-  const status = data.action === "ACCEPTED" ? "accepted" : "rejected";
-  const msg =
-    data.action === "ACCEPTED"
-      ? "Your referral has been <strong>accepted</strong>. You will be contacted to schedule an appointment."
-      : "Your referral has been <strong>rejected</strong>. Please contact your referring dentist for more information.";
+  const isAccepted = data.action === "ACCEPTED";
+
   return wrapHtml(
-    `Referral ${status}`,
-    `<p style="font-size:15px;line-height:1.6;">Dear ${data.patientName},</p>` +
-      `<p style="font-size:15px;line-height:1.6;">${msg}</p>`,
+    `Referral ${isAccepted ? "Accepted" : "Rejected"}`,
+    `
+      <p style="font-size:15px;line-height:1.6;">
+        Dear <strong>${data.patientName}</strong>,
+      </p>
+
+      ${
+        isAccepted
+          ? `
+            <p style="font-size:15px;line-height:1.6;">
+              Thank you for choosing Aspire Clinic.
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              We are pleased to let you know that your referral has been
+              <strong>accepted</strong> by our Aspire Clinic dentist,
+              <strong>${data.practitionerName}</strong>, following a clinical review.
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              Following the assessment, our dentist has provided the following information regarding your proposed treatment.
+            </p>
+
+            <h3 style="margin:20px 0 10px;">Treatment Summary</h3>
+
+            <p style="font-size:15px;line-height:1.6;">
+              <strong>Proposed Treatment</strong><br/>
+              ${data.proposedTreatmentDetails || "N/A"}
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              <strong>Proposed Consultation Time</strong><br/>
+              ${data.proposedConsultationTime || "N/A"}
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              <strong>Dentist Comments</strong><br/>
+              ${data.comments || "No additional comments provided."}
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              Our administration team will now arrange your appointment and will contact you shortly with the confirmed consultation date and time.
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              We look forward to welcoming you to Aspire Clinic and providing you with the highest quality of care throughout your treatment journey.
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              If you have any questions before your appointment, please do not hesitate to contact our team.
+            </p>
+          `
+          : `
+            <p style="font-size:15px;line-height:1.6;">
+              Thank you for choosing Aspire Clinic.
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              Following a clinical assessment by our Aspire Clinic dentist,
+              <strong>${data.practitionerName}</strong>, we regret to inform you that your referral has been
+              <strong>rejected</strong> at this time.
+            </p>
+
+            <h3 style="margin:20px 0 10px;">Dentist Comments</h3>
+
+            <p style="font-size:15px;line-height:1.6;">
+              ${data.comments || "No comments were provided."}
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              If you have any questions regarding this decision, please contact your referring dentist or Aspire Clinic for further assistance.
+            </p>
+          `
+      }
+
+     <p style="font-size:15px;line-height:1.6;">
+  Kind regards,<br/>
+  <strong>Aspire Clinic Team</strong><br/><br/>
+  Eve Front of House — Aspire Dental Clinic<br/>
+  020 8081 9958 | info@theaspireclinic.com<br/>
+  29-35 Mortimer Street<br/>
+  London<br/>
+  W1T 3JG
+</p>
+    `,
   );
 }
 
-export function assignedAdminEmail(data: ReferralNotificationData): string {
+export function responseAdminEmail(data: ReferralNotificationData): string {
   return wrapHtml(
-    "Referral Update",
-    `<p style="font-size:15px;line-height:1.6;">Dear Admin,</p>
-    <p style="font-size:15px;line-height:1.6;">
-      The referral request for patient 
-      <strong>${data.patientName}</strong>, referred by Referring Dentist 
-      <strong>${data.referringDentistName}</strong>, has been assigned to 
-      Aspire Dentist <strong>${data.practitionerName}</strong>.
-    </p>`,
+    "Referral Response",
+    `
+      <p style="font-size:15px;line-height:1.6;">
+        Dear Admin,
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        A referral has been successfully assigned to an Aspire Clinic dentist.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Please find the referral details below:
+      </p>
+
+      <h3 style="margin:20px 0 10px;">
+        Referral Details
+      </h3>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Patient</strong><br/>
+        ${data.patientName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Referring Dentist</strong><br/>
+         ${data.referringDentistName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Assigned Aspire Dentist</strong><br/>
+         ${data.practitionerName}
+      </p>
+       <h3 style="margin:20px 0 10px;">Treatment Summary</h3>
+
+            <p style="font-size:15px;line-height:1.6;">
+              <strong>Proposed Treatment</strong><br/>
+              ${data.proposedTreatmentDetails || "N/A"}
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              <strong>Proposed Consultation Time</strong><br/>
+              ${data.proposedConsultationTime || "N/A"}
+            </p>
+
+            <p style="font-size:15px;line-height:1.6;">
+              <strong>Dentist Comments</strong><br/>
+              ${data.comments || "No additional comments provided."}
+            </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        The assigned dentist will now review the referral and either 
+        <strong>accept</strong> or <strong>reject</strong> the request. 
+        Once a decision has been made, the referring dentist, patient, and 
+        administration team will be notified automatically.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Thank you for helping ensure a smooth referral process.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Kind regards,<br/>
+        <strong>Aspire Clinic Team</strong>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Eve Front of House — Aspire Dental Clinic<br/>
+        020 8081 9958 | info@theaspireclinic.com<br/>
+        29-35 Mortimer Street<br/>
+        London<br/>
+        W1T 3JG
+      </p>
+    `,
   );
 }
 
@@ -171,7 +733,13 @@ export function otpEmailHtml(otp: string | null, name?: string): string {
       ${name ? `<p style="font-size:15px;line-height:1.6;">Hi ${name},</p>` : ""}
 
       <p style="font-size:15px;line-height:1.6;">
-        Your one-time password for Aspire Clinic is:
+        We received a request to verify your identity for your Aspire Clinic account.
+        To complete the verification process, please use the one-time password (OTP) 
+        provided below.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Your Aspire Clinic verification code is:
       </p>
 
       <div style="
@@ -180,21 +748,39 @@ export function otpEmailHtml(otp: string | null, name?: string): string {
         letter-spacing:8px;
         text-align:center;
         margin:25px 0;
-        color:#B7A58D;
+        color:#3D3630;
       ">
         ${otp ?? ""}
       </div>
 
+     
+
       <p style="font-size:15px;line-height:1.6;">
-        This code will expire in <strong>15 minutes</strong>.
+        This code will expire in <strong>15 minutes</strong>. Please do not share 
+        this code with anyone, including Aspire Clinic staff.
       </p>
 
       <p style="font-size:15px;line-height:1.6;">
-        If you did not request this code, please ignore this email.
+        If you did not request this verification code, please ignore this email. 
+        Your account will remain secure.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Kind regards,<br/>
+        <strong>Aspire Clinic Team</strong>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Eve Front of House — Aspire Dental Clinic<br/>
+        020 8081 9958 | info@theaspireclinic.com<br/>
+        29-35 Mortimer Street<br/>
+        London<br/>
+        W1T 3JG
       </p>
     `,
   );
 }
+
 export function buildReferralHtml(
   referralForm: any,
   options?: {
@@ -221,85 +807,188 @@ export function buildReferralHtml(
   };
 
   const rawBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const field = (value: any) =>
+    value === undefined || value === null || value === "" ? "NA" : value;
 
-  // Header
+  // ---------------------------------------------------------------------
+  // DENTIST RECIPIENT — "Referral Received" confirmation
+  // ---------------------------------------------------------------------
   if (recipient === "dentist") {
     parts.push(`
+      <p style="font-size:13px;letter-spacing:1px;color:#B7A58D;text-transform:uppercase;margin:0 0 6px 0;">
+        Confirmation
+      </p>
+      <h2 style="margin:0 0 20px 0;font-size:20px;color:#222;">
+        Thank you for your referral.
+      </h2>
+
       <p style="font-size:15px;line-height:1.6;">
-        Hi ${referralForm.referralName ?? "Dentist"},
+        <strong>Dear ${field(referralForm.referralName)},</strong>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Thank you so much for entrusting <strong>${field(referralForm.patientName)}</strong> to our care
+        for <strong>${field(referralForm.treatmentDetails)}</strong>. We received your referral
+        ${referralForm.createdAt ? `on ${referralForm.createdAt}` : ""} and wanted to write to let you know
+        it is safely with us.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Your patient will be in very good hands. One of our team will be in touch with
+        ${field(referralForm.patientName)} to arrange their consultation, and we will look after them
+        with the same care and attention you would give them yourself.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        We will keep you fully informed throughout. You can expect a written update from us after the
+        initial consultation, and again at the conclusion of any treatment we undertake. Once our care
+        is complete, your patient will be returned to you for ongoing maintenance and routine care,
+        together with all relevant clinical notes and findings.
       </p>
     `);
 
-    if (isRegistered) {
+    if (!isRegistered) {
       parts.push(`
         <p style="font-size:15px;line-height:1.6;">
-          You submitted a referral for 
-          <strong>${referralForm.patientName ?? "Patient"}</strong>.
+          Please register your account using the link below to view the referral progress.
         </p>
-
-        <p style="font-size:15px;line-height:1.6;">
-          Please log in to your dashboard to review the referral details 
-          and track progress.
-        </p>
-
         <p>
-          <strong>Reference:</strong> ${referralId ?? "N/A"}
-        </p>
-      `);
-    } else {
-      parts.push(`
-        <p style="font-size:15px;line-height:1.6;">
-          You submitted a referral for 
-          <strong>${referralForm.patientName ?? "Patient"}</strong>.
-        </p>
-
-        <p style="font-size:15px;line-height:1.6;">
-          Please register your account using the link below to view 
-          the referral progress.
-        </p>
-
-        <p>
-          <a href="${rawBase}/dentist/register">
-            Register Account
-          </a>
+          <a href="${rawBase}/dentist/register" style="color:#B7A58D;">Register Account</a>
         </p>
       `);
     }
+
+    // Patient Details
+    const patientLines: string[] = [
+      `Name of Patient - ${field(referralForm.patientName)}`,
+      `Date of Birth - ${field(referralForm.patientDateOfBirth)}`,
+      `Address - ${field(referralForm.patientAddress)}`,
+      `Mobile Number - ${field(referralForm.patientPhoneNumber)}`,
+      `Email Address - ${field(referralForm.patientEmail)}`,
+      `Medical History - ${field(referralForm.medicalHistoryPdfUrl ? `<a href="${referralForm.medicalHistoryPdfUrl}">View Document</a>` : undefined)}`,
+    ];
+
+    let treatmentRequiredBlock = `<p style="margin:12px 0 4px 0;">Treatment Required :</p><ol style="margin:0 0 12px 22px;padding:0;">`;
+    treatmentRequiredBlock += `<li>CBCT Scan - ${field(referralForm.cbctReportPdfUrl ? `<a href="${referralForm.cbctReportPdfUrl}">View Document</a>` : undefined)}</li>`;
+    treatmentRequiredBlock += `<li>Dental Speciality - ${field(referralForm.dentalSpeciality)}</li>`;
+    treatmentRequiredBlock += `</ol>`;
+
+    addSection(
+      "Patient Details",
+      patientLines.join("<br/>") +
+        treatmentRequiredBlock +
+        `<p style="margin:0 0 4px 0;">Please describe the treatment required in as much detail as possible - ${field(referralForm.treatmentDetails)}</p>` +
+        `<p style="margin:0;">Supporting Documents (Photographs, Radiographs) - ${field(
+          referralForm.supportingDocumentsUrl
+            ? `<a href="${referralForm.supportingDocumentsUrl}">View Document</a>`
+            : undefined,
+        )}</p>`,
+    );
+
+    // Referring Dentist / Practice Details
+    const dentistLines: string[] = [
+      `Name of Dentist - ${field(referralForm.referralName)}`,
+      `GDC Number - ${field(referralForm.referralGDC)}`,
+      `Dentist Email - ${field(referralForm.referralEmail)}`,
+      `Practice Name - ${field(referralForm.practiceName)}`,
+      `Practice Email Address - ${field(referralForm.practiceEmail)}`,
+      `Practice Phone Number - ${field(referralForm.practicePhoneNumber)}`,
+      `Practice Address - ${field(referralForm.referralPracticeNameAddress)}`,
+      `Would you like to attend the treatment appointment with the patient and shadow the dentist? - ${field(
+        referralForm.attendTreatment,
+      )}`,
+    ];
+
+    addSection(
+      "Referring Dentist / Practice Details",
+      dentistLines.join("<br/>"),
+    );
+
+    if (referralForm.prescriptionDetails) {
+      addSection("Prescription Details", `${referralForm.prescriptionDetails}`);
+    }
+
+    if (referralForm.other) {
+      addSection("Other Notes", referralForm.other);
+    }
+
+    // Closing / signature
+    parts.push(`
+      <p style="font-size:15px;line-height:1.6;margin-top:10px;">
+        If at any point you would like an update, have a question, or simply want to discuss anything
+        about your patient, please do not hesitate to contact me directly — I am always happy to help.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Also you can create an account with Aspire Clinic team using the link here:<br/>
+        <a href="${rawBase}/patient/register" style="color:#B7A58D;">${rawBase}/patient/register</a>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Thank you again for thinking of Aspire, and we are very grateful for the trust you have placed
+        in our team.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;margin-bottom:0;">With warm regards,</p>
+      <p style="font-size:15px;line-height:1.6;margin-top:4px;">
+        <strong>Eve</strong><br/>
+        Front of House — Aspire Dental Clinic<br/>
+        020 8081 9958 | <a href="mailto:info@theaspireclinic.com" style="color:#B7A58D;">info@theaspireclinic.com</a><br/>
+        29-35 Mortimer Street<br/>
+        London<br/>
+        W1T 3JG
+      </p>
+
+      <div style="margin-top:25px;padding:20px;background:#EDE8E1;border-radius:8px;">
+        <p style="margin:0 0 8px 0;font-size:13px;letter-spacing:1px;color:#B7A58D;text-transform:uppercase;">
+          Taught by Those Who Teach
+        </p>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#444;">
+          Aspire Clinic is the clinical home of the Aspire Dental Academy. Every specialist on our team
+          is also an educator — holding our standards to the level we teach.
+        </p>
+      </div>
+    `);
+
+    return wrapHtml("Referral Received", parts.join(""), "Patient Referral");
+  }
+
+  // ---------------------------------------------------------------------
+  // PATIENT RECIPIENT — unchanged
+  // ---------------------------------------------------------------------
+  parts.push(`
+    <p style="font-size:15px;line-height:1.6;">
+      Hi ${referralForm.patientName ?? "Patient"},
+    </p>
+  `);
+
+  if (isRegistered) {
+    parts.push(`
+      <p style="font-size:15px;line-height:1.6;">
+        We received a referral for you. Our team will review it and 
+        get back to you with the next steps.
+      </p>
+
+      <p>
+        <strong>Reference:</strong> ${referralId ?? "N/A"}
+      </p>
+    `);
   } else {
     parts.push(`
       <p style="font-size:15px;line-height:1.6;">
-        Hi ${referralForm.patientName ?? "Patient"},
+        We received a referral for you but could not find an Aspire account.
+      </p>
+
+      <p>
+        Please register to Aspire to complete your profile:
+      </p>
+
+      <p>
+        <a href="${rawBase}/patient/register">
+          Register Account
+        </a>
       </p>
     `);
-
-    if (isRegistered) {
-      parts.push(`
-        <p style="font-size:15px;line-height:1.6;">
-          We received a referral for you. Our team will review it and 
-          get back to you with the next steps.
-        </p>
-
-        <p>
-          <strong>Reference:</strong> ${referralId ?? "N/A"}
-        </p>
-      `);
-    } else {
-      parts.push(`
-        <p style="font-size:15px;line-height:1.6;">
-          We received a referral for you but could not find an Aspire account.
-        </p>
-
-        <p>
-          Please register to Aspire to complete your profile:
-        </p>
-
-        <p>
-          <a href="${rawBase}/patient/register">
-            Register Account
-          </a>
-        </p>
-      `);
-    }
   }
 
   // Patient details

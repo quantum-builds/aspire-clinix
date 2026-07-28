@@ -55,7 +55,7 @@ export async function notifyAppointmentStatus(
     }
   }
 
-  const data = { patientName, referringDentistName, status };
+  const data = { patientName, referringDentistName, status, };
 
   await Promise.allSettled([
     sendEmailToAdmins({

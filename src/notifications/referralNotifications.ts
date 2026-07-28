@@ -4,7 +4,7 @@ import {
   assignedPractitionerEmail,
   assignedReferringDentistEmail,
   assignedPatientEmail,
-  assignedAdminEmail,
+  AdminEmail,
   responseAdminEmail,
   responseReferringDentistEmail,
   responsePatientEmail,
@@ -49,13 +49,15 @@ async function buildNotificationData(referralRequestId: string): Promise<Referra
         ? referral.requestStatus
         : undefined,
       comments: referral.dentistComments ?? undefined,
+      proposedTreatmentDetails: referral.proposedTreatmentDetails ?? undefined,
+      proposedConsultationTime: referral.proposedConsultationTime ?? undefined,
     };
   } catch (err) {
     console.error(`[ReferralNotification] Failed to build data for ${referralRequestId}:`, err);
     return null;
   }
 }
-
+// its is triggered when a appointment is bind for a referral by ==>> Admin
 export async function notifyReferralAppointmentBound(referralRequestId: string): Promise<void> {
   const data = await buildNotificationData(referralRequestId);
   if (!data) return;
@@ -81,7 +83,7 @@ export async function notifyReferralAppointmentBound(referralRequestId: string):
    
   ]);
 }
-
+// its is triggered when a referral is assigned to a Dentally dentist by ==>> Admin
 export async function notifyReferralDentistAssigned(referralRequestId: string): Promise<void> {
   const data = await buildNotificationData(referralRequestId);
   if (!data) return;
@@ -104,13 +106,11 @@ export async function notifyReferralDentistAssigned(referralRequestId: string): 
       subject: "Your referral has been assigned",
       html: assignedPatientEmail(data),
     }),
-    sendEmailToAdmins({
-      subject: "Referral assigned to practitioner",
-      html: assignedAdminEmail(data),
-    }),
+   
   ]);
 }
 
+/// its triggered when a referral is accepted or rejected by the ==>>Dentally dentist. 
 export async function notifyReferralResponded(referralRequestId: string): Promise<void> {
   const data = await buildNotificationData(referralRequestId);
   if (!data) return;
