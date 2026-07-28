@@ -104,8 +104,8 @@ export default function AppointmentCard({
             </div>
             <div className="flex justify-between items-center">
               <p className="italic text-green font-medium text-xl">
-                Status: {appointment.state}
-              </p>
+                {/* Status: {appointment.state} */}
+                The Appointment as been Assigned             </p>
             </div>
             {appointment.state !== AppointmentState.PENDING &&
               <div className="flex justify-between items-center mt-2">

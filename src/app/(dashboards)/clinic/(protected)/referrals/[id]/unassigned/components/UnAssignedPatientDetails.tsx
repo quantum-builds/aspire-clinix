@@ -136,7 +136,7 @@ export default function UnAssignedPatientDetails({
           )}
           {showBindBtn && (
             <CustomButton
-              text="Bind with Appointment"
+              text="Assign Appointment"
               style="primary"
               handleOnClick={() => setIsBindModalOpen(true)}
             />
