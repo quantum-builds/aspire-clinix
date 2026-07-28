@@ -42,8 +42,12 @@ export default function AppointmentGrid({
                 </div>
               </div>
               <div className="flex justify-between items-center">
-                <p className="italic text-green font-medium text-xl">
+                {/* <p className="italic text-green font-medium text-xl">
                   Status: {appointment.status}
+                </p> */}
+                <p className="italic text-green font-medium text-xl">
+                  {/* Status: {appointment.state} */}
+                  The Appointment as been Assigned
                 </p>
                 <p className="italic font-mediium text-xl text-dashboardTextBlack truncate max-w-[50%]">
                   Appointment # {appointment.appointmentNumber}

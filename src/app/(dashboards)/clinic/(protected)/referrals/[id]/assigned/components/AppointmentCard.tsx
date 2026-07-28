@@ -37,9 +37,13 @@ export default function AssignedAppointmentCard({
               </div>
             </div>
             <div className="flex justify-between items-center">
-              <p className="italic text-green font-medium text-xl">
+              {/* <p className="italic text-green font-medium text-xl">
                 Status: {appointment.state}
-              </p>
+              </p> */}
+               <p className="italic text-green font-medium text-xl">
+            {/* Status: {appointment.state} */}
+            The Appointment as been Assigned
+          </p>
             </div>
           </div>
           <div className="flex justify-between items-end">
