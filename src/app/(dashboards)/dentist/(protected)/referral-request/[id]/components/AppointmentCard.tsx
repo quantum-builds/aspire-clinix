@@ -110,9 +110,9 @@ export default function AppointmentCard({
             {appointment.state !== AppointmentState.PENDING &&
               <div className="flex justify-between items-center mt-2">
                 <div className="flex gap-1 items-center">
-                  <p className="text-lg flex gap-1 items-center">
+                  {/* <p className="text-lg flex gap-1 items-center">
                     Status: <StatusBage status={appointment.state} />
-                  </p>
+                  </p> */}
                 </div>
                 <div className="relative">
                   <Dropdown
