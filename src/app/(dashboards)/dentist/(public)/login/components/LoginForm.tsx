@@ -13,6 +13,7 @@ import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export const dentistsSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -21,7 +22,7 @@ export const dentistsSchema = z.object({
 
 type FormData = z.infer<typeof dentistsSchema>;
 
-export default function DentistLoginForm() {
+function LoginContent() {
   const { mutate: verifyDentist, isPending: verifyDentistLoader } =
     useVerifyDentist();
   const router = useRouter();
@@ -140,5 +141,13 @@ export default function DentistLoginForm() {
         </p>
       </div>
     </form>
+  );
+}
+
+export default function DentistLoginForm() {
+  return (
+    <Suspense fallback={null}>
+      <LoginContent />
+    </Suspense>
   );
 }

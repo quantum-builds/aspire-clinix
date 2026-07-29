@@ -2,7 +2,7 @@
 
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -59,7 +59,7 @@ export const patientSchema = z.object({
 
 type FormData = z.infer<typeof patientSchema>;
 
-export default function DentistRegisterForm() {
+function RegisterContent() {
   const { mutate: createDentist, isPending: createDentistLoader } =
     useCreateUser();
     const searchParams = useSearchParams();
@@ -228,5 +228,13 @@ export default function DentistRegisterForm() {
         </p>
       </div>
     </form>
+  );
+}
+
+export default function DentistRegisterForm() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterContent />
+    </Suspense>
   );
 }
