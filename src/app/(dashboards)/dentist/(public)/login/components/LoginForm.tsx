@@ -11,7 +11,7 @@ import { z } from "zod";
 import { useVerifyDentist } from "@/services/dentist/dentistMutation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 export const dentistsSchema = z.object({
@@ -25,6 +25,9 @@ export default function DentistLoginForm() {
   const { mutate: verifyDentist, isPending: verifyDentistLoader } =
     useVerifyDentist();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email") ?? "";
+  const gdcNo = searchParams.get("gdc") ?? "";
 
   const {
     register,
@@ -34,8 +37,8 @@ export default function DentistLoginForm() {
   } = useForm<FormData>({
     resolver: zodResolver(dentistsSchema),
     defaultValues: {
-      email: "",
-      gdcNumber: "",
+      email: email,
+      gdcNumber: gdcNo,
     },
   });
 

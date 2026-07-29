@@ -33,12 +33,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { TPractice } from "@/types/practice";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { useCreateUser } from "@/services/patient/patientMutation";
 import { TokenRoles } from "@/constants/UserRoles";
+
 
 export const patientSchema = z.object({
   firstName: z
@@ -61,6 +62,11 @@ type FormData = z.infer<typeof patientSchema>;
 export default function DentistRegisterForm() {
   const { mutate: createDentist, isPending: createDentistLoader } =
     useCreateUser();
+    const searchParams = useSearchParams();
+    const email = searchParams.get("email") ?? "";
+    const gdcNo = searchParams.get("gdc") ?? "";
+    const firstName = searchParams.get("firstName") ?? "";
+    const lastName = searchParams.get("lastName") ?? "";
 
   const router = useRouter();
 
@@ -72,10 +78,10 @@ export default function DentistRegisterForm() {
   } = useForm<FormData>({
     resolver: zodResolver(patientSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      gdcNo: "",
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      gdcNo: gdcNo,
     },
   });
 

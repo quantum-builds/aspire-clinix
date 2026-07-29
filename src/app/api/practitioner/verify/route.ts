@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
 
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedGdcNumber = gdcNumber.trim().toLowerCase();
-
+    
     const filteredPractitioners = (
       response.response.practitioners ?? []
     ).filter(

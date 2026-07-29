@@ -119,9 +119,7 @@ export function assignedPractitionerEmail(
     `,
   );
 }
-export function bindPractitionerEmail(
-  data: ReferralNotificationData,
-): string {
+export function bindPractitionerEmail(data: ReferralNotificationData): string {
   return wrapHtml(
     "Appointment Booked",
     `
@@ -251,7 +249,7 @@ export function bindReferringDentistEmail(
 
       <p style="font-size:15px;line-height:1.6;">
         The referral you created for <strong>${data.patientName}</strong> has been 
-        booked with Aspire Dentist <strong>Dr. ${data.practitionerName}</strong>.
+        booked with Aspire Dentist <strong> ${data.practitionerName}</strong>.
         The appointment details have been confirmed.
       </p>
 
@@ -270,12 +268,12 @@ export function bindReferringDentistEmail(
 
       <p style="font-size:15px;line-height:1.6;">
         <strong>Referring Dentist</strong><br/>
-        Dr. ${data.referringDentistName}
+         ${data.referringDentistName}
       </p>
 
       <p style="font-size:15px;line-height:1.6;">
         <strong>Aspire Dentist</strong><br/>
-        Dr. ${data.practitionerName}
+         ${data.practitionerName}
       </p>
 
       <p style="font-size:15px;line-height:1.6;">
@@ -299,9 +297,7 @@ export function bindReferringDentistEmail(
   );
 }
 
-export function assignedPatientEmail(
-  data: ReferralNotificationData,
-): string {
+export function assignedPatientEmail(data: ReferralNotificationData): string {
   return wrapHtml(
     "Referral Assigned",
     `
@@ -357,9 +353,7 @@ export function assignedPatientEmail(
   );
 }
 
-export function bindPatientEmail(
-  data: ReferralNotificationData,
-): string {
+export function bindPatientEmail(data: ReferralNotificationData): string {
   return wrapHtml(
     "Appointment Booked",
     `
@@ -394,7 +388,7 @@ export function bindPatientEmail(
 
       <p style="font-size:15px;line-height:1.6;">
         <strong>Aspire Dentist</strong><br/>
-        Dr. ${data.practitionerName}
+         ${data.practitionerName}
       </p>
 
       <p style="font-size:15px;line-height:1.6;">
@@ -1074,4 +1068,154 @@ export function buildReferralHtml(
   return wrapHtml("Referral Notification", parts.join(""));
 }
 
+export function referralCreatedAdminEmail(
+  form: any,
+  referralLink: string,
+): string {
+  return wrapHtml(
+    "New Referral Submitted",
+    `
+      <p style="font-size:15px;line-height:1.6;">
+        Dear Admin,
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        A new referral has been submitted for
+        <strong>${form.patientName}</strong> by
+        <strong> ${form.referralName}</strong>.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Please review the referral details below.
+      </p>
+
+      <h3 style="margin:20px 0 10px;color:#B7A58D;">
+        Patient Details
+      </h3>
+
+      <table style="width:100%;font-size:15px;line-height:1.8;">
+        <tr>
+          <td style="padding:4px 8px;width:170px;"><strong>Name</strong></td>
+          <td>${form.patientName}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 8px;"><strong>Date of Birth</strong></td>
+          <td>${form.patientDateOfBirth ? new Date(form.patientDateOfBirth).toLocaleDateString() : "N/A"}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 8px;"><strong>Address</strong></td>
+          <td>${form.patientAddress || "N/A"}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 8px;"><strong>Phone Number</strong></td>
+          <td>${form.patientPhoneNumber || "N/A"}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 8px;"><strong>Email</strong></td>
+          <td>${form.patientEmail || "N/A"}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 8px;"><strong>Medical History</strong></td>
+          <td>
+            ${
+              form.medicalHistoryPdfUrl
+                ? `<a href="${referralLink}">View PDF</a>`
+                : "Not Provided"
+            }
+          </td>
+        </tr>
+      </table>
+
+      <h3 style="margin:20px 0 10px;color:#B7A58D;">
+        Referral Details
+      </h3>
+
+      <table style="width:100%;font-size:15px;line-height:1.8;">
+        <tr>
+          <td style="padding:4px 8px;width:170px;"><strong>Referral Type</strong></td>
+          <td>${form.cbct || form.dentalSpecialty || "N/A"}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 8px;"><strong>Other Details</strong></td>
+          <td>${form.other || "N/A"}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 8px;"><strong>Treatment Details</strong></td>
+          <td>${form.treatmentDetails || "N/A"}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 8px;"><strong>Prescription Details</strong></td>
+          <td>${form.prescriptionDetails || "N/A"}</td>
+        </tr>
+        ${
+          form.cbctReportPdfUrl
+            ? `
+        <tr>
+          <td style="padding:4px 8px;"><strong>CBCT Report</strong></td>
+          <td><a href="${referralLink}">View PDF</a></td>
+        </tr>`
+            : ""
+        }
+      </table>
+
+      <h3 style="margin:20px 0 10px;color:#B7A58D;">
+        Referring Dentist Details
+      </h3>
+
+      <table style="width:100%;font-size:15px;line-height:1.8;">
+        <tr>
+          <td style="padding:4px 8px;width:170px;"><strong>Name</strong></td>
+          <td> ${form.referralName}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 8px;"><strong>GDC Number</strong></td>
+          <td>${form.referralGDC || "N/A"}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 8px;"><strong>Practice</strong></td>
+          <td>${form.referralPracticeNameAddress || "N/A"}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 8px;"><strong>Phone Number</strong></td>
+          <td>${form.referralPhoneNumber || "N/A"}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 8px;"><strong>Email</strong></td>
+          <td>${form.referralEmail || "N/A"}</td>
+        </tr>
+      </table>
+
+      <h3 style="margin:20px 0 10px;">
+        Treatment Appointment
+      </h3>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Attendance Preference:</strong>
+        ${form.attendTreatment || "Not specified"}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Please review this referral in the Aspire Clinic dashboard and assign it to the appropriate Aspire Dentist for further assessment.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Thank you for helping ensure a smooth referral process.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Kind regards,<br/>
+        <strong>Aspire Clinic Team</strong>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Eve Front of House — Aspire Dental Clinic<br/>
+        020 8081 9958 | info@theaspireclinic.com<br/>
+        29-35 Mortimer Street<br/>
+        London<br/>
+        W1T 3JG
+      </p>
+    `,
+    "Patient Referral",
+  );
+}
 export default buildReferralHtml;
