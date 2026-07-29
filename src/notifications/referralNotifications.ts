@@ -12,6 +12,7 @@ import {
   bindPatientEmail,
   bindReferringDentistEmail,
   bindPractitionerEmail,
+  referralCreatedAdminEmail,
 } from "@/constants/referralEmailTemplates";
 
 async function buildNotificationData(referralRequestId: string): Promise<ReferralNotificationData | null> {
@@ -132,4 +133,25 @@ export async function notifyReferralResponded(referralRequestId: string): Promis
       html: responseAdminEmail(data),
     }),
   ]);
+}
+
+export async function notifyReferralCreated(referralForm: any): Promise<void> {
+  try {
+    const req = await prisma.referralRequest.findUnique({
+      where: { referralFormId: referralForm.id },
+      select: { id: true },
+    });
+    if (!req) return;
+
+    const rawBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/";
+    const base = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
+    const referralLink = `${base}/clinic/referrals/${req.id}/unassigned`;
+
+    await sendEmailToAdmins({
+      subject: `New referral submitted for ${referralForm.patientName}`,
+      html: referralCreatedAdminEmail(referralForm, referralLink),
+    });
+  } catch (err) {
+    console.error("[ReferralNotification] Failed to notify admins:", err);
+  }
 }

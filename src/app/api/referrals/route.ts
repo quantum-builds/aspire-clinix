@@ -8,6 +8,7 @@ import { getPatient } from "@/dentallyHelpers/patient";
 import sendgrid from "@/config/sendgrid-config";
 import buildReferralHtml from "@/constants/referralEmailTemplates";
 import { getPractitioners } from "@/dentallyHelpers/practitioners";
+import { notifyReferralCreated } from "@/notifications/referralNotifications";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -179,6 +180,8 @@ const CBCT_OPTIONS = new Set([
 export async function POST(req: NextRequest) {
   let isPatientRegistered = true;
   let isReferralDentistRegistered = true;
+  let isLogin = false;
+  let userResponse = null;
 
   const referralForm = await req.json();
   try {
@@ -328,11 +331,19 @@ export async function POST(req: NextRequest) {
     const referralGDC = referralForm.referralGDC;
 
     const referralDentist = await prisma.dentist.findFirst({
-      where: { email: referralEmail,gdcNo: referralGDC },
+      where: { email: referralEmail, gdcNo: referralGDC },
     });
 
     if (referralDentist) {
       referralForm.referralDentistId = referralDentist.id;
+      isLogin = true;
+      userResponse = {
+        firstName: referralDentist.firstName,
+        lastName: referralDentist.lastName,
+        email: referralDentist.email,
+        phoneNumber: referralForm.referralPhoneNumber || "",
+        gdcNumber: referralDentist.gdcNo,
+      };
     } else if (!referralDentist) {
       const normalizedEmail = referralEmail.trim().toLowerCase();
       const normalizedGdcNumber = referralGDC.trim().toLowerCase();
@@ -361,8 +372,24 @@ export async function POST(req: NextRequest) {
           },
         });
         referralForm.referralDentistId = newDentist.id;
+        isLogin = true;
+        userResponse = {
+          firstName: practitioner.user?.firstName,
+          lastName: practitioner.user?.lastName,
+          email: practitioner.user?.email,
+          phoneNumber: practitioner.user?.phoneNumber,
+          gdcNumber: practitioner.gdcNumber,
+        };
       } else {
         isReferralDentistRegistered = false;
+        isLogin = false;
+        userResponse = {
+          firstName,
+          lastName,
+          email: referralEmail,
+          phoneNumber: referralForm.referralPhoneNumber || "",
+          gdcNumber: referralGDC,
+        };
       }
     }
     const referral = await prisma.$transaction(async (tx) => {
@@ -378,51 +405,14 @@ export async function POST(req: NextRequest) {
       return newReferral;
     });
 
-    // const dentsitEmail = referralForm.referralEmail;
-    // if (dentsitEmail && process.env.EMAIL_FROM) {
-    //   try {
-    //     const dentistHtml = buildReferralHtml(referralForm, {
-    //       recipient: "dentist",
-    //       isRegistered: isReferralDentistRegistered,
-    //       referralId: referral.id,
-    //     });
-    //     await sendgrid.send({
-    //       from: process.env.EMAIL_FROM,
-    //       to: dentsitEmail,
-    //       subject: "New Referral Form Submitted",
-    //       html: dentistHtml,
-    //       text: undefined,
-    // //     });
-    // //   } catch (err) {
-    // //     console.error("Error sending referral dentist email:", err);
-    // //   }
-    // // }
-
-    // const patientEmail = referralForm.patientEmail;
-    // if (patientEmail && process.env.EMAIL_FROM) {
-    //   try {
-    //     const patientHtml = buildReferralHtml(referralForm, {
-    //       recipient: "patient",
-    //       isRegistered: isPatientRegistered,
-    //       referralId: referral.id,
-    //     });
-    //     const subject = isPatientRegistered
-    //       ? "Referral form received"
-    //       : "Complete your Aspire registration";
-    //     await sendgrid.send({
-    //       from: process.env.EMAIL_FROM,
-    //       to: patientEmail,
-    //       subject,
-    //       html: patientHtml,
-    //       text: undefined,
-    //     });
-    //   } catch (err) {
-    //     console.error("Error sending referral patient email:", err);
-    //   }
-    // }
+    notifyReferralCreated(referral).catch(console.error);
 
     return createCorsJson(
-      createResponse(true, "Form created successfully.", referral),
+      createResponse(true, "Form created successfully.", {
+        isLogin,
+        user: userResponse,
+        referral,
+      }),
       { status: 201 },
     );
   } catch (error) {

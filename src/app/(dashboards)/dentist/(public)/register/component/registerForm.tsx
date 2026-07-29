@@ -2,7 +2,7 @@
 
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -33,12 +33,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { TPractice } from "@/types/practice";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { useCreateUser } from "@/services/patient/patientMutation";
 import { TokenRoles } from "@/constants/UserRoles";
+
 
 export const patientSchema = z.object({
   firstName: z
@@ -58,9 +59,14 @@ export const patientSchema = z.object({
 
 type FormData = z.infer<typeof patientSchema>;
 
-export default function DentistRegisterForm() {
+function RegisterContent() {
   const { mutate: createDentist, isPending: createDentistLoader } =
     useCreateUser();
+    const searchParams = useSearchParams();
+    const email = searchParams.get("email") ?? "";
+    const gdcNo = searchParams.get("gdc") ?? "";
+    const firstName = searchParams.get("firstName") ?? "";
+    const lastName = searchParams.get("lastName") ?? "";
 
   const router = useRouter();
 
@@ -72,10 +78,10 @@ export default function DentistRegisterForm() {
   } = useForm<FormData>({
     resolver: zodResolver(patientSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      gdcNo: "",
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      gdcNo: gdcNo,
     },
   });
 
@@ -222,5 +228,13 @@ export default function DentistRegisterForm() {
         </p>
       </div>
     </form>
+  );
+}
+
+export default function DentistRegisterForm() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterContent />
+    </Suspense>
   );
 }
