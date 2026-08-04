@@ -27,8 +27,7 @@ export default async function RegisterPage() {
             Register as Referring Dentist
           </h1>
           <p className="text-muted-foreground mt-2">
-            Create a dentist profile with basic details and an optional profile
-            image.
+           Create a profile to follow your referral from start to finish — with status updates and instant alerts when reports are ready.
           </p>
         </header>
 
