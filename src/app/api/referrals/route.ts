@@ -195,20 +195,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const response = await getPatient({
-      firstName: patientFirstName,
-      lastName: patientLastName,
-    });
+      let activePatients: any[] = [];
 
-    if (response.isError) {
-      return createCorsJson(createResponse(false, "Dentally Error", null), {
-        status: 400,
-      });
-    }
+      try {
+        const response = await getPatient({
+          firstName: patientFirstName,
+          lastName: patientLastName,
+        });
 
-    let activePatients = (response.response.patients ?? []).filter(
-      (patient: any) => patient.active && !patient.archivedReason,
-    );
+        if (response.isError) {
+          console.error(
+            "Dentally patient lookup failed:",
+            response.response.status,
+          );
+          isPatientRegistered = false;
+        } else {
+          activePatients = (response.response.patients ?? []).filter(
+            (patient: any) => patient.active && !patient.archivedReason,
+          );
+        }
+      } catch (error) {
+        console.error("Dentally patient lookup error:", error);
+        isPatientRegistered = false;
+      }
 
     if (activePatients.length > 1) {
       const matchingPatients = activePatients.filter(
@@ -322,9 +331,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const name = referralForm.referralName?.trim();
+    const referralFirstName = (referralForm.referralFirstName ?? "").trim();
+    const referralLastName = (referralForm.referralLastName ?? "").trim();
+    const referralFullName =
+      referralFirstName || referralLastName
+        ? `${referralFirstName} ${referralLastName}`.trim()
+        : (referralForm.referralName ?? "").trim();
 
-    const [firstName, ...lastNameParts] = name.split(" ");
+    if (!referralFullName) {
+      return createCorsJson(
+        createResponse(
+          false,
+          "Referring dentist first and last name is required",
+          null,
+        ),
+        { status: 400 },
+      );
+    }
+
+    referralForm.referralName = referralFullName;
+    delete referralForm.referralFirstName;
+    delete referralForm.referralLastName;
+
+    const [firstName, ...lastNameParts] = referralFullName.split(" ");
     const lastName = lastNameParts.join(" ");
 
     const referralEmail = referralForm.referralEmail;
@@ -347,18 +376,30 @@ export async function POST(req: NextRequest) {
     } else if (!referralDentist) {
       const normalizedEmail = referralEmail.trim().toLowerCase();
       const normalizedGdcNumber = referralGDC.trim().toLowerCase();
-      const res = await getPractitioners();
-      if (res.isError) {
-        return res.response;
-      }
 
-      const filteredPractitioners = (res.response.practitioners ?? []).filter(
-        (practitioner: any) =>
-          practitioner?.user?.email?.trim?.().toLowerCase?.() ===
-            normalizedEmail &&
-          practitioner?.gdcNumber?.trim?.().toLowerCase?.() ===
-            normalizedGdcNumber,
-      );
+      let filteredPractitioners: any[] = [];
+
+      try {
+        const res = await getPractitioners();
+        if (res.isError) {
+          console.error(
+            "Dentally practitioner lookup failed:",
+            res.response.status,
+          );
+          isReferralDentistRegistered = false;
+        } else {
+          filteredPractitioners = (res.response.practitioners ?? []).filter(
+            (practitioner: any) =>
+              practitioner?.user?.email?.trim?.().toLowerCase?.() ===
+                normalizedEmail &&
+              practitioner?.gdcNumber?.trim?.().toLowerCase?.() ===
+                normalizedGdcNumber,
+          );
+        }
+      } catch (error) {
+        console.error("Dentally practitioner lookup error:", error);
+        isReferralDentistRegistered = false;
+      }
       if (filteredPractitioners.length === 1) {
         const practitioner = filteredPractitioners[0];
         const newDentist = await prisma.dentist.create({
@@ -374,11 +415,11 @@ export async function POST(req: NextRequest) {
         referralForm.referralDentistId = newDentist.id;
         isLogin = true;
         userResponse = {
-          firstName: practitioner.user?.firstName,
-          lastName: practitioner.user?.lastName,
-          email: practitioner.user?.email,
-          phoneNumber: practitioner.user?.phoneNumber,
-          gdcNumber: practitioner.gdcNumber,
+          firstName: practitioner.user?.firstName || firstName,
+          lastName: practitioner.user?.lastName || lastName,
+          email: practitioner.user?.email || normalizedEmail,
+          phoneNumber: practitioner.user?.phoneNumber || "",
+          gdcNumber: practitioner.gdcNumber || normalizedGdcNumber,
         };
       } else {
         isReferralDentistRegistered = false;
@@ -406,6 +447,7 @@ export async function POST(req: NextRequest) {
     });
 
     notifyReferralCreated(referral).catch(console.error);
+    console.log("IS LOGIN:", isLogin);
 
     return createCorsJson(
       createResponse(true, "Form created successfully.", {
