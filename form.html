@@ -807,6 +807,20 @@
         padding: 22px 18px;
       }
     }
+    .field-row {
+  display: flex;
+  gap: 20px;
+}
+
+.field-row .field {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .field-row {
+    flex-direction: column;
+  }
+}
   </style>
 </head>
 
@@ -976,24 +990,26 @@
     <div class="card">
       <div class="section-title"> Referring Dentist / Practice Details</div>
 
-     <div class="field">
-  <label>Dentist First Name <span class="req">*</span></label>
-  <input
-    type="text"
-    id="dentistFirstName"
-    placeholder="First Name"
-  />
-  <div class="field-error" id="err-dentistFirstName"></div>
-</div>
+    <div class="field-row">
+  <div class="field">
+    <label>Dentist First Name <span class="req">*</span></label>
+    <input
+      type="text"
+      id="dentistFirstName"
+      placeholder="First Name"
+    />
+    <div class="field-error" id="err-dentistFirstName"></div>
+  </div>
 
-<div class="field">
-  <label>Dentist Last Name <span class="req">*</span></label>
-  <input
-    type="text"
-    id="dentistLastName"
-    placeholder="Last Name"
-  />
-  <div class="field-error" id="err-dentistLastName"></div>
+  <div class="field">
+    <label>Dentist Last Name <span class="req">*</span></label>
+    <input
+      type="text"
+      id="dentistLastName"
+      placeholder="Last Name"
+    />
+    <div class="field-error" id="err-dentistLastName"></div>
+  </div>
 </div>
       <div class="row-2"> 
         <div class="field">
