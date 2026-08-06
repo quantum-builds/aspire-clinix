@@ -976,11 +976,25 @@
     <div class="card">
       <div class="section-title"> Referring Dentist / Practice Details</div>
 
-      <div class="field">
-        <label>Dentist Name <span class="req">*</span></label>
-        <input type="text" id="dentistName" placeholder="Dr. Full Name" />
-        <div class="field-error" id="err-dentistName"></div>
-      </div>
+     <div class="field">
+  <label>Dentist First Name <span class="req">*</span></label>
+  <input
+    type="text"
+    id="dentistFirstName"
+    placeholder="First Name"
+  />
+  <div class="field-error" id="err-dentistFirstName"></div>
+</div>
+
+<div class="field">
+  <label>Dentist Last Name <span class="req">*</span></label>
+  <input
+    type="text"
+    id="dentistLastName"
+    placeholder="Last Name"
+  />
+  <div class="field-error" id="err-dentistLastName"></div>
+</div>
       <div class="row-2"> 
         <div class="field">
         
@@ -1394,7 +1408,7 @@
         document.getElementById('cbct-trigger').classList.add('invalid-trigger');
         ok = false;
       }
-      req('dentistName', 'Dentist name is required');
+      // req('dentistName', 'Dentist name is required');
       req('gdcNumber', 'GDC number is required');
       req('practiceName', 'Practice name is required');
       req('practiceEmail', 'Practice email is required');
@@ -1460,7 +1474,8 @@
         treatmentDetails: document.getElementById('medicalHistory').value.trim(),
         dentalSpecialty: isCbct ? null : dropdownState.specialty,
         cbct: isCbct ? cbctValue : null,
-        referralName: document.getElementById('dentistName').value.trim(),
+        referralFirstName: document.getElementById('dentistFirstName').value.trim(),
+        referralLastName: document.getElementById('dentistLastName').value.trim(),
         referralGDC: document.getElementById('gdcNumber').value.trim(),
         referralPracticeNameAddress: document.getElementById('practiceName').value.trim() +
           (document.getElementById('practiceAddress').value ? ' - ' + document.getElementById('practiceAddress').value.trim() : ''),
@@ -1491,7 +1506,7 @@
           else if (/\.(doc|docx)$/i.test(file.name)) fileType = 'document';
           else fileType = 'images';
           var params = new URLSearchParams({ fileName: file.name, fileType: fileType, mimeType: file.type, fileSize: String(file.size) });
-          var signedRes = await fetch(' https://aspire-clinix.vercel.app/api/s3?' + params.toString());
+          var signedRes = await fetch('  http://localhost:3000/api/s3?' + params.toString());
           var signedJson = null;
           var ct = signedRes.headers.get('content-type') || '';
           if (ct.includes('application/json')) {
@@ -1517,7 +1532,7 @@
             else if (/\.(doc|docx)$/i.test(cbctFile.name)) cFileType = 'document';
             else cFileType = 'images';
             var cParams = new URLSearchParams({ fileName: cbctFile.name, fileType: cFileType, mimeType: cbctFile.type, fileSize: String(cbctFile.size) });
-            var cRes = await fetch(' https://aspire-clinix.vercel.app/api/s3?' + cParams.toString());
+            var cRes = await fetch('http://localhost:3000/api/s3?' + cParams.toString());
             var cJson = null;
             var cCt = cRes.headers.get('content-type') || '';
             if (cCt.includes('application/json')) {
@@ -1531,25 +1546,25 @@
           }
         }
 
-        var res = await fetch(' https://aspire-clinix.vercel.app/api/referrals', {
+        var res = await fetch(' http://localhost:3000/api/referrals', {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
         });
 
-        var data = await res.json();
-
-       if(data.data.isLogin) {
-           window.location.href = 'https://aspire-clinix.vercel.app/dentist/login?email=' + encodeURIComponent(data.data.user.email) + '&gdc=' + encodeURIComponent(data.data.user.gdcNumber);
-        } else {
-         window.location.href = 'https://aspire-clinix.vercel.app/dentist/register?firstName=' + encodeURIComponent(data.data.user.firstName)
-        +'&lastName=' + encodeURIComponent(data.data.user.lastName)
-  + '&email=' + encodeURIComponent(data.data.user.email)
-  + '&gdc=' + encodeURIComponent(data.data.user.gdcNumber);
-           }
-      
-
-        data = null;
+        var data = null;
         try { data = await res.json(); } catch (e) { data = null; }
-        if (!res.ok) throw new Error((data && data.message) || ('Server error: ' + res.status));
+
+        if (!res.ok || !data || !data.status || !data.data) {
+          throw new Error((data && data.message) || ('Server error: ' + res.status));
+        }
+
+        if (data.data.isLogin) {
+          window.location.href = 'https://aspire-clinix.vercel.app/dentist/login?email=' + encodeURIComponent(data.data.user.email) + '&gdc=' + encodeURIComponent(data.data.user.gdcNumber);
+        } else {
+          window.location.href = 'https://aspire-clinix.vercel.app/dentist/register?firstName=' + encodeURIComponent(data.data.user.firstName)
+          + '&lastName=' + encodeURIComponent(data.data.user.lastName)
+          + '&email=' + encodeURIComponent(data.data.user.email)
+          + '&gdc=' + encodeURIComponent(data.data.user.gdcNumber);
+        }
 
         showToast('Referral submitted successfully!', 'success');
         clearForm();
