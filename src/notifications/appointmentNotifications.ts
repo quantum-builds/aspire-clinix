@@ -1,10 +1,11 @@
 import prisma from "@/lib/db";
-import { sendEmail, sendEmailToAdmins } from "@/lib/emailService";
+import { sendEmail} from "@/lib/emailService";
 import {
   appointmentStatusAdminEmail,
   appointmentStatusPatientEmail,
   appointmentStatusReferringDentistEmail,
 } from "@/constants/appointmentEmailTemplates";
+import { useSendEmailToAdmin } from "@/services/adminEmailServices";
 
 export async function notifyAppointmentStatus(
   appointmentId: string,
@@ -56,9 +57,10 @@ export async function notifyAppointmentStatus(
   }
 
   const data = { patientName, referringDentistName, status, };
+   const { mutateAsync: sendEmailToAdmin } = useSendEmailToAdmin();
 
   await Promise.allSettled([
-    sendEmailToAdmins({
+    sendEmailToAdmin({
       subject: `Appointment ${status}`,
       html: appointmentStatusAdminEmail(data),
     }),

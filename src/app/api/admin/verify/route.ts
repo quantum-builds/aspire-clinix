@@ -3,9 +3,10 @@ import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { generateOtp } from "@/utils/generateOtp";
 import bcrypt from "bcryptjs";
-import sendgrid from "@/config/sendgrid-config";
+
 import { otpEmailHtml } from "@/constants/referralEmailTemplates";
-import resend from "@/config/resend-config";
+
+import { sendEmail } from "@/lib/emailService";
 
 export async function POST(req: NextRequest) {
   try {
@@ -90,13 +91,11 @@ export async function POST(req: NextRequest) {
     });
     const html = otpEmailHtml(admin.otp);
 
-    await resend.emails.send({
-      from: `Aspire Clinic <${process.env.EMAIL_FROM!}>`,
+    await sendEmail({
       to: process.env.EMAIL_TO!,
       subject: "Your Aspire OTP code",
-      replyTo: process.env.REPLY_TO_EMAIL!,
       html,
-    });
+    })
     return NextResponse.json(
       createResponse(true, "Admin wait the super admin approval", admin),
       { status: 201 },

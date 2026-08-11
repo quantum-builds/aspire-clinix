@@ -1,6 +1,6 @@
-import sendgrid from "@/config/sendgrid-config";
 import prisma from "@/lib/db";
 import resend from "@/config/resend-config";
+import { useSendEmailToAdmin } from "@/services/adminEmailServices";
 
 interface EmailPayload {
   to: string;
@@ -25,18 +25,4 @@ export async function sendEmail({ to, subject, html }: EmailPayload): Promise<vo
   }
 }
 
-export async function sendEmailToAdmins({ subject, html }: Omit<EmailPayload, 'to'>): Promise<void> {
-  try {
-    const admins = await prisma.admin.findMany({ select: { email: true } });
-    const emails = admins.map((a) => a.email).filter(Boolean) as string[];
-    if (emails.length === 0) {
-      console.warn("[EmailService] No admin emails found");
-      return;
-    }
-    await Promise.allSettled(
-      emails.map((email) => sendEmail({ to: email, subject, html })),
-    );
-  } catch (err) {
-    console.error("[EmailService] Failed to send admin emails:", err);
-  }
-}
+
