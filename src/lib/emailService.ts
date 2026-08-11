@@ -18,6 +18,7 @@ export async function sendEmail({ to, subject, html }: EmailPayload): Promise<vo
       to,
       subject,
       html,
+      replyTo: process.env.REPLAY_TO_EMAIL || process.env.EMAIL_FROM,
     });
   } catch (err) {
     console.error(`[EmailService] Failed to send to ${to}:`, err);
