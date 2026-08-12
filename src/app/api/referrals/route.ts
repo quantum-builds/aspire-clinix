@@ -480,6 +480,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
+    console.log("Referral GET Token:", token);
 
     if (!token) {
       return createCorsJson(createResponse(false, "Unauthorized", null), {
