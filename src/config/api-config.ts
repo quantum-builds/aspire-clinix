@@ -83,6 +83,7 @@ export const ENDPOINTS = {
 
   email: {
     sendEmail: "/api/send-email",
+    sendEmailToAdmin: "/api/send-email-to-admin",
   },
 
   treatment: {

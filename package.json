@@ -2,6 +2,9 @@
   "name": "aspire-clinic",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "npx prisma generate && next dev",
     "build": "npx prisma generate && next build",
@@ -53,6 +56,7 @@
     "react-hook-form": "^7.54.1",
     "react-toastify": "^11.0.3",
     "recharts": "^2.15.0",
+    "resend": "^6.18.1",
     "sharp": "^0.33.5",
     "stripe": "^17.6.0",
     "swagger-jsdoc": "^6.2.8",
@@ -72,7 +76,7 @@
     "@types/formidable": "^3.4.5",
     "@types/js-cookie": "^3.0.6",
     "@types/jsonwebtoken": "^9.0.7",
-    "@types/node": "^20.17.19",
+    "@types/node": "^24.0.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18",
     "@types/react-query": "^1.2.8",

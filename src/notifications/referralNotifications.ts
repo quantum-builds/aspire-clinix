@@ -1,5 +1,5 @@
 import prisma from "@/lib/db";
-import { sendEmail, sendEmailToAdmins } from "@/lib/emailService";
+import { sendEmail } from "@/lib/emailService";
 import {
   assignedPractitionerEmail,
   assignedReferringDentistEmail,
@@ -14,6 +14,7 @@ import {
   bindPractitionerEmail,
   referralCreatedAdminEmail,
 } from "@/constants/referralEmailTemplates";
+import { useSendEmailToAdmin } from "@/services/adminEmailServices";
 
 async function buildNotificationData(referralRequestId: string): Promise<ReferralNotificationData | null> {
   try {
@@ -116,6 +117,8 @@ export async function notifyReferralResponded(referralRequestId: string): Promis
   const data = await buildNotificationData(referralRequestId);
   if (!data) return;
 
+   const { mutateAsync: sendEmailToAdmin } = useSendEmailToAdmin();
+
   await Promise.allSettled([
     data.referringDentistEmail &&
       sendEmail({
@@ -128,7 +131,7 @@ export async function notifyReferralResponded(referralRequestId: string): Promis
       subject: `Your referral has been ${data.action === "ACCEPTED" ? "accepted" : "rejected"}`,
       html: responsePatientEmail(data),
     }),
-    sendEmailToAdmins({
+    sendEmailToAdmin({
       subject: `Referral ${data.action === "ACCEPTED" ? "accepted" : "rejected"} by practitioner`,
       html: responseAdminEmail(data),
     }),
@@ -136,6 +139,7 @@ export async function notifyReferralResponded(referralRequestId: string): Promis
 }
 
 export async function notifyReferralCreated(referralForm: any): Promise<void> {
+   const { mutateAsync: sendEmailToAdmin } = useSendEmailToAdmin();
   try {
     const req = await prisma.referralRequest.findUnique({
       where: { referralFormId: referralForm.id },
@@ -147,7 +151,7 @@ export async function notifyReferralCreated(referralForm: any): Promise<void> {
     const base = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
     const referralLink = `${base}/clinic/referrals/${req.id}/unassigned`;
 
-    await sendEmailToAdmins({
+    await sendEmailToAdmin({
       subject: `New referral submitted for ${referralForm.patientName}`,
       html: referralCreatedAdminEmail(referralForm, referralLink),
     });

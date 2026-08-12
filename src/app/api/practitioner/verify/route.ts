@@ -7,6 +7,7 @@ import { createResponse } from "@/utils/createResponse";
 import { generateOtp } from "@/utils/generateOtp";
 import { NextRequest, NextResponse } from "next/server";
 import { otpEmailHtml } from "@/constants/referralEmailTemplates";
+import { sendEmail } from "@/lib/emailService";
 
 /**
  * @swagger
@@ -206,13 +207,12 @@ export async function POST(req: NextRequest) {
 
     const html = otpEmailHtml(dbDentist.otp, fullName);
 
-    await sendgrid.send({
-      from: process.env.EMAIL_FROM,
-      to: dbDentist.email,
+   
+    await sendEmail({
+      to: email,
       subject: "Your Aspire OTP code",
       html,
-      text: undefined,
-    });
+    })
 
     const data = {
       id: dbDentist.id,

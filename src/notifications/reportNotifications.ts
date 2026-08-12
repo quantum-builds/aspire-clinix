@@ -1,10 +1,11 @@
 import prisma from "@/lib/db";
-import { sendEmail, sendEmailToAdmins } from "@/lib/emailService";
+import { sendEmail} from "@/lib/emailService";
 import {
   reportCreatedAdminEmail,
   reportCreatedPatientEmail,
   reportCreatedReferringDentistEmail,
 } from "@/constants/reportEmailTemplates";
+import { useSendEmailToAdmin } from "@/services/adminEmailServices";
 
 interface ReportInput {
   patientDentallyId: string;
@@ -73,9 +74,10 @@ export async function notifyReportsCreated(
     .join("");
 
   const data = { dentistName, patientName, referringDentistName, reportListHtml };
+   const { mutateAsync: sendEmailToAdmin } = useSendEmailToAdmin();
 
   await Promise.allSettled([
-    sendEmailToAdmins({
+    sendEmailToAdmin({
       subject: `New report created by ${dentistName}`,
       html: reportCreatedAdminEmail(data),
     }),
