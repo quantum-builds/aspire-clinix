@@ -147,10 +147,10 @@ export async function notifyReferralCreated(referralForm: any): Promise<void> {
     const base = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
     const referralLink = `${base}/clinic/referrals/${req.id}/unassigned`;
     
-    await sendEmailToAdmins({
-      subject: `New referral submitted for ${referralForm.patientName}`,
-      html: referralCreatedAdminEmail(referralForm, referralLink),
-    });
+    // await sendEmailToAdmins({
+    //   subject: `New referral submitted for ${referralForm.patientName}`,
+    //   html: referralCreatedAdminEmail(referralForm, referralLink),
+    // });
   } catch (err) {
     console.error("[ReferralNotification] Failed to notify admins:", err);
   }
