@@ -121,10 +121,20 @@ export function buildReferralHtml(
     treatLines.push(
       `<strong>Attend treatment:</strong> ${referralForm.attendTreatment}`,
     );
-  if (referralForm.medicalHistoryPdfUrl)
-    treatLines.push(
-      `<strong>Medical history:</strong> <a href="${referralForm.medicalHistoryPdfUrl}">View document</a>`,
-    );
+  if (referralForm.medicalHistoryPdfUrl) {
+    const urls = Array.isArray(referralForm.medicalHistoryPdfUrl)
+      ? referralForm.medicalHistoryPdfUrl
+      : [referralForm.medicalHistoryPdfUrl];
+    if (urls.length > 0) {
+      const links = urls
+        .map(
+          (url: string, i: number) =>
+            `<a href="${url}">View document${urls.length > 1 ? ` ${i + 1}` : ""}</a>`
+        )
+        .join(", ");
+      treatLines.push(`<strong>Medical history:</strong> ${links}`);
+    }
+  }
   if (referralForm.cbctReportPdfUrl)
     treatLines.push(
       `<strong>CBCT report:</strong> <a href="${referralForm.cbctReportPdfUrl}">View document</a>`,

@@ -110,7 +110,8 @@ import { getPatientById } from "@/dentallyHelpers/patient";
  *               - "Lower left molar pain"
  *               - "Requires endodontic assessment"
  *             treatmentDetails: "Suspected caries on 36"
- *             medicalHistoryPdfUrl: "https://example.com/medical-history/john-doe.pdf"
+ *             medicalHistoryPdfUrl:
+ *               - "https://example.com/medical-history/john-doe.pdf"
  *             other: "Patient prefers morning appointments"
  *     responses:
  *       200:
@@ -260,6 +261,17 @@ export async function PUT(req: NextRequest) {
 
   try {
     const updateReferralForm = await req.json();
+
+    if (typeof updateReferralForm.medicalHistoryPdfUrl === 'string') {
+      updateReferralForm.medicalHistoryPdfUrl = updateReferralForm.medicalHistoryPdfUrl
+        ? [updateReferralForm.medicalHistoryPdfUrl]
+        : [];
+    } else if (
+      updateReferralForm.medicalHistoryPdfUrl !== undefined &&
+      !Array.isArray(updateReferralForm.medicalHistoryPdfUrl)
+    ) {
+      updateReferralForm.medicalHistoryPdfUrl = [];
+    }
 
     await prisma.referralForm.update({
       where: { id: referralFormId },

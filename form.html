@@ -966,7 +966,7 @@
               <div class="upload-text"><span>Click to upload</span> or drag &amp; drop</div>
               <div class="upload-text" style="margin-top:4px;font-size:11px;">PDF, Word or Image</div>
             </label>
-            <input type="file" id="fileUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.svg" />
+            <input type="file" id="fileUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.svg" multiple />
           </div>
           <div id="file-list"></div>
         </div>
@@ -1500,7 +1500,7 @@
         practiceEmail: document.getElementById('practiceEmail').value.trim(),
         practicePhoneNumber: document.getElementById('practiceCountry').value + document.getElementById('practicePhone').value.trim(),
         attendTreatment: shadow === 'yes' ? 'Yes' : (shadow === 'no' ? 'No' : null),
-        medicalHistoryPdfUrl: null,
+        medicalHistoryPdfUrl: [],
         cbctReportPdfUrl: null,
         prescriptionDetails: document.getElementById('prescriptionDetails').value.trim(),
         other: ''
@@ -1513,16 +1513,17 @@
 
       try {
         var fileInput = document.getElementById('fileUpload');
-        var file = (fileInput.files && fileInput.files.length > 0) ? fileInput.files[0] : null;
+        var files = (fileInput.files && fileInput.files.length > 0) ? Array.from(fileInput.files) : [];
 
-        if (file) {
+        for (var fi = 0; fi < files.length; fi++) {
+          var file = files[fi];
           if (!/\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(file.name)) throw new Error('Only PDF, Word, or image files are allowed.');
           var fileType;
           if (/\.pdf$/i.test(file.name)) fileType = 'pdf';
           else if (/\.(doc|docx)$/i.test(file.name)) fileType = 'document';
           else fileType = 'images';
           var params = new URLSearchParams({ fileName: file.name, fileType: fileType, mimeType: file.type, fileSize: String(file.size) });
-          var signedRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + params.toString());
+          var signedRes = await fetch('  http://localhost:3000/api/s3?' + params.toString());
           var signedJson = null;
           var ct = signedRes.headers.get('content-type') || '';
           if (ct.includes('application/json')) {
@@ -1535,7 +1536,7 @@
           var put = await fetch(signedJson.url, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
           if (!put.ok) throw new Error('Failed to upload file to storage');
           var u = new URL(signedJson.url);
-          payload.medicalHistoryPdfUrl = u.pathname.replace(/^\//, '');
+          payload.medicalHistoryPdfUrl.push(u.pathname.replace(/^\//, ''));
         }
 
         if (dropdownState.cbct && cbctReportRequired[dropdownState.cbct]) {
@@ -1548,7 +1549,7 @@
             else if (/\.(doc|docx)$/i.test(cbctFile.name)) cFileType = 'document';
             else cFileType = 'images';
             var cParams = new URLSearchParams({ fileName: cbctFile.name, fileType: cFileType, mimeType: cbctFile.type, fileSize: String(cbctFile.size) });
-            var cRes = await fetch('https://aspire-clinix.vercel.app/api/s3?' + cParams.toString());
+            var cRes = await fetch('  http://localhost:3000/api/s3?' + cParams.toString());
             var cJson = null;
             var cCt = cRes.headers.get('content-type') || '';
             if (cCt.includes('application/json')) {
@@ -1562,7 +1563,7 @@
           }
         }
 
-        var res = await fetch('https://aspire-clinix.vercel.app/api/referrals', {
+        var res = await fetch('  http://localhost:3000/api/referrals', {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
         });
 

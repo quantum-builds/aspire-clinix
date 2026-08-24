@@ -41,7 +41,9 @@ export async function OPTIONS() {
  *             type: object
  *             properties:
  *               medicalHistoryPdfUrl:
- *                 type: string
+ *                 type: array
+ *                 items:
+ *                   type: string
  *               referralDetails:
  *                 type: array
  *                 items:
@@ -92,7 +94,8 @@ export async function OPTIONS() {
  *                 - "Lower left molar pain"
  *                 - "Requires endodontic assessment"
  *               treatmentDetails: "Suspected caries on 36"
- *               medicalHistoryPdfUrl: "https://example.com/medical-history/john-doe.pdf"
+ *               medicalHistoryPdfUrl:
+ *                 - "https://example.com/medical-history/john-doe.pdf"
  *               other: "Patient prefers morning appointments"
  *     responses:
  *       201:
@@ -433,6 +436,15 @@ export async function POST(req: NextRequest) {
         };
       }
     }
+
+    if (typeof referralForm.medicalHistoryPdfUrl === 'string') {
+      referralForm.medicalHistoryPdfUrl = referralForm.medicalHistoryPdfUrl
+        ? [referralForm.medicalHistoryPdfUrl]
+        : [];
+    } else if (!Array.isArray(referralForm.medicalHistoryPdfUrl)) {
+      referralForm.medicalHistoryPdfUrl = [];
+    }
+
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({
         data: referralForm,

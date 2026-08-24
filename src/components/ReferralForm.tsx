@@ -115,16 +115,22 @@ export const referralSchema = z.object({
   attendTreatment: z.string(),
 
   medicalHistoryPdfUrl: z
-    .any()
+    .array(z.any())
     .optional()
-    .refine((file) => !file || file instanceof File, {
-      message: "Please upload a PDF file",
-    })
+    .default([])
     .refine(
-      (file) =>
-        !file ||
-        (file.type === "application/pdf" && file.size <= 5 * 1024 * 1024),
-      { message: "Only PDF files under 5MB are allowed" },
+      (files) => !files || files.every((file) => file instanceof File),
+      { message: "Please upload valid files" },
+    )
+    .refine(
+      (files) =>
+        !files || files.every((file) => file.type === "application/pdf"),
+      { message: "Only PDF files are allowed" },
+    )
+    .refine(
+      (files) =>
+        !files || files.every((file) => file.size <= 5 * 1024 * 1024),
+      { message: "Each file must be under 5MB" },
     ),
 });
 
@@ -178,7 +184,6 @@ interface ReferralFormProps {
 export default function ReferralForm({ practices }: ReferralFormProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const { mutate: createReferralForm, isPending: creatingReferralFormLoader } =
     useCreateReferralForm();
@@ -208,7 +213,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
       dentalSpecialty: "",
       cbct: "",
       attendTreatment: "yes",
-      medicalHistoryPdfUrl: undefined,
+      medicalHistoryPdfUrl: [],
       other: "",
       treatmentDetails: "",
     },
@@ -252,21 +257,26 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
       return;
     }
 
-    console.log("Validation passed, uploading file...");
+    console.log("Validation passed, uploading files...");
 
-    let fileUrl = undefined;
-    if (formData.medicalHistoryPdfUrl) {
+    let fileUrls: string[] = [];
+    if (formData.medicalHistoryPdfUrl && formData.medicalHistoryPdfUrl.length > 0) {
       try {
-        const imageUploaded = await uploadFile({
-          selectedFile: formData.medicalHistoryPdfUrl,
-          fileType: ResoucrceType.PDF,
-        });
-
-        fileUrl = `uploads/aspire-clinic/letters/${imageUploaded.name}`;
-        console.log("File uploaded successfully:", fileUrl);
+        const uploadResults = await Promise.all(
+          formData.medicalHistoryPdfUrl.map((file) =>
+            uploadFile({
+              selectedFile: file,
+              fileType: ResoucrceType.PDF,
+            })
+          )
+        );
+        fileUrls = uploadResults.map(
+          (result) => `uploads/aspire-clinic/letters/${result.name}`
+        );
+        console.log("Files uploaded successfully:", fileUrls);
       } catch (error) {
         console.error("File upload error:", error);
-        showToast("error", "Failed to upload medical history file");
+        showToast("error", "Failed to upload medical history files");
         return;
       }
     }
@@ -299,7 +309,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
       cbct: formData.cbct,
       attendTreatment: formData.attendTreatment,
       treatmentDetails: formData.treatmentDetails,
-      medicalHistoryPdfUrl: fileUrl,
+      medicalHistoryPdfUrl: fileUrls,
       other: formData.other,
     };
 
@@ -346,19 +356,33 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
             );
           }
 
-          // Convert PDF to base64 if it exists
-          let pdfBase64 = null;
-          let pdfFileName = null;
+          // Convert PDFs to base64 if they exist
+          let pdfAttachments: Array<{
+            content: string;
+            filename: string;
+            type: string;
+            disposition: string;
+          }> = [];
 
-          if (formData.medicalHistoryPdfUrl) {
+          if (
+            formData.medicalHistoryPdfUrl &&
+            formData.medicalHistoryPdfUrl.length > 0
+          ) {
             try {
-              const arrayBuffer =
-                await formData.medicalHistoryPdfUrl.arrayBuffer();
-              pdfBase64 = Buffer.from(arrayBuffer).toString("base64");
-              pdfFileName = formData.medicalHistoryPdfUrl.name;
+              pdfAttachments = await Promise.all(
+                formData.medicalHistoryPdfUrl.map(async (file) => {
+                  const arrayBuffer = await file.arrayBuffer();
+                  return {
+                    content: Buffer.from(arrayBuffer).toString("base64"),
+                    filename: file.name,
+                    type: "application/pdf",
+                    disposition: "attachment",
+                  };
+                })
+              );
             } catch (error) {
-              console.error("Error converting PDF to base64:", error);
-              showToast("error", "Error processing PDF file");
+              console.error("Error converting PDFs to base64:", error);
+              showToast("error", "Error processing PDF files");
               return;
             }
           }
@@ -605,57 +629,83 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
               <Controller
                 name="medicalHistoryPdfUrl"
                 control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-5">
-                      <div
-                        onClick={handleUploadClick}
-                        className="cursor-pointer"
-                      >
-                        <input
-                          id="fileUpload"
-                          type="file"
-                          accept="application/pdf"
-                          ref={fileInputRef}
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files && e.target.files.length > 0) {
-                              const file = e.target.files[0];
-                              field.onChange(file);
-                              const objectUrl = URL.createObjectURL(file);
-                              setPreviewUrl(objectUrl);
-                            }
-                          }}
-                        />
-                        <Image
-                          src={UploadPDFIcon}
-                          alt="upload-pdf"
-                          height={80}
-                          width={80}
-                        />
+                render={({ field }) => {
+                  const files = Array.isArray(field.value) ? field.value : [];
+                  return (
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-5">
+                        <div
+                          onClick={handleUploadClick}
+                          className="cursor-pointer"
+                        >
+                          <input
+                            id="fileUpload"
+                            type="file"
+                            accept="application/pdf"
+                            multiple
+                            ref={fileInputRef}
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files.length > 0) {
+                                const newFiles = Array.from(e.target.files);
+                                const updatedFiles = [...files, ...newFiles];
+                                field.onChange(updatedFiles);
+                              }
+                            }}
+                          />
+                          <Image
+                            src={UploadPDFIcon}
+                            alt="upload-pdf"
+                            height={80}
+                            width={80}
+                          />
+                        </div>
+
+                        <Label
+                          htmlFor="fileUpload"
+                          className="cursor-pointer text-green underline text-xl"
+                        >
+                          Upload Documents
+                        </Label>
                       </div>
 
-                      <Label
-                        htmlFor="fileUpload"
-                        className="cursor-pointer text-green underline text-xl"
-                      >
-                        Upload a Document
-                      </Label>
+                      {files.length > 0 && (
+                        <div className="flex flex-col gap-2">
+                          {files.map((file: File, index: number) => (
+                            <div
+                              key={`${file.name}-${index}`}
+                              className="flex items-center gap-3"
+                            >
+                              <PdfModal
+                                pdfUrl={URL.createObjectURL(file)}
+                                trigger={
+                                  <div className="flex items-center gap-3 cursor-pointer text-lg">
+                                    <span>{file.name}</span>
+                                    <p className="underline text-green">
+                                      See Document
+                                    </p>
+                                  </div>
+                                }
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = files.filter(
+                                    (_: File, i: number) => i !== index
+                                  );
+                                  field.onChange(updated);
+                                }}
+                                className="text-red-500 hover:text-red-700 text-sm underline"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-
-                    {field.value && (
-                      <PdfModal
-                        pdfUrl={previewUrl!}
-                        trigger={
-                          <div className="flex items-center gap-3 cursor-pointer text-lg">
-                            {(field.value as File).name}
-                            <p className="underline text-green">See Document</p>
-                          </div>
-                        }
-                      />
-                    )}
-                  </div>
-                )}
+                  );
+                }}
               />
               {errors.medicalHistoryPdfUrl && (
                 <p className="text-sm text-red-500">
