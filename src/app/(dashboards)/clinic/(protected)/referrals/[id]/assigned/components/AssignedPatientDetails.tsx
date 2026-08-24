@@ -1,12 +1,8 @@
 "use client";
 
-import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
-import ReferralFormDetailModal from "@/app/(dashboards)/components/ReferralFormDetailModal";
-import PdfModal from "@/app/(dashboards)/components/ViewPdfModal";
+import SupportingDocumentsCard from "@/app/(dashboards)/components/SupportingDocumentsCard";
 import { ReadOnlyCheckbox } from "@/components/ReadOnlyCheckBox";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
-import { UploadPDFIcon } from "@/assets";
 
 interface PatientReferralDetailsProps {
   id: string;
@@ -37,8 +33,7 @@ interface PatientReferralDetailsProps {
     referralDeatils: string;
     treatmentDetails?: string;
     attendTreatment: string;
-    medicalHistoryPDF?: string;
-    cbctReportPdfUrl?: string | null;
+    medicalHistoryPDF?: string[];
     prescriptionDetails?: string;
     practicePhoneNumber?: string;
   };
@@ -134,6 +129,9 @@ export default function AssignedPatientDetails({
             </p>
           </div>
         </div>
+        <SupportingDocumentsCard
+          medicalHistoryPDF={referralFormDetails.medicalHistoryPDF}
+        />
         <div className="bg-gray p-6 1xl50:space-y-5 space-y-0 rounded-2xl">
           <div className="flex justify-between items-center">
             <p className="text-green font-medium text-2xl max-1xl50:mb-3">
@@ -184,43 +182,6 @@ export default function AssignedPatientDetails({
                 <ReadOnlyCheckbox label="No" checked={true} />
               )}
             </div>
-          </div>
-          <div className="flex gap-24">
-            {referralFormDetails.medicalHistoryPDF && (
-              <div className="flex flex-col">
-                <h3 className="font-medium text-dashboardTextBlack mb-2">
-                  Medical History
-                </h3>
-
-                <PdfModal
-                  pdfUrl={referralFormDetails.medicalHistoryPDF}
-                  trigger={
-                    <div className="flex items-center gap-3 cursor-pointer">
-                      <Image src={UploadPDFIcon} alt="PDF Icon" />
-                      <p className="underline text-green">See Document</p>
-                    </div>
-                  }
-                />
-              </div>
-            )}
-
-            {referralFormDetails.cbctReportPdfUrl && (
-              <div className="flex flex-col">
-                <h3 className="font-medium text-dashboardTextBlack mb-2">
-                  CBCT Report
-                </h3>
-
-                <PdfModal
-                  pdfUrl={referralFormDetails.cbctReportPdfUrl}
-                  trigger={
-                    <div className="flex items-center gap-3 cursor-pointer">
-                      <Image src={UploadPDFIcon} alt="PDF Icon" />
-                      <p className="underline text-green">See Document</p>
-                    </div>
-                  }
-                />
-              </div>
-            )}
           </div>
         </div>
       </div>

@@ -67,8 +67,12 @@ export default async function ReferralHistoryDetail({
     treatmentDetails: referralForm.treatmentDetails,
     prescriptionDetails: referralForm.prescriptionDetails,
     attendTreatment: referralForm.attendTreatment === "yes" ? "yes" : "no",
-    medicalHistoryPDF: referralForm.medicalHistoryPdf,
-    cbctReportPdfUrl: referralForm.cbctReportPdf,
+    medicalHistoryPDF: (() => {
+      const raw = referralForm.medicalHistoryPdf ?? referralForm.medicalHistoryPdfUrl;
+      if (Array.isArray(raw)) return raw;
+      if (raw) return [raw];
+      return [];
+    })(),
   };
 
   return (
