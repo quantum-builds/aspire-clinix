@@ -77,11 +77,18 @@ export async function getReferralRequest(id: string) {
     const responseData: Response<TReferralRequest> = response.data;
     const referralForm: TReferralForm = responseData.data.referralForm;
 
-    const upload = referralForm.medicalHistoryPdfUrl
-      ? await getAMedia(referralForm.medicalHistoryPdfUrl)
-      : null;
+    const pdfUrls = Array.isArray(referralForm.medicalHistoryPdfUrl)
+      ? referralForm.medicalHistoryPdfUrl
+      : referralForm.medicalHistoryPdfUrl
+        ? [referralForm.medicalHistoryPdfUrl]
+        : [];
 
-    referralForm.medicalHistoryPdf = upload?.files?.[0]?.url;
+    const uploads = await Promise.all(
+      pdfUrls.map((url) => getAMedia(url))
+    );
+    referralForm.medicalHistoryPdf = uploads
+      .map((u) => (Array.isArray(u) ? u?.[0]?.url : u?.files?.[0]?.url))
+      .filter(Boolean) as string[];
 
     const cbctUpload = referralForm.cbctReportPdfUrl
       ? await getAMedia(referralForm.cbctReportPdfUrl)

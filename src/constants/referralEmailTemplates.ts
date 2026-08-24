@@ -853,13 +853,21 @@ export function buildReferralHtml(
     }
 
     // Patient Details
+    const medicalHistoryLinks = (() => {
+      const raw = referralForm.medicalHistoryPdfUrl;
+      if (!raw) return undefined;
+      const urls = Array.isArray(raw) ? raw : [raw];
+      if (urls.length === 0) return undefined;
+      return urls.map((url, i) => `<a href="${url}">View Document${urls.length > 1 ? ` ${i + 1}` : ""}</a>`).join(", ");
+    })();
+
     const patientLines: string[] = [
       `Name of Patient - ${field(referralForm.patientName)}`,
       `Date of Birth - ${field(referralForm.patientDateOfBirth)}`,
       `Address - ${field(referralForm.patientAddress)}`,
       `Mobile Number - ${field(referralForm.patientPhoneNumber)}`,
       `Email Address - ${field(referralForm.patientEmail)}`,
-      `Medical History - ${field(referralForm.medicalHistoryPdfUrl ? `<a href="${referralForm.medicalHistoryPdfUrl}">View Document</a>` : undefined)}`,
+      `Medical History - ${field(medicalHistoryLinks)}`,
     ];
 
     let treatmentRequiredBlock = `<p style="margin:12px 0 4px 0;">Treatment Required :</p><ol style="margin:0 0 12px 22px;padding:0;">`;
@@ -1119,7 +1127,14 @@ export function referralCreatedAdminEmail(
           <td>
             ${
               form.medicalHistoryPdfUrl
-                ? `<a href="${referralLink}">View PDF</a>`
+                ? (() => {
+                    const urls = Array.isArray(form.medicalHistoryPdfUrl)
+                      ? form.medicalHistoryPdfUrl
+                      : [form.medicalHistoryPdfUrl];
+                    return urls.length > 0
+                      ? urls.map((url: string, i: number) => `<a href="${referralLink}">View PDF${urls.length > 1 ? ` ${i + 1}` : ""}</a>`).join(", ")
+                      : "Not Provided";
+                  })()
                 : "Not Provided"
             }
           </td>

@@ -38,7 +38,13 @@ export function referralAdminEmail(formData: FormData) {
                     <tr><td><strong>Mobile Number:</strong></td><td>${formData.patientPhoneNumber
     }</td></tr>
                     <tr><td><strong>Email:</strong></td><td>${formData.patientEmail}</td></tr>
-                    <tr><td><strong>Medical History:</strong></td><td>${formData.medicalHistoryPdfUrl || "N/A"
+                    <tr><td><strong>Medical History:</strong></td><td>${(() => {
+                      if (!formData.medicalHistoryPdfUrl) return "N/A";
+                      const urls = Array.isArray(formData.medicalHistoryPdfUrl)
+                        ? formData.medicalHistoryPdfUrl
+                        : [formData.medicalHistoryPdfUrl];
+                      return urls.length > 0 ? urls.join(", ") : "N/A";
+                    })()
     }</td></tr>
                   </table>
     

@@ -71,8 +71,12 @@ export default async function UnAssignedWrapper({
     referralDeatils: referralDetails,
     treatmentDetails: referralForm.treatmentDetails,
     attendTreatment: referralForm.attendTreatment?.toLowerCase() === "yes" ? "yes" : "no",
-    medicalHistoryPDF:
-      referralForm.medicalHistoryPdf ?? referralForm.medicalHistoryPdfUrl,
+    medicalHistoryPDF: (() => {
+      const raw = referralForm.medicalHistoryPdf ?? referralForm.medicalHistoryPdfUrl;
+      if (Array.isArray(raw)) return raw;
+      if (raw) return [raw];
+      return [];
+    })(),
     cbctReportPdfUrl: referralForm.cbctReportPdfUrl ?? null,
     prescriptionDetails: referralForm.prescriptionDetails,
   };

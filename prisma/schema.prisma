@@ -15,7 +15,7 @@ model ReferralForm {
   referralEmail               String
   referralGDC                 String
   referralName                String
-  medicalHistoryPdfUrl        String?
+  medicalHistoryPdfUrl        String[]
   patientAddress              String
   patientDateOfBirth          DateTime
   patientEmail                String

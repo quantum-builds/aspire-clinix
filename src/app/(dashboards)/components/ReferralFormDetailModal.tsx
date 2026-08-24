@@ -13,7 +13,7 @@ interface ReferralFormDetailModalProps {
         treatmentDetails?: string;
         prescriptionDetails?: string;
         attendTreatment: string;
-        medicalHistoryPDF?: string;
+        medicalHistoryPDF?: string[];
     };
 }
 
@@ -69,16 +69,26 @@ export default function ReferralFormDetailModal({
                         </div>
                     )}
 
-                    {referralFormDetails.medicalHistoryPDF && (
-                        <PdfModal
-                            pdfUrl={referralFormDetails.medicalHistoryPDF}
-                            trigger={
-                                <div className="flex items-center gap-3 cursor-pointer">
-                                    <Image src={UploadPDFIcon} alt="PDF Icon" />
-                                    <p className="underline text-green">See Document</p>
-                                </div>
-                            }
-                        />
+                    {referralFormDetails.medicalHistoryPDF &&
+                        referralFormDetails.medicalHistoryPDF.length > 0 && (
+                        <div className="flex flex-col gap-2">
+                            {referralFormDetails.medicalHistoryPDF.map(
+                                (url, index) => (
+                                    <PdfModal
+                                        key={index}
+                                        pdfUrl={url}
+                                        trigger={
+                                            <div className="flex items-center gap-3 cursor-pointer">
+                                                <Image src={UploadPDFIcon} alt="PDF Icon" />
+                                                <p className="underline text-green">
+                                                    See Document {referralFormDetails.medicalHistoryPDF!.length > 1 ? `${index + 1}` : ""}
+                                                </p>
+                                            </div>
+                                        }
+                                    />
+                                )
+                            )}
+                        </div>
                     )}
 
                     <div className="space-y-2">
