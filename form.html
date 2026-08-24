@@ -366,10 +366,98 @@
       color: var(--text-muted);
     }
 
+    #file-list .file-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 6px;
+    }
+
+    #file-list .file-item .file-icon {
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+
+    #file-list .file-item .file-name {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text);
+      font-size: 12.5px;
+    }
+
+    #file-list .file-item .file-remove {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
+      padding: 2px 4px;
+      border-radius: 2px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    #file-list .file-item .file-remove:hover {
+      color: var(--error);
+      background: rgba(201, 112, 112, 0.15);
+    }
+
     #cbct-report-list {
       margin-top: 10px;
       font-size: 12px;
       color: var(--text-muted);
+    }
+
+    #cbct-report-list .file-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 6px;
+    }
+
+    #cbct-report-list .file-item .file-icon {
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+
+    #cbct-report-list .file-item .file-name {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text);
+      font-size: 12.5px;
+    }
+
+    #cbct-report-list .file-item .file-remove {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
+      padding: 2px 4px;
+      border-radius: 2px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    #cbct-report-list .file-item .file-remove:hover {
+      color: var(--error);
+      background: rgba(201, 112, 112, 0.15);
     }
 
     /* ── Submit button ── */
@@ -1300,19 +1388,44 @@
     });
 
     /* ─── FILE UPLOAD ─── */
-    document.getElementById('fileUpload').addEventListener('change', updateFileList);
+    var selectedFiles = [];
+    var cbctSelectedFiles = [];
 
-    function updateFileList() {
-      var input = document.getElementById('fileUpload');
-      var list = document.getElementById('file-list');
-      if (!input.files || input.files.length === 0) { list.textContent = ''; return; }
-      var files = Array.from(input.files).filter(function (f) {
-        return /\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(f.name);
+    document.getElementById('fileUpload').addEventListener('change', function () {
+      appendFiles(this.files);
+      this.value = '';
+    });
+
+    function appendFiles(fileList) {
+      var validExts = /\.(pdf|doc|docx|jpe?g|png|svg)$/i;
+      var added = 0;
+      var duplicate = 0;
+      Array.from(fileList).forEach(function (f) {
+        if (!validExts.test(f.name)) return;
+        var exists = selectedFiles.some(function (sf) { return sf.name === f.name && sf.size === f.size; });
+        if (exists) { duplicate++; return; }
+        selectedFiles.push(f);
+        added++;
       });
-      if (files.length !== input.files.length) {
-        list.textContent = 'Only PDF, Word, or image files are allowed.'; input.value = ''; return;
-      }
-      list.textContent = files.map(function (f) { return '📎 ' + f.name; }).join('  ·  ');
+      renderFileList();
+      if (duplicate > 0) showToast('This file is already added', 'error');
+    }
+
+    function removeFile(index) {
+      selectedFiles.splice(index, 1);
+      renderFileList();
+    }
+
+    function renderFileList() {
+      var list = document.getElementById('file-list');
+      if (selectedFiles.length === 0) { list.innerHTML = ''; return; }
+      list.innerHTML = selectedFiles.map(function (f, i) {
+        return '<div class="file-item">' +
+          '<span class="file-icon">📎</span>' +
+          '<span class="file-name">' + f.name + '</span>' +
+          '<button type="button" class="file-remove" onclick="removeFile(' + i + ')" title="Remove">&times;</button>' +
+          '</div>';
+      }).join('');
     }
 
     var uploadArea = document.getElementById('uploadArea');
@@ -1320,28 +1433,45 @@
     uploadArea.addEventListener('dragleave', function () { uploadArea.style.borderColor = ''; });
     uploadArea.addEventListener('drop', function (e) {
       e.preventDefault(); uploadArea.style.borderColor = '';
-      var fileInput = document.getElementById('fileUpload');
-      var dt = new DataTransfer();
-      Array.from(e.dataTransfer.files).forEach(function (file) {
-        if (/\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(file.name)) dt.items.add(file);
-      });
-      fileInput.files = dt.files; updateFileList();
+      appendFiles(e.dataTransfer.files);
     });
 
     /* CBCT report upload */
-    document.getElementById('cbctReportUpload').addEventListener('change', updateCbctReportList);
+    document.getElementById('cbctReportUpload').addEventListener('change', function () {
+      appendCbctFiles(this.files);
+      this.value = '';
+    });
 
-    function updateCbctReportList() {
-      var input = document.getElementById('cbctReportUpload');
-      var list = document.getElementById('cbct-report-list');
-      if (!input.files || input.files.length === 0) { list.textContent = ''; return; }
-      var files = Array.from(input.files).filter(function (f) {
-        return /\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(f.name);
+    function appendCbctFiles(fileList) {
+      var validExts = /\.(pdf|doc|docx|jpe?g|png|svg)$/i;
+      var added = 0;
+      var duplicate = 0;
+      Array.from(fileList).forEach(function (f) {
+        if (!validExts.test(f.name)) return;
+        var exists = cbctSelectedFiles.some(function (sf) { return sf.name === f.name && sf.size === f.size; });
+        if (exists) { duplicate++; return; }
+        cbctSelectedFiles.push(f);
+        added++;
       });
-      if (files.length !== input.files.length) {
-        list.textContent = 'Only PDF, Word, or image files are allowed.'; input.value = ''; return;
-      }
-      list.textContent = files.map(function (f) { return '📎 ' + f.name; }).join('  ·  ');
+      renderCbctFileList();
+      if (duplicate > 0) showToast('This file is already added', 'error');
+    }
+
+    function removeCbctFile(index) {
+      cbctSelectedFiles.splice(index, 1);
+      renderCbctFileList();
+    }
+
+    function renderCbctFileList() {
+      var list = document.getElementById('cbct-report-list');
+      if (cbctSelectedFiles.length === 0) { list.innerHTML = ''; return; }
+      list.innerHTML = cbctSelectedFiles.map(function (f, i) {
+        return '<div class="file-item">' +
+          '<span class="file-icon">📎</span>' +
+          '<span class="file-name">' + f.name + '</span>' +
+          '<button type="button" class="file-remove" onclick="removeCbctFile(' + i + ')" title="Remove">&times;</button>' +
+          '</div>';
+      }).join('');
     }
 
     var cbctUploadArea = document.getElementById('cbctUploadArea');
@@ -1349,12 +1479,7 @@
     cbctUploadArea.addEventListener('dragleave', function () { cbctUploadArea.style.borderColor = ''; });
     cbctUploadArea.addEventListener('drop', function (e) {
       e.preventDefault(); cbctUploadArea.style.borderColor = '';
-      var fileInput = document.getElementById('cbctReportUpload');
-      var dt = new DataTransfer();
-      Array.from(e.dataTransfer.files).forEach(function (file) {
-        if (/\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(file.name)) dt.items.add(file);
-      });
-      fileInput.files = dt.files; updateCbctReportList();
+      appendCbctFiles(e.dataTransfer.files);
     });
 
     var dobInput = document.getElementById('dob');
@@ -1434,8 +1559,7 @@
       var shadow = document.querySelector('input[name="shadow"]:checked');
       if (!shadow) { setError('shadow', 'Please select an option'); ok = false; }
       if (dropdownState.cbct && cbctReportRequired[dropdownState.cbct]) {
-        var cbctFile = document.getElementById('cbctReportUpload');
-        if (!cbctFile.files || cbctFile.files.length === 0) { setError('cbctReportUpload', 'CBCT report PDF is required'); ok = false; }
+        if (cbctSelectedFiles.length === 0) { setError('cbctReportUpload', 'CBCT report PDF is required'); ok = false; }
       }
       return ok;
     }
@@ -1453,8 +1577,10 @@
           var el = document.getElementById(id); if (el) el.value = '';
         });
       var dobPicker = document.getElementById('dob-picker'); if (dobPicker) dobPicker.value = '';
-      document.getElementById('fileUpload').value = '';
-      document.getElementById('file-list').textContent = '';
+      selectedFiles = [];
+      cbctSelectedFiles = [];
+      renderFileList();
+      renderCbctFileList();
       clearSpecialty(); clearCbct();
       document.querySelectorAll('input[name="shadow"]').forEach(function (r) { r.checked = false; });
       cbctReportRequired = {};
@@ -1512,11 +1638,10 @@
       setInputsDisabled(true);
 
       try {
-        var fileInput = document.getElementById('fileUpload');
-        var files = (fileInput.files && fileInput.files.length > 0) ? Array.from(fileInput.files) : [];
+        payload.medicalHistoryPdfUrl = [];
 
-        for (var fi = 0; fi < files.length; fi++) {
-          var file = files[fi];
+        for (var fi = 0; fi < selectedFiles.length; fi++) {
+          var file = selectedFiles[fi];
           if (!/\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(file.name)) throw new Error('Only PDF, Word, or image files are allowed.');
           var fileType;
           if (/\.pdf$/i.test(file.name)) fileType = 'pdf';
@@ -1540,9 +1665,8 @@
         }
 
         if (dropdownState.cbct && cbctReportRequired[dropdownState.cbct]) {
-          var cbctInput = document.getElementById('cbctReportUpload');
-          var cbctFile = (cbctInput.files && cbctInput.files.length > 0) ? cbctInput.files[0] : null;
-          if (cbctFile) {
+          if (cbctSelectedFiles.length > 0) {
+            var cbctFile = cbctSelectedFiles[0];
             if (!/\.(pdf|doc|docx|jpe?g|png|svg)$/i.test(cbctFile.name)) throw new Error('CBCT report must be a PDF, Word, or image file.');
             var cFileType;
             if (/\.pdf$/i.test(cbctFile.name)) cFileType = 'pdf';
