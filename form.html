@@ -1057,6 +1057,7 @@
             <input type="file" id="fileUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.svg" />
           </div>
           <div id="file-list"></div>
+          <div class="field-error" id="err-fileUpload"></div>
         </div>
         <div class="field" id="cbct-report-field" style="display:none;flex:1;">
           <label>CBCT Report </label>
@@ -1398,17 +1399,21 @@
 
     function appendFiles(fileList) {
       var validExts = /\.(pdf|doc|docx|jpe?g|png|svg)$/i;
-      var added = 0;
       var duplicate = 0;
       Array.from(fileList).forEach(function (f) {
         if (!validExts.test(f.name)) return;
         var exists = selectedFiles.some(function (sf) { return sf.name === f.name && sf.size === f.size; });
         if (exists) { duplicate++; return; }
         selectedFiles.push(f);
-        added++;
       });
       renderFileList();
-      if (duplicate > 0) showToast('This file is already added', 'error');
+      var errEl = document.getElementById('err-fileUpload');
+      if (duplicate > 0) {
+        errEl.textContent = 'This file is already added';
+        setTimeout(function () { errEl.textContent = ''; }, 3000);
+      } else {
+        errEl.textContent = '';
+      }
     }
 
     function removeFile(index) {
@@ -1444,17 +1449,21 @@
 
     function appendCbctFiles(fileList) {
       var validExts = /\.(pdf|doc|docx|jpe?g|png|svg)$/i;
-      var added = 0;
       var duplicate = 0;
       Array.from(fileList).forEach(function (f) {
         if (!validExts.test(f.name)) return;
         var exists = cbctSelectedFiles.some(function (sf) { return sf.name === f.name && sf.size === f.size; });
         if (exists) { duplicate++; return; }
         cbctSelectedFiles.push(f);
-        added++;
       });
       renderCbctFileList();
-      if (duplicate > 0) showToast('This file is already added', 'error');
+      var errEl = document.getElementById('err-cbctReportUpload');
+      if (duplicate > 0) {
+        errEl.textContent = 'This file is already added';
+        setTimeout(function () { errEl.textContent = ''; }, 3000);
+      } else {
+        errEl.textContent = '';
+      }
     }
 
     function removeCbctFile(index) {
