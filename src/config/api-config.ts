@@ -71,14 +71,19 @@ export const ENDPOINTS = {
       after?: string,
       status?: string,
       pageType?: string,
+      callStatus?: string,
     ) =>
       `/api/referral-requests?page=${page ?? 1}&search=${search ?? ""}&on=${
         on ?? ""
-      }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}&page-type=${pageType ?? ""}&stats-only=${statsOnly}`,
+      }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}&call-status=${callStatus ?? ""}&page-type=${pageType ?? ""}&stats-only=${statsOnly}`,
     getById: (id: string) => `/api/referral-requests/${id}`,
     patch: (id: string) => `/api/referral-requests/${id}`,
     delete: (id: string) => `/api/referral-requests/${id}`,
     respond: (id: string) => `/api/referral-requests/${id}/respond`,
+  },
+
+  referrals: {
+    patch: (id: string) => `/api/referrals/${id}`,
   },
 
   email: {

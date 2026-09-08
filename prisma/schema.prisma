@@ -32,6 +32,8 @@ model ReferralForm {
   practicePhoneNumber         String?
   cbctReportPdfUrl            String?
   prescriptionDetails         String?
+  callStatus                  CallStatus?
+  callDate                    DateTime?
   patient                     Patient?         @relation(fields: [patientId], references: [id])
   referralDentist             Dentist?         @relation(fields: [referralDentistId], references: [id])
   referralRequest             ReferralRequest?
@@ -380,8 +382,9 @@ enum ReferralRequestStatus {
   UNASSIGNED
   PENDING_REVIEW
   ACCEPTED
-  REJECTED
+  REJECTED_BY_DENTIST
   ASSIGNED
+  REJECTED_BY_PATIENT
 }
 
 enum DentistResponseStatus {
@@ -393,4 +396,12 @@ enum DentistResponseStatus {
 enum ReportRecipient {
   PATIENT
   REFERRING_DENTIST
+}
+
+enum CallStatus {
+  PENDING
+  AWAITING
+  REJECTED
+  UNATTENDED
+  CONFIRM
 }

@@ -3,7 +3,7 @@ import prisma from "@/lib/db";
 import { DentistReferralPageTYpe } from "@/types/common";
 import { calcChange } from "@/utils/calculatePercatageChnage";
 import { createResponse } from "@/utils/createResponse";
-import { Prisma, ReferralRequestStatus } from "@prisma/client";
+import { Prisma, ReferralRequestStatus, CallStatus } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import type { JWT } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
@@ -155,10 +155,15 @@ export async function GET(req: NextRequest) {
     const before = searchParams.get("before") || "";
     const after = searchParams.get("after") || "";
     const statusParam = searchParams.get("status") || "";
+    const callStatusParam = searchParams.get("call-status") || "";
     const pageType = searchParams.get("page-type") || "";
     const statsOnlyParam = searchParams.get("stats-only");
     const statsOnly = statsOnlyParam === "true";
-    const { localDentistId: referralDentistId, role: dentistRole } = await resolveReferralDentistId(token);
+    const { localDentistId: referralDentistId, role: dentistRole } =
+      await resolveReferralDentistId(token);
+
+    console.log("Call Status:", callStatusParam);
+    console.log("statusParam:", statusParam);
 
     if (statsOnly) {
       const now = new Date();
@@ -177,10 +182,16 @@ export async function GET(req: NextRequest) {
       if (token.role === TokenRoles.DENTALLY_PRACTITIONER) {
         if (pageType === DentistReferralPageTYpe.REQUEST && referralDentistId) {
           baseWhere.assignedDentistId = referralDentistId;
-        } else if (pageType === DentistReferralPageTYpe.HISTORY && referralDentistId) {
+        } else if (
+          pageType === DentistReferralPageTYpe.HISTORY &&
+          referralDentistId
+        ) {
           (baseWhere.referralForm ??= {}).referralDentistId = referralDentistId;
         }
-      } else if (token.role === TokenRoles.REFERRING_DENTIST && referralDentistId) {
+      } else if (
+        token.role === TokenRoles.REFERRING_DENTIST &&
+        referralDentistId
+      ) {
         (baseWhere.referralForm ??= {}).referralDentistId = referralDentistId;
       }
 
@@ -188,13 +199,18 @@ export async function GET(req: NextRequest) {
       const [thisWeekTotal, ...thisWeekStatusCounts] = await Promise.all([
         prisma.referralRequest.count({ where: baseWhere }),
         ...statuses.map((s) =>
-          prisma.referralRequest.count({ where: { ...baseWhere, requestStatus: s } }),
+          prisma.referralRequest.count({
+            where: { ...baseWhere, requestStatus: s },
+          }),
         ),
       ]);
 
       const [lastWeekTotal, ...lastWeekStatusCounts] = await Promise.all([
         prisma.referralRequest.count({
-          where: { ...baseWhere, createdAt: { gte: lastWeekStart, lte: lastWeekEnd } },
+          where: {
+            ...baseWhere,
+            createdAt: { gte: lastWeekStart, lte: lastWeekEnd },
+          },
         }),
         ...statuses.map((s) =>
           prisma.referralRequest.count({
@@ -210,12 +226,16 @@ export async function GET(req: NextRequest) {
       const thisWeekAssigned =
         thisWeekStatusCounts[statuses.indexOf(ReferralRequestStatus.ASSIGNED)];
       const thisWeekUnassigned =
-        thisWeekStatusCounts[statuses.indexOf(ReferralRequestStatus.UNASSIGNED)];
+        thisWeekStatusCounts[
+          statuses.indexOf(ReferralRequestStatus.UNASSIGNED)
+        ];
 
       const lastWeekAssigned =
         lastWeekStatusCounts[statuses.indexOf(ReferralRequestStatus.ASSIGNED)];
       const lastWeekUnassigned =
-        lastWeekStatusCounts[statuses.indexOf(ReferralRequestStatus.UNASSIGNED)];
+        lastWeekStatusCounts[
+          statuses.indexOf(ReferralRequestStatus.UNASSIGNED)
+        ];
 
       const averageReferrals =
         thisWeekTotal === 0
@@ -347,19 +367,32 @@ export async function GET(req: NextRequest) {
     }
 
     if (referringDentistFilter) {
-      andConditions.push({ referralForm: { referralDentistId: referringDentistFilter } });
+      andConditions.push({
+        referralForm: { referralDentistId: referringDentistFilter },
+      });
     }
 
     if (status) {
-      andConditions.push({ requestStatus: status });
+      andConditions.push({
+        requestStatus: status.toUpperCase() as ReferralRequestStatus,
+      });
+    }
+
+    if (callStatusParam) {
+      andConditions.push({
+        referralForm: {
+          callStatus: callStatusParam.toUpperCase() as CallStatus,
+        },
+      });
     }
 
     if (Object.keys(dateFilter).length) {
       andConditions.push({ referralForm: dateFilter });
     }
 
-    let baseWhere: Prisma.ReferralRequestWhereInput =
-      andConditions.length ? { AND: andConditions } : {};
+    let baseWhere: Prisma.ReferralRequestWhereInput = andConditions.length
+      ? { AND: andConditions }
+      : {};
 
     const [referralRequests, totalCount] = await Promise.all([
       prisma.referralRequest.findMany({
@@ -378,8 +411,7 @@ export async function GET(req: NextRequest) {
       prisma.referralRequest.count({ where: baseWhere }),
     ]);
 
-    console.log("Referral requests BE:", referralRequests);
-    console.log("Total count: BE", totalCount);
+    
     if (referralRequests.length === 0) {
       return NextResponse.json(
         createResponse(false, "No referral request found", null),

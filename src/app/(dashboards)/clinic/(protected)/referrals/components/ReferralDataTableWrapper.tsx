@@ -9,6 +9,7 @@ interface ReferralDataTableWrapperProps {
   query: string;
   page: number;
   status: string;
+  callStatus: string;
   on: string
   before: string
   after: string
@@ -18,6 +19,7 @@ export default async function ReferralatDaTableWrapper({
   query,
   page,
   status,
+  callStatus,
   on, before, after
 }: ReferralDataTableWrapperProps) {
   const response: Response<TReferralRequestResponse> =
@@ -25,6 +27,7 @@ export default async function ReferralatDaTableWrapper({
       page: page,
       search: query,
       status: status,
+      callStatus: callStatus,
       on: on, before: before, after: after
     });
 

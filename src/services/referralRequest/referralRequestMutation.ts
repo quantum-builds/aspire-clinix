@@ -20,6 +20,26 @@ export const usePatchReferralRequest = () => {
   });
 };
 
+export const useUpdateCallStatus = () => {
+  return useMutation({
+    mutationFn: async ({
+      id,
+      callStatus,
+      callDate,
+    }: {
+      id: string;
+      callStatus: string;
+      callDate: string | null;
+    }) => {
+      const response = await axiosInstance.patch(
+        ENDPOINTS.referrals.patch(id),
+        { callStatus, callDate }
+      );
+      return response.data;
+    },
+  });
+};
+
 export const useDeleteReferralRequests = () => {
   return useMutation({
     mutationFn: async ({

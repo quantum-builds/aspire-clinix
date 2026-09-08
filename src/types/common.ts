@@ -265,6 +265,7 @@ export interface AppointmentRequest {
 
 export interface TStatusOption {
   value: string;
+  label: string;
 }
 
 export enum UserRoles {

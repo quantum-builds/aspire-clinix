@@ -13,12 +13,13 @@ import Dropdown from "./custom-components/DropDown"
 
 interface DateFilterProps {
   statusOptions: TStatusOption[] | null
+  callStatusOptions?: { value: string; label: string }[]
   showDateFilter?: boolean
   lockAfterDate?: boolean
   lockBeforeDate?: boolean
 }
 
-export default function DateFilter({ statusOptions, showDateFilter, lockAfterDate, lockBeforeDate }: DateFilterProps) {
+export default function DateFilter({ statusOptions, callStatusOptions, showDateFilter, lockAfterDate, lockBeforeDate }: DateFilterProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -26,17 +27,20 @@ export default function DateFilter({ statusOptions, showDateFilter, lockAfterDat
   const [afterDate, setAfterDate] = useState<Date | null>(null)
   const [beforeDate, setBeforeDate] = useState<Date | null>(null)
   const [status, setStatus] = useState<string | null>("")
+  const [callStatus, setCallStatus] = useState<string | null>("")
 
   useEffect(() => {
     const on = searchParams.get("on")
     const after = searchParams.get("after")
     const before = searchParams.get("before")
     const statusParam = searchParams.get("status")
+    const callStatusParam = searchParams.get("callStatus")
 
     if (on) setOnDate(new Date(on))
     if (after) setAfterDate(new Date(after))
     if (before) setBeforeDate(new Date(before))
     if (statusParam) setStatus(statusParam)
+    if (callStatusParam) setCallStatus(callStatusParam)
   }, [searchParams])
 
   const formatDate = (date: Date | null) => {
@@ -69,12 +73,14 @@ export default function DateFilter({ statusOptions, showDateFilter, lockAfterDat
       setOnDate(null)
     } else if (key === "status") {
       setStatus(value)
+    } else if (key === "callStatus") {
+      setCallStatus(value)
     }
 
     router.push(`?${params.toString()}`)
   }
 
-  const activeFilterCount = (status ? 1 : 0) + (onDate ? 1 : 0) + (afterDate ? 1 : 0) + (beforeDate ? 1 : 0)
+  const activeFilterCount = (status ? 1 : 0) + (callStatus ? 1 : 0) + (onDate ? 1 : 0) + (afterDate ? 1 : 0) + (beforeDate ? 1 : 0)
 
   return (
     <CustomPopover
@@ -146,11 +152,27 @@ export default function DateFilter({ statusOptions, showDateFilter, lockAfterDat
                 <Dropdown
                   options={statusOptions.map((option) => ({
                     value: option.value,
-                    label: capitalize(option.value),
+                    label: option.label,
                   }))}
                   value={status ?? ""}
                   onValueChange={(newValue) => updateQuery("status", newValue)}
                   placeholder="Select Status"
+                  className="w-full"
+                  triggerClassName="w-full border border-green p-3 h-10 rounded-lg flex justify-between items-center cursor-pointer"
+                  contentClassName="w-full border border-green rounded-lg bg-white mt-2"
+                  showClearOption={true}
+                />
+              </div>
+            )}
+
+            {callStatusOptions && callStatusOptions.length > 0 && (
+              <div className="w-full space-y-[2px]">
+                <p className="text-green font-medium">Call Status</p>
+                <Dropdown
+                  options={callStatusOptions}
+                  value={callStatus ?? ""}
+                  onValueChange={(newValue) => updateQuery("callStatus", newValue)}
+                  placeholder="Select Call Status"
                   className="w-full"
                   triggerClassName="w-full border border-green p-3 h-10 rounded-lg flex justify-between items-center cursor-pointer"
                   contentClassName="w-full border border-green rounded-lg bg-white mt-2"
