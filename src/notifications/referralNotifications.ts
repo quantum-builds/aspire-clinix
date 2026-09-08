@@ -46,7 +46,7 @@ async function buildNotificationData(referralRequestId: string): Promise<Referra
       referringDentistEmail: referral.referralForm.referralEmail ?? undefined,
       treatmentDetails: referral.referralForm.treatmentDetails ?? undefined,
       hasAppointment: !!referral.appointmentId,
-      action: (referral.requestStatus === "ACCEPTED" || referral.requestStatus === "REJECTED")
+      action: (referral.requestStatus === "ACCEPTED" || referral.requestStatus === "REJECTED_BY_DENTIST" )
         ? referral.requestStatus
         : undefined,
       comments: referral.dentistComments ?? undefined,

@@ -193,18 +193,27 @@ export default async function ReferralRequest(props: {
         statusOptions={[
           {
             value: ReferralRequestStatus.PENDING_REVIEW,
+            label: ReferralRequestStatus.PENDING_REVIEW
           },
           {
             value: ReferralRequestStatus.ACCEPTED,
+            label: ReferralRequestStatus.ACCEPTED
           },
           {
-            value: ReferralRequestStatus.REJECTED,
+            value: ReferralRequestStatus.REJECTED_BY_DENTIST,
+            label: ReferralRequestStatus.REJECTED_BY_DENTIST
+          },
+          {
+            value: ReferralRequestStatus.REJECTED_BY_PATIENT,
+            label: ReferralRequestStatus.REJECTED_BY_PATIENT
           },
           {
             value: ReferralRequestStatus.ASSIGNED,
+            label: ReferralRequestStatus.ASSIGNED
           },
           {
             value: ReferralRequestStatus.UNASSIGNED,
+            label: ReferralRequestStatus.UNASSIGNED
           },
         ]}
       />

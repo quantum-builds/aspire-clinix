@@ -28,7 +28,8 @@ interface ReferralHistoryDataTableProps {
 const statusConfig: Record<string, { label: string; dot: string }> = {
   [ReferralRequestStatus.PENDING_REVIEW]: { label: "REVIEW PENDING", dot: "bg-blue-500" },
   [ReferralRequestStatus.ACCEPTED]: { label: "ACCEPTED", dot: "bg-emerald-400" },
-  [ReferralRequestStatus.REJECTED]: { label: "REJECTED", dot: "bg-red-500" },
+  [ReferralRequestStatus.REJECTED_BY_DENTIST]: { label: "REJECTED", dot: "bg-red-500" },
+   [ReferralRequestStatus.REJECTED_BY_PATIENT]: { label: "REJECTED", dot: "bg-red-500" },
   [ReferralRequestStatus.UNASSIGNED]: { label: "UNASSIGNED", dot: "bg-[#fcd833]" },
   [ReferralRequestStatus.ASSIGNED]: { label: "ASSIGNED", dot: "bg-green" },
 };

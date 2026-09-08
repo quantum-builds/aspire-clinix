@@ -37,9 +37,11 @@ export default async function ReferralHistory(props: {
         statusOptions={[
           {
             value: ReferralRequestStatus.ASSIGNED,
+            label: ReferralRequestStatus.ASSIGNED
           },
           {
             value: ReferralRequestStatus.UNASSIGNED,
+            label: ReferralRequestStatus.UNASSIGNED
           },
         ]}
       />

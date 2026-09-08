@@ -24,9 +24,11 @@ export default async function PracticePage(props: {
           statusOptions={[
             {
               value: PracticeApprovalStatus.PENDING,
+              label: PracticeApprovalStatus.PENDING
             },
             {
               value: PracticeApprovalStatus.CANCELLED,
+              label: PracticeApprovalStatus.CANCELLED
             },
           ]}
         />

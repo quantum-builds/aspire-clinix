@@ -8,7 +8,7 @@ export interface ReferralNotificationData {
   referringDentistEmail?: string;
   treatmentDetails?: string;
   hasAppointment: boolean;
-  action?: "ACCEPTED" | "REJECTED";
+  action?: "ACCEPTED" | "REJECTED_BY_DENTIST";
   comments?: string;
   proposedTreatmentDetails?: string;
   proposedConsultationTime?: string;
