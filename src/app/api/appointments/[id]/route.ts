@@ -273,18 +273,15 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // if (token.role === TokenRoles.REFERRING_DENTIST) {
-    //   return NextResponse.json(createResponse(false, "Forbidden", null), {
-    //     status: 403,
-    //   });
-    // }
-
     let patiendDentallyId = "";
     let dentistDentallyId = "";
+    let isAdmin = false;
     if (token && token.role === TokenRoles.PATIENT) {
       patiendDentallyId = token.sub || "";
     } else if (token && token.role === TokenRoles.DENTALLY_PRACTITIONER) {
       dentistDentallyId = token.sub || "";
+    } else if (token?.role === TokenRoles.ADMIN) {
+      isAdmin = true;
     }
 
     const appointmentId = req.nextUrl.pathname.split("/").pop();
@@ -312,7 +309,11 @@ export async function GET(req: NextRequest) {
 
     let appointmentOwner = null;
 
-    if (patiendDentallyId) {
+    if (isAdmin) {
+      // Admin (clinic) can view any appointment, so skip the ownership check.
+      // This guarantees appointments appear on the Admin Report page.
+      appointmentOwner = null;
+    } else if (patiendDentallyId) {
       appointmentOwner = await prisma.patient.findUnique({
         where: { dentallyId: Number(patiendDentallyId) },
         select: { id: true, appointmentIds: true },
@@ -334,7 +335,7 @@ export async function GET(req: NextRequest) {
       ? (appointmentOwner.appointmentIds as string[])
       : [];
 
-    const isExist = currentAppointmentIds.includes(appointmentId);
+    const isExist = isAdmin || currentAppointmentIds.includes(appointmentId);
 
     if (!isExist) {
       return NextResponse.json(
