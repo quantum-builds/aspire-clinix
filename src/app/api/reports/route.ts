@@ -150,11 +150,11 @@ export async function GET(req: NextRequest) {
     const baseWhere: Prisma.ReportWhereInput = {
       ...(search
         ? {
-          title: {
-            contains: search,
-            mode: "insensitive" as Prisma.QueryMode,
-          },
-        }
+            title: {
+              contains: search,
+              mode: "insensitive" as Prisma.QueryMode,
+            },
+          }
         : {}),
       ...(dentistId ? { dentistId } : {}),
       ...(patientDentallyId ? { patientDentallyId } : {}),
@@ -239,9 +239,9 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    if (
-      token.role !== TokenRoles.DENTALLY_PRACTITIONER
-    ) {
+    const isAdmin = token.role === TokenRoles.ADMIN;
+
+    if (!isAdmin && token.role !== TokenRoles.DENTALLY_PRACTITIONER) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
       });
@@ -273,7 +273,7 @@ export async function POST(req: NextRequest) {
 
     const appointmentId = Array.from(appointmentIdsSet)[0];
 
-    if (!dentistId) {
+    if (!isAdmin && !dentistId) {
       return NextResponse.json(
         createResponse(false, "Dentist id is required", null),
         { status: 400 },
@@ -302,15 +302,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    let dentist: { id: string } | null = null;
 
-    const dentist = await prisma.dentist.findFirst({
-      where: {
-        dentallyId: Number(dentistId),
-        appointmentIds: {
-          has: appointmentId,
+    if (isAdmin) {
+      // Admin creates the report on behalf of the treating dentist of the
+      // booked appointment, so link it to that dentist (not the admin).
+      dentist = await prisma.dentist.findFirst({
+        where: {
+          appointmentIds: { has: appointmentId },
         },
-      },
-    });
+        select: { id: true },
+      });
+    } else {
+      dentist = await prisma.dentist.findFirst({
+        where: {
+          dentallyId: Number(dentistId),
+          appointmentIds: {
+            has: appointmentId,
+          },
+        },
+      });
+    }
+
     console.log("appointment id ", appointmentId)
 
     if (!dentist) {
