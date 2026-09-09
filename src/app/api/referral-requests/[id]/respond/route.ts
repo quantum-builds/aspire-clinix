@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
     if (action === "ACCEPTED") {
       updateData.requestStatus = "ACCEPTED";
     } else if (action === "REJECTED") {
-      updateData.requestStatus = "REJECTED";
+      updateData.requestStatus = "REJECTED_BY_DENTIST";
     }
 
     const updated = await prisma.referralRequest.update({

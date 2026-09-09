@@ -28,9 +28,11 @@ export default async function PracticePage(props: {
           statusOptions={[
             {
               value: "True",
+              label: "True",
             },
             {
               value: "False",
+              label: "False",
             },
           ]}
           extraBtns={

@@ -11,25 +11,32 @@ import Image from "next/image";
 import { CalenderInputIconV2, DeleteIconV2 } from "@/assets";
 import { useRouter } from "next/navigation";
 import { TReferralRequest } from "@/types/referral-request";
-import { ReferralRequestStatus } from "@prisma/client";
+import { ReferralRequestStatus, CallStatus } from "@prisma/client";
 import { formatDate } from "@/utils/formatDateTime";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
+import UpdateCallStatusModal from "@/app/(dashboards)/components/UpdateCallStatusModal";
 import { useState } from "react";
 import { useDeleteReferralRequests } from "@/services/referralRequest/referralRequestMutation";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { showToast } from "@/utils/defaultToastOptions";
 import { TableActionMenu } from "@/app/(dashboards)/components/custom-components/TableActionMenu";
+import { formatStatus } from "@/utils/formateStatus";
 
 interface ClinicReferralDataTableProps {
   entries: TReferralRequest[];
 }
+
 
 export function ClinicReferralDataTable({
   entries,
 }: ClinicReferralDataTableProps) {
   const router = useRouter();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(
+    null,
+  );
+  const [selectedEntry, setSelectedEntry] = useState<TReferralRequest | null>(
     null,
   );
 
@@ -67,10 +74,22 @@ export function ClinicReferralDataTable({
         return "bg-green";
       case ReferralRequestStatus.PENDING_REVIEW:
         return "bg-blue-500";
+      case CallStatus.PENDING:
+        return "bg-blue-500";
       case ReferralRequestStatus.ACCEPTED:
         return "bg-emerald-400";
-      case ReferralRequestStatus.REJECTED:
+      case ReferralRequestStatus.REJECTED_BY_DENTIST:
         return "bg-red-500";
+      case CallStatus.REJECTED:
+        return "bg-red-500";
+      case ReferralRequestStatus.REJECTED_BY_PATIENT:
+        return "bg-red-500";
+      case CallStatus.CONFIRM:
+        return "bg-green";
+      case CallStatus.AWAITING:
+        return "bg-yellow-500";
+      case CallStatus.UNATTENDED:
+        return "bg-orange-500";
       default:
         return "bg-[#fcd833]";
     }
@@ -83,6 +102,13 @@ export function ClinicReferralDataTable({
         router.push(
           `/clinic/referrals/${entry.id}/${getStatusRoute(entry.requestStatus)}`,
         );
+      },
+    },
+    {
+      label: "Update",
+      onClick: () => {
+        setSelectedEntry(entry);
+        setIsUpdateModalOpen(true);
       },
     },
     {
@@ -113,6 +139,9 @@ export function ClinicReferralDataTable({
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Status
+            </TableHead>
+            <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
+              Call Status
             </TableHead>
             <TableHead className="px-6 py-4 bg-dashboardBarBackground text-xl text-dashboardTextBlack font-medium">
               Referral Date
@@ -161,8 +190,20 @@ export function ClinicReferralDataTable({
                   <div
                     className={`size-3 rounded-[4px] ${getStatusColor(entry.requestStatus)}`}
                   />
-                  {entry.requestStatus}
+                  {formatStatus(entry.requestStatus)}
                 </div>
+              </TableCell>
+              <TableCell className="px-6 py-4">
+                {entry.referralForm.callStatus ? (
+                  <div className="flex gap-2 items-center">
+                    <div
+                      className={`size-3 rounded-[4px] ${getStatusColor(entry.referralForm.callStatus)}`}
+                    />
+                    {formatStatus(entry.referralForm.callStatus)}
+                  </div>
+                ) : (
+                  <span className="text-gray-400 italic">—</span>
+                )}
               </TableCell>
               <TableCell className="px-6 py-4 flex gap-1 items-center">
                 <Image
@@ -190,6 +231,20 @@ export function ClinicReferralDataTable({
         description="Are you sure you want to delete this request? This action cannot be undone."
         cancelText="No"
         confirmText="Yes"
+      />
+
+      <UpdateCallStatusModal
+        isOpen={isUpdateModalOpen}
+        onClose={() => {
+          setIsUpdateModalOpen(false);
+          setSelectedEntry(null);
+        }}
+        referralId={selectedEntry?.referralFormId || ""}
+        currentCallStatus={selectedEntry?.referralForm.callStatus}
+        currentCallDate={selectedEntry?.referralForm.callDate}
+        onSuccess={() => {
+          router.refresh();
+        }}
       />
     </div>
   );

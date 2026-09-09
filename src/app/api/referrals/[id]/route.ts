@@ -5,6 +5,11 @@ import { getToken } from "next-auth/jwt";
 import { createResponse } from "@/utils/createResponse";
 import { TokenRoles } from "@/constants/UserRoles";
 import { getPatientById } from "@/dentallyHelpers/patient";
+import { CallStatus, ReferralRequestStatus } from "@prisma/client";
+
+function isCallStatus(value: string): value is CallStatus {
+  return (Object.values(CallStatus) as string[]).includes(value);
+}
 
 /**
  * @swagger
@@ -262,10 +267,11 @@ export async function PUT(req: NextRequest) {
   try {
     const updateReferralForm = await req.json();
 
-    if (typeof updateReferralForm.medicalHistoryPdfUrl === 'string') {
-      updateReferralForm.medicalHistoryPdfUrl = updateReferralForm.medicalHistoryPdfUrl
-        ? [updateReferralForm.medicalHistoryPdfUrl]
-        : [];
+    if (typeof updateReferralForm.medicalHistoryPdfUrl === "string") {
+      updateReferralForm.medicalHistoryPdfUrl =
+        updateReferralForm.medicalHistoryPdfUrl
+          ? [updateReferralForm.medicalHistoryPdfUrl]
+          : [];
     } else if (
       updateReferralForm.medicalHistoryPdfUrl !== undefined &&
       !Array.isArray(updateReferralForm.medicalHistoryPdfUrl)
@@ -326,6 +332,118 @@ export async function DELETE(req: NextRequest) {
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(createResponse(false, errorMessage, null), {
+      status: 500,
+    });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  const referralFormId = req.nextUrl.pathname.split("/").pop();
+
+  try {
+    // Authenticate user
+    const token = await getToken({ req });
+
+    if (!token) {
+      return NextResponse.json(createResponse(false, "Unauthorized", null), {
+        status: 401,
+      });
+    }
+
+    // Only allowed roles can update call status
+    if (
+      token.role === TokenRoles.PATIENT ||
+      token.role === TokenRoles.DENTALLY_PRACTITIONER ||
+      token.role === TokenRoles.REFERRING_DENTIST
+    ) {
+      return NextResponse.json(createResponse(false, "Forbidden", null), {
+        status: 403,
+      });
+    }
+
+    // Validate referral ID
+    if (!referralFormId || !isValidCuid(referralFormId)) {
+      return NextResponse.json(
+        createResponse(false, "Invalid Form Id.", null),
+        { status: 400 },
+      );
+    }
+
+    // Get request body
+    const payload = await req.json();
+
+    const { callStatus, callDate } = payload as {
+      callStatus?: string;
+      callDate?: string | null;
+    };
+
+    // Validate call status
+    if (!callStatus) {
+      return NextResponse.json(
+        createResponse(false, "Call Status is Required.", null),
+        { status: 400 },
+      );
+    }
+
+    const normalizedCallStatus = callStatus.trim().toUpperCase();
+
+    if (!isCallStatus(normalizedCallStatus)) {
+      return NextResponse.json(
+        createResponse(false, "Invalid Call Status.", null),
+        { status: 400 },
+      );
+    }
+
+    const referralForm = await prisma.referralForm.findUnique({
+      where: {
+        id: referralFormId,
+      },
+      include: {
+        referralRequest: true,
+      },
+    });
+
+    if (!referralForm) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "Referral form with this Id does not exists.",
+          null,
+        ),
+        { status: 404 },
+      );
+    }
+
+    const updatedReferral = await prisma.referralForm.update({
+      where: {
+        id: referralFormId,
+      },
+      data: {
+        callStatus: normalizedCallStatus,
+        callDate,
+        ...(normalizedCallStatus === CallStatus.REJECTED &&
+        referralForm.referralRequest
+          ? {
+              referralRequest: {
+                update: {
+                  requestStatus: ReferralRequestStatus.REJECTED_BY_PATIENT,
+                },
+              },
+            }
+          : {}),
+      },
+    });
+
+    return NextResponse.json(
+      createResponse(true, "Referral call status updated successfully.", {
+        referralForm: updatedReferral,
+      }),
+      { status: 200 },
+    );
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,
     });

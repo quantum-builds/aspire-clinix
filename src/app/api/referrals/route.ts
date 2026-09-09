@@ -9,6 +9,7 @@ import sendgrid from "@/config/sendgrid-config";
 import buildReferralHtml from "@/constants/referralEmailTemplates";
 import { getPractitioners } from "@/dentallyHelpers/practitioners";
 import { notifyReferralCreated } from "@/notifications/referralNotifications";
+import { CallStatus } from "@prisma/client";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -198,29 +199,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
-      let activePatients: any[] = [];
+    let activePatients: any[] = [];
 
-      try {
-        const response = await getPatient({
-          firstName: patientFirstName,
-          lastName: patientLastName,
-        });
+    try {
+      const response = await getPatient({
+        firstName: patientFirstName,
+        lastName: patientLastName,
+      });
 
-        if (response.isError) {
-          console.error(
-            "Dentally patient lookup failed:",
-            response.response.status,
-          );
-          isPatientRegistered = false;
-        } else {
-          activePatients = (response.response.patients ?? []).filter(
-            (patient: any) => patient.active && !patient.archivedReason,
-          );
-        }
-      } catch (error) {
-        console.error("Dentally patient lookup error:", error);
+      if (response.isError) {
+        console.error(
+          "Dentally patient lookup failed:",
+          response.response.status,
+        );
         isPatientRegistered = false;
+      } else {
+        activePatients = (response.response.patients ?? []).filter(
+          (patient: any) => patient.active && !patient.archivedReason,
+        );
       }
+    } catch (error) {
+      console.error("Dentally patient lookup error:", error);
+      isPatientRegistered = false;
+    }
 
     if (activePatients.length > 1) {
       const matchingPatients = activePatients.filter(
@@ -437,7 +438,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    if (typeof referralForm.medicalHistoryPdfUrl === 'string') {
+    if (typeof referralForm.medicalHistoryPdfUrl === "string") {
       referralForm.medicalHistoryPdfUrl = referralForm.medicalHistoryPdfUrl
         ? [referralForm.medicalHistoryPdfUrl]
         : [];
@@ -447,14 +448,19 @@ export async function POST(req: NextRequest) {
 
     const referral = await prisma.$transaction(async (tx) => {
       const newReferral = await tx.referralForm.create({
-        data: referralForm,
+        data: {
+          ...referralForm,
+          callStatus: CallStatus.PENDING,
+        },
       });
+
       await tx.referralRequest.create({
         data: {
           referralFormId: newReferral.id,
           requestStatus: ReferralRequestStatus.UNASSIGNED,
         },
       });
+
       return newReferral;
     });
 

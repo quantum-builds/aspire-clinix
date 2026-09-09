@@ -16,6 +16,7 @@ export async function getReferralRequests({
   before,
   after,
   status,
+  callStatus,
   pageType,
   statsOnly = false,
 }: {
@@ -25,6 +26,7 @@ export async function getReferralRequests({
   before?: string;
   after?: string;
   status?: string;
+  callStatus?: string;
   pageType?: string;
   statsOnly?: boolean;
 }) {
@@ -40,6 +42,7 @@ export async function getReferralRequests({
         after,
         status,
         pageType,
+        callStatus,
       ),
     );
     const responseData: Response<TReferralRequestResponse> = response.data;

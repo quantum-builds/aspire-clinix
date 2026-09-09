@@ -79,7 +79,8 @@ export type TReferralForm = TCreateReferralForm & {
   patientId?: string;
   referralDentist?: TDentist;
   patient?: Patient;
-  
+  callStatus?: string | null;
+  callDate?: Date | null;
 
   referralRequest?: TReferralRequest;
 };

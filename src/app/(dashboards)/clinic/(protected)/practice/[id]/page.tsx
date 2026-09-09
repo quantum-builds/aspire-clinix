@@ -16,7 +16,7 @@ export default async function PracticePage(props: { params: { id: string } }) {
           pageHeading="Practices"
           showSearch={false}
           showFilters={false}
-          statusOptions={[{ value: PracticeApprovalStatus.APPROVED }]}
+          statusOptions={[{ value: PracticeApprovalStatus.APPROVED , label : PracticeApprovalStatus.APPROVED} ]}
           showBackBtn={true}
           extraBtns={
             <CustomButton text="Practice Requests" href={`${id}/requests`} />

@@ -21,6 +21,7 @@ interface PageTopBarProps {
   showBackBtn?: boolean;
   showDateFilter?: boolean;
   statusOptions: TStatusOption[] | null;
+  callStatusOptions?: { value: string; label: string }[];
   lockAfterDate?: boolean;
   lockBeforeDate?: boolean;
   showDropdown?: boolean;
@@ -34,6 +35,7 @@ export default function PageTopBar({
   showExport = false,
   extraBtns,
   statusOptions,
+  callStatusOptions,
   showDateFilter = true,
   showBackBtn = false,
   lockAfterDate = false,
@@ -61,6 +63,7 @@ export default function PageTopBar({
           {showFilters && (
             <DateFilter
               statusOptions={statusOptions}
+              callStatusOptions={callStatusOptions}
               showDateFilter={showDateFilter}
               lockAfterDate={lockAfterDate}
               lockBeforeDate={lockBeforeDate}

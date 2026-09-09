@@ -35,24 +35,31 @@ export default async function UpcomingAppointments(props: {
         statusOptions={[
           {
             value: AppointmentState.PENDING,
+            label: AppointmentState.PENDING
           },
           {
             value: AppointmentState.CONFIRMED,
+            label:AppointmentState.CONFIRMED,
           },
           {
             value: AppointmentState.ARRIVED,
+            label:AppointmentState.ARRIVED,
           },
           {
             value: AppointmentState.INSURGERY,
+            label: AppointmentState.INSURGERY,
           },
           {
             value: AppointmentState.COMPLETED,
+            label: AppointmentState.COMPLETED,
           },
           {
             value: AppointmentState.CANCELLED,
+            label: AppointmentState.CANCELLED,
           },
           {
             value: AppointmentState.DIDNOTATTEND,
+            label: AppointmentState.DIDNOTATTEND,
           }
         ]}
       />
