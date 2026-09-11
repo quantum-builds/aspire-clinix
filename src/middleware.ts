@@ -35,25 +35,68 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request, secret });
   // ---- 1. If no token ----
   if (!token) {
-    if (pathname.startsWith("/patient") && !patientPublic.includes(pathname)) {
-      return NextResponse.redirect(new URL("/patient/login", request.url));
-    }
-    if (pathname.startsWith("/dentist") && !dentistPublic.includes(pathname)) {
-      return NextResponse.redirect(new URL("/dentist/login", request.url));
-    }
-    if (pathname.startsWith("/clinic") && !clinicPublic.includes(pathname)) {
-      return NextResponse.redirect(new URL("/clinic/login", request.url));
+    if (
+      pathname.startsWith("/patient") &&
+      !patientPublic.includes(pathname)
+    ) {
+      const loginUrl = new URL("/patient/login", request.url);
+
+      loginUrl.searchParams.set(
+        "redirectTo",
+        pathname,
+      );
+
+      return NextResponse.redirect(loginUrl);
     }
 
-    return NextResponse.next(); // public route, let them pass
+    if (
+      pathname.startsWith("/dentist") &&
+      !dentistPublic.includes(pathname)
+    ) {
+      const loginUrl = new URL("/dentist/login", request.url);
+
+      loginUrl.searchParams.set(
+        "redirectTo",
+        pathname,
+      );
+
+      return NextResponse.redirect(loginUrl);
+    }
+
+    if (
+      pathname.startsWith("/clinic") &&
+      !clinicPublic.includes(pathname)
+    ) {
+      const loginUrl = new URL("/clinic/login", request.url);
+
+      loginUrl.searchParams.set(
+        "redirectTo",
+        pathname,
+      );
+
+      return NextResponse.redirect(loginUrl);
+    }
+
+    return NextResponse.next();
   }
 
-  // ---- 2. If token exists ----
+  // =========================================================
+  // 2. USER IS LOGGED IN
+  // =========================================================
+
   const role = token.role as string;
-  // Redirect logged-in users away from login pages
-  if (patientPublic.includes(pathname) && role === "PATIENT") {
-    return NextResponse.redirect(new URL("/patient", request.url));
+
+  // Already logged-in patient should not see login/register/otp pages
+  if (
+    patientPublic.includes(pathname) &&
+    role === "PATIENT"
+  ) {
+    return NextResponse.redirect(
+      new URL("/patient", request.url),
+    );
   }
+
+  // Already logged-in dentist should not see login/register/otp pages
   if (
     dentistPublic.includes(pathname) &&
     (role === "DENTALLY_PRACTITIONER" ||
@@ -71,39 +114,65 @@ export async function middleware(request: NextRequest) {
     !patientPublic.includes(pathname) &&
     role !== "PATIENT"
   ) {
-    return NextResponse.redirect(new URL("/patient/login", request.url));
+    const loginUrl = new URL("/patient/login", request.url);
+
+    loginUrl.searchParams.set(
+      "redirectTo",
+      pathname,
+    );
+
+    return NextResponse.redirect(loginUrl);
   }
 
-  // Allow ADMINs to view dentist reports
-  if (pathname.startsWith("/dentist/appointments") && pathname.includes("/reports") && role === "ADMIN") {
-    return NextResponse.next();
-  }
-
+  // Dentist routes
   if (
     pathname.startsWith("/dentist") &&
     !dentistPublic.includes(pathname) &&
-    !(role === "DENTALLY_PRACTITIONER" ||
+    !(
+      role === "DENTALLY_PRACTITIONER" ||
       role === "REFERRING_DENTIST"
     )
   ) {
-    return NextResponse.redirect(new URL("/dentist/login", request.url));
+    const loginUrl = new URL("/dentist/login", request.url);
+
+    loginUrl.searchParams.set(
+      "redirectTo",
+      pathname,
+    );
+
+    return NextResponse.redirect(loginUrl);
   }
 
+  // Clinic/Admin routes
   if (
     pathname.startsWith("/clinic") &&
     !clinicPublic.includes(pathname) &&
     role !== "ADMIN"
   ) {
-    return NextResponse.redirect(new URL("/clinic/login", request.url));
+    const loginUrl = new URL("/clinic/login", request.url);
+
+    loginUrl.searchParams.set(
+      "redirectTo",
+      pathname,
+    );
+
+    return NextResponse.redirect(loginUrl);
   }
 
   // ---- 4. Dentist role-specific restrictions ----
 
   if (
     role === "REFERRING_DENTIST" &&
-    pathname.startsWith("/dentist/appointments/upcoming")
+    pathname.startsWith(
+      "/dentist/appointments/upcoming",
+    )
   ) {
-    return NextResponse.redirect(new URL("/dentist/referral-history", request.url));
+    return NextResponse.redirect(
+      new URL(
+        "/dentist/referral-history",
+        request.url,
+      ),
+    );
   }
 
   if (
@@ -111,12 +180,17 @@ export async function middleware(request: NextRequest) {
     (role === "DENTALLY_PRACTITIONER" ||
       role === "REFERRING_DENTIST")
   ) {
-    const allowedRoutes = dentistAllowedRoutes[role] || [];
+    const allowedRoutes =
+      dentistAllowedRoutes[role] || [];
 
-    const isAllowed = allowedRoutes.some((route) => pathname.startsWith(route));
-   
+    const isAllowed = allowedRoutes.some((route) =>
+      pathname.startsWith(route),
+    );
+
     if (!isAllowed) {
-      return NextResponse.redirect(new URL("/403", request.url));
+      return NextResponse.redirect(
+        new URL("/403", request.url),
+      );
     }
   }
 
@@ -124,5 +198,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|api/).*)",
+  ],
 };

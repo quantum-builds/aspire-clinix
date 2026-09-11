@@ -11,7 +11,7 @@ import { z } from "zod";
 import Link from "next/link";
 import { loginMutation } from "@/services/LoginMutation";
 import { showToast } from "@/utils/defaultToastOptions";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { TokenRoles } from "@/constants/UserRoles";
@@ -29,7 +29,10 @@ type FormData = z.infer<typeof adminSchema>;
 export default function AdminLoginForm() {
   const { mutate: adminLogin, isPending: adminLoginLoader } = loginMutation();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
+  const redirectTo = searchParams.get("redirectTo");
+  const destination = redirectTo?.startsWith("/") ? redirectTo : "/clinic";
 
   const {
     register,
@@ -60,13 +63,17 @@ export default function AdminLoginForm() {
               "Please verify your OTP to complete registration",
             );
 
-            router.replace(`/clinic/otp-verify?email=${result.email}`);
+            const otpParams = new URLSearchParams({ email: result.email });
+            if (redirectTo?.startsWith("/")) {
+              otpParams.set("redirectTo", redirectTo);
+            }
+            router.replace(`/clinic/otp-verify?${otpParams.toString()}`);
             return;
           }
 
           showToast("success", "Admin Logged in Successfully");
           reset();
-          router.replace("/clinic");
+          router.replace(destination);
         },
 
         onError: (error) => {

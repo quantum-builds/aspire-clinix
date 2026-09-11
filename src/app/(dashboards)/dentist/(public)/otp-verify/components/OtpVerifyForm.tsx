@@ -36,13 +36,17 @@ function LoadingFallback() {
   );
 }
 
-
 function OtpVerificationForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
+
   const email = searchParams.get("email") ?? "";
+  const redirectTo = searchParams.get("redirectTo");
+
+  
 
   const { mutate: verifyOtp, isPending: isVerifying } = loginMutation();
+    console.log("redirectTo in OtpVerifyForm:", redirectTo);
 
   const {
     register,
@@ -65,12 +69,17 @@ function OtpVerificationForm() {
       {
         email,
         otp: data.otp,
-        role:TokenRoles.REFERRING_DENTIST
+        role: TokenRoles.REFERRING_DENTIST,
       },
       {
         onSuccess: () => {
           showToast("success", "Dentist Logged in Successfully");
-          router.replace("/dentist");
+
+          if (redirectTo?.startsWith("/")) {
+            router.replace(redirectTo);
+          } else {
+            router.replace("/dentist");
+          }
         },
         onError: (error) => {
           const errorMessage = getAxiosErrorMessage(error);
@@ -91,6 +100,7 @@ function OtpVerificationForm() {
           <Label htmlFor="otp" className="text-lg font-medium">
             OTP<span className="text-red-500">*</span>
           </Label>
+
           <div className="relative">
             <Input
               id="otp"
@@ -98,14 +108,18 @@ function OtpVerificationForm() {
               {...register("otp")}
               className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
             />
+
             <Image
               src={TextIconV2}
               alt="icon"
               className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
             />
           </div>
+
           {errors.otp && (
-            <p className="text-sm text-red-500">{errors.otp.message}</p>
+            <p className="text-sm text-red-500">
+              {errors.otp.message}
+            </p>
           )}
         </div>
       </div>
@@ -119,6 +133,7 @@ function OtpVerificationForm() {
           loading={isVerifying}
           className="w-fit py-4 px-20"
         />
+
         <p className="text-sm text-muted-foreground mt-4">
           Didn&apos;t receive the code?{" "}
           <Link

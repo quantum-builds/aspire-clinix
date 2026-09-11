@@ -30,6 +30,9 @@ function LoginContent() {
   const email = searchParams.get("email") ?? "";
   const gdcNo = searchParams.get("gdc") ?? "";
 
+  const redirectTo = searchParams.get("redirectTo");
+  console.log("redirectTo in LoginForm:", redirectTo);
+
   const {
     register,
     handleSubmit,
@@ -52,7 +55,11 @@ function LoginContent() {
       {
         onSuccess: (resData) => {
           showToast("success", "OTP sent successfully to your email");
-          router.replace(`/dentist/otp-verify?email=${resData.email}`);
+          const otpParams = new URLSearchParams({ email: resData.email });
+          if (redirectTo?.startsWith("/")) {
+            otpParams.set("redirectTo", redirectTo);
+          }
+          router.replace(`/dentist/otp-verify?${otpParams.toString()}`);
         },
         onError: (error) => {
           const msg = getAxiosErrorMessage(error);

@@ -5,6 +5,7 @@ export interface ReportNotificationData {
   patientName?: string;
   referringDentistName?: string;
   reportListHtml: string;
+  reportLink: string;
 }
 
 export function reportCreatedAdminEmail(
@@ -33,6 +34,12 @@ export function reportCreatedAdminEmail(
       <div style="font-size:15px;line-height:1.6;">
         ${data.reportListHtml}
       </div>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <a href="${data.reportLink}" target="_blank" style="color:#2563eb; text-decoration:underline;">
+          View report
+        </a>
+      </p>
 
       <p style="font-size:15px;line-height:1.6;">
         Please ensure the report is reviewed and any necessary follow-up actions 
@@ -86,6 +93,12 @@ export function reportCreatedPatientEmail(
       </div>
 
       <p style="font-size:15px;line-height:1.6;">
+        <a href="${data.reportLink}" target="_blank" style="color:#2563eb; text-decoration:underline;">
+          View report
+        </a>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
         You can log in to the Aspire Clinic portal to view your report and access 
         any additional information provided by your dental care team.
       </p>
@@ -137,6 +150,12 @@ export function reportCreatedReferringDentistEmail(
       <div style="font-size:15px;line-height:1.6;">
         ${data.reportListHtml}
       </div>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <a href="${data.reportLink}" target="_blank" style="color:#2563eb; text-decoration:underline;">
+          View report
+        </a>
+      </p>
 
       <p style="font-size:15px;line-height:1.6;">
         You can log in to the Aspire Clinic portal to review the report and access 
