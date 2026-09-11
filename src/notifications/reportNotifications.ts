@@ -16,6 +16,7 @@ interface ReportInput {
 export async function notifyReportsCreated(
   reports: ReportInput[],
   dentistId: string,
+  appointmentId: string,
 ): Promise<void> {
   const hasRecipientType = reports.some((r) => r.recipientType);
   if (!hasRecipientType) return;
@@ -54,7 +55,7 @@ export async function notifyReportsCreated(
     if (needsReferringDentist && patient?.email) {
       const referralForm = await prisma.referralForm.findFirst({
         where: { patientEmail: patient.email },
-        select: { referralEmail: true, referralName: true },
+            select: { referralEmail: true, referralName: true },
         orderBy: { createdAt: "desc" },
       });
 
@@ -64,34 +65,62 @@ export async function notifyReportsCreated(
       }
     }
   }
+  console.log("REPORT NOTIFICATION DATA:", referringDentistEmail)
+
+  const rawBase =
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/";
+
+  const base = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
 
   const reportListHtml = reports
-    .map(
-      (r) =>
-        `<li style="margin-bottom:4px;"><strong>${r.title}</strong> (${r.fileType})</li>`,
-    )
+    .map((r) => {
+      return `
+      <li style="margin-bottom:4px;">
+        <strong>${r.title}</strong>
+        (${r.fileType})
+      </li>
+    `;
+    })
     .join("");
 
-  const data = { dentistName, patientName, referringDentistName, reportListHtml };
+  const baseData = {
+    dentistName,
+    patientName,
+    referringDentistName,
+    reportListHtml,
+  };
+
+  const adminData = {
+    ...baseData,
+    reportLink: `${base}/clinic/appointments/${appointmentId}/reports`,
+  };
+  const patientData = {
+    ...baseData,
+    reportLink: `${base}/patient/appointments/${appointmentId}/reports`,
+  };
+  const dentistData = {
+    ...baseData,
+    reportLink: `${base}/dentist/appointments/${appointmentId}/reports`,
+  };
 
   await Promise.allSettled([
     sendEmailToAdmins({
       subject: `New report created by ${dentistName}`,
-      html: reportCreatedAdminEmail(data),
+      html: reportCreatedAdminEmail(adminData),
     }),
     needsPatient &&
       patientEmail &&
       sendEmail({
         to: patientEmail,
         subject: "New report available",
-        html: reportCreatedPatientEmail(data),
+        html: reportCreatedPatientEmail(patientData),
       }),
     needsReferringDentist &&
       referringDentistEmail &&
       sendEmail({
         to: referringDentistEmail,
         subject: `New report for your referral patient ${patientName || ""}`,
-        html: reportCreatedReferringDentistEmail(data),
+        html: reportCreatedReferringDentistEmail(dentistData),
       }),
   ]);
 }

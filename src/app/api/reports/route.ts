@@ -251,7 +251,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const reports = Array.isArray(body) ? body : [body];
-    console.log("reports are ", reports)
+    console.log("reports are ", reports);
     // define a set for appointmentIds to check if the appointmentId in each report belongs to the dentist
     const appointmentIdsSet = new Set<string>();
     reports.forEach((report) => {
@@ -324,7 +324,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    console.log("appointment id ", appointmentId)
+    console.log("appointment id ", appointmentId);
 
     if (!dentist) {
       return NextResponse.json(
@@ -338,13 +338,15 @@ export async function POST(req: NextRequest) {
       dentistId: dentist.id,
     }));
 
-    console.log("report to create ", reportsToCreate)
+    console.log("report to create ", reportsToCreate);
 
-    await prisma.report.createMany({
+    const report = await prisma.report.createMany({
       data: reportsToCreate,
     });
 
-    notifyReportsCreated(reportsToCreate, dentist.id).catch(console.error);
+    notifyReportsCreated(reportsToCreate, dentist.id, appointmentId).catch(
+      console.error,
+    );
 
     return NextResponse.json(
       createResponse(true, "Reports created successfully.", null),

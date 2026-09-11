@@ -2,6 +2,7 @@ import Image from "next/image";
 import { AspireDarkLogo } from "@/assets";
 import AdminLoginForm from "./components/LoginForm";
 import BackButton from "@/app/(dashboards)/components/BackButton";
+import { Suspense } from "react";
 
 export default function LoginPage() {
   return (
@@ -32,7 +33,9 @@ export default function LoginPage() {
         </header>
 
         <section className="w-full max-w-lg ">
-          <AdminLoginForm />
+          <Suspense>
+            <AdminLoginForm />
+          </Suspense>
         </section>
       </div>
     </main>

@@ -41,6 +41,8 @@ function OtpVerificationForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const patientEmail = searchParams.get("email") ?? "";
+  const redirectTo = searchParams.get("redirectTo");
+  const destination = redirectTo?.startsWith("/") ? redirectTo : "/patient";
 
   const { mutate: verifyOtp, isPending: isVerifying } = loginMutation();
 
@@ -70,7 +72,7 @@ function OtpVerificationForm() {
       {
         onSuccess: () => {
           showToast("success", "Patient Logged in Successfully");
-          router.replace("/patient");
+          router.replace(destination);
         },
         onError: (error) => {
           const errorMessage = getAxiosErrorMessage(error);

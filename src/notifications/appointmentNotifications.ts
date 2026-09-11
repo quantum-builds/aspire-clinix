@@ -44,7 +44,7 @@ export async function notifyAppointmentStatus(
     if (needsReferringDentist && patient?.email) {
       const referralForm = await prisma.referralForm.findFirst({
         where: { patientEmail: patient.email },
-        select: { referralEmail: true, referralName: true },
+            select: { referralEmail: true, referralName: true },
         orderBy: { createdAt: "desc" },
       });
 
