@@ -11,14 +11,11 @@ import { Response } from "@/types/common";
 import { getReferralRequests } from "@/services/referralRequest/referralRequestQuery";
 import { ReferralRequestStatus } from "@prisma/client";
 
-
-
 export default async function StatsCardWrapper() {
-  const response: Response<TReferralRequestStasts> =
-    await getReferralRequests({
-      statsOnly: true
-    });
-
+  const response: Response<TReferralRequestStasts> = await getReferralRequests({
+    statsOnly: true,
+  });
+  console.log("Referral stats response:", response.data);
 
   const REFERRAL_CARDS: TReferraLRequestCards = {
     totalReferrals: {
@@ -32,7 +29,8 @@ export default async function StatsCardWrapper() {
       icon: AttendedReferrals,
       title: "Assigned Referrals",
       count: response?.data?.assignedReferrals?.count || 0,
-      percentageChange: response?.data?.assignedReferrals?.percentageChange || 0,
+      percentageChange:
+        response?.data?.assignedReferrals?.percentageChange || 0,
       link: "View assigned",
       statusParams: `${ReferralRequestStatus.ASSIGNED}`,
     },
@@ -40,7 +38,8 @@ export default async function StatsCardWrapper() {
       icon: UnattendedReferrals,
       title: "Unassigned Referrals",
       count: response?.data?.unassignedReferrals?.count || 0,
-      percentageChange: response?.data?.unassignedReferrals?.percentageChange || 0,
+      percentageChange:
+        response?.data?.unassignedReferrals?.percentageChange || 0,
       link: "View unassigned",
       statusParams: `${ReferralRequestStatus.UNASSIGNED}`,
     },
