@@ -513,8 +513,8 @@ export async function PATCH(req: NextRequest) {
 
     // --- BIND APPOINTMENT (existing flow) ---
     if (requestStatus === "ASSIGNED") {
-       notifyReferralAppointmentBound(referralRequestId).catch(console.error);
-       
+      notifyReferralAppointmentBound(referralRequestId).catch(console.error);
+
       if (!appointmentId) {
         return NextResponse.json(
           createResponse(
@@ -607,7 +607,8 @@ export async function DELETE(req: NextRequest) {
 
     if (
       token.role !== TokenRoles.ADMIN &&
-      token.role !== TokenRoles.REFERRING_DENTIST
+      token.role !== TokenRoles.REFERRING_DENTIST &&
+      token.role !== TokenRoles.DENTALLY_PRACTITIONER
     ) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
         status: 403,
@@ -643,6 +644,8 @@ export async function DELETE(req: NextRequest) {
 
     if (
       token.role !== TokenRoles.ADMIN &&
+      token.role !== TokenRoles.REFERRING_DENTIST &&
+      token.role !== TokenRoles.DENTALLY_PRACTITIONER &&
       referralRequest.referralForm.referralDentistId != token.sub
     ) {
       return NextResponse.json(createResponse(false, "Forbidden", null), {
