@@ -293,12 +293,14 @@ export async function GET(req: NextRequest) {
       );
     }
     const response = await getAppointment(appointmentId);
+    console.log("Response from getAppointment:", response);
 
     if (response.isError) {
       return response.response;
     }
 
     const appointment = (response.response.appointment ?? null) as Appointment;
+    console.log("Fetched appointment:", appointment);
 
     if (!appointment) {
       return NextResponse.json(
@@ -353,6 +355,10 @@ export async function GET(req: NextRequest) {
       recipientWhere.recipientType = "REFERRING_DENTIST";
     }
 
+    console.log("Appointment ID:", appointmentId);
+    console.log("Appointment:", appointment);
+    console.log("Patient ID:", appointment.patientId);
+
     const [patient, videos, pdfs] = await Promise.all([
       await prisma.patient.findUnique({
         where: { dentallyId: appointment.patientId },
@@ -401,9 +407,9 @@ export async function GET(req: NextRequest) {
             uuid: patientData.uuid,
             dentallyId: Number(patientData.id),
             name,
-            email: patientData.emailAddress,
-            mobileNumber: patientData.mobilePhone,
-            dateOfBirth: patientData.dateOfBirth,
+            email: patientData.emailAddress ?? "",
+            mobileNumber: patientData.mobilePhone ?? "",
+            dateOfBirth: patientData.dateOfBirth ?? "",
           },
         });
       } else {
