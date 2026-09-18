@@ -190,7 +190,7 @@ export default function AppointmentCard({
           </div>
         </div>
       </div>
-      <ConfirmationModal
+      {/* <ConfirmationModal
         icon={CancelIcon}
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
@@ -202,7 +202,7 @@ export default function AppointmentCard({
         description="Are you sure you want to cancel this appointment? This action cannot be undone."
         cancelText="No"
         confirmText="Yes"
-      />
+      /> */}
       <ConfirmationModal
         isOpen={isConfirmModalOpen}
         onClose={() => setIsCOnfirmModelOpen(false)}

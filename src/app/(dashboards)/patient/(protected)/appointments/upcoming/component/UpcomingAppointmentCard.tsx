@@ -132,13 +132,13 @@ export default function UpcomingAppointmentCard({
             href={`/patient/appointments/${appointment.id}/reports`}
           />
 
-          {appointment.state !== AppointmentState.CANCELLED && (
+          {/* {appointment.state !== AppointmentState.CANCELLED && (
             <CustomButton
               style="white"
               handleOnClick={() => setIsCancelModalOpen(true)}
               text="Cancel Appointment"
             />
-          )}
+          )} */}
         </div>
       </div>
       <ConfirmationModal

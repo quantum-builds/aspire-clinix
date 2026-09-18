@@ -143,13 +143,13 @@ export default function UpcomingAppointmentCard({
               text="Confirm Appointment"
             />
           )}
-          {appointment.state !== AppointmentState.CANCELLED && (
+          {/* {appointment.state !== AppointmentState.CANCELLED && (
             <CustomButton
               style="white"
               handleOnClick={() => setIsCancelModalOpen(true)}
               text="Cancel Appointment"
             />
-          )}
+          )} */}
         </div>
       </div>
       <ConfirmationModal
