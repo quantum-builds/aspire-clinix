@@ -62,6 +62,12 @@ export default async function UpcomingAppointments(props: {
             label: AppointmentState.DIDNOTATTEND
           }
         ]}
+        preBtns={
+          <CustomButton
+            text="Book Appointment"
+            href="/patient/plan-selection"
+          />
+        }
         extraBtns={
           <CustomButton
             text="Pre-book consultation"
