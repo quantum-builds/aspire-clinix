@@ -86,6 +86,24 @@ export async function middleware(request: NextRequest) {
 
   const role = token.role as string;
 
+  // ---- Patient-only routes (explicit guard) ----
+  const patientOnlyRoutes = ["/patient/plan-selection"];
+  if (
+    patientOnlyRoutes.some((route) => pathname.startsWith(route)) &&
+    role !== "PATIENT"
+  ) {
+    if (role === "ADMIN") {
+      return NextResponse.redirect(new URL("/clinic", request.url));
+    }
+    if (
+      role === "DENTALLY_PRACTITIONER" ||
+      role === "REFERRING_DENTIST"
+    ) {
+      return NextResponse.redirect(new URL("/dentist", request.url));
+    }
+    return NextResponse.redirect(new URL("/403", request.url));
+  }
+
   // Already logged-in patient should not see login/register/otp pages
   if (
     patientPublic.includes(pathname) &&
