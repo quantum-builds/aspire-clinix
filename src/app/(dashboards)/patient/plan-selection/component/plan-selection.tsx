@@ -14,6 +14,7 @@ const PLAN_OPTIONS: { title: string; description: string; href?: string }[] = [
   {
     title: "No Current Plan",
     description: "Book a wellness appointment without purchasing a plan.",
+    href: "/patient/plan-selection/wellness-treatments",
   },
 ];
 
