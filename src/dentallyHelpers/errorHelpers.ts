@@ -60,11 +60,22 @@ export function dentallyErrorHelper(
       };
     }
 
+    if (error.type === "invalid_request_error") {
+      const errorMessage = error.message || "Invalid request";
+      return {
+        isError: true,
+        response: NextResponse.json(
+          createResponse(false, errorMessage, null),
+          { status: 400 },
+        ),
+      };
+    }
+
     return {
       isError: true,
       response: NextResponse.json(
         createResponse(false, "Resource not found", null),
-        { status: 404 }
+        { status: 404 },
       ),
     };
   }

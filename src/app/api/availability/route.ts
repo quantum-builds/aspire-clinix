@@ -3,6 +3,9 @@ import { TAvailabilitySlot } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import axios from "axios";
+
+const MIN_AVAILABILITY_RANGE_MS = 24 * 60 * 60 * 1000;
 
 type DentallyAvailabilityEntry = {
   startTime?: string | null;
@@ -10,6 +13,27 @@ type DentallyAvailabilityEntry = {
   availableDuration?: number | null;
   practitionerId?: number | null;
 };
+
+type DentallyErrorResponse = {
+  error?: {
+    message?: string;
+  };
+};
+
+function getErrorMessage(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    const responseData = error.response?.data as
+      | DentallyErrorResponse
+      | undefined;
+    const upstreamMessage = responseData?.error?.message;
+
+    if (upstreamMessage) {
+      return upstreamMessage;
+    }
+  }
+
+  return error instanceof Error ? error.message : String(error);
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -46,16 +70,54 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const startDate = new Date(startTime);
+    const finishDate = new Date(finishTime);
+
+    if (
+      Number.isNaN(startDate.getTime()) ||
+      Number.isNaN(finishDate.getTime())
+    ) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "startTime and finishTime must be valid dates.",
+          null,
+        ),
+        { status: 400 },
+      );
+    }
+
+    if (
+      finishDate.getTime() - startDate.getTime() <
+      MIN_AVAILABILITY_RANGE_MS
+    ) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "finishTime must be at least 24 hours after startTime.",
+          null,
+        ),
+        { status: 400 },
+      );
+    }
+
+    // Clamp startTime to now if it's in the past
+    const now = new Date();
+    const effectiveStartDate =
+      startDate.getTime() <= now.getTime() ? now : startDate;
+    const effectiveStartTime = effectiveStartDate.toISOString();
+
     const duration = durationRaw ? Number(durationRaw) : null;
+    const effectiveDuration =
+      duration !== null && Number.isInteger(duration) && duration > 0
+        ? duration
+        : null;
 
     const availabilityResponse = await getAvailability({
       practitionerId,
-      startTime,
+      startTime: effectiveStartTime,
       finishTime,
-      duration:
-        duration !== null && Number.isInteger(duration) && duration > 0
-          ? duration
-          : null,
+      duration: effectiveDuration,
     });
 
     if (availabilityResponse.isError) {
@@ -79,9 +141,12 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(createResponse(false, errorMessage, null), {
-      status: 500,
-    });
+    const status =
+      axios.isAxiosError(error) && error.response ? error.response.status : 500;
+
+    return NextResponse.json(
+      createResponse(false, getErrorMessage(error), null),
+      { status },
+    );
   }
 }
