@@ -1,5 +1,8 @@
+"use client";
+
 import Button from "@/app/(dashboards)/components/Button";
 import { TPractitioner } from "@/types/common";
+import { useSearchParams } from "next/navigation";
 
 interface PractitionerCardProps {
   practitioner: TPractitioner;
@@ -12,13 +15,16 @@ export default function PractitionerCard({
   treatmentId,
   duration,
 }: PractitionerCardProps) {
+  const searchParams = useSearchParams();
+  const type = searchParams.get("type");
+
   const name = `${practitioner.firstName} ${practitioner.lastName}`.trim();
 
   const selectSlotHref = `/patient/plan-selection/slot-selection?practitionerId=${
     practitioner.id
   }${treatmentId ? `&treatmentId=${encodeURIComponent(treatmentId)}` : ""}${
     duration ? `&duration=${encodeURIComponent(duration)}` : ""
-  }`;
+  }${type ? `&type=${type}` : ""}`;
 
   return (
     <div className="flex flex-col rounded-2xl border px-5 py-6 text-left bg-dashboardBarBackground border-green transition hover:border-green-600">

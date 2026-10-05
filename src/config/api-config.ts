@@ -223,6 +223,21 @@ export const ENDPOINTS = {
 
   stripe: {
     buyProducts: "/api/stripe/product/checkout",
+    status: "/api/stripe/status",
+  },
+
+  membership: {
+    checkout: "/api/stripe/membership/checkout",
+    upgrade: "/api/stripe/membership/upgrade",
+    cancelUpgrade: "/api/stripe/membership/cancel-upgrade",
+    cancel: "/api/stripe/membership/cancel",
+    reactivate: "/api/stripe/membership/reactivate",
+    current: "/api/stripe/membership/current",
+    bookAppointment: "/api/membership/book-appointment",
+  },
+
+  checkout: {
+    createSession: "/api/checkout",
   },
 
   appointemtRequest: {

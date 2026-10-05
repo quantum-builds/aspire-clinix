@@ -3,6 +3,7 @@ import "./globals.css";
 import localFont from "next/font/local";
 import { TanStackProvider } from "@/providers/TanStackProvider";
 import ToastProvider from "@/providers/ToastProvider";
+import SessionProvider from "@/providers/SessionProvider";
 
 
 const gillSans = localFont({
@@ -31,7 +32,9 @@ export default function RootLayout({
       <body className={`text-[#382F26] ${opus.variable}  ${gillSans.variable}`}>
      
           <TanStackProvider>
-            <ToastProvider>{children}</ToastProvider>
+            <SessionProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </SessionProvider>
           </TanStackProvider>
         
       </body>

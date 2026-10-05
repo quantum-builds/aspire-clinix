@@ -7,12 +7,12 @@ export const TIMEZONE = "Europe/London";
 export const DAY_FMT = "yyyy-MM-dd";
 
 export type StoredSlot = {
-  date: string;
+ 
   startTime: string;
   finishTime: string;
   practitionerId: string;
   treatmentId?: string;
-  duration?: number | null;
+
 };
 
 export type SlotChip = {

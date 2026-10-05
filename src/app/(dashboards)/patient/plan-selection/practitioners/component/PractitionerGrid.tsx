@@ -14,6 +14,38 @@ interface PractitionerGridWrapperProps {
   duration?: string;
 }
 
+const TREATMENT_PRACTITIONER_NAMES: Record<number, string> = {
+  1367621: "cryo chamber",
+  1367845: "contrast therapy",
+  1367626: "ice bath",
+  1367623: "hyperbaric chamber",
+  1367624: "red light",
+  1367622: "infrared",
+};
+
+function getPractitionerForTreatment(
+  practitioners: TPractitioner[],
+  treatmentId?: string,
+) {
+  if (!treatmentId) {
+    return practitioners;
+  }
+
+  const practitionerName = TREATMENT_PRACTITIONER_NAMES[Number(treatmentId)];
+
+  if (!practitionerName) {
+    return practitioners;
+  }
+
+  const matchingPractitioner = practitioners.find((practitioner) =>
+    `${practitioner.firstName} ${practitioner.lastName}`
+      .toLowerCase()
+      .includes(practitionerName),
+  );
+
+  return matchingPractitioner ? [matchingPractitioner] : [];
+}
+
 export default async function PractitionerGridWrapper({
   treatmentId,
   duration,
@@ -28,7 +60,13 @@ export default async function PractitionerGridWrapper({
     return <NoContent1 text={text} />;
   }
 
-  const practitioners = response.data;
+  const practitioners = getPractitionerForTreatment(response.data, treatmentId);
+
+  if (practitioners.length === 0) {
+    return (
+      <NoContent1 text="No practitioner is available for this treatment." />
+    );
+  }
 
   return (
     <>

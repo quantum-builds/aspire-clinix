@@ -177,12 +177,7 @@ const handleItemPaymentSuccess = async (
       }
     });
 
-    console.log("Payment success stored:", {
-      email,
-      amount: eventObject.amount_total,
-      paymentId: eventObject.id,
-      products: products,
-    });
+  
   } catch (error) {
     console.error("Error in handleItemPaymentSuccess:", error);
   }
@@ -234,11 +229,6 @@ const handleItemPaymentFailure = async (eventObject: Stripe.PaymentIntent) => {
       });
     });
 
-    console.log("Payment failure stored:", {
-      email,
-      amount: eventObject.amount / 100,
-      paymentId: eventObject.id,
-    });
   } catch (error) {
     console.error("Error in handlePaymentFailure:", error);
   }

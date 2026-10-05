@@ -1,15 +1,20 @@
 import { axiosDentallyInstance, DENTALLY_ENDPOINTS } from "@/config/api-config";
 import { DATA_TYPE, dentallyErrorHelper } from "./errorHelpers";
-import { DentallyFee, getFeesByTreatment, pickValidDurationOne, pickValidPriceOne } from "./fee";
+import {
+  DentallyFee,
+  getFeesByTreatment,
+  pickValidDurationOne,
+  pickValidPriceOne,
+} from "./fee";
 
-const REQUIRED_WELLNESS_TREATMENTS = new Set([
-  "compression therapy",
-  "cryotherapy",
-  "contrast session (cryo + sauna)",
-  "hyperbaric oxygen chamber",
-  "ice bath",
-  "red light therapy",
-  "infrared sauna",
+const REQUIRED_WELLNESS_TREATMENTS = new Map<number, string>([
+  // [1367625, "Compression Therapy"],
+  [1367621, "Cryotherapy"],
+  [1367845, "Contrast Session (Cryo + Sauna)"],
+  [1367626, "Ice Bath"],
+  [1367623, "Hyperbaric Oxygen Chamber"],
+  [1367624, "Red Light Therapy"],
+  [1367622, "Infrared Sauna"],
 ]);
 
 const TREATMENTS_PER_PAGE = 100;
@@ -18,10 +23,10 @@ type DentallyTreatment = {
   id: number;
   nomenclature?: string | null;
   patientNomenclature?: string | null;
+  notes?: string | null;
   description?: string | null;
   code?: string | null;
 };
-
 
 export async function getWellnessTreatments() {
   const siteId = process.env.DENTALLY_SITE_ID;
@@ -30,8 +35,14 @@ export async function getWellnessTreatments() {
     throw new Error("DENTALLY_SITE_ID is not defined in environment variables");
   }
 
-  const matched: { id: number; name: string; description?: string | null; code?: string }[] = [];
-  const matchedNames = new Set<string>();
+  const matched: {
+    id: number;
+    name: string;
+    description?: string | null;
+    code?: string;
+  }[] = [];
+
+  const matchedIds = new Set<number>();
 
   let page = 1;
   let totalPages = 1;
@@ -54,31 +65,31 @@ export async function getWellnessTreatments() {
       []) as DentallyTreatment[];
 
     for (const treatment of treatments) {
-      const name = (
-        treatment.patientNomenclature || treatment.nomenclature || ""
-      ).trim();
-
       if (
-        !name ||
-        matchedNames.has(name) ||
-        !REQUIRED_WELLNESS_TREATMENTS.has(name.toLowerCase())
+        matchedIds.has(treatment.id) ||
+        !REQUIRED_WELLNESS_TREATMENTS.has(treatment.id)
       ) {
         continue;
       }
 
-      matchedNames.add(name);
+      const configuredName = REQUIRED_WELLNESS_TREATMENTS.get(treatment.id)!;
+
+      matchedIds.add(treatment.id);
+
       matched.push({
         id: treatment.id,
-        name,
-        description: treatment.description || null,
+        name: configuredName,
+        description: treatment.notes ?? treatment.description ?? null,
         code: treatment.code || undefined,
       });
     }
-    if (matchedNames.size >= REQUIRED_WELLNESS_TREATMENTS.size) {
+
+    if (matchedIds.size >= REQUIRED_WELLNESS_TREATMENTS.size) {
       break;
     }
 
     const meta = treatmentsResponse.response.meta;
+
     totalPages = meta?.totalPages ?? page;
     page += 1;
   } while (page <= totalPages);
@@ -89,17 +100,28 @@ export async function getWellnessTreatments() {
         const feeResult = await getFeesByTreatment(treatment.id);
 
         if (feeResult.isError) {
-          return { ...treatment, price: null };
+          return {
+            ...treatment,
+            price: null,
+            duration: null,
+          };
         }
 
         const fees = (feeResult.response.fees || []) as DentallyFee[];
+
         return {
           ...treatment,
           price: pickValidPriceOne(fees),
           duration: pickValidDurationOne(fees),
         };
-      } catch {
-        return { ...treatment, price: null };
+      } catch (error) {
+        console.error(`Failed to get fee for treatment ${treatment.id}`, error);
+
+        return {
+          ...treatment,
+          price: null,
+          duration: null,
+        };
       }
     }),
   );
