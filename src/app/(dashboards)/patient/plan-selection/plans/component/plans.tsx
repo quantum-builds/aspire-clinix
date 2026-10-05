@@ -89,7 +89,7 @@ export default function PlansPage() {
     setLoadingPlanId(planId);
 
     upgradePlan(
-      { newPlanId: planId },
+      { planId },
       {
         onSuccess: (data) => {
           if (data.status) {

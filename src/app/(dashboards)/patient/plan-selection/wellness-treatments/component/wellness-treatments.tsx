@@ -4,6 +4,14 @@ import MembershipCard from "./MembershipCard";
 import TreatmentGridWrapper from "./TreatmentGrid";
 import { TreatmentGridSkeleton } from "./skeletons/TreatmentGridSkeleton";
 
+function MembershipCardWrapper() {
+  return (
+    <Suspense fallback={null}>
+      <MembershipCard />
+    </Suspense>
+  );
+}
+
 export default function WellnessTreatmentsPage() {
   return (
     <main className="min-h-screen  px-4 py-2 sm:px-6 lg:px-8">
@@ -19,7 +27,7 @@ export default function WellnessTreatmentsPage() {
             </p>
           </div>
 
-          <MembershipCard />
+          <MembershipCardWrapper />
 
           <div className="mx-auto mt-10 max-w-[650px]">
             <Suspense fallback={<TreatmentGridSkeleton />}>
