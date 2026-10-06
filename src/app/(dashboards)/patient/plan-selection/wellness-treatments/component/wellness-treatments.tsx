@@ -14,22 +14,33 @@ function MembershipCardWrapper() {
 
 export default function WellnessTreatmentsPage() {
   return (
-    <main className="min-h-screen  px-4 py-2 sm:px-6 lg:px-8">
-      <BackButton />
-      <div className="mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-4xl items-center justify-center">
-        <section className="w-full rounded-2xl bg-dashboardBarBackground px-6 py-10 text-center shadow-sm sm:px-10 md:py-14">
-          <div className="mx-auto max-w-2xl">
-            <h1 className="font-opus text-3xl font-medium text-dashboardTextBlack sm:text-4xl">
+    <main className="relative min-h-screen overflow-hidden  px-4 py-20 sm:px-6 lg:px-8">
+      {/* soft warm glow behind heading */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-[-250px] top-0 h-[700px] w-[1100px] bg-[radial-gradient(ellipse_at_center,rgba(214,188,160,0.18)_0%,rgba(255,255,255,0)_65%)]"
+      />
+
+      <div className="relative mx-auto w-full max-w-[1000px]">
+        <div className="text-center">
+          <BackButton />
+        </div>
+
+        <section className="w-full px-0 pb-16 pt-10 text-center">
+          <div className="mx-auto max-w-3xl">
+            <h1 className="font-[family-name:var(--font-cormorant)] text-[40px] font-normal leading-[44px] tracking-[-1px] text-[var(--wt-heading)] sm:text-[66px] sm:leading-[66px] sm:tracking-[-1.65px]">
               Wellness Treatments
             </h1>
-            <p className="mx-auto mt-4 max-w-xl font-gillSans text-lg text-lightBlack sm:text-xl">
-              Book a wellness treatment without a membership plan.
+            <p className="mx-auto mt-10 max-w-3xl font-gillSans text-lg leading-8 text-[var(--wt-desc)] sm:text-xl">
+              Book a wellness treatment without a membership plan. Individual,
+              non-invasive therapeutic sessions engineered for cellular reset
+              and vitality.
             </p>
           </div>
 
           <MembershipCardWrapper />
 
-          <div className="mx-auto mt-10 max-w-[650px]">
+          <div className="mx-auto mt-10 w-full">
             <Suspense fallback={<TreatmentGridSkeleton />}>
               <TreatmentGridWrapper />
             </Suspense>

@@ -9,9 +9,15 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
 
   return (
-    <PractitionersPage
-      treatmentId={searchParams?.treatmentId}
-      duration={searchParams?.duration}
-    />
+    <div className="relative h-full">
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10 bg-[#0B0A08]"
+      />
+      <PractitionersPage
+        treatmentId={searchParams?.treatmentId}
+        duration={searchParams?.duration}
+      />
+    </div>
   );
 }

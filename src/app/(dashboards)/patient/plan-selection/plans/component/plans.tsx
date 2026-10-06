@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import BackButton from "@/app/(dashboards)/components/BackButton";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import {
@@ -48,6 +48,7 @@ const MEMBERSHIP_PLANS = [
 ];
 
 export default function PlansPage() {
+  const queryClient = useQueryClient();
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
 
   const { data: membershipData, isLoading } = useQuery({
@@ -93,7 +94,7 @@ export default function PlansPage() {
       {
         onSuccess: (data) => {
           if (data.status) {
-            window.location.reload();
+            queryClient.invalidateQueries({ queryKey: ["currentMembership"] });
           }
           setLoadingPlanId(null);
         },
@@ -110,7 +111,7 @@ export default function PlansPage() {
 
     cancelUpgrade(undefined, {
       onSuccess: () => {
-        window.location.reload();
+        queryClient.invalidateQueries({ queryKey: ["currentMembership"] });
         setLoadingPlanId(null);
       },
       onError: (error) => {
@@ -126,7 +127,7 @@ export default function PlansPage() {
     cancelMembership(undefined, {
       onSuccess: () => {
         showToast("success", "Plan will be cancelled on the next billing date.");
-        window.location.reload();
+        queryClient.invalidateQueries({ queryKey: ["currentMembership"] });
         setLoadingPlanId(null);
       },
       onError: (error) => {
@@ -142,7 +143,7 @@ export default function PlansPage() {
     reactivateMembership(undefined, {
       onSuccess: () => {
         showToast("success", "Membership reactivated successfully.");
-        window.location.reload();
+        queryClient.invalidateQueries({ queryKey: ["currentMembership"] });
         setLoadingPlanId(null);
       },
       onError: (error) => {

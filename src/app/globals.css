@@ -113,6 +113,14 @@ html {
     --light-black: #7e7e7e;
     --gray: #f3f5f7;
     --light-gray: #d0d0d0;
+    --wt-bg: #ffffff;
+    --wt-card: #0b0a08;
+    --wt-heading: #f8f5ee;
+    --wt-amount: #d6bca0;
+    --wt-name: #faf7f2;
+    --wt-desc: #a8a196;
+    --wt-btn: #a49d92;
+    --wt-page-bg: #f5f0ea;
   }
   .dark {
     --background: 240 10% 3.9%;

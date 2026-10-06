@@ -10,10 +10,12 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
 
   return (
-    <SlotSelectionShell
-      practitionerId={searchParams?.practitionerId}
-      treatmentId={searchParams?.treatmentId}
-      duration={searchParams?.duration}
-    />
+    <div className="min-h-screen bg-[#0B0A08]">
+      <SlotSelectionShell
+        practitionerId={searchParams?.practitionerId}
+        treatmentId={searchParams?.treatmentId}
+        duration={searchParams?.duration}
+      />
+    </div>
   );
 }

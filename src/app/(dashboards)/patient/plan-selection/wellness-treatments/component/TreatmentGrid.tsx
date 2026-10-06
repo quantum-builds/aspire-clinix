@@ -29,7 +29,7 @@ export default async function TreatmentGridWrapper() {
 
 export function TreatmentGrid({ treatments }: TreatmentGridProps) {
   return (
-    <div className="grid gap-5 text-left">
+    <div className="grid gap-6 text-left">
       {treatments.map((treatment) => (
         <TreatmentCard key={treatment.id} treatment={treatment} />
       ))}

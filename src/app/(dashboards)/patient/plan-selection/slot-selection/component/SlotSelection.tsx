@@ -59,9 +59,7 @@ export default function SlotSelection({
   const appointmentDuration = useMemo(() => {
     const parsed = Number(duration);
 
-    return duration && Number.isInteger(parsed) && parsed > 0
-      ? parsed
-      : null;
+    return duration && Number.isInteger(parsed) && parsed > 0 ? parsed : null;
   }, [duration]);
 
   useEffect(() => {
@@ -87,14 +85,9 @@ export default function SlotSelection({
 
   const todayKey = todayKeyLondon();
 
-  const selectedKey = selectedDay
-    ? format(selectedDay, DAY_FMT)
-    : todayKey;
+  const selectedKey = selectedDay ? format(selectedDay, DAY_FMT) : todayKey;
 
-  const range = useMemo(
-    () => buildRange(selectedKey),
-    [selectedKey],
-  );
+  const range = useMemo(() => buildRange(selectedKey), [selectedKey]);
 
   const { data, isLoading } = useGetAvailability({
     practitionerId,
@@ -109,14 +102,11 @@ export default function SlotSelection({
     error,
   } = useCreateCheckoutSession();
 
-  const {
-    mutate: bookMembershipAppointment,
-    isPending: isBookingMembership,
-  } = useBookMembershipAppointment();
+  const { mutate: bookMembershipAppointment, isPending: isBookingMembership } =
+    useBookMembershipAppointment();
 
   const handleSelect = (dayKey: string, chip: SlotChip) => {
-    const patientId =
-      (session?.user as { id?: string })?.id ?? "";
+    const patientId = (session?.user as { id?: string })?.id ?? "";
 
     console.log("Slot clicked:", {
       dayKey,
@@ -138,10 +128,7 @@ export default function SlotSelection({
     };
 
     try {
-      window.sessionStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(storedSlot),
-      );
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(storedSlot));
 
       setStored(storedSlot);
     } catch (error) {
@@ -176,17 +163,13 @@ export default function SlotSelection({
 
           console.error("Checkout URL not returned:", data);
 
-          alert(
-            "Unable to start checkout. Please try again.",
-          );
+          alert("Unable to start checkout. Please try again.");
         },
 
         onError: (error) => {
           console.error("Checkout failed:", error);
 
-          alert(
-            "Failed to start checkout. Please try again.",
-          );
+          alert("Failed to start checkout. Please try again.");
         },
       },
     );
@@ -195,8 +178,7 @@ export default function SlotSelection({
   const handleConfirmMembershipBooking = () => {
     if (!pendingSlot) return;
 
-    const patientId =
-      (session?.user as { id?: string })?.id ?? "";
+    const patientId = (session?.user as { id?: string })?.id ?? "";
 
     bookMembershipAppointment(
       {
@@ -238,10 +220,7 @@ export default function SlotSelection({
     );
   }
 
-  const slots =
-    data && data.status
-      ? (data.data ?? [])
-      : [];
+  const slots = data && data.status ? (data.data ?? []) : [];
 
   const allDayKeys: string[] = [];
 
@@ -256,14 +235,11 @@ export default function SlotSelection({
   const grouped = groupByDate(slots);
 
   const rows = allDayKeys.map((dayKey) => {
-    const daySlots =
-      grouped.find(([key]) => key === dayKey)?.[1] ?? [];
+    const daySlots = grouped.find(([key]) => key === dayKey)?.[1] ?? [];
 
     return {
       dayKey,
-      chips: daySlots.flatMap((slot) =>
-        buildChips(slot, appointmentDuration),
-      ),
+      chips: daySlots.flatMap((slot) => buildChips(slot, appointmentDuration)),
     };
   });
 
@@ -274,51 +250,39 @@ export default function SlotSelection({
   } else if (!data || !data.status) {
     slotsContent = (
       <NoContent1
-        text={
-          data?.message ||
-          "Unable to load availability right now."
-        }
+        text={data?.message || "Unable to load availability right now."}
       />
     );
   } else {
     slotsContent = (
-      <div className="flex w-full flex-col gap-5">
+      <div className="flex w-full flex-col gap-6">
         {rows.map((row) => (
-          <div
-            key={row.dayKey}
-            className="text-left"
-          >
-            <h3 className="mb-3 font-opus text-xl font-medium text-dashboardTextBlack">
+          <div key={row.dayKey} className="text-left">
+            <h3 className="mb-3 font-[family-name:var(--font-cormorant)] text-[24px] font-normal leading-[30px] tracking-[0.9px] text-[var(--wt-name)] sm:text-[28px]">
               {dayLabel(row.dayKey)}
             </h3>
 
             {row.chips.length > 0 ? (
               <div className="flex flex-wrap gap-3">
                 {row.chips.map((chip) => {
-                  const isSelected =
-                    selectedSlotKey === chip.key;
+                  const isSelected = selectedSlotKey === chip.key;
 
                   return (
                     <button
                       key={chip.key}
                       type="button"
                       disabled={isPending || isBookingMembership}
-                      onClick={() =>
-                        handleSelect(
-                          row.dayKey,
-                          chip,
-                        )
-                      }
+                      onClick={() => handleSelect(row.dayKey, chip)}
                       className={cn(
-                        "flex items-center justify-center rounded-[100px] border border-green px-4 py-2 font-gillSans text-sm text-dashboardTextBlack transition hover:border-green-600",
+                        "flex items-center justify-center rounded-full border border-white/15 px-4 py-2 font-gillSans text-sm text-[var(--wt-name)] transition hover:border-[var(--wt-amount)]/60",
                         isSelected &&
-                          "bg-green text-dashboardTextBarBackground hover:bg-green",
+                          "border-transparent bg-[var(--wt-btn)] text-[#0b0a08] hover:border-transparent",
                         (isPending || isBookingMembership) &&
                           "cursor-not-allowed opacity-50",
                       )}
                     >
                       {isPending && isSelected ? (
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#0b0a08] border-t-transparent" />
                       ) : (
                         chip.label
                       )}
@@ -327,7 +291,7 @@ export default function SlotSelection({
                 })}
               </div>
             ) : (
-              <p className="font-gillSans text-sm text-lightBlack">
+              <p className="font-gillSans text-sm text-[var(--wt-desc)]">
                 No slots available for this day
               </p>
             )}
@@ -339,8 +303,8 @@ export default function SlotSelection({
 
   const storedMatches = Boolean(
     stored &&
-      stored.practitionerId === practitionerId &&
-      stored.treatmentId === treatmentId,
+    stored.practitionerId === practitionerId &&
+    stored.treatmentId === treatmentId,
   );
 
   return (
@@ -348,32 +312,26 @@ export default function SlotSelection({
       <div className="flex w-full justify-end">
         <button
           type="button"
-          onClick={() =>
-            setIsCalendarOpen((open) => !open)
-          }
-          className="inline-flex items-center gap-2 rounded-full border border-green px-4 py-2 font-gillSans text-sm text-dashboardTextBlack transition hover:bg-green hover:text-dashboardTextBarBackground"
+          onClick={() => setIsCalendarOpen((open) => !open)}
+          className="inline-flex h-9 items-center justify-center gap-2 rounded-full bg-[var(--wt-btn)] px-6 py-[10px] font-gillSans text-sm font-medium uppercase tracking-wide text-[#0b0a08] transition hover:opacity-90"
           aria-expanded={isCalendarOpen}
         >
           <CalendarDays
             className="h-4 w-4"
+            strokeWidth={1.5}
             aria-hidden="true"
           />
-
           Change Date
         </button>
       </div>
 
       {isCalendarOpen && (
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 text-[var(--wt-name)]">
           <Calendar
             mode="single"
             selected={selectedDay ?? undefined}
             onSelect={(day) => {
-              if (
-                !day ||
-                (selectedDay &&
-                  isSameDay(day, selectedDay))
-              ) {
+              if (!day || (selectedDay && isSameDay(day, selectedDay))) {
                 return;
               }
 
@@ -392,7 +350,7 @@ export default function SlotSelection({
                 setSelectedDay(null);
                 setIsCalendarOpen(false);
               }}
-              className="font-gillSans text-sm text-green underline"
+              className="font-gillSans text-sm text-[var(--wt-amount)] underline"
             >
               Reset to today
             </button>
@@ -401,12 +359,12 @@ export default function SlotSelection({
       )}
 
       {storedMatches && stored && (
-        <div className="w-full rounded-2xl border border-green px-4 py-3 text-left">
-          <p className="font-gillSans text-sm text-lightBlack">
+        <div className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-left">
+          <p className="font-gillSans text-xs uppercase tracking-[0.18em] text-[var(--wt-amount)]">
             Selected slot
           </p>
 
-          <p className="font-gillSans text-base text-dashboardTextBlack">
+          <p className="mt-1 font-gillSans text-base text-[var(--wt-name)]">
             {formatInTimeZone(
               new Date(stored.startTime),
               TIMEZONE,
@@ -417,7 +375,7 @@ export default function SlotSelection({
       )}
 
       {error && (
-        <p className="font-gillSans text-sm text-red-500">
+        <p className="font-gillSans text-sm text-red-400">
           Failed to load checkout. Please try again.
         </p>
       )}
