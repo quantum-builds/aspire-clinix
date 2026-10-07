@@ -3,6 +3,7 @@ import { createResponse } from "@/utils/createResponse";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import { TokenRoles } from "@/constants/UserRoles";
 
 /**
  * @swagger
@@ -174,22 +175,16 @@ export async function DELETE(req: NextRequest) {
         status: 401,
       });
     }
-    if (token.role !== "dentist") {
+    const role = token.role as string;
+    if (
+      role !== TokenRoles.DENTALLY_PRACTITIONER &&
+      role !== TokenRoles.ADMIN
+    ) {
       return NextResponse.json(createResponse(false, "Unauthorized", null), {
         status: 403,
       });
     }
-
-    const dentistId = token.sub;
-
-    if (!dentistId) {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
-    }
-
     const reportId = req.nextUrl.pathname.split("/").pop();
-
     if (!reportId || !isValidCuid(reportId)) {
       return NextResponse.json(
         createResponse(false, "Invalid Report Id.", null),
@@ -207,21 +202,54 @@ export async function DELETE(req: NextRequest) {
         { status: 404 },
       );
     }
+    if (role === TokenRoles.DENTALLY_PRACTITIONER) {
+      const dentallyId = Number(token.sub);
+      if (Number.isNaN(dentallyId)) {
+        return NextResponse.json(
+          createResponse(false, "Unauthorized to delete this report.", null),
+          { status: 403 },
+        );
+      }
 
-    if (report.dentistId === dentistId) {
-      await prisma.report.delete({
-        where: { id: reportId },
+      const dentist = await prisma.dentist.findFirst({
+        where: { dentallyId },
+        select: { id: true },
       });
-      return NextResponse.json(
-        createResponse(true, "Report deleted successfully.", null),
-        { status: 200 },
-      );
-    } else {
-      return NextResponse.json(
-        createResponse(false, "Unauthorized to delete this report.", null),
-        { status: 403 },
-      );
+
+      if (!dentist || report.dentistId !== dentist.id) {
+        return NextResponse.json(
+          createResponse(false, "Unauthorized to delete this report.", null),
+          { status: 403 },
+        );
+      }
     }
+    if (report.fileUrl) {
+      try {
+        const { DeleteObjectCommand } = await import("@aws-sdk/client-s3");
+        const s3 = (await import("@/config/s3-config")).default;
+
+        const fileKey = report.fileUrl.startsWith("http")
+          ? new URL(report.fileUrl).pathname.replace(/^\//, "")
+          : report.fileUrl;
+
+        await s3.send(
+          new DeleteObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME!,
+            Key: fileKey,
+          }),
+        );
+      } catch (s3Error) {
+        console.log("Error deleting file from S3:", s3Error);
+      }
+    }
+    await prisma.report.delete({
+      where: { id: reportId },
+    });
+
+    return NextResponse.json(
+      createResponse(true, "Report deleted successfully.", null),
+      { status: 200 },
+    );
   } catch (error) {
     console.log("Error in deleting report ", error);
     const errorMessage = error instanceof Error ? error.message : String(error);

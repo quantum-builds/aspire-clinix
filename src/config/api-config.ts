@@ -195,6 +195,7 @@ export const ENDPOINTS = {
         appointmentId ?? ""
       }&on=${on ?? ""}&before=${before ?? ""}&after=${after ?? ""}`,
     create: "/api/reports",
+    delete: (id: string) => `/api/reports/${id}`,
   },
 
   products: {

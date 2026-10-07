@@ -140,6 +140,7 @@ export default function ReportGrid({
         <VideoReportGrid
           reports={videoReports}
           isNewUploadPage={true}
+          canDelete
           uploadedVideos={uploadedVideos}
           handleRemoveVideo={handleRemoveVideo}
           handleVideoSelect={handleVideoSelect}
@@ -147,6 +148,7 @@ export default function ReportGrid({
         <LetterReportGrid
           reports={pdfReports}
           isNewUploadPage={true}
+          canDelete
           uploadedPdfs={uploadedPdfs}
           handleRemovePdf={handleRemovePdf}
           handlePdfSelect={handlePdfSelect}
