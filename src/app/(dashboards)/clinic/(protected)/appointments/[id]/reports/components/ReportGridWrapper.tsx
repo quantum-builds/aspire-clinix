@@ -50,8 +50,8 @@ export default async function ReportGridWrapper({
         dentistDetails={dentist}
       />
       <div className="flex flex-col gap-10 bg-dashboardBarBackground rounded-2xl p-6">
-        <VideoReportGrid reports={videos ?? []} />
-        <LetterReportGrid reports={pdfs ?? []} />
+        <VideoReportGrid reports={videos ?? []} canDelete />
+        <LetterReportGrid reports={pdfs ?? []} canDelete />
       </div>
     </>
   );
