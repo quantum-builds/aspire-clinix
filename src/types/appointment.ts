@@ -143,7 +143,7 @@ export interface AppointmentReasonDetails {
   reason?: string;
 }
 
-enum AppointmentReason {
+export enum AppointmentReason {
   EXAM = "Exam",
   SCALEANDPOLISH = "Scale & Polish",
   EXAMANDSCALEANDPOLISH = "Exam + Scale & Polish",

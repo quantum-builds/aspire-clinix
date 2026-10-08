@@ -12,7 +12,7 @@ interface CustomButtonProps {
   className?: string;
   disabled?: boolean;
   loading?: boolean;
-  style?: "primary" | "secondary" | "white";
+  style?: "primary" | "secondary" | "white" | "theme";
   type?: "button" | "submit" | "reset";
   textSize?: number;
 }
@@ -34,7 +34,9 @@ export default function CustomButton({
       ? "bg-green text-dashboardBarBackground hover:bg-greenHover"
       : style === "secondary"
         ? "bg-gray text-dashboardTextBlack hover:bg-lightGray"
-        : "bg-dashboardBarBackground";
+        : style === "theme"
+          ? "h-9 py-[10px] bg-[var(--wt-btn)] text-[#0b0a08] font-gillSans font-medium uppercase tracking-wide hover:opacity-90"
+          : "bg-dashboardBarBackground";
 
   if (href) {
     return (

@@ -2,14 +2,14 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { CalenderInputIconV2, TextIconV2 } from "@/assets";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -59,10 +59,12 @@ export const patientSchema = z.object({
 
 type FormData = z.infer<typeof patientSchema>;
 
-export default function PatientLoginForm() {
+function LoginContent() {
   const { mutate: verifyPatient, isPending: verifyPatientLoader } =
     useVerifyPatient();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo");
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const {
@@ -108,7 +110,11 @@ export default function PatientLoginForm() {
           showToast("success", "OTP sent successfully");
           
           if (data.email) {
-            router.replace(`/patient/otp-verify?email=${data.email}`);
+            const otpParams = new URLSearchParams({ email: data.email });
+            if (redirectTo?.startsWith("/")) {
+              otpParams.set("redirectTo", redirectTo);
+            }
+            router.replace(`/patient/otp-verify?${otpParams.toString()}`);
           } else {
             console.error("[LoginForm] No patient email found in response");
             showToast("error", "Something went wrong. Please try again.");
@@ -289,5 +295,13 @@ export default function PatientLoginForm() {
         </p>
       </div>
     </form>
+  );
+}
+
+export default function PatientLoginForm() {
+  return (
+    <Suspense fallback={null}>
+      <LoginContent />
+    </Suspense>
   );
 }

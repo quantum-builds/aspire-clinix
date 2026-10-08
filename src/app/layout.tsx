@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
+import { Cormorant_Garamond } from "next/font/google";
 import { TanStackProvider } from "@/providers/TanStackProvider";
 import ToastProvider from "@/providers/ToastProvider";
+import SessionProvider from "@/providers/SessionProvider";
 
 
 const gillSans = localFont({
@@ -13,6 +15,12 @@ const gillSans = localFont({
 const opus = localFont({
   src: "../app/fonts/Opus.ttf",
   variable: "--font-opus",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-cormorant",
 });
 
 export const metadata: Metadata = {
@@ -28,10 +36,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`text-[#382F26] ${opus.variable}  ${gillSans.variable}`}>
+      <body className={`text-[#382F26] ${opus.variable} ${gillSans.variable} ${cormorant.variable}`}>
      
           <TanStackProvider>
-            <ToastProvider>{children}</ToastProvider>
+            <SessionProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </SessionProvider>
           </TanStackProvider>
         
       </body>

@@ -18,6 +18,7 @@ interface PageTopBarProps {
   showFilters: boolean;
   showExport?: boolean;
   extraBtns?: ReactNode;
+  preBtns?: ReactNode;
   showBackBtn?: boolean;
   showDateFilter?: boolean;
   statusOptions: TStatusOption[] | null;
@@ -34,6 +35,7 @@ export default function PageTopBar({
   showFilters,
   showExport = false,
   extraBtns,
+  preBtns,
   statusOptions,
   callStatusOptions,
   showDateFilter = true,
@@ -59,6 +61,7 @@ export default function PageTopBar({
       </div>
       <Suspense>
         <div className="flex justify-end gap-3">
+          {preBtns}
           {showSearch && <SearchBar placeholder={searchPlaceHolder} />}
           {showFilters && (
             <DateFilter
