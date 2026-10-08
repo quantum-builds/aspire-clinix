@@ -132,10 +132,7 @@ export async function GET(req: NextRequest) {
     let dentistDentallyId = "";
     if (token && token.role === TokenRoles.PATIENT) {
       patiendDentallyId = token.sub || "";
-    } else if (
-      token &&
-      token.role === TokenRoles.DENTALLY_PRACTITIONER
-    ) {
+    } else if (token && token.role === TokenRoles.DENTALLY_PRACTITIONER) {
       dentistDentallyId = token.sub || "";
     }
 
@@ -158,19 +155,29 @@ export async function GET(req: NextRequest) {
       ...(state && { state: state as AppointmentState }),
     };
 
-  
     const response = await listAppointment(appointmentParams);
     if (response.isError) return response.response;
-   
 
-    const appointments = (response.response.appointments ?? []) as Appointment[];
+    console.log(
+      "Appointments fetched successfully:",
+      JSON.stringify(response.response, null, 2),
+    );
 
-    // Get all unique patient IDs from appointments
-    const dentallyPatientIds = Array.from(new Set(
-      appointments
-        .map((apt) => apt.patientId)
-        .filter((id): id is number => id !== undefined && id !== null)
-    ));
+    const appointments = (
+      (response.response.appointments ?? []) as Appointment[]
+    ).filter((apt) => apt.patientId != null);
+    console.log(
+      "Filtered appointments with valid patient IDs:",
+      JSON.stringify(appointments, null, 2),
+    );
+
+    const dentallyPatientIds = Array.from(
+      new Set(
+        appointments
+          .map((apt) => apt.patientId)
+          .filter((id): id is number => id !== undefined && id !== null),
+      ),
+    );
 
     // Only query and update patients that exist in our database
     if (dentallyPatientIds.length) {
@@ -222,11 +229,13 @@ export async function GET(req: NextRequest) {
     }
 
     // Get all unique practitioner IDs from appointments
-    const dentallyPractitionerIds = Array.from(new Set(
-      appointments
-        .map((apt) => apt.practitionerId)
-        .filter((id): id is number => id !== undefined && id !== null)
-    ));
+    const dentallyPractitionerIds = Array.from(
+      new Set(
+        appointments
+          .map((apt) => apt.practitionerId)
+          .filter((id): id is number => id !== undefined && id !== null),
+      ),
+    );
 
     // Only query and update dentists that exist in our database
     if (dentallyPractitionerIds.length) {
@@ -279,7 +288,10 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(
-      createResponse(true, "Appointments fetched successfully", response.response),
+      createResponse(true, "Appointments fetched successfully", {
+        ...response.response,
+        appointments,
+      }),
       { status: 200 },
     );
   } catch (error) {
