@@ -44,9 +44,6 @@ export default function PlanSelectionPage() {
         aria-hidden
         className="pointer-events-none absolute -left-[210px] top-0 h-[700px] w-[1100px] bg-[radial-gradient(ellipse_at_center,rgba(214,188,160,0.18)_0%,rgba(255,255,255,0)_65%)]"
       />
-
-      />
-
       <div className="relative mx-auto w-full max-w-[1000px]">
         <div className="text-center">
           <BackButton />

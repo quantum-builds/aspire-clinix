@@ -1,20 +1,33 @@
+"use client";
+
 import Button from "@/app/(dashboards)/components/Button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-const BOOKING_OPTIONS = [
-  {
-    title: "Dental Appointment",
-    description: "Book a regular dental appointment.",
-    href: "https://aspire-dental.portal.dental/book",
-  },
-  {
-    title: "Wellness Appointment",
-    description: "Continue to the Wellness experience.",
-    href: "/patient/login",
-  },
-];
+import { useSession } from "next-auth/react";
 
 export default function WellnessPage() {
+  const { data: session, status } = useSession();
+
+  const isLoggedInPatient =
+    status === "authenticated" && session?.user?.role === "PATIENT";
+
+  const wellnessHref = isLoggedInPatient
+    ? "/patient/plan-selection"
+    : "/patient/login?redirectTo=/patient/plan-selection";
+
+  const BOOKING_OPTIONS = [
+    {
+      title: "Dental Appointment",
+      description: "Book a regular dental appointment.",
+      href: "https://aspire-dental.portal.dental/",
+    },
+    {
+      title: "Wellness Appointment",
+      description: "Continue to the Wellness experience.",
+      href: wellnessHref,
+    },
+  ];
+
   return (
     <main className="min-h-screen  px-4 py-2 sm:px-6 lg:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-4xl items-center justify-center">

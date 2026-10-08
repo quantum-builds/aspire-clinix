@@ -109,6 +109,10 @@ export async function middleware(request: NextRequest) {
     patientPublic.includes(pathname) &&
     role === "PATIENT"
   ) {
+    const redirectTo = request.nextUrl.searchParams.get("redirectTo");
+    if (redirectTo?.startsWith("/")) {
+      return NextResponse.redirect(new URL(redirectTo, request.url));
+    }
     return NextResponse.redirect(
       new URL("/patient", request.url),
     );

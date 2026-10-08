@@ -30,7 +30,7 @@ export default function MembershipCard() {
   };
 
    return (
-    <div className="mx-auto mt-8 max-w-[650px] rounded-[28px] bg-[var(--wt-card)] p-6 text-left shadow-[0_30px_50px_-20px_rgba(0,0,0,0.35)]">
+    <div className="mx-auto mt-8 max-w-[650px] rounded-[28px]  border border-[#56493A73] bg-[#12100D] opacity-0.82 p-6 text-left shadow-[0_30px_50px_-20px_rgba(0,0,0,0.35)]">
       <h2 className="font-[family-name:var(--font-cormorant)] text-3xl font-normal tracking-[0.9px] text-[var(--wt-name)]">
         Your Plan: {plan.name}
       </h2>

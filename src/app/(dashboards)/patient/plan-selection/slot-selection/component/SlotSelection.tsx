@@ -383,6 +383,7 @@ export default function SlotSelection({
       {slotsContent}
 
       <CustomConfirmationModal
+        theme="dark"
         isOpen={showConfirmation}
         onClose={() => {
           setShowConfirmation(false);

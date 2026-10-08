@@ -13,7 +13,7 @@ export default function SlotSelectionShell({
   duration,
 }: SlotSelectionPageProps) {
   return (
-    <main className="relative overflow-x-hidden px-4 py-50 sm:px-6 lg:px-8">
+    <main className="relative  px-4 py-20 sm:px-6 lg:px-8">
       <div
         aria-hidden
         className="pointer-events-none absolute left-[-250px] top-0 h-[750px] w-[1100px] bg-[radial-gradient(ellipse_at_center,rgba(214,188,160,0.18)_0%,rgba(255,255,255,0)_65%)]"
