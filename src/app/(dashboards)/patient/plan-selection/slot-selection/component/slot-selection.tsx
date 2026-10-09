@@ -1,4 +1,3 @@
-import BackButton from "@/app/(dashboards)/components/BackButton";
 import SlotSelection from "./SlotSelection";
 
 interface SlotSelectionPageProps {
@@ -20,10 +19,6 @@ export default function SlotSelectionShell({
       />
 
       <div className="relative mx-auto w-full max-w-[1000px]">
-        <div className="text-center">
-          <BackButton />
-        </div>
-
         <section className="w-full pb-16 pt-6 text-center">
           <div className="mx-auto max-w-3xl">
             <h1 className="font-[family-name:var(--font-cormorant)] text-[40px] font-normal leading-[44px] tracking-[-1px] text-[var(--wt-heading)] sm:text-[66px] sm:leading-[66px] sm:tracking-[-1.65px]">

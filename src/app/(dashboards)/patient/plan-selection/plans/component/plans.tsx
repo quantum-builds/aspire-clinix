@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import BackButton from "@/app/(dashboards)/components/BackButton";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import {
   useBuyPlan,
@@ -21,7 +20,7 @@ const MEMBERSHIP_PLANS = [
     price: "£275",
     features: [
       "Any 4 treatments per month (up to 2 hyperbaric)",
-      "VIP access to special events,",
+      "VIP access to special events",
       "1 guest pass",
       "1 complimentary breathwork session",
     ],
@@ -32,7 +31,7 @@ const MEMBERSHIP_PLANS = [
     price: "£445",
     features: [
       "Any 8 treatments per month (up to 4 hyperbaric)",
-      "VIP access to special events,",
+      "VIP access to special events",
       "2 guest passes",
       "2 complimentary breathwork sessions",
     ],
@@ -43,7 +42,7 @@ const MEMBERSHIP_PLANS = [
     price: "£785",
     features: [
       "Unlimited treatments, with up to 8 hyperbaric sessions per month",
-      "VIP access to special events,",
+      "VIP access to special events",
       "3 guest passes",
       "3 complimentary breathwork sessions",
     ],
@@ -93,7 +92,7 @@ export default function PlansPage() {
     setLoadingPlanId(planId);
 
     upgradePlan(
-      { planId },
+      { newPlanId: planId },
       {
         onSuccess: (data) => {
           if (data.status) {
@@ -240,17 +239,13 @@ export default function PlansPage() {
   };
 
   return (
-    <main className="relative overflow-x-hidden px-4 py-14 sm:px-6 lg:px-8">
+    <main className="relative px-4 py-20 sm:px-6 lg:px-8">
       <div
         aria-hidden
         className="pointer-events-none absolute left-[-250px] top-0 h-[700px] w-[1100px] bg-[radial-gradient(ellipse_at_center,rgba(214,188,160,0.18)_0%,rgba(255,255,255,0)_65%)]"
       />
 
-      <div className="relative mx-auto w-full max-w-[1000px]">
-        <div className="text-center">
-          <BackButton />
-        </div>
-
+      <div className="relative mx-auto w-full max-w-[1000px] top-10">
         <section className="w-full pb-16 pt-6 text-center">
           <div className="mx-auto max-w-3xl">
             <h1 className="font-[family-name:var(--font-cormorant)] text-[40px] font-normal leading-[44px] tracking-[-1px] text-[var(--wt-heading)] sm:text-[66px] sm:leading-[66px] sm:tracking-[-1.65px]">
@@ -346,7 +341,7 @@ export default function PlansPage() {
                       text={buttonText}
                       style="theme"
                       textSize={14}
-                      className="w-full sm:w-[163.5px]"
+                      className="w-full whitespace-nowrap sm:w-auto sm:min-w-[163.5px]"
                       loading={isLoadingThis}
                       disabled={disabled}
                       handleOnClick={() => handleButtonClick(plan.name)}

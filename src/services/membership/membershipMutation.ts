@@ -6,6 +6,10 @@ interface BuyPlanData {
   planId: string;
 }
 
+interface UpgradePlanData {
+  newPlanId: string;
+}
+
 interface BuyPlanResponse {
   checkoutUrl: string;
 }
@@ -45,7 +49,7 @@ export const useBuyPlan = () => {
 export const useUpgradePlan = () => {
   return useMutation({
     mutationFn: async (
-      data: BuyPlanData,
+      data: UpgradePlanData,
     ): Promise<Response<UpgradePlanResponse>> => {
       const response = await axiosInstance.post(
         ENDPOINTS.membership.upgrade,

@@ -326,7 +326,7 @@ export default function SlotSelection({
       </div>
 
       {isCalendarOpen && (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 text-[var(--wt-name)]">
+        <div className="wt-calendar flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-[#12100D] p-4">
           <Calendar
             mode="single"
             selected={selectedDay ?? undefined}
@@ -334,13 +334,11 @@ export default function SlotSelection({
               if (!day || (selectedDay && isSameDay(day, selectedDay))) {
                 return;
               }
-
               setSelectedDay(day);
               setIsCalendarOpen(false);
             }}
-            disabled={{
-              before: keyToLocalDate(todayKey),
-            }}
+            disabled={{ before: keyToLocalDate(todayKey) }}
+            className="!bg-transparent !p-0 text-[var(--wt-name)]"
           />
 
           {selectedDay && (
@@ -350,14 +348,13 @@ export default function SlotSelection({
                 setSelectedDay(null);
                 setIsCalendarOpen(false);
               }}
-              className="font-gillSans text-sm text-[var(--wt-amount)] underline"
+              className="font-gillSans text-sm text-[var(--wt-amount)] underline underline-offset-4 hover:opacity-80"
             >
               Reset to today
             </button>
           )}
         </div>
       )}
-
       {storedMatches && stored && (
         <div className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-left">
           <p className="font-gillSans text-xs uppercase tracking-[0.18em] text-[var(--wt-amount)]">

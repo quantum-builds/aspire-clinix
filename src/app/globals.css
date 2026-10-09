@@ -77,6 +77,28 @@ html {
 .zoom-out {
   zoom: 0.75;
 }
+.wt-calendar [aria-selected="true"],
+.wt-calendar [aria-selected="true"] > button {
+  background: #a49d92 !important;
+  color: #0b0a08 !important;
+  border-radius: 9999px !important;
+}
+
+.wt-calendar [aria-selected="true"]:hover,
+.wt-calendar [aria-selected="true"]:focus,
+.wt-calendar [aria-selected="true"] > button:hover,
+.wt-calendar [aria-selected="true"] > button:focus {
+  background: #a49d92 !important;
+  color: #0b0a08 !important;
+}
+
+/* today, when it isn't the selected day: thin gold ring only */
+.wt-calendar .rdp-day_today:not([aria-selected="true"]),
+.wt-calendar [data-today="true"]:not([aria-selected="true"]) {
+  background: transparent !important;
+  border-radius: 9999px;
+  box-shadow: inset 0 0 0 1px rgba(214, 188, 160, 0.6);
+}
 
 @layer base {
   :root {

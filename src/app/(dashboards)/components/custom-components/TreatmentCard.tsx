@@ -105,7 +105,7 @@ export default function TreatmentCard({ treatment }: TreatmentCardProps) {
 
         <Button
           text="Book Treatment"
-          className="!h-9 !w-full !rounded-full !bg-[var(--wt-btn)] !px-2 !py-[10px] !text-[10px] !font-medium !uppercase !tracking-wide !text-[#0b0a08] hover:!opacity-90 sm:!w-[163.5px]"
+          className="!h-9 !w-full !rounded-full !bg-[var(--wt-btn)] !px-2 !py-[10px] text-[12px] !font-medium !uppercase !tracking-wide !text-[#0b0a08] hover:!opacity-90 sm:!w-[163.5px]"
           href={`/patient/plan-selection/practitioners?treatmentId=${treatment.id}${
             treatment.duration ? `&duration=${treatment.duration}` : ""
           }${type ? `&type=${type}` : ""}`}
