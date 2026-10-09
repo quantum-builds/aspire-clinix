@@ -14,8 +14,6 @@ export default async function UpcomingAppointments(props: {
   const searchParams = await props.searchParams;
   const sessionId = searchParams?.session_id;
 
-  console.log("UpcomingAppointments searchParams:", searchParams);
-  console.log("UpcomingAppointments sessionId:", sessionId);
 
   let statusResponse = null;
   if (sessionId && sessionId.trim() !== "") {

@@ -48,6 +48,7 @@ export default function UpcomingAppointmentsContent({
         pageHeading="Appointments"
         showSearch={false}
         showFilters={true}
+        filtersBelow={true}
         lockAfterDate={true}
         statusOptions={[
           { value: AppointmentState.PENDING, label: AppointmentState.PENDING },
@@ -75,18 +76,22 @@ export default function UpcomingAppointmentsContent({
         ]}
         preBtns={
           <CustomButton
-            text="Book Appointment"
+            text="Book Wellness Appointment"
             href="/patient/plan-selection"
+            style="white"
+            className="border border-green hover:bg-[#ede9e4] "
+
           />
         }
         extraBtns={
           <CustomButton
-            text="Pre-book consultation"
+            text="Book Dental Appointment"
             href="https://aspire-dental.portal.dental/"
+
           />
         }
       />
-      <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+      <Suspense >{children}</Suspense>
     </div>
   );
 }

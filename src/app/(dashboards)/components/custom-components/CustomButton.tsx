@@ -36,7 +36,7 @@ export default function CustomButton({
         ? "bg-gray text-dashboardTextBlack hover:bg-lightGray"
         : style === "theme"
           ? "h-9 py-[10px] bg-[var(--wt-btn)] text-[#0b0a08] font-gillSans font-medium uppercase tracking-wide hover:opacity-90"
-          : "bg-dashboardBarBackground";
+          : "bg-white text-dashboardTextBlack border border-gray-200 hover:bg-gray-50";
 
   if (href) {
     return (
