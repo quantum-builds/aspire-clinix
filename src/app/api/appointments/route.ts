@@ -288,6 +288,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(
+
       createResponse(true, "Appointments fetched successfully", {
         ...response.response,
         appointments,

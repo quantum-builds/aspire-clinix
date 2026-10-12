@@ -99,6 +99,18 @@ export const ENDPOINTS = {
     delete: (id: string) => `/api/treatments/${id}`,
   },
 
+  wellnessTreatment: {
+    getAll: "/api/wellness-treatments",
+  },
+
+  practitioners: {
+    getAll: "/api/practitioners",
+  },
+
+  availability: {
+    getAll: "/api/availability",
+  },
+
   patientTreatment: {
     getAll: (patientId: string) =>
       `/api/patient/treatments?patientId=${patientId}`,
@@ -212,6 +224,21 @@ export const ENDPOINTS = {
 
   stripe: {
     buyProducts: "/api/stripe/product/checkout",
+    status: "/api/stripe/status",
+  },
+
+  membership: {
+    checkout: "/api/stripe/membership/checkout",
+    upgrade: "/api/stripe/membership/upgrade",
+    cancelUpgrade: "/api/stripe/membership/cancel-upgrade",
+    cancel: "/api/stripe/membership/cancel",
+    reactivate: "/api/stripe/membership/reactivate",
+    current: "/api/stripe/membership/current",
+    bookAppointment: "/api/membership/book-appointment",
+  },
+
+  checkout: {
+    createSession: "/api/checkout",
   },
 
   appointemtRequest: {
@@ -266,6 +293,27 @@ export const DENTALLY_ENDPOINTS = {
     get: (id: string) => `appointments/${id}`,
     delete: (id: string) => `appointments/${id}`,
     edit: (id: string) => `appointments/${id}`,
+  },
+  treatment: {
+    list: (site_id: string, page: number, perPage: number = 100): string =>
+      `treatments?site_id=${site_id}&page=${page}&per_page=${perPage}`,
+    get: (id: string) => `treatments/${id}`,
+  },
+  fee: {
+    list: (treatmentId: number): string => `fees?treatment_id=${treatmentId}`,
+  },
+  availability: {
+    list: (
+      practitionerId: number,
+      startTime: string,
+      finishTime: string,
+      duration?: number,
+    ): string =>
+      `appointments/availability?practitioner_ids%5B%5D=${practitionerId}&start_time=${encodeURIComponent(
+        startTime,
+      )}&finish_time=${encodeURIComponent(finishTime)}${
+        duration ? `&duration=${duration}` : ""
+      }`,
   },
 };
 

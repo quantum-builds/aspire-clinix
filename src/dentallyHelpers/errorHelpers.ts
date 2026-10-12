@@ -8,6 +8,11 @@ export enum DATA_TYPE {
   APPOINTMENTS = "appointments",
   PRACTITIONER = "practitioner",
   PRACTITIONERS = "practitioners",
+  TREATMENT = "treatment",
+  TREATMENTS = "treatments",
+  FEE = "fee",
+  FEES = "fees",
+  AVAILABILITY = "availability",
 }
 
 const DATA_TYPE_KEY_MAP: Record<DATA_TYPE, string> = {
@@ -17,6 +22,11 @@ const DATA_TYPE_KEY_MAP: Record<DATA_TYPE, string> = {
   [DATA_TYPE.PATIENTS]: "patients",
   [DATA_TYPE.PRACTITIONER]: "practitioner",
   [DATA_TYPE.PRACTITIONERS]: "practitioners",
+  [DATA_TYPE.TREATMENT]: "treatment",
+  [DATA_TYPE.TREATMENTS]: "treatments",
+  [DATA_TYPE.FEE]: "fee",
+  [DATA_TYPE.FEES]: "fees",
+  [DATA_TYPE.AVAILABILITY]: "availability",
 };
 
 type ErrorResult = {
@@ -50,11 +60,22 @@ export function dentallyErrorHelper(
       };
     }
 
+    if (error.type === "invalid_request_error") {
+      const errorMessage = error.message || "Invalid request";
+      return {
+        isError: true,
+        response: NextResponse.json(
+          createResponse(false, errorMessage, null),
+          { status: 400 },
+        ),
+      };
+    }
+
     return {
       isError: true,
       response: NextResponse.json(
         createResponse(false, "Resource not found", null),
-        { status: 404 }
+        { status: 404 },
       ),
     };
   }

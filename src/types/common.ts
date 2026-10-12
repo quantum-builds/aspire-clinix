@@ -72,6 +72,31 @@ export type TPlan = {
   type?: string;
 };
 
+export type TTreatment = {
+  id: number;
+  name: string;
+  description?: string | null;
+  code?: string;
+  price?: string | null;
+  duration?: number | null;
+};
+
+export type TAvailabilitySlot = {
+  startTime: string;
+  finishTime: string;
+  availableDuration: number;
+  practitionerId: number;
+};
+
+export type TPractitioner = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  gdcNumber?: string;
+  role?: string;
+  imageUrl?: string | null;
+};
+
 export type TPurchasedProduct = {
   cartId: string;
   products: {

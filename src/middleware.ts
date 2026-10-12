@@ -2,16 +2,51 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { DENTALLY_ENDPOINTS } from "./config/api-config";
+import {
+  PLAN_ACCESS_COOKIE,
+  getExpectedToken,
+  isAccessGateEnabled,
+  safeEqual,
+} from "@/lib/planAccess";
+
+console.log("ENABLED:", JSON.stringify(process.env.PLAN_ACCESS_ENABLED), "gate:", isAccessGateEnabled());
+console.log(
+  "ENABLED:", JSON.stringify(process.env.PLAN_ACCESS_ENABLED),
+  "PASSWORD SET:", !!process.env.PLAN_ACCESS_PASSWORD,
+  "gate:", isAccessGateEnabled(),
+ 
+);
 
 const secret = process.env.NEXTAUTH_SECRET; // required for getToken
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  console.log("ENABLED:", JSON.stringify(process.env.PLAN_ACCESS_ENABLED), "gate:", isAccessGateEnabled());
+console.log(
+  "ENABLED:", JSON.stringify(process.env.PLAN_ACCESS_ENABLED),
+  "PASSWORD SET:", !!process.env.PLAN_ACCESS_PASSWORD,
+  "gate:", isAccessGateEnabled(),
+ 
+);
+
+
   // Define public routes
-  const patientPublic = ["/patient/login", "/patient/otp-verify", "/patient/register"];
-  const dentistPublic = ["/dentist/login", "/dentist/otp-verify", "/dentist/register"];
-  const clinicPublic = ["/clinic/login", "/clinic/register", "/clinic/otp-verify"];
+  const patientPublic = [
+    "/patient/login",
+    "/patient/otp-verify",
+    "/patient/register",
+  ];
+  const dentistPublic = [
+    "/dentist/login",
+    "/dentist/otp-verify",
+    "/dentist/register",
+  ];
+  const clinicPublic = [
+    "/clinic/login",
+    "/clinic/register",
+    "/clinic/otp-verify",
+  ];
 
   // Dentist role-based route permissions
   const dentistAllowedRoutes: Record<string, string[]> = {
@@ -35,44 +70,26 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request, secret });
   // ---- 1. If no token ----
   if (!token) {
-    if (
-      pathname.startsWith("/patient") &&
-      !patientPublic.includes(pathname)
-    ) {
+    if (pathname.startsWith("/patient") && !patientPublic.includes(pathname)) {
       const loginUrl = new URL("/patient/login", request.url);
 
-      loginUrl.searchParams.set(
-        "redirectTo",
-        pathname,
-      );
+      loginUrl.searchParams.set("redirectTo", pathname);
 
       return NextResponse.redirect(loginUrl);
     }
 
-    if (
-      pathname.startsWith("/dentist") &&
-      !dentistPublic.includes(pathname)
-    ) {
+    if (pathname.startsWith("/dentist") && !dentistPublic.includes(pathname)) {
       const loginUrl = new URL("/dentist/login", request.url);
 
-      loginUrl.searchParams.set(
-        "redirectTo",
-        pathname,
-      );
+      loginUrl.searchParams.set("redirectTo", pathname);
 
       return NextResponse.redirect(loginUrl);
     }
 
-    if (
-      pathname.startsWith("/clinic") &&
-      !clinicPublic.includes(pathname)
-    ) {
+    if (pathname.startsWith("/clinic") && !clinicPublic.includes(pathname)) {
       const loginUrl = new URL("/clinic/login", request.url);
 
-      loginUrl.searchParams.set(
-        "redirectTo",
-        pathname,
-      );
+      loginUrl.searchParams.set("redirectTo", pathname);
 
       return NextResponse.redirect(loginUrl);
     }
@@ -86,21 +103,52 @@ export async function middleware(request: NextRequest) {
 
   const role = token.role as string;
 
-  // Already logged-in patient should not see login/register/otp pages
+  // ---- Patient-only routes (explicit guard) ----
+  const patientOnlyRoutes = ["/patient/plan-selection"];
   if (
-    patientPublic.includes(pathname) &&
-    role === "PATIENT"
+    patientOnlyRoutes.some((route) => pathname.startsWith(route)) &&
+    role !== "PATIENT"
   ) {
-    return NextResponse.redirect(
-      new URL("/patient", request.url),
-    );
+    if (role === "ADMIN") {
+      return NextResponse.redirect(new URL("/clinic", request.url));
+    }
+    if (role === "DENTALLY_PRACTITIONER" || role === "REFERRING_DENTIST") {
+      return NextResponse.redirect(new URL("/dentist", request.url));
+    }
+    return NextResponse.redirect(new URL("/403", request.url));
+  }
+
+  // ---- Plan-selection access gate (password cookie) ----
+  // Runs only for logged-in patients. If PLAN_ACCESS_PASSWORD is not set,
+  // the gate is off and everyone gets through.
+   if (
+    pathname.startsWith("/patient/plan-selection") &&
+    isAccessGateEnabled()
+  ) {
+    const accessCookie = request.cookies.get(PLAN_ACCESS_COOKIE)?.value ?? "";
+    const hasAccess =
+      accessCookie !== "" && safeEqual(accessCookie, await getExpectedToken());
+
+    if (!hasAccess) {
+      const accessUrl = new URL("/access", request.url);
+      accessUrl.searchParams.set("next", pathname + request.nextUrl.search);
+      return NextResponse.redirect(accessUrl);
+    }
+  }
+
+  // Already logged-in patient should not see login/register/otp pages
+  if (patientPublic.includes(pathname) && role === "PATIENT") {
+    const redirectTo = request.nextUrl.searchParams.get("redirectTo");
+    if (redirectTo?.startsWith("/")) {
+      return NextResponse.redirect(new URL(redirectTo, request.url));
+    }
+    return NextResponse.redirect(new URL("/patient", request.url));
   }
 
   // Already logged-in dentist should not see login/register/otp pages
   if (
     dentistPublic.includes(pathname) &&
-    (role === "DENTALLY_PRACTITIONER" ||
-      role === "REFERRING_DENTIST")
+    (role === "DENTALLY_PRACTITIONER" || role === "REFERRING_DENTIST")
   ) {
     return NextResponse.redirect(new URL("/dentist", request.url));
   }
@@ -116,10 +164,7 @@ export async function middleware(request: NextRequest) {
   ) {
     const loginUrl = new URL("/patient/login", request.url);
 
-    loginUrl.searchParams.set(
-      "redirectTo",
-      pathname,
-    );
+    loginUrl.searchParams.set("redirectTo", pathname);
 
     return NextResponse.redirect(loginUrl);
   }
@@ -128,17 +173,11 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith("/dentist") &&
     !dentistPublic.includes(pathname) &&
-    !(
-      role === "DENTALLY_PRACTITIONER" ||
-      role === "REFERRING_DENTIST"
-    )
+    !(role === "DENTALLY_PRACTITIONER" || role === "REFERRING_DENTIST")
   ) {
     const loginUrl = new URL("/dentist/login", request.url);
 
-    loginUrl.searchParams.set(
-      "redirectTo",
-      pathname,
-    );
+    loginUrl.searchParams.set("redirectTo", pathname);
 
     return NextResponse.redirect(loginUrl);
   }
@@ -151,10 +190,7 @@ export async function middleware(request: NextRequest) {
   ) {
     const loginUrl = new URL("/clinic/login", request.url);
 
-    loginUrl.searchParams.set(
-      "redirectTo",
-      pathname,
-    );
+    loginUrl.searchParams.set("redirectTo", pathname);
 
     return NextResponse.redirect(loginUrl);
   }
@@ -163,34 +199,23 @@ export async function middleware(request: NextRequest) {
 
   if (
     role === "REFERRING_DENTIST" &&
-    pathname.startsWith(
-      "/dentist/appointments/upcoming",
-    )
+    pathname.startsWith("/dentist/appointments/upcoming")
   ) {
     return NextResponse.redirect(
-      new URL(
-        "/dentist/referral-history",
-        request.url,
-      ),
+      new URL("/dentist/referral-history", request.url),
     );
   }
 
   if (
     pathname.startsWith("/dentist") &&
-    (role === "DENTALLY_PRACTITIONER" ||
-      role === "REFERRING_DENTIST")
+    (role === "DENTALLY_PRACTITIONER" || role === "REFERRING_DENTIST")
   ) {
-    const allowedRoutes =
-      dentistAllowedRoutes[role] || [];
+    const allowedRoutes = dentistAllowedRoutes[role] || [];
 
-    const isAllowed = allowedRoutes.some((route) =>
-      pathname.startsWith(route),
-    );
+    const isAllowed = allowedRoutes.some((route) => pathname.startsWith(route));
 
     if (!isAllowed) {
-      return NextResponse.redirect(
-        new URL("/403", request.url),
-      );
+      return NextResponse.redirect(new URL("/403", request.url));
     }
   }
 
@@ -198,7 +223,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api/).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/).*)"],
 };

@@ -32,6 +32,7 @@ export default async function PastAppointments(props: {
         pageHeading="Appointments"
         showSearch={false}
         showFilters={true}
+        filtersBelow={true}
         lockBeforeDate={true}
         statusOptions={[
           {
@@ -65,8 +66,9 @@ export default async function PastAppointments(props: {
         ]}
         extraBtns={
           <CustomButton
-            text="Pre-book consultation"
+            text="Book Dental Appointment"
             href="https://aspire-dental.portal.dental/"
+            style="white"
           />
         }
       />

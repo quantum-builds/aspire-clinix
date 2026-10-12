@@ -42,18 +42,18 @@ model ReferralForm {
 }
 
 model ReferralRequest {
-  id                String                @id @default(cuid())
-  referralFormId    String                @unique
-  assignedDentistId String?
-  appointmentId               String?               @unique
-  requestStatus               ReferralRequestStatus
-  dentistResponseStatus       DentistResponseStatus?
-  dentistComments             String?
-  proposedTreatmentDetails    String?
-  proposedConsultationTime    String?
-  respondedAt                 DateTime?
-  createdAt                   DateTime              @default(now())
-  referralForm                ReferralForm          @relation(fields: [referralFormId], references: [id])
+  id                       String                 @id @default(cuid())
+  referralFormId           String                 @unique
+  assignedDentistId        String?
+  appointmentId            String?                @unique
+  requestStatus            ReferralRequestStatus
+  dentistResponseStatus    DentistResponseStatus?
+  dentistComments          String?
+  proposedTreatmentDetails String?
+  proposedConsultationTime String?
+  respondedAt              DateTime?
+  createdAt                DateTime               @default(now())
+  referralForm             ReferralForm           @relation(fields: [referralFormId], references: [id])
 }
 
 model Plan {
@@ -70,6 +70,7 @@ model Plan {
   discounts          Discount?             @relation(fields: [discountId], references: [id])
   users              UserSubscribedPlans[]
 }
+
 model Discount {
   id        String       @id @default(uuid())
   type      DiscountType
@@ -86,8 +87,6 @@ model UserSubscribedPlans {
 
   @@unique([userId, planId])
 }
-
-
 
 model Dentist {
   id                  String              @id @default(cuid())
@@ -109,8 +108,8 @@ model Dentist {
 }
 
 model Patient {
-  id                  String         @id @default(cuid())
-  uuid                String         @unique
+  id                  String              @id @default(cuid())
+  uuid                String              @unique
   mobileNumber        String
   dateOfBirth         String
   otp                 String?
@@ -118,11 +117,13 @@ model Patient {
   email               String
   familyId            String?
   appointmentIds      String[]
-  name                String         @unique
-  dentallyId          Int            @unique
+  name                String              @unique
+  dentallyId          Int                 @unique
   imageUrl            String?
   referralForms       ReferralForm[]
   reports             Report[]
+  subscription        Subscription?
+  patientMemberships  PatientMembership[]
 
   @@index([familyId])
 }
@@ -149,7 +150,6 @@ model pendingAdmin {
   updatedAt           DateTime  @updatedAt
   password            String
 }
-
 
 model Practice {
   id           String              @id @default(cuid())
@@ -292,6 +292,87 @@ model Video {
   fileType    String
 }
 
+model TreatmentStripe {
+  treatmentId     Int      @id
+  stripePriceId   String   @unique
+  stripeProductId String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Subscription {
+  id        String     @id @default(cuid())
+  patientId String
+  planId    String
+  startDate DateTime
+  endDate   DateTime
+  status    PlanStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  patient   Patient    @relation(fields: [patientId], references: [id])
+
+  @@unique([patientId])
+}
+
+model MembershipPlan {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  stripeProductId String   @unique
+  stripePriceId   String   @unique
+  treatmentLimit  Int?
+  hyperbaricLimit Int?
+  breathworkLimit Int      @default(0)
+  guestPassLimit  Int      @default(0)
+  vipEventAccess  Boolean  @default(true)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  memberships         PatientMembership[] @relation("CurrentPlan")
+  pendingMemberships  PatientMembership[] @relation("PendingPlan")
+}
+
+model PatientMembership {
+  id                   String           @id @default(uuid())
+  patientId            String           @unique
+  planId               String
+  patient              Patient          @relation(fields: [patientId], references: [id]) // use your patient model name
+  plan                 MembershipPlan   @relation("CurrentPlan", fields: [planId], references: [id])
+  stripeCustomerId     String
+  stripeSubscriptionId String           @unique
+  status               MembershipStatus @default(ACTIVE)
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean          @default(false)
+  cancelledAt          DateTime?
+  usedTreatments       Int              @default(0)
+  usedHyperbaric       Int              @default(0)
+  usedBreathwork       Int              @default(0)
+  usedGuestPasses      Int              @default(0)
+  pendingPlanId        String?
+  pendingPlan          MembershipPlan?  @relation("PendingPlan", fields: [pendingPlanId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointments MembershipAppointment[]
+
+  @@index([patientId, status])
+  @@index([planId])
+}
+
+model MembershipAppointment {
+
+  id String @id @default(uuid())
+  membershipId  String
+  appointmentId String            @unique 
+  membership    PatientMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([membershipId])
+}
+
 enum InvoiceStatus {
   PENDING
   PROCESSING
@@ -404,4 +485,10 @@ enum CallStatus {
   REJECTED
   UNATTENDED
   CONFIRM
+}
+
+enum MembershipStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
 }
