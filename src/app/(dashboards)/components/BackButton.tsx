@@ -28,7 +28,7 @@ export default function BackButton({
       cameFromStripe =
         !!document.referrer &&
         new URL(document.referrer).hostname.endsWith("stripe.com");
-    } catch {}
+    } catch { }
 
     if (cameFromStripe && window.history.length > 2) {
       window.history.go(-2);
@@ -47,7 +47,9 @@ export default function BackButton({
       onClick={handleBack}
     >
       <Image src={BackButtonIcon} alt="back button icon" className="w-4 h-4" />
-      {text ? text : "Back"}
+      <p className="mt-1">
+        {text ? text : "Back"}
+      </p>
     </button>
   );
 }

@@ -15,7 +15,7 @@ export default async function TreatmentGridWrapper() {
       ? response.message || "Unable to load wellness treatments right now."
       : "No wellness treatments are available right now.";
 
-    return <NoContent1 text={text} />;
+    return <NoContent1 text={text} appointmentFlow={true} />;
   }
 
   const treatments = response.data;

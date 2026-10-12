@@ -57,14 +57,14 @@ export default async function PractitionerGridWrapper({
       ? response.message || "Unable to load practitioners right now."
       : "No practitioners are available right now.";
 
-    return <NoContent1 text={text} />;
+    return <NoContent1 text={text} appointmentFlow={true} />;
   }
 
   const practitioners = getPractitionerForTreatment(response.data, treatmentId);
 
   if (practitioners.length === 0) {
     return (
-      <NoContent1 text="No practitioner is available for this treatment." />
+      <NoContent1 text="No practitioner is available for this treatment." appointmentFlow={true} />
     );
   }
 

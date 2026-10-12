@@ -216,7 +216,7 @@ export default function SlotSelection({
 
   if (!practitionerId) {
     return (
-      <NoContent1 text="No practitioner selected. Please go back and choose a practitioner." />
+      <NoContent1 text="No practitioner selected. Please go back and choose a practitioner." appointmentFlow={true} />
     );
   }
 
@@ -251,6 +251,7 @@ export default function SlotSelection({
     slotsContent = (
       <NoContent1
         text={data?.message || "Unable to load availability right now."}
+        appointmentFlow={true}
       />
     );
   } else {
@@ -276,9 +277,9 @@ export default function SlotSelection({
                       className={cn(
                         "flex items-center justify-center rounded-full border border-white/15 px-4 py-2 font-gillSans text-sm text-[var(--wt-name)] transition hover:border-[var(--wt-amount)]/60",
                         isSelected &&
-                          "border-transparent bg-[var(--wt-btn)] text-[#0b0a08] hover:border-transparent",
+                        "border-transparent bg-[var(--wt-btn)] text-[#0b0a08] hover:border-transparent",
                         (isPending || isBookingMembership) &&
-                          "cursor-not-allowed opacity-50",
+                        "cursor-not-allowed opacity-50",
                       )}
                     >
                       {isPending && isSelected ? (
@@ -321,7 +322,9 @@ export default function SlotSelection({
             strokeWidth={1.5}
             aria-hidden="true"
           />
-          Change Date
+          <p className="mt-1">
+            Change Date
+          </p>
         </button>
       </div>
 
