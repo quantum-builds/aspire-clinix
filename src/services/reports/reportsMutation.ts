@@ -13,3 +13,12 @@ export const useCreateReport = () => {
     },
   });
 };
+
+export const useDeleteReport = () => {
+  return useMutation({
+    mutationFn: async ({ id }: { id: string }) => {
+      const response = await axiosInstance.delete(ENDPOINTS.reports.delete(id));
+      return response.data.data;
+    },
+  });
+};

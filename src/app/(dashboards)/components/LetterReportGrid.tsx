@@ -11,6 +11,7 @@ import { useRef } from "react";
 
 interface LetterReportGridProps {
   reports: TReport[];
+  canDelete?: boolean;
   isNewUploadPage?: boolean;
   uploadedPdfs?: File[];
   handlePdfSelect?: (file: File) => void;
@@ -19,6 +20,7 @@ interface LetterReportGridProps {
 
 export default function LetterReportGrid({
   reports,
+  canDelete = false,
   isNewUploadPage = false,
   uploadedPdfs = [],
   handlePdfSelect,
@@ -73,7 +75,7 @@ export default function LetterReportGrid({
       <div className="grid 2xl:grid-cols-5 xl:grid-cols-3 lg:grid-cols-2 gap-x-6 gap-y-10">
         {/* Already saved reports */}
         {reports.map((report, index) => (
-          <LetterReportCard key={index} report={report} />
+          <LetterReportCard key={index} report={report} canDelete={canDelete} />
         ))}
 
         {/* Uploaded but unsaved PDFs */}

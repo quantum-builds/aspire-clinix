@@ -163,10 +163,14 @@ export async function GET(req: NextRequest) {
       JSON.stringify(response.response, null, 2),
     );
 
-    const appointments = (response.response.appointments ??
-      []) as Appointment[];
+    const appointments = (
+      (response.response.appointments ?? []) as Appointment[]
+    ).filter((apt) => apt.patientId != null);
+    console.log(
+      "Filtered appointments with valid patient IDs:",
+      JSON.stringify(appointments, null, 2),
+    );
 
-    // Get all unique patient IDs from appointments
     const dentallyPatientIds = Array.from(
       new Set(
         appointments
@@ -284,11 +288,11 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(
-      createResponse(
-        true,
-        "Appointments fetched successfully",
-        response.response,
-      ),
+
+      createResponse(true, "Appointments fetched successfully", {
+        ...response.response,
+        appointments,
+      }),
       { status: 200 },
     );
   } catch (error) {

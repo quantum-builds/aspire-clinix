@@ -61,10 +61,12 @@ function ReportGrid({
         <VideoReportGrid
           reports={videoReports}
           isNewUploadPage={isNewUploadPage}
+          canDelete
         />
         <LetterReportGrid
           reports={letterReports}
           isNewUploadPage={isNewUploadPage}
+          canDelete
         />
       </div>
     </div>

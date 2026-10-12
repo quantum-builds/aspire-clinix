@@ -9,6 +9,7 @@ import { useRef } from "react";
 
 interface VideoReportGridProps {
   reports: TReport[];
+  canDelete?: boolean;
   isNewUploadPage?: boolean;
   uploadedVideos?: File[];
   handleVideoSelect?: (file: File) => void;
@@ -17,6 +18,7 @@ interface VideoReportGridProps {
 
 export default function VideoReportGrid({
   reports,
+  canDelete = false,
   isNewUploadPage = false,
   uploadedVideos = [],
   handleRemoveVideo,
@@ -72,7 +74,7 @@ export default function VideoReportGrid({
       <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 gap-x-6 gap-y-10">
         {/* Render already saved reports */}
         {reports.map((report, index) => (
-          <VideoReportCard key={index} report={report} />
+          <VideoReportCard key={index} report={report} canDelete={canDelete} />
         ))}
 
         {/* Render uploaded (not yet saved) videos */}
