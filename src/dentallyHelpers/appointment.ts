@@ -5,7 +5,7 @@ import { DATA_TYPE, dentallyErrorHelper } from "./errorHelpers";
 export async function createAppointment(appointmentData: CreateAppointment) {
   const response = await axiosDentallyInstance.post(
     DENTALLY_ENDPOINTS.appointment.create,
-    appointmentData,
+    { appointment: appointmentData },
   );
   return dentallyErrorHelper(response.data, DATA_TYPE.APPOINTMENT);
 }

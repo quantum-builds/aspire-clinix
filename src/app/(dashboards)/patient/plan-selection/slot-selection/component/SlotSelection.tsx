@@ -6,14 +6,18 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useGetAvailability } from "@/services/availability/availabilityMutation";
 import { useCreateCheckoutSession } from "@/services/checkout/checkoutMutation";
-import { useBookMembershipAppointment } from "@/services/membership/membershipMutation";
+import {
+  useBookWithPlan,
+  useCheckEligibility,
+} from "@/services/wellness/wellnessAppointmentMutation";
 import { format, isSameDay } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { CalendarDays } from "lucide-react";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
+import { getCurrentMembership } from "@/services/membership/membershipQuery";
 
 import {
   buildChips,
@@ -37,20 +41,29 @@ interface SlotSelectionProps {
   duration?: string;
 }
 
+const PENDING_CONFIRMATION_KEY = "pendingWellnessConfirmation";
+
 export default function SlotSelection({
   practitionerId,
   treatmentId,
   duration,
 }: SlotSelectionProps) {
-  const { data: session } = useSession();
-  const searchParams = useSearchParams();
-  const isMembershipBooking = searchParams.get("type") === "membership";
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const submittingRef = useRef(false);
 
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [stored, setStored] = useState<StoredSlot | null>(null);
   const [selectedSlotKey, setSelectedSlotKey] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showPlanConfirmation, setShowPlanConfirmation] = useState(false);
+  const [showLoginRequired, setShowLoginRequired] = useState(false);
+  const [isCheckingPlan, setIsCheckingPlan] = useState(false);
+  const [isProcessingPlanBooking, setIsProcessingPlanBooking] = useState(false);
+  const [paidModalType, setPaidModalType] = useState<
+    "PLAN_LIMIT" | "HYPERBARIC_LIMIT" | null
+  >(null);
   const [pendingSlot, setPendingSlot] = useState<{
     dayKey: string;
     chip: SlotChip;
@@ -77,6 +90,36 @@ export default function SlotSelection({
         parsed.treatmentId === treatmentId
       ) {
         setSelectedSlotKey(parsed.startTime);
+
+        if (
+          window.sessionStorage.getItem(PENDING_CONFIRMATION_KEY) === "true"
+        ) {
+          window.sessionStorage.removeItem(PENDING_CONFIRMATION_KEY);
+
+          const dayKey = formatInTimeZone(
+            new Date(parsed.startTime),
+            TIMEZONE,
+            DAY_FMT,
+          );
+
+          setPendingSlot({
+            dayKey,
+            chip: {
+              key: parsed.startTime,
+              label: formatInTimeZone(
+                new Date(parsed.startTime),
+                TIMEZONE,
+                "HH:mm",
+              ),
+              startTime: parsed.startTime,
+              finishTime: parsed.finishTime,
+            },
+          });
+
+    
+          setSelectedDay(keyToLocalDate(dayKey));
+          setShowConfirmation(true);
+        }
       }
     } catch (error) {
       console.error("Failed to load stored slot:", error);
@@ -89,7 +132,7 @@ export default function SlotSelection({
 
   const range = useMemo(() => buildRange(selectedKey), [selectedKey]);
 
-  const { data, isLoading } = useGetAvailability({
+  const { data, isLoading, refetch: refetchAvailability } = useGetAvailability({
     practitionerId,
     startTime: range.startTime,
     finishTime: range.finishTime,
@@ -102,18 +145,15 @@ export default function SlotSelection({
     error,
   } = useCreateCheckoutSession();
 
-  const { mutate: bookMembershipAppointment, isPending: isBookingMembership } =
-    useBookMembershipAppointment();
+  const { mutateAsync: checkEligibility } = useCheckEligibility();
+  const { mutateAsync: bookWithPlan } = useBookWithPlan();
 
   const handleSelect = (dayKey: string, chip: SlotChip) => {
-    const patientId = (session?.user as { id?: string })?.id ?? "";
-
     console.log("Slot clicked:", {
       dayKey,
       chip,
       treatmentId,
       practitionerId,
-      patientId,
       startTime: chip.startTime,
       finishTime: chip.finishTime,
     });
@@ -135,20 +175,34 @@ export default function SlotSelection({
       console.error("Failed to store selected slot:", error);
     }
 
-    // If membership booking, show confirmation modal
-    if (isMembershipBooking) {
-      setPendingSlot({ dayKey, chip });
-      setShowConfirmation(true);
-      return;
-    }
+  
+    setPendingSlot({ dayKey, chip });
+    setShowConfirmation(true);
+  };
 
-    // Otherwise, use existing Stripe checkout flow
+  const clearPendingBooking = () => {
+    setShowConfirmation(false);
+    setShowPlanConfirmation(false);
+    setShowLoginRequired(false);
+    setPaidModalType(null);
+    setPendingSlot(null);
+    setSelectedSlotKey(null);
+    setStored(null);
+    window.sessionStorage.removeItem(STORAGE_KEY);
+    window.sessionStorage.removeItem(PENDING_CONFIRMATION_KEY);
+  };
+
+  const handleCheckoutFallback = () => {
+    if (!pendingSlot) return;
+
+    const patientId = (session?.user as { id?: string })?.id ?? "";
+
     createCheckoutSession(
       {
         treatmentId: Number(treatmentId),
         practitionerId: practitionerId ?? "",
-        startTime: chip.startTime,
-        finishTime: chip.finishTime,
+        startTime: pendingSlot.chip.startTime,
+        finishTime: pendingSlot.chip.finishTime,
         reason: "Wellness Appointment",
         patientId,
       },
@@ -175,43 +229,183 @@ export default function SlotSelection({
     );
   };
 
-  const handleConfirmMembershipBooking = () => {
+  const handleConfirmAppointment = async () => {
     if (!pendingSlot) return;
+
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+
+    try {
+      if (status === "loading") return;
+
+      if (status !== "authenticated") {
+        setShowLoginRequired(true);
+        return;
+      }
+
+      setIsCheckingPlan(true);
+
+      try {
+        const membershipRes = await getCurrentMembership();
+        const membership =
+          membershipRes?.status && membershipRes.data
+            ? membershipRes.data
+            : null;
+
+        const hasActivePlan = Boolean(
+          membership &&
+            membership.status === "ACTIVE" &&
+            membership.plan,
+        );
+
+        if (hasActivePlan) {
+          setShowConfirmation(false);
+          setShowPlanConfirmation(true);
+        } else {
+          setShowConfirmation(false);
+          handleCheckoutFallback();
+        }
+      } catch (error) {
+        console.error("Failed to check membership:", error);
+        showToast("error", "Unable to check your plan. Please try again.");
+      } finally {
+        setIsCheckingPlan(false);
+      }
+    } finally {
+      submittingRef.current = false;
+    }
+  };
+
+  const handleLoginRequiredConfirm = () => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+
+    try {
+      window.sessionStorage.setItem(PENDING_CONFIRMATION_KEY, "true");
+    } catch (error) {
+      console.error("Failed to store pending confirmation:", error);
+    }
+
+    const slotUrl = `/patient/plan-selection/slot-selection?practitionerId=${
+      practitionerId ?? ""
+    }&treatmentId=${treatmentId ?? ""}${
+      duration ? `&duration=${encodeURIComponent(duration)}` : ""
+    }`;
+
+    router.push(`/patient/login?redirectTo=${encodeURIComponent(slotUrl)}`);
+  };
+
+  const handlePaidAppointmentConfirm = () => {
+    if (!pendingSlot) return;
+
+    setPaidModalType(null);
+    handleCheckoutFallback();
+  };
+
+  const handleConfirmPlanBooking = async () => {
+    if (!pendingSlot) return;
+
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+    setIsProcessingPlanBooking(true);
 
     const patientId = (session?.user as { id?: string })?.id ?? "";
 
-    bookMembershipAppointment(
-      {
+    const bookingPayload = {
+      treatmentId: Number(treatmentId),
+      practitionerId: practitionerId ?? "",
+      startTime: pendingSlot.chip.startTime,
+      finishTime: pendingSlot.chip.finishTime,
+      reason: "Wellness Appointment",
+      patientId,
+    };
+
+    try {
+      const eligibilityRes = await checkEligibility({
         treatmentId: Number(treatmentId),
-        practitionerId: practitionerId ?? "",
-        startTime: pendingSlot.chip.startTime,
-        finishTime: pendingSlot.chip.finishTime,
-        reason: "Wellness Appointment",
-        patientId,
-      },
-      {
-        onSuccess: (data) => {
-          console.log("Membership booking success:", data);
-          showToast("success", "Appointment booked successfully!");
-          setShowConfirmation(false);
-          setPendingSlot(null);
-          setSelectedSlotKey(null);
-          setStored(null);
-          window.sessionStorage.removeItem(STORAGE_KEY);
-          // Redirect to appointments page or show success
-          window.location.href = "/patient/appointments/upcoming";
-        },
-        onError: (error) => {
-          console.error("Membership booking failed:", error);
-          showToast("error", "Failed to book appointment. Please try again.");
-          setShowConfirmation(false);
-          setPendingSlot(null);
-          setSelectedSlotKey(null);
-          setStored(null);
-          window.sessionStorage.removeItem(STORAGE_KEY);
-        },
-      },
-    );
+      });
+
+      const eligibility = eligibilityRes.data?.status;
+
+      if (eligibility === "PLAN_LIMIT_REACHED") {
+        setShowPlanConfirmation(false);
+        setPaidModalType("PLAN_LIMIT");
+        return;
+      }
+
+      if (eligibility === "HYPERBARIC_LIMIT_REACHED") {
+        setShowPlanConfirmation(false);
+        setPaidModalType("HYPERBARIC_LIMIT");
+        return;
+      }
+
+      if (eligibility !== "OK") {
+        setShowPlanConfirmation(false);
+        handleCheckoutFallback();
+        return;
+      }
+
+      const bookingRes = await bookWithPlan(bookingPayload);
+      const outcome = bookingRes.data?.status;
+
+      if (outcome === "OK") {
+        showToast("success", "Appointment booked successfully!");
+        clearPendingBooking();
+
+        const remaining =
+          bookingRes.data?.remainingTreatments === null
+            ? "unlimited"
+            : String(bookingRes.data?.remainingTreatments ?? "");
+        const remainingHyperbaric =
+          bookingRes.data?.remainingHyperbaric === null
+            ? "unlimited"
+            : String(bookingRes.data?.remainingHyperbaric ?? "");
+
+        window.location.href = `/patient/plan-selection/appointment-booked?appointmentId=${
+          bookingRes.data?.appointmentId
+        }&treatmentId=${treatmentId ?? ""}&startTime=${encodeURIComponent(
+          pendingSlot.chip.startTime,
+        )}&finishTime=${encodeURIComponent(
+          pendingSlot.chip.finishTime,
+        )}${remaining ? `&remaining=${remaining}` : ""}${
+          remainingHyperbaric
+            ? `&remainingHyperbaric=${remainingHyperbaric}`
+            : ""
+        }`;
+        return;
+      }
+
+      if (outcome === "SLOT_TAKEN") {
+        showToast(
+          "error",
+          bookingRes.message ||
+            "This slot is no longer available. Please select another time.",
+        );
+        clearPendingBooking();
+        refetchAvailability();
+        return;
+      }
+
+      if (
+        outcome === "PLAN_LIMIT_REACHED" ||
+        outcome === "HYPERBARIC_LIMIT_REACHED"
+      ) {
+        setShowPlanConfirmation(false);
+        setPaidModalType(
+          outcome === "PLAN_LIMIT_REACHED" ? "PLAN_LIMIT" : "HYPERBARIC_LIMIT",
+        );
+        return;
+      }
+
+      setShowPlanConfirmation(false);
+      handleCheckoutFallback();
+    } catch (error) {
+      console.error("Plan booking failed:", error);
+      showToast("error", "Failed to book appointment. Please try again.");
+    } finally {
+      setIsProcessingPlanBooking(false);
+      submittingRef.current = false;
+    }
   };
 
   if (!practitionerId) {
@@ -272,13 +466,13 @@ export default function SlotSelection({
                     <button
                       key={chip.key}
                       type="button"
-                      disabled={isPending || isBookingMembership}
+                      disabled={isPending}
                       onClick={() => handleSelect(row.dayKey, chip)}
                       className={cn(
                         "flex items-center justify-center rounded-full border border-white/15 px-4 py-2 font-gillSans text-sm text-[var(--wt-name)] transition hover:border-[var(--wt-amount)]/60",
                         isSelected &&
                         "border-transparent bg-[var(--wt-btn)] text-[#0b0a08] hover:border-transparent",
-                        (isPending || isBookingMembership) &&
+                        isPending &&
                         "cursor-not-allowed opacity-50",
                       )}
                     >
@@ -385,19 +579,59 @@ export default function SlotSelection({
       <CustomConfirmationModal
         theme="dark"
         isOpen={showConfirmation}
-        onClose={() => {
-          setShowConfirmation(false);
-          setPendingSlot(null);
-          setSelectedSlotKey(null);
-          setStored(null);
-          window.sessionStorage.removeItem(STORAGE_KEY);
-        }}
-        onConfirm={handleConfirmMembershipBooking}
-        isPending={isBookingMembership}
+        onClose={clearPendingBooking}
+        onConfirm={handleConfirmAppointment}
+        isPending={isCheckingPlan}
         title="Confirm Appointment"
-        description="Are you sure you want to book this appointment using your membership plan?"
+        description="Are you sure you want to book this appointment?"
         confirmText="Confirm"
         cancelText="Cancel"
+      />
+
+      <CustomConfirmationModal
+        theme="dark"
+        isOpen={showLoginRequired}
+        onClose={() => setShowLoginRequired(false)}
+        onConfirm={handleLoginRequiredConfirm}
+        title="Login Required"
+        description="Please log in to book your appointment."
+        confirmText="Login"
+        cancelText="Cancel"
+      />
+
+      <CustomConfirmationModal
+        theme="dark"
+        isOpen={showPlanConfirmation}
+        onClose={() => {
+          setShowPlanConfirmation(false);
+          setShowConfirmation(true);
+        }}
+        onConfirm={handleConfirmPlanBooking}
+        isPending={isProcessingPlanBooking}
+        title="Book with Your Plan"
+        description="This appointment will be booked using your current plan. Do you want to continue?"
+        confirmText="Confirm"
+        cancelText="Cancel"
+      />
+
+      <CustomConfirmationModal
+        theme="dark"
+        isOpen={paidModalType !== null}
+        onClose={() => setPaidModalType(null)}
+        onConfirm={handlePaidAppointmentConfirm}
+        isPending={isPending}
+        title={
+          paidModalType === "PLAN_LIMIT"
+            ? "Plan Treatments Used"
+            : "Hyperbaric Sessions Used"
+        }
+        description={
+          paidModalType === "PLAN_LIMIT"
+            ? "You have used all treatments in your current plan this month. Would you like to book a single paid appointment?"
+            : "You have used all Hyperbaric sessions included in your plan this month. Would you like to book a single paid appointment?"
+        }
+        confirmText="Yes"
+        cancelText="No"
       />
     </div>
   );

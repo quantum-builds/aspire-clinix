@@ -1,17 +1,8 @@
-"use client";
-
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+
+const WELLNESS_BOOKING_HREF = "/patient/plan-selection/wellness-treatments";
 
 export default function LandingPage() {
-  const { data: session, status } = useSession();
-
-  const isLoggedInPatient =
-    status === "authenticated" && session?.user?.role === "PATIENT";
-
-  const wellnessHref = isLoggedInPatient
-    ? "/patient/plan-selection"
-    : "/patient/login?redirectTo=/patient/plan-selection";
 
   return (
     <main className="absolute inset-0 h-full w-full object-cover">
@@ -58,7 +49,7 @@ export default function LandingPage() {
             </Link>
 
             <Link
-              href={wellnessHref}
+              href={WELLNESS_BOOKING_HREF}
               className="group relative flex h-14 w-[230px] items-center justify-center overflow-hidden rounded-full bg-[#E3DFD3]  font-gillSans text-[20px] font-medium tracking-wide text-[#0B0A08]"
             >
               <span className="relative z-10 font-[family-name:var(--font-cormorant)]">

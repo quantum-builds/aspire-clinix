@@ -1,5 +1,4 @@
 import { buildAppointmentQuery } from "@/dentallyHelpers/appointment";
-import { getPatient } from "@/dentallyHelpers/patient";
 import { ListAppointment } from "@/types/appointment";
 import { AppointmentDateType } from "@/types/common";
 import { toCamel, toSnake } from "@/utils/typeConventionConvertor";
@@ -235,6 +234,11 @@ export const ENDPOINTS = {
     reactivate: "/api/stripe/membership/reactivate",
     current: "/api/stripe/membership/current",
     bookAppointment: "/api/membership/book-appointment",
+  },
+
+  wellnessAppointments: {
+    checkEligibility: "/api/wellness/appointments/check-eligibility",
+    bookWithPlan: "/api/wellness/appointments/book-with-plan",
   },
 
   checkout: {
