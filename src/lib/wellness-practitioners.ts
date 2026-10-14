@@ -1,7 +1,6 @@
 import { TPractitioner } from "@/types/common";
-
 export const TREATMENT_PRACTITIONER_NAMES: Record<number, string> = {
-  [1367621]: "Richard Porter", // Cryotherapy
+  [1367621]: "Muhammad Massab", // Cryotherapy
   [1367845]: "Contrast Therapy", // Contrast Session (Cryo + Sauna)
   [1367623]: "Hyperbaric Chamber", // Hyperbaric Oxygen Chamber
   [1367626]: "Ice Bath", // Ice Bath

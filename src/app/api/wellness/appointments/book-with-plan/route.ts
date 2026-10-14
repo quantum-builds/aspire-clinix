@@ -20,6 +20,9 @@ import {
 
 const prisma = new PrismaClient();
 
+const AVAILABILITY_PADDING_MS = 12 * 60 * 60 * 1000;
+const MIN_AVAILABILITY_RANGE_MS = 24 * 60 * 60 * 1000;
+
 function logDentallyError(context: string, error: unknown) {
   if (axios.isAxiosError(error)) {
     console.error(`[Dentally ${context}] request failed`, {
@@ -157,11 +160,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const now = Date.now();
+
+    if (new Date(startTime).getTime() <= now) {
+      return NextResponse.json(
+        createResponse(false, "This slot is in the past", null),
+        { status: 400 },
+      );
+    }
+
+    // Dentally rejects availability queries that start in the past, and
+    // expects a range of at least 24 hours.
     const windowStart = new Date(
-      new Date(startTime).getTime() - 12 * 60 * 60 * 1000,
+      Math.max(now, new Date(startTime).getTime() - AVAILABILITY_PADDING_MS),
     );
     const windowEnd = new Date(
-      new Date(finishTime).getTime() + 12 * 60 * 60 * 1000,
+      Math.max(
+        new Date(finishTime).getTime() + AVAILABILITY_PADDING_MS,
+        windowStart.getTime() + MIN_AVAILABILITY_RANGE_MS,
+      ),
     );
 
     const durationMinutes = Math.round(
@@ -176,14 +193,11 @@ export async function POST(req: NextRequest) {
         startTime: windowStart.toISOString(),
         finishTime: windowEnd.toISOString(),
         duration: durationMinutes,
-        test: true, // Enable test logging for availability check
       });
     } catch (error) {
       logDentallyError("availability", error);
       throw error;
     }
-
-    console.log("Availability response:", availabilityResponse);
 
     console.log("Availability response:", availabilityResponse);
 
