@@ -3,7 +3,6 @@ import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
 import { createAppointment } from "@/dentallyHelpers/appointment";
 import { CreateAppointment } from "@/types/appointment";
-import { AppointmentReason } from "@/types/appointment";
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("stripe-signature");
@@ -111,7 +110,7 @@ export async function POST(req: NextRequest) {
           finishTime,
           practitionerId: Number(practitioner_id),
           patientId: Number(patient_id),
-          reason: AppointmentReason.OTHER,
+          reason: reason || "Wellness Appointment",
         };
 
         if (

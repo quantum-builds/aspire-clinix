@@ -1,12 +1,21 @@
 "use client";
 
 import Button from "@/app/(dashboards)/components/Button";
+import { TreatmentCardSkeleton } from "@/app/(dashboards)/patient/plan-selection/wellness-treatments/component/skeletons/TreatmentGridSkeleton";
+import {
+  CONTRAST_SESSION_TREATMENT_ID,
+  HYPERBARIC_TREATMENT_ID,
+} from "@/lib/plan-treatment-cost";
+import { getCurrentMembership } from "@/services/membership/membershipQuery";
 import { TTreatment } from "@/types/common";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Clock } from "lucide-react";
 
 interface TreatmentCardProps {
   treatment: TTreatment;
+  practitionerId?: string | null;
 }
 
 function parseTreatmentTimes(description: string | null | undefined) {
@@ -25,20 +34,72 @@ function parseTreatmentTimes(description: string | null | undefined) {
   };
 }
 
-export default function TreatmentCard({ treatment }: TreatmentCardProps) {
+export default function TreatmentCard({
+  treatment,
+  practitionerId,
+}: TreatmentCardProps) {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
-  const isMembership = type === "membership";
   const { activeTime, totalTime } = parseTreatmentTimes(treatment.description);
 
+  const { status: sessionStatus } = useSession();
+  const isPatient = sessionStatus === "authenticated";
+
+  const { data: membershipData, isFetched: membershipFetched } = useQuery({
+    queryKey: ["currentMembership"],
+    queryFn: getCurrentMembership,
+    enabled: isPatient,
+  });
+
+  if (sessionStatus === "loading" || (isPatient && !membershipFetched)) {
+    return <TreatmentCardSkeleton />;
+  }
+
+  const membership = membershipData?.data;
+  const plan = membership?.plan;
+
+  let showPrice = false;
+
+  if (!membership || !plan || membership.status !== "ACTIVE") {
+    showPrice = true;
+  } else {
+    const remainingTreatments =
+      plan.treatmentLimit === null
+        ? Infinity
+        : Math.max(0, plan.treatmentLimit - membership.usedTreatments);
+    const remainingHyperbaric =
+      plan.hyperbaricLimit === null
+        ? Infinity
+        : Math.max(0, plan.hyperbaricLimit - membership.usedHyperbaric);
+
+    if (remainingTreatments === 0) {
+      showPrice = true;
+    } else if (
+      remainingTreatments < 2 &&
+      treatment.id === CONTRAST_SESSION_TREATMENT_ID
+    ) {
+      showPrice = true;
+    } else if (treatment.id === HYPERBARIC_TREATMENT_ID) {
+      showPrice = remainingHyperbaric <= 0;
+    }
+  }
+
+  const bookHref = practitionerId
+    ? `/patient/plan-selection/slot-selection?practitionerId=${encodeURIComponent(
+        practitionerId,
+      )}&treatmentId=${treatment.id}${
+        treatment.duration ? `&duration=${treatment.duration}` : ""
+      }${type ? `&type=${type}` : ""}`
+    : null;
+
   return (
-    <div className="flex flex-col rounded-[28px] border border-[#56493A73] bg-[#12100D] opacity-0.82 px-6 py-8 text-left  transition hover:border-[var(--wt-amount)]/40 sm:px-8 sm:py-9">
+    <div className="flex flex-col rounded-[28px] border border-white/15 bg-[#56493A73] opacity-0.82 px-6 py-8 text-left  transition hover:border-[var(--wt-amount)]/40 sm:px-8 sm:py-9">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <h2 className="min-w-0 font-[family-name:var(--font-cormorant)] text-[30px] font-normal leading-[36px] tracking-[0.9px] text-[var(--wt-name)] sm:text-[36px] sm:leading-[40px]">
           {treatment.name}
         </h2>
 
-        {!isMembership && (treatment.price || treatment.code) && (
+        {showPrice && (treatment.price || treatment.code) && (
           <div className="flex flex-col items-end gap-1 text-right">
             {treatment.price && (
               <span className="font-[family-name:var(--font-cormorant)] text-[36px] font-normal leading-none text-[var(--wt-amount)] sm:text-[44px]">
@@ -103,13 +164,22 @@ export default function TreatmentCard({ treatment }: TreatmentCardProps) {
           <span />
         )}
 
-        <Button
-          text="Book Treatment"
-          className="!h-9 !w-full !rounded-full !bg-[var(--wt-btn)] !px-2 !py-[10px] text-[12px] !font-medium !uppercase !tracking-wide !text-[#0b0a08] hover:!opacity-90 sm:!w-[163.5px]"
-          href={`/patient/plan-selection/practitioners?treatmentId=${treatment.id}${
-            treatment.duration ? `&duration=${treatment.duration}` : ""
-          }${type ? `&type=${type}` : ""}`}
-        />
+        {practitionerId ? (
+          <Button
+            text="Book Treatment"
+            className="!h-9 !w-full !rounded-full !bg-[var(--wt-btn)] !px-2 !py-[10px] text-[12px] !font-medium !uppercase !tracking-wide !text-[#0b0a08] hover:!opacity-90 sm:!w-[163.5px]"
+            href={bookHref!}
+          />
+        ) : (
+          <button
+            type="button"
+            disabled
+            title="No practitioner is currently assigned to this treatment."
+            className="flex h-9 w-full cursor-not-allowed items-center justify-center rounded-full bg-[var(--wt-btn)] px-2 py-[10px] text-[12px] font-medium uppercase tracking-wide text-[#0b0a08] opacity-50 sm:w-[163.5px]"
+          >
+            Practitioner unavailable
+          </button>
+        )}
       </div>
     </div>
   );

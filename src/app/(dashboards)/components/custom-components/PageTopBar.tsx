@@ -51,7 +51,7 @@ export default function PageTopBar({
   const [participantType, setParticipantType] = useState<string>("patient");
   return (
     <div className={cn("flex justify-between", filtersBelow ? "flex-col gap-3" : "items-center")}>
-      <div className="flex items-center justify-between">
+      <div className="flex w-full items-center justify-between ">
         <div className="flex items-center gap-3">
           {showBackBtn && (
             <div

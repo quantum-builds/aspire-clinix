@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -11,7 +12,7 @@ interface CustomConfirmationModalProps {
   onConfirm: () => void;
   isPending?: boolean;
   title: string;
-  description: string;
+  description: ReactNode;
   cancelText?: string;
   icon?: string;
   confirmText?: string;

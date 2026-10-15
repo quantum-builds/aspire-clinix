@@ -1,4 +1,5 @@
 import SlotSelectionShell from "./component/slot-selection";
+import WellnessTopActions from "@/app/(dashboards)/patient/plan-selection/components/WellnessTopActions";
 
 export default async function Page(props: {
   searchParams?: Promise<{
@@ -10,7 +11,8 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
 
   return (
-    <div className="min-h-screen bg-[#0B0A08]">
+    <div className="min-h-screen ">
+      <WellnessTopActions />
       <SlotSelectionShell
         practitionerId={searchParams?.practitionerId}
         treatmentId={searchParams?.treatmentId}

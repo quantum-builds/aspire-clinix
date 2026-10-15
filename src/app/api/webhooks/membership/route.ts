@@ -128,7 +128,6 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // Create the PatientMembership record
         await prisma.patientMembership.create({
           data: {
             patientId: patient.id,
@@ -183,7 +182,6 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // If there's a pending upgrade, activate it now
       if (membership.pendingPlanId) {
         const newPlan = await prisma.membershipPlan.findUnique({
           where: { id: membership.pendingPlanId },
@@ -216,7 +214,11 @@ export async function POST(req: NextRequest) {
           );
         }
       } else {
-        // Just update period dates and cancel status
+
+        const periodRolledOver =
+          new Date(subscription.current_period_start * 1000).getTime() !==
+          membership.currentPeriodStart.getTime();
+
         await prisma.patientMembership.update({
           where: { id: membership.id },
           data: {
@@ -229,6 +231,14 @@ export async function POST(req: NextRequest) {
             cancelAtPeriodEnd: subscription.cancel_at_period_end,
             status:
               subscription.status === "canceled" ? "CANCELLED" : "ACTIVE",
+            ...(periodRolledOver
+              ? {
+                  usedTreatments: 0,
+                  usedHyperbaric: 0,
+                  usedBreathwork: 0,
+                  usedGuestPasses: 0,
+                }
+              : {}),
           },
         });
       }

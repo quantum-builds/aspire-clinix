@@ -1,0 +1,9 @@
+{
+  "appointment": {
+    "start_time": "2026-10-13T21:40:00.000Z",
+    "finish_time": "2026-10-13T22:20:00.000Z",
+    "patient_id": 116,
+    "practitioner_id":349385,
+    "reason": "Wellness Appointment"
+  }
+}
