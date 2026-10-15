@@ -13,7 +13,14 @@ import {
 import { format, isSameDay } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { CalendarDays } from "lucide-react";
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
@@ -57,8 +64,9 @@ export default function SlotSelection({
   const [stored, setStored] = useState<StoredSlot | null>(null);
   const [selectedSlotKey, setSelectedSlotKey] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [showPlanConfirmation, setShowPlanConfirmation] = useState(false);
-  const [showLoginRequired, setShowLoginRequired] = useState(false);
+  const [confirmationMode, setConfirmationMode] = useState<
+    "login" | "plan" | "standard" | null
+  >(null);
   const [isCheckingPlan, setIsCheckingPlan] = useState(false);
   const [isProcessingPlanBooking, setIsProcessingPlanBooking] = useState(false);
   const [paidModalType, setPaidModalType] = useState<
@@ -68,6 +76,37 @@ export default function SlotSelection({
     dayKey: string;
     chip: SlotChip;
   } | null>(null);
+
+  const prepareConfirmation = useCallback(async () => {
+    if (status === "loading") return;
+
+    if (status !== "authenticated") {
+      setConfirmationMode("login");
+      setShowConfirmation(true);
+      return;
+    }
+
+    setIsCheckingPlan(true);
+
+    try {
+      const membershipRes = await getCurrentMembership();
+      const membership =
+        membershipRes?.status && membershipRes.data
+          ? membershipRes.data
+          : null;
+      const hasActivePlan = Boolean(
+        membership && membership.status === "ACTIVE" && membership.plan,
+      );
+
+      setConfirmationMode(hasActivePlan ? "plan" : "standard");
+      setShowConfirmation(true);
+    } catch (error) {
+      console.error("Failed to check membership:", error);
+      showToast("error", "Unable to check your plan. Please try again.");
+    } finally {
+      setIsCheckingPlan(false);
+    }
+  }, [status]);
 
   const appointmentDuration = useMemo(() => {
     const parsed = Number(duration);
@@ -116,15 +155,14 @@ export default function SlotSelection({
             },
           });
 
-    
           setSelectedDay(keyToLocalDate(dayKey));
-          setShowConfirmation(true);
+          void prepareConfirmation();
         }
       }
     } catch (error) {
       console.error("Failed to load stored slot:", error);
     }
-  }, [practitionerId, treatmentId]);
+  }, [prepareConfirmation, practitionerId, treatmentId]);
 
   const todayKey = todayKeyLondon();
 
@@ -176,14 +214,14 @@ export default function SlotSelection({
     }
 
   
-    setPendingSlot({ dayKey, chip });
-    setShowConfirmation(true);
+    const nextPendingSlot = { dayKey, chip };
+    setPendingSlot(nextPendingSlot);
+    void prepareConfirmation();
   };
 
   const clearPendingBooking = () => {
     setShowConfirmation(false);
-    setShowPlanConfirmation(false);
-    setShowLoginRequired(false);
+    setConfirmationMode(null);
     setPaidModalType(null);
     setPendingSlot(null);
     setSelectedSlotKey(null);
@@ -236,41 +274,9 @@ export default function SlotSelection({
     submittingRef.current = true;
 
     try {
-      if (status === "loading") return;
-
-      if (status !== "authenticated") {
-        setShowLoginRequired(true);
-        return;
-      }
-
-      setIsCheckingPlan(true);
-
-      try {
-        const membershipRes = await getCurrentMembership();
-        const membership =
-          membershipRes?.status && membershipRes.data
-            ? membershipRes.data
-            : null;
-
-        const hasActivePlan = Boolean(
-          membership &&
-            membership.status === "ACTIVE" &&
-            membership.plan,
-        );
-
-        if (hasActivePlan) {
-          setShowConfirmation(false);
-          setShowPlanConfirmation(true);
-        } else {
-          setShowConfirmation(false);
-          handleCheckoutFallback();
-        }
-      } catch (error) {
-        console.error("Failed to check membership:", error);
-        showToast("error", "Unable to check your plan. Please try again.");
-      } finally {
-        setIsCheckingPlan(false);
-      }
+      setShowConfirmation(false);
+      setConfirmationMode(null);
+      handleCheckoutFallback();
     } finally {
       submittingRef.current = false;
     }
@@ -328,19 +334,22 @@ export default function SlotSelection({
       const eligibility = eligibilityRes.data?.status;
 
       if (eligibility === "PLAN_LIMIT_REACHED") {
-        setShowPlanConfirmation(false);
+        setShowConfirmation(false);
+        setConfirmationMode(null);
         setPaidModalType("PLAN_LIMIT");
         return;
       }
 
       if (eligibility === "HYPERBARIC_LIMIT_REACHED") {
-        setShowPlanConfirmation(false);
+        setShowConfirmation(false);
+        setConfirmationMode(null);
         setPaidModalType("HYPERBARIC_LIMIT");
         return;
       }
 
       if (eligibility !== "OK") {
-        setShowPlanConfirmation(false);
+        setShowConfirmation(false);
+        setConfirmationMode(null);
         handleCheckoutFallback();
         return;
       }
@@ -390,14 +399,16 @@ export default function SlotSelection({
         outcome === "PLAN_LIMIT_REACHED" ||
         outcome === "HYPERBARIC_LIMIT_REACHED"
       ) {
-        setShowPlanConfirmation(false);
+        setShowConfirmation(false);
+        setConfirmationMode(null);
         setPaidModalType(
           outcome === "PLAN_LIMIT_REACHED" ? "PLAN_LIMIT" : "HYPERBARIC_LIMIT",
         );
         return;
       }
 
-      setShowPlanConfirmation(false);
+      setShowConfirmation(false);
+      setConfirmationMode(null);
       handleCheckoutFallback();
     } catch (error) {
       console.error("Plan booking failed:", error);
@@ -503,7 +514,7 @@ export default function SlotSelection({
   );
 
   return (
-    <div className="flex w-full flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-6">
       <div className="flex w-full justify-end">
         <button
           type="button"
@@ -580,37 +591,47 @@ export default function SlotSelection({
         theme="dark"
         isOpen={showConfirmation}
         onClose={clearPendingBooking}
-        onConfirm={handleConfirmAppointment}
-        isPending={isCheckingPlan}
-        title="Confirm Appointment"
-        description="Are you sure you want to book this appointment?"
-        confirmText="Confirm"
-        cancelText="Cancel"
-      />
-
-      <CustomConfirmationModal
-        theme="dark"
-        isOpen={showLoginRequired}
-        onClose={() => setShowLoginRequired(false)}
-        onConfirm={handleLoginRequiredConfirm}
-        title="Login Required"
-        description="Please log in to book your appointment."
-        confirmText="Login"
-        cancelText="Cancel"
-      />
-
-      <CustomConfirmationModal
-        theme="dark"
-        isOpen={showPlanConfirmation}
-        onClose={() => {
-          setShowPlanConfirmation(false);
-          setShowConfirmation(true);
-        }}
-        onConfirm={handleConfirmPlanBooking}
-        isPending={isProcessingPlanBooking}
-        title="Book with Your Plan"
-        description="This appointment will be booked using your current plan. Do you want to continue?"
-        confirmText="Confirm"
+        onConfirm={
+          confirmationMode === "login"
+            ? handleLoginRequiredConfirm
+            : confirmationMode === "plan"
+              ? handleConfirmPlanBooking
+              : handleConfirmAppointment
+        }
+        isPending={isCheckingPlan || isProcessingPlanBooking}
+        title={
+          confirmationMode === "login"
+            ? "Confirm Your Appointment"
+            : confirmationMode === "plan"
+              ? "Confirm Your Wellness Appointment"
+              : "Confirm Appointment"
+        }
+        description={
+          confirmationMode === "login"
+            ? (
+                <>
+                  You’ve selected a time slot for your Wellness Appointment.
+                  Please <strong>log in</strong> to your account to continue
+                  and confirm your booking.
+                </>
+              )
+            : confirmationMode === "plan"
+              ? "You’ve selected a time slot for your Wellness Appointment. This appointment will be booked using your current membership plan. Do you want to continue?"
+                : (
+                    <>
+                      Are you sure you want to proceed with booking this
+                      appointment? After confirmation, you’ll be redirected to{" "}
+                      <strong>Stripe</strong> to complete your payment.
+                    </>
+                  )
+        }
+        confirmText={
+          confirmationMode === "login"
+            ? "Log In"
+            : confirmationMode === "plan"
+              ? "Confirm Appointment"
+              : "Confirm"
+        }
         cancelText="Cancel"
       />
 

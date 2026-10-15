@@ -16,7 +16,7 @@ export default function WellnessTreatmentsPage() {
     <main className="relative min-h-screen  px-4 py-20 sm:px-6 lg:px-8">
       <div
         aria-hidden
-        className="pointer-events-none absolute left-[-250px] top-0 h-[700px] w-[1100px] bg-[radial-gradient(ellipse_at_center,rgba(214,188,160,0.18)_0%,rgba(255,255,255,0)_65%)]"
+        className="pointer-events-none absolute left-[-250px] top-0 h-[700px] w-[1100px] bg-[radial-gradient(ellipse_at_center,rgba(214,188,160,0.18)_0%,rgba(255,255,255,0)_55%)]"
       />
 
       <div className="relative mx-auto w-full max-w-[1000px]">

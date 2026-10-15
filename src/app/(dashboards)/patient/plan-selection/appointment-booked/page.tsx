@@ -80,7 +80,7 @@ export default async function AppointmentBookedPage({
         : null;
 
   return (
-    <div className="relative min-h-screen bg-[#0B0A08]">
+    <div className="relative min-h-screen">
       <div
         aria-hidden
         className="pointer-events-none absolute left-[-250px] top-0 h-[750px] w-[1100px] bg-[radial-gradient(ellipse_at_center,rgba(214,188,160,0.18)_0%,rgba(255,255,255,0)_65%)]"

@@ -7,6 +7,7 @@ import {
   isAccessGateEnabled,
   safeEqual,
 } from "@/lib/planAccess";
+import { safeRedirectPath } from "@/lib/safeRedirect";
 
 const secret = process.env.NEXTAUTH_SECRET; // required for getToken
 
@@ -108,11 +109,11 @@ export async function middleware(request: NextRequest) {
 
   // Already logged-in patient should not see login/register/otp pages
   if (patientPublic.includes(pathname) && role === "PATIENT") {
-    const redirectTo = request.nextUrl.searchParams.get("redirectTo");
-    if (redirectTo?.startsWith("/")) {
-      return NextResponse.redirect(new URL(redirectTo, request.url));
-    }
-    return NextResponse.redirect(new URL("/patient", request.url));
+    const redirectTo = safeRedirectPath(
+      request.nextUrl.searchParams.get("redirectTo"),
+      "/patient",
+    );
+    return NextResponse.redirect(new URL(redirectTo, request.url));
   }
 
   // Already logged-in dentist should not see login/register/otp pages

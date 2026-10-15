@@ -1,11 +1,32 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-export default function WellnessTopActions() {
+const TREATMENTS_PATH = "/patient/plan-selection/wellness-treatments";
+const PLANS_PATH = "/patient/plan-selection/plans";
+
+// Treatment page links to the plan page; every other wellness page links back
+// to treatments.
+function getSecondaryAction(pathname: string) {
+  return pathname === TREATMENTS_PATH
+    ? { label: "View plans", href: PLANS_PATH }
+    : { label: "View Treatments", href: TREATMENTS_PATH };
+}
+
+function getLoginHref(pathname: string, search: string) {
+  const returnTo = search ? `${pathname}?${search}` : pathname;
+  return `/patient/login?redirectTo=${encodeURIComponent(returnTo)}`;
+}
+
+function TopActions({ search }: { search: string }) {
   const { status } = useSession();
+  const pathname = usePathname();
   const isAuthenticated = status === "authenticated";
+  const loginHref = getLoginHref(pathname, search);
+  const secondaryAction = getSecondaryAction(pathname);
 
   return (
     <div className="relative z-20 w-full border-b border-white/5">
@@ -19,7 +40,7 @@ export default function WellnessTopActions() {
               />
               <span>Already have a plan?</span>
               <Link
-                href="/patient/login"
+                href={loginHref}
                 className="text-[var(--wt-amount)] hover:underline decoration-[var(--wt-amount)]/50 underline-offset-4 transition hover:decoration-[var(--wt-amount)]"
               >
                 Sign in to access your discounted prices.
@@ -36,20 +57,35 @@ export default function WellnessTopActions() {
         <div className="flex items-center gap-3">
           {!isAuthenticated && (
             <Link
-              href="/patient/login"
+              href={loginHref}
               className="flex h-9 items-center justify-center rounded-full border border-white/15 px-5 font-gillSans text-xs font-medium uppercase tracking-wide text-[var(--wt-name)] transition hover:border-[var(--wt-amount)] sm:text-sm"
             >
               Sign in
             </Link>
           )}
           <Link
-            href="/patient/plan-selection/plans"
+            href={secondaryAction.href}
             className="flex h-9 items-center justify-center rounded-full bg-[var(--wt-amount)] px-5 font-gillSans text-xs font-medium uppercase tracking-wide text-[#0B0A08] transition hover:opacity-90 sm:text-sm"
           >
-            View plans
+            {secondaryAction.label}
           </Link>
         </div>
       </div>
     </div>
+  );
+}
+
+function TopActionsWithSearch() {
+  const searchParams = useSearchParams();
+  return <TopActions search={searchParams.toString()} />;
+}
+
+export default function WellnessTopActions() {
+  // useSearchParams needs a Suspense boundary; the fallback renders the same
+  // header without the query string until it resolves.
+  return (
+    <Suspense fallback={<TopActions search="" />}>
+      <TopActionsWithSearch />
+    </Suspense>
   );
 }

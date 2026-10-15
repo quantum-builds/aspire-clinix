@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/app/(dashboards)/components/Button";
+import { TreatmentCardSkeleton } from "@/app/(dashboards)/patient/plan-selection/wellness-treatments/component/skeletons/TreatmentGridSkeleton";
 import {
   CONTRAST_SESSION_TREATMENT_ID,
   HYPERBARIC_TREATMENT_ID,
@@ -44,11 +45,15 @@ export default function TreatmentCard({
   const { status: sessionStatus } = useSession();
   const isPatient = sessionStatus === "authenticated";
 
-  const { data: membershipData } = useQuery({
+  const { data: membershipData, isFetched: membershipFetched } = useQuery({
     queryKey: ["currentMembership"],
     queryFn: getCurrentMembership,
     enabled: isPatient,
   });
+
+  if (sessionStatus === "loading" || (isPatient && !membershipFetched)) {
+    return <TreatmentCardSkeleton />;
+  }
 
   const membership = membershipData?.data;
   const plan = membership?.plan;
@@ -88,7 +93,7 @@ export default function TreatmentCard({
     : null;
 
   return (
-    <div className="flex flex-col rounded-[28px] border border-[#56493A73] bg-[#12100D] opacity-0.82 px-6 py-8 text-left  transition hover:border-[var(--wt-amount)]/40 sm:px-8 sm:py-9">
+    <div className="flex flex-col rounded-[28px] border border-white/15 bg-[#56493A73] opacity-0.82 px-6 py-8 text-left  transition hover:border-[var(--wt-amount)]/40 sm:px-8 sm:py-9">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <h2 className="min-w-0 font-[family-name:var(--font-cormorant)] text-[30px] font-normal leading-[36px] tracking-[0.9px] text-[var(--wt-name)] sm:text-[36px] sm:leading-[40px]">
           {treatment.name}

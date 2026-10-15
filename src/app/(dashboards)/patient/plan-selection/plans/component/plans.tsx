@@ -201,9 +201,7 @@ export default function PlansPage() {
   };
 
   const handleButtonClick = (planName: string) => {
-    // Buying, cancelling, upgrading or downgrading a membership requires a
-    // logged-in patient. Ask for confirmation first, then send the visitor
-    // to login (restoring the Plan page after OTP verification).
+  
     if (status === "loading") return;
 
     if (!isPatient) {
@@ -285,7 +283,7 @@ export default function PlansPage() {
             </p>
           </div>
 
-          <div className="mx-auto mt-10 grid max-w-[650px] gap-6 sm:grid-cols-1">
+          <div className="mx-auto mt-10 grid max-w-[750px] gap-6 sm:grid-cols-1">
             {MEMBERSHIP_PLANS.map((plan) => {
               const isCurrentPlan =
                 currentMembership?.currentPlanName === plan.name;
@@ -389,8 +387,14 @@ export default function PlansPage() {
         onClose={() => setShowLoginRequired(false)}
         onConfirm={handleLoginRedirect}
         title="Login Required"
-        description="You have to login first to Buy a plan."
-        confirmText="Login"
+        description={
+          <>
+            You’ve selected a membership plan for your Wellness Appointments.
+            Please <strong>log in</strong> to your account to continue with
+            your selected plan and complete your purchase.
+          </>
+        }
+        confirmText="Log In"
         cancelText="Cancel"
       />
     </main>
