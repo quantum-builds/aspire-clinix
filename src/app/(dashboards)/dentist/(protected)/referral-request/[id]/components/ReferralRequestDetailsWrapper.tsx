@@ -121,6 +121,7 @@ export default async function ReferralRequestDetail({
       <PatientReferralDetails
         id={id}
         showModel={showModel}
+        appointmentId={appointment?.id}
         patientDetials={patientDetails}
         dentistDetails={dentistDetails}
         referralFormDetails={referralFormDetails}

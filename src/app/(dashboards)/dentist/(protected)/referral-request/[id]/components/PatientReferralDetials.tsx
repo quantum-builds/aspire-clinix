@@ -12,6 +12,7 @@ import { DialogContent, DialogTitle } from "@/components/ui/dialog";
 interface PatientReferralDetailsProps {
   id: string;
   showModel: boolean;
+  appointmentId?: number | string;
   patientDetials: {
     name: string;
     age: string;
@@ -49,6 +50,7 @@ interface PatientReferralDetailsProps {
 export default function PatientReferralDetails({
   id,
   showModel,
+  appointmentId,
   patientDetials,
   dentistDetails,
   referralFormDetails,
@@ -77,6 +79,13 @@ export default function PatientReferralDetails({
         <p className="font-medium text-dashboardTextBlack text-2xl">
           Patient & Referral Dentist Details
         </p>
+
+        {appointmentId && (
+          <CustomButton
+            text="Create Report"
+            href={`/dentist/appointments/${appointmentId}/reports/new`}
+          />
+        )}
       </div>
 
       <div className="grid xl:grid-cols-2 gap-3">

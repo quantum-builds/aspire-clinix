@@ -127,6 +127,7 @@ export default async function AssignedWrapper({
       <AssignedPatientDetails
         id={id}
         showModel={showModel}
+        appointmentId={String(appointment.id)}
         referralFormDetails={referralFormDetails}
         patientDetials={patientDetails}
         assignedDentistDetails={assignedDentistDetails}

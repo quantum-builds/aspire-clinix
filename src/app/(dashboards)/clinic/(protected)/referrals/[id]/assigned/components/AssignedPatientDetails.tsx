@@ -1,12 +1,14 @@
 "use client";
 
 import SupportingDocumentsCard from "@/app/(dashboards)/components/SupportingDocumentsCard";
+import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { ReadOnlyCheckbox } from "@/components/ReadOnlyCheckBox";
 import { usePathname } from "next/navigation";
 
 interface PatientReferralDetailsProps {
   id: string;
   showModel: boolean;
+  appointmentId?: string;
   patientDetials: {
     referenceId?: string;
     name: string;
@@ -42,6 +44,7 @@ interface PatientReferralDetailsProps {
 export default function AssignedPatientDetails({
   id,
   showModel,
+  appointmentId,
   referralFormDetails,
   patientDetials,
   assignedDentistDetails,
@@ -56,6 +59,13 @@ export default function AssignedPatientDetails({
         <p className="font-medium text-dashboardTextBlack text-2xl">
           Patient & Referral Dentist Details
         </p>
+
+        {appointmentId && (
+          <CustomButton
+            text="Create Report"
+            href={`/clinic/appointments/${appointmentId}/reports/new`}
+          />
+        )}
         
       </div>
 
