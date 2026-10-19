@@ -37,6 +37,9 @@ export default async function TreatmentGridWrapper() {
 
   const practitionerIdByTreatment: Record<number, string | null> = {};
 
+  console.log("Treatments from api:", treatments);
+  // console.log("Practitioners:", practitioners);
+
   for (const treatment of treatments) {
     const practitioner = findPractitionerForTreatment(
       practitioners,
@@ -46,7 +49,14 @@ export default async function TreatmentGridWrapper() {
     practitionerIdByTreatment[treatment.id] = practitioner
       ? String(practitioner.id)
       : null;
+
+    if (treatment.id === 1367845) {
+      console.log("Treatment:", treatment);
+      console.log("Practitioner:", practitioner);
+    }
   }
+
+  console.log("practitionerIdByTreatment", practitionerIdByTreatment);
 
   return (
     <TreatmentGrid

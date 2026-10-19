@@ -3,7 +3,9 @@
 import { CalenderInputIconV2, CancelIcon, TimeIconV2 } from "@/assets";
 import { useChangeAppointmentState } from "@/services/appointments/appointmentMutation";
 import { AppointmentState, TAppointment } from "@/types/appointment";
-import { formatDate, formatTime } from "@/utils/formatDateTime";
+import { formatDate } from "@/utils/formatDateTime";
+import { TIMEZONE } from "@/utils/slotSelectionUtils";
+import { formatInTimeZone } from "date-fns-tz";
 import Image from "next/image";
 import { AppointmentStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -63,8 +65,8 @@ export default function FirstUpcomingAppointmentCard({
             <div className="flex items-center gap-1">
               <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />
               <p className="text-lg">
-                {formatTime(appointment.startTime)} -{" "}
-                {formatTime(appointment.finishTime)}
+                {formatInTimeZone(new Date(appointment.startTime), TIMEZONE, "HH:mm")} -{" "}
+                {formatInTimeZone(new Date(appointment.finishTime), TIMEZONE, "HH:mm")}
               </p>
             </div>
           </div>

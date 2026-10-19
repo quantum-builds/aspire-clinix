@@ -3,7 +3,9 @@
 import { capitalize } from "@/utils/formatWords";
 import { CalenderInputIconV2, DropDownIcon, TimeIconV2 } from "@/assets";
 import { AppointmentState, TAppointment } from "@/types/appointment";
-import { formatDate, formatTime } from "@/utils/formatDateTime";
+import { formatDate } from "@/utils/formatDateTime";
+import { TIMEZONE } from "@/utils/slotSelectionUtils";
+import { formatInTimeZone } from "date-fns-tz";
 import Image from "next/image";
 import PatientDetailsModal from "../../components/PatientDetailsModal";
 import { useState } from "react";
@@ -83,8 +85,8 @@ export default function PastAppointmentCard({
           <div className="flex items-center gap-1">
             <Image src={TimeIconV2} alt="Time Icon" className="w-4 h-4" />
             <p className="text-lg">
-              {formatTime(appointment.startTime)} -{" "}
-              {formatTime(appointment.finishTime)}
+              {formatInTimeZone(new Date(appointment.startTime), TIMEZONE, "HH:mm")} -{" "}
+              {formatInTimeZone(new Date(appointment.finishTime), TIMEZONE, "HH:mm")}
             </p>
           </div>
         </div>

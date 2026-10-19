@@ -298,10 +298,10 @@ export default function PlansPage() {
               return (
                 <div
                   key={plan.name}
-                  className={`relative rounded-[28px] bg-[#12100D]/[0.82] px-6 py-8 text-left shadow-[0_30px_50px_-20px_rgba(0,0,0,0.35)] transition sm:px-8 sm:py-9 ${
+                  className={`relative rounded-[28px]  bg-[#56493A73] px-6 py-8 text-left shadow-[0_30px_50px_-20px_rgba(0,0,0,0.35)] transition sm:px-8 sm:py-9 ${
                     isCurrentPlan
                       ? "border-2 border-[var(--wt-amount)]"
-                      : "border border-[#56493A]/45 hover:border-[var(--wt-amount)]/40"
+                      : "border  border-white/15 hover:border-[var(--wt-amount)]/40"
                   }`}
                 >
                   {isCurrentPlan && (

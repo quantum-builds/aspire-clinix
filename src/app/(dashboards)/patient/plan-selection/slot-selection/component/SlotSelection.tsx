@@ -519,7 +519,7 @@ export default function SlotSelection({
         <button
           type="button"
           onClick={() => setIsCalendarOpen((open) => !open)}
-          className="inline-flex h-9 items-center justify-center gap-2 rounded-full bg-[var(--wt-btn)] px-6 py-[10px] font-gillSans text-sm font-medium uppercase tracking-wide text-[#0b0a08] transition hover:opacity-90"
+          className="inline-flex h-9 items-center justify-center gap-2 rounded-full  border-white/15 bg-[var(--wt-amount)] px-6 py-[10px] font-gillSans text-sm font-medium uppercase tracking-wide text-[#0b0a08] transition hover:opacity-90"
           aria-expanded={isCalendarOpen}
         >
           <CalendarDays
@@ -564,7 +564,7 @@ export default function SlotSelection({
         </div>
       )}
       {storedMatches && stored && (
-        <div className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-left">
+        <div className="w-full rounded-2xl border border-white/15 bg-[#56493A73] px-5 py-4 text-left">
           <p className="font-gillSans text-xs uppercase tracking-[0.18em] text-[var(--wt-amount)]">
             Selected slot
           </p>

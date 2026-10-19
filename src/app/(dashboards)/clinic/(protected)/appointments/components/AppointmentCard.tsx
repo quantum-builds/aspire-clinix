@@ -4,7 +4,9 @@ import CustomButton from "@/app/(dashboards)/components/custom-components/Custom
 import { CalenderInputIconV2, TimeIconV2 } from "@/assets";
 import { TAppointment } from "@/types/appointment";
 import { AppointmentDateType } from "@/types/common";
-import { formatDate, formatTime } from "@/utils/formatDateTime";
+import { formatDate } from "@/utils/formatDateTime";
+import { TIMEZONE } from "@/utils/slotSelectionUtils";
+import { formatInTimeZone } from "date-fns-tz";
 import Image from "next/image";
 
 interface UpcomingAppointmentCardProps {
@@ -81,8 +83,8 @@ export default function UpcomingAppointmentCard({
             <p>
               Time:{" "}
               <span className="font-medium text-lg">
-                {formatTime(appointment.startTime)} -{" "}
-                {formatTime(appointment.finishTime)}
+                {formatInTimeZone(new Date(appointment.startTime), TIMEZONE, "HH:mm")} -{" "}
+                {formatInTimeZone(new Date(appointment.finishTime), TIMEZONE, "HH:mm")}
               </span>
             </p>
           </div>

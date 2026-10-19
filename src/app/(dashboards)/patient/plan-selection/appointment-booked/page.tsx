@@ -88,7 +88,7 @@ export default async function AppointmentBookedPage({
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-[1000px] items-center justify-center px-4 py-20 sm:px-6 lg:px-8">
         <section className="w-full max-w-[650px]">
-          <div className="rounded-[28px] border border-[#56493A]/45 bg-[#12100D]/[0.82] px-6 py-10 text-center shadow-[0_30px_50px_-20px_rgba(0,0,0,0.35)] sm:px-8 sm:py-12">
+          <div className="rounded-[28px] border  border-white/15 bg-[#56493A73 px-6 py-10 text-center shadow-[0_30px_50px_-20px_rgba(0,0,0,0.35)] sm:px-8 sm:py-12">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15">
               <CheckCircle2
                 className="h-9 w-9 text-emerald-400"

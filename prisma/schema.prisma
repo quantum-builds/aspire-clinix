@@ -89,12 +89,13 @@ model UserSubscribedPlans {
 }
 
 model Dentist {
-  id                  String              @id @default(cuid())
-  email               String              @unique
-  gdcNo               String              @unique
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
-  otp                 String?
+  id        String   @id @default(cuid())
+  email     String   @unique
+  gdcNo     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  otp       String?
+
   otpInvalidationTime DateTime?
   firstName           String
   lastName            String
@@ -204,8 +205,11 @@ model Report {
   patientDentallyId String
   patientId         String?
   recipientType     ReportRecipient?
+  sessionId         String? 
+
   dentist           Dentist          @relation(fields: [dentistId], references: [id], onDelete: Cascade)
   patient           Patient?         @relation(fields: [patientId], references: [id])
+  session           Session?         @relation(fields: [sessionId], references: [id])
 
   @@index([appointmentId])
   @@index([patientDentallyId])
@@ -328,8 +332,8 @@ model MembershipPlan {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  memberships         PatientMembership[] @relation("CurrentPlan")
-  pendingMemberships  PatientMembership[] @relation("PendingPlan")
+  memberships        PatientMembership[] @relation("CurrentPlan")
+  pendingMemberships PatientMembership[] @relation("PendingPlan")
 }
 
 model PatientMembership {
@@ -362,15 +366,46 @@ model PatientMembership {
 }
 
 model MembershipAppointment {
-
-  id String @id @default(uuid())
+  id            String            @id @default(uuid())
   membershipId  String
-  appointmentId String            @unique 
+  appointmentId String            @unique
   membership    PatientMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 
   @@index([membershipId])
+}
+
+model Treatment {
+  id             String   @id @default(cuid())
+  name           String
+  description    String?
+  price          Decimal  @db.Decimal(10, 2)
+  duration       Int
+  totalLimit     Int?
+  remainingLimit Int?
+  availabilities Json?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  session        Session[]
+}
+
+model Session {
+  id               String   @id @default(cuid())
+  patientId        Int
+  patientName      String
+  practitionerId   Int?
+  practitionerName String?
+  treatmentId      String
+  startTime        DateTime
+  endTime          DateTime
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  treatment        Treatment @relation(fields: [treatmentId], references: [id])
+  reports          Report[]
 }
 
 enum InvoiceStatus {

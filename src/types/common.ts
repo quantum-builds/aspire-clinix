@@ -73,8 +73,8 @@ export type TPlan = {
 };
 
 export type TTreatment = {
+  name?: string;
   id: number;
-  name: string;
   description?: string | null;
   code?: string;
   price?: string | null;
