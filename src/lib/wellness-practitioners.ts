@@ -4,7 +4,7 @@ export const TREATMENT_PRACTITIONER_NAMES: Record<number, string> = {
   [1367845]: "Contrast Therapy", // Contrast Session (Cryo + Sauna)
   [1367623]: "Hyperbaric Chamber", // Hyperbaric Oxygen Chamber
   [1367626]: "Ice Bath", // Ice Bath
-  [1367624]: "Red Light", // Red Light Therapy
+  [1367624]: "red light", // Red Light Therapy
   [1367622]: "Infared Sauna", // Infrared Sauna
 };
 
@@ -23,6 +23,8 @@ export function findPractitionerForTreatment(
   return (
     practitioners.find((practitioner) =>
       `${practitioner.firstName} ${practitioner.lastName}`
+        .replace(/\s+/g, " ")
+        .trim()
         .toLowerCase()
         .includes(normalized),
     ) ?? null

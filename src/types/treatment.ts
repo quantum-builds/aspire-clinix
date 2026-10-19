@@ -12,6 +12,8 @@ export type TTreatment = {
   name: string;
   description: string | null;
   price: string;
+  stripeProductId: string;
+  stripePriceId: string;
   availabilities: TAvailability[] | null;
   isActive: boolean;
   createdAt: Date;
@@ -22,6 +24,8 @@ export type TTreatmentCreate = {
   name: string;
   description?: string | null;
   price: number;
+  stripeProductId: string;
+  stripePriceId: string;
   availabilities?: (Omit<TAvailability, "remainingLimit"> & {
     remainingLimit?: number;
   })[];

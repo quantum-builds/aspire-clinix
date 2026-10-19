@@ -46,12 +46,33 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const { name, description, price, availabilities, isActive } =
-      await req.json();
+    const {
+      name,
+      description,
+      price,
+      availabilities,
+      isActive,
+      stripeProductId,
+      stripePriceId,
+    } = await req.json();
 
     if (typeof name !== "string" || !name.trim()) {
       return NextResponse.json(
         createResponse(false, "Name is required.", null),
+        { status: 400 },
+      );
+    }
+
+    if (typeof stripeProductId !== "string" || !stripeProductId.trim()) {
+      return NextResponse.json(
+        createResponse(false, "Stripe product id is required.", null),
+        { status: 400 },
+      );
+    }
+
+    if (typeof stripePriceId !== "string" || !stripePriceId.trim()) {
+      return NextResponse.json(
+        createResponse(false, "Stripe price id is required.", null),
         { status: 400 },
       );
     }
@@ -168,6 +189,8 @@ export async function POST(req: NextRequest) {
     const treatment = await prisma.treatment.create({
       data: {
         name,
+        stripeProductId: stripeProductId.trim(),
+        stripePriceId: stripePriceId.trim(),
         description,
         price,
         isActive,

@@ -102,6 +102,10 @@ export const ENDPOINTS = {
     getAll: "/api/wellness-treatments",
   },
 
+  sessions: {
+    create: "/api/sessions",
+  },
+
   practitioners: {
     getAll: "/api/practitioners",
   },

@@ -76,12 +76,39 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const { name, description, price, availabilities, isActive } =
-      await req.json();
+    const {
+      name,
+      description,
+      price,
+      availabilities,
+      isActive,
+      stripeProductId,
+      stripePriceId,
+    } = await req.json();
 
     if (name !== undefined && (typeof name !== "string" || !name.trim())) {
       return NextResponse.json(
         createResponse(false, "Name must be a non-empty string.", null),
+        { status: 400 },
+      );
+    }
+
+    if (
+      stripeProductId !== undefined &&
+      (typeof stripeProductId !== "string" || !stripeProductId.trim())
+    ) {
+      return NextResponse.json(
+        createResponse(false, "Stripe product id must be a non-empty string.", null),
+        { status: 400 },
+      );
+    }
+
+    if (
+      stripePriceId !== undefined &&
+      (typeof stripePriceId !== "string" || !stripePriceId.trim())
+    ) {
+      return NextResponse.json(
+        createResponse(false, "Stripe price id must be a non-empty string.", null),
         { status: 400 },
       );
     }
@@ -198,6 +225,8 @@ export async function PATCH(req: NextRequest) {
     const treatment = await prisma.treatment.update({
       where: { id: treatmentId },
       data: {
+        stripeProductId: stripeProductId?.trim(),
+        stripePriceId: stripePriceId?.trim(),
         name,
         description,
         price,

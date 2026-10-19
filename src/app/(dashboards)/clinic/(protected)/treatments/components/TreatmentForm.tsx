@@ -30,6 +30,8 @@ const treatmentFormSchema = z.object({
       message: "Price must be a non-negative number",
     }),
   isActive: z.enum(["True", "False"]),
+  stripeProductId: z.string().trim().min(1, "Stripe product ID is required"),
+  stripePriceId: z.string().trim().min(1, "Stripe price ID is required"),
   availabilities: z.array(
     z
       .object({
@@ -124,6 +126,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
     description: treatment?.description ?? "",
     price: treatment ? String(treatment.price) : "",
     isActive: treatment && !treatment.isActive ? "False" : "True",
+    stripeProductId: treatment?.stripeProductId ?? "",
+    stripePriceId: treatment?.stripePriceId ?? "",
     availabilities: (treatment?.availabilities ?? []).map((slot) => ({
       date: slot.date,
       startTime: slot.startTime,
@@ -155,6 +159,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
       description: data.description || null,
       price: Number(data.price),
       isActive: data.isActive === "True",
+      stripeProductId: data.stripeProductId,
+      stripePriceId: data.stripePriceId,
       availabilities: data.availabilities.map((slot) => ({
         date: slot.date,
         startTime: slot.startTime,
@@ -298,6 +304,55 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
               />
               {errors.isActive && (
                 <p className="text-sm text-red-500">{errors.isActive.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 3 */}
+          <div className="grid grid-cols-2 gap-6">
+            {/* Stripe Product ID */}
+            <div className="space-y-2">
+              <Label className="text-lg font-medium">Stripe Product ID
+                <span className="text-red-500 text-sm ml-1">*</span>
+              </Label>
+              <Controller
+                name="stripeProductId"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder="e.g. prod_..."
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              {errors.stripeProductId && (
+                <p className="text-sm text-red-500">
+                  {errors.stripeProductId.message}
+                </p>
+              )}
+            </div>
+
+            {/* Stripe Price ID */}
+            <div className="space-y-2">
+              <Label className="text-lg font-medium">Stripe Price ID
+                <span className="text-red-500 text-sm ml-1">*</span>
+              </Label>
+              <Controller
+                name="stripePriceId"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder="e.g. price_..."
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              {errors.stripePriceId && (
+                <p className="text-sm text-red-500">
+                  {errors.stripePriceId.message}
+                </p>
               )}
             </div>
           </div>
