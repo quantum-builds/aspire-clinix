@@ -381,9 +381,6 @@ model Treatment {
   name           String
   description    String?
   price          Decimal  @db.Decimal(10, 2)
-  duration       Int
-  totalLimit     Int?
-  remainingLimit Int?
   availabilities Json?
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())

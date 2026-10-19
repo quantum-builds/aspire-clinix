@@ -14,8 +14,9 @@ import { useSearchParams } from "next/navigation";
 import { Clock } from "lucide-react";
 
 interface TreatmentCardProps {
-  treatment: TTreatment;
+  treatment: Omit<TTreatment, "id"> & { id: number | string };
   practitionerId?: string | null;
+  slotsHref?: string;
 }
 
 function parseTreatmentTimes(description: string | null | undefined) {
@@ -37,6 +38,7 @@ function parseTreatmentTimes(description: string | null | undefined) {
 export default function TreatmentCard({
   treatment,
   practitionerId,
+  slotsHref,
 }: TreatmentCardProps) {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
@@ -164,11 +166,11 @@ export default function TreatmentCard({
           <span />
         )}
 
-        {practitionerId ? (
+        {slotsHref || practitionerId ? (
           <Button
             text="Book Treatment"
             className="!h-9 !w-full !rounded-full !bg-[var(--wt-btn)] !px-2 !py-[10px] text-[12px] !font-medium !uppercase !tracking-wide !text-[#0b0a08] hover:!opacity-90 sm:!w-[163.5px]"
-            href={bookHref!}
+            href={slotsHref ?? bookHref!}
           />
         ) : (
           <button

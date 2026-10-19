@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import MembershipCard from "./MembershipCard";
 import TreatmentGridWrapper from "./TreatmentGrid";
+import DbTreatmentGrid from "./DbTreatmentGrid";
 import { TreatmentGridSkeleton } from "./skeletons/TreatmentGridSkeleton";
 
 function MembershipCardWrapper() {
@@ -38,6 +39,11 @@ export default function WellnessTreatmentsPage() {
             <Suspense fallback={<TreatmentGridSkeleton />}>
               <TreatmentGridWrapper />
             </Suspense>
+            <div className="mt-6">
+              <Suspense fallback={null}>
+                <DbTreatmentGrid />
+              </Suspense>
+            </div>
           </div>
         </section>
       </div>
