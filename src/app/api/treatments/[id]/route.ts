@@ -84,7 +84,31 @@ export async function PATCH(req: NextRequest) {
       isActive,
       stripeProductId,
       stripePriceId,
+      practitionerId,
+      practitionerName,
     } = await req.json();
+
+    if (
+      practitionerId !== undefined &&
+      practitionerId !== null &&
+      (typeof practitionerId !== "string" || !/^\d+$/.test(practitionerId))
+    ) {
+      return NextResponse.json(
+        createResponse(false, "Practitioner id must be a numeric Dentally practitioner id.", null),
+        { status: 400 },
+      );
+    }
+
+    if (
+      practitionerName !== undefined &&
+      practitionerName !== null &&
+      typeof practitionerName !== "string"
+    ) {
+      return NextResponse.json(
+        createResponse(false, "Practitioner name must be a string.", null),
+        { status: 400 },
+      );
+    }
 
     if (name !== undefined && (typeof name !== "string" || !name.trim())) {
       return NextResponse.json(
@@ -227,6 +251,8 @@ export async function PATCH(req: NextRequest) {
       data: {
         stripeProductId: stripeProductId?.trim(),
         stripePriceId: stripePriceId?.trim(),
+        practitionerId,
+        practitionerName,
         name,
         description,
         price,

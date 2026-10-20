@@ -17,6 +17,13 @@ import {
   usePatchTreatment,
 } from "@/services/treatments/treatmentMutation";
 import { TTreatment, TTreatmentCreate } from "@/types/treatment";
+import { useGetDentallyPractitioners } from "@/services/dentallyPractitioner/dentallyPractitionerQuery";
+
+type TDentallyPractitioner = {
+  id: number;
+  firstName: string;
+  lastName: string;
+};
 
 const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -32,6 +39,7 @@ const treatmentFormSchema = z.object({
   isActive: z.enum(["True", "False"]),
   stripeProductId: z.string().trim().min(1, "Stripe product ID is required"),
   stripePriceId: z.string().trim().min(1, "Stripe price ID is required"),
+  practitionerId: z.string(),
   availabilities: z.array(
     z
       .object({
@@ -120,6 +128,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
     useCreateTreatment();
   const { mutate: patchTreatment, isPending: patchTreatmentLoader } =
     usePatchTreatment();
+  const { data: practitioners, isPending: practitionersLoading } =
+    useGetDentallyPractitioners();
 
   const defaultValues: FormData = {
     name: treatment?.name ?? "",
@@ -128,6 +138,7 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
     isActive: treatment && !treatment.isActive ? "False" : "True",
     stripeProductId: treatment?.stripeProductId ?? "",
     stripePriceId: treatment?.stripePriceId ?? "",
+    practitionerId: treatment?.practitionerId ?? "",
     availabilities: (treatment?.availabilities ?? []).map((slot) => ({
       date: slot.date,
       startTime: slot.startTime,
@@ -153,7 +164,33 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
     name: "availabilities",
   });
 
+  const practitionerOptions = (practitioners ?? []).map(
+    (practitioner: TDentallyPractitioner) => ({
+      value: String(practitioner.id),
+      label: `${practitioner.firstName} ${practitioner.lastName}`
+        .replace(/\s+/g, " ")
+        .trim(),
+    }),
+  );
+
+  // Keep the saved practitioner selectable even if Dentally no longer lists it.
+  if (
+    treatment?.practitionerId &&
+    !practitionerOptions.some(
+      (option: { value: string }) => option.value === treatment.practitionerId,
+    )
+  ) {
+    practitionerOptions.push({
+      value: treatment.practitionerId,
+      label: treatment.practitionerName ?? treatment.practitionerId,
+    });
+  }
+
   const onSubmit = (data: FormData) => {
+    const selectedPractitioner = practitionerOptions.find(
+      (option: { value: string }) => option.value === data.practitionerId,
+    );
+
     const payload: TTreatmentCreate = {
       name: data.name,
       description: data.description || null,
@@ -161,6 +198,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
       isActive: data.isActive === "True",
       stripeProductId: data.stripeProductId,
       stripePriceId: data.stripePriceId,
+      practitionerId: selectedPractitioner ? selectedPractitioner.value : null,
+      practitionerName: selectedPractitioner ? selectedPractitioner.label : null,
       availabilities: data.availabilities.map((slot) => ({
         date: slot.date,
         startTime: slot.startTime,
@@ -352,6 +391,40 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
               {errors.stripePriceId && (
                 <p className="text-sm text-red-500">
                   {errors.stripePriceId.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 4 */}
+          <div className="grid grid-cols-2 gap-6">
+            {/* Practitioner Dropdown */}
+            <div className="space-y-2">
+              <Label className="text-lg font-medium">Practitioner</Label>
+              <Controller
+                name="practitionerId"
+                control={control}
+                render={({ field }) => (
+                  <Dropdown
+                    options={practitionerOptions}
+                    value={field.value}
+                    onValueChange={(val) => field.onChange(val || "")}
+                    placeholder={
+                      practitionersLoading
+                        ? "Loading practitioners..."
+                        : "Select practitioner"
+                    }
+                    className="w-full"
+                    contentClassName="w-full"
+                    triggerClassName="bg-gray px-6 py-3 h-[52px] rounded-2xl justify-between"
+                    placeholderClassName="text-gray-600"
+                    showClearOption={true}
+                  />
+                )}
+              />
+              {errors.practitionerId && (
+                <p className="text-sm text-red-500">
+                  {errors.practitionerId.message}
                 </p>
               )}
             </div>

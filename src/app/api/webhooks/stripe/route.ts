@@ -219,7 +219,8 @@ export async function POST(req: NextRequest) {
               return null;
             }
 
-            const { start, end } = await reserveTreatmentSlot(
+            const { treatment: reservedTreatment, start, end } =
+              await reserveTreatmentSlot(
               tx,
               treatment_id,
               date,
@@ -230,6 +231,10 @@ export async function POST(req: NextRequest) {
               data: {
                 patientId: dentallyId,
                 patientName: patient.name,
+                practitionerId: reservedTreatment.practitionerId
+                  ? Number(reservedTreatment.practitionerId)
+                  : null,
+                practitionerName: reservedTreatment.practitionerName,
                 treatmentId: treatment_id,
                 startTime: start,
                 endTime: end,

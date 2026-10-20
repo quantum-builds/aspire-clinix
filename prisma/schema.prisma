@@ -382,6 +382,8 @@ model Treatment {
   description    String?
   stripePriceId   String   @unique
   stripeProductId String   @unique
+  practitionerId   String?
+  practitionerName String?
   price          Decimal  @db.Decimal(10, 2)
   availabilities Json?
   isActive       Boolean  @default(true)
