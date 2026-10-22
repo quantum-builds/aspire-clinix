@@ -1,5 +1,4 @@
 import { buildAppointmentQuery } from "@/dentallyHelpers/appointment";
-import { getPatient } from "@/dentallyHelpers/patient";
 import { ListAppointment } from "@/types/appointment";
 import { AppointmentDateType } from "@/types/common";
 import { toCamel, toSnake } from "@/utils/typeConventionConvertor";
@@ -103,6 +102,10 @@ export const ENDPOINTS = {
     getAll: "/api/wellness-treatments",
   },
 
+  sessions: {
+    create: "/api/sessions",
+  },
+
   practitioners: {
     getAll: "/api/practitioners",
   },
@@ -166,13 +169,14 @@ export const ENDPOINTS = {
       after?: string,
       dateType?: AppointmentDateType | null,
       status?: string,
+      appointmentType?: string,
     ) =>
       `/api/appointments?page=${page ?? 1}&perPage=${perPage ?? 20}&search=${search ?? ""}&on=${
         on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}&dateType=${
         dateType ?? ""
       }&status=${status ?? ""}&practitioner_id=${practitionerId ?? ""}&site_id=${siteId}
-      &state${state}&updatedAfte${updatedAfte}`,
+      &state${state}&updatedAfte${updatedAfte}&appointmentType=${appointmentType ?? ""}`,
     post: "/api/appointments",
     patch: (id: number) => `/api/appointments/${id}`,
     getById: (id: string) => `/api/appointments/${id}`,
@@ -235,6 +239,11 @@ export const ENDPOINTS = {
     reactivate: "/api/stripe/membership/reactivate",
     current: "/api/stripe/membership/current",
     bookAppointment: "/api/membership/book-appointment",
+  },
+
+  wellnessAppointments: {
+    checkEligibility: "/api/wellness/appointments/check-eligibility",
+    bookWithPlan: "/api/wellness/appointments/book-with-plan",
   },
 
   checkout: {

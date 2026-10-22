@@ -1,9 +1,9 @@
-import { Patient, TPatient } from "./patient";
+import { Patient } from "./patient";
 import { TReport } from "./reports";
 
 export type TAppointment = {
   bindStatus?: "BOUND" | "UNBOUND";
-  id: number;
+  id: number | string;
   appointmentCancellationReasonId: number | null;
   arrivedAt: string | null;
   bookedViaApi: boolean;
@@ -47,7 +47,7 @@ export type TAppointmentPagination = {
 };
 
 export type TAppointmentResponse = {
-  appointmentRequests: any;
+  appointmentRequests: unknown[];
   appointments: TAppointment[];
   meta: TAppointmentPagination;
 };
@@ -58,11 +58,11 @@ export interface CreateAppointment {
   startTime: Date;
   finishTime: Date;
   practitionerId: number;
-  reason: AppointmentReason;
+  reason: string;
   patientId?: number;
   state?: AppointmentState;
   notes?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   forceChanges?: boolean;
 }
 

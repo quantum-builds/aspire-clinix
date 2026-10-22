@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
 
       success_url: `${origin}/patient/appointments/upcoming?session_id={CHECKOUT_SESSION_ID}`,
 
-      cancel_url: `${origin}/patient/plan-selection`,
+      cancel_url: `${origin}/patient/plan-selection/wellness-treatments`,
     });
 
     return NextResponse.json(

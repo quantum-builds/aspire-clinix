@@ -77,7 +77,7 @@ export default function UpcomingAppointmentsContent({
         preBtns={
           <CustomButton
             text="Book Wellness Appointment"
-            href="/patient/plan-selection"
+            href="/patient/plan-selection/wellness-treatments"
             style="white"
             className="border border-green hover:bg-[#ede9e4] "
 

@@ -2,7 +2,9 @@
 
 import { CalenderInputIconV2, CancelIcon, TimeIconV2 } from "@/assets";
 import { AppointmentState, TAppointment } from "@/types/appointment";
-import { formatDate, formatTime } from "@/utils/formatDateTime";
+import { formatDate } from "@/utils/formatDateTime";
+import { TIMEZONE } from "@/utils/slotSelectionUtils";
+import { formatInTimeZone } from "date-fns-tz";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useChangeAppointmentState } from "@/services/appointments/appointmentMutation";
@@ -118,8 +120,8 @@ export default function UpcomingAppointmentCard({
             <p>
               Time:{" "}
               <span className="font-medium text-lg">
-                {formatTime(appointment.startTime)} -{" "}
-                {formatTime(appointment.finishTime)}
+                {formatInTimeZone(new Date(appointment.startTime), TIMEZONE, "HH:mm")} -{" "}
+                {formatInTimeZone(new Date(appointment.finishTime), TIMEZONE, "HH:mm")}
               </span>
             </p>
           </div>

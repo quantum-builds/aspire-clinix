@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
+import CustomConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import {
   useBuyPlan,
   useUpgradePlan,
@@ -51,11 +54,18 @@ const MEMBERSHIP_PLANS = [
 
 export default function PlansPage() {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
+  const [showLoginRequired, setShowLoginRequired] = useState(false);
+  const { data: session, status } = useSession();
+
+  const isPatient =
+    status === "authenticated" && session?.user?.role === "PATIENT";
 
   const { data: membershipData, isLoading } = useQuery({
     queryKey: ["currentMembership"],
     queryFn: getCurrentMembership,
+    enabled: isPatient,
   });
 
   const currentMembership = membershipData?.data || null;
@@ -191,6 +201,14 @@ export default function PlansPage() {
   };
 
   const handleButtonClick = (planName: string) => {
+  
+    if (status === "loading") return;
+
+    if (!isPatient) {
+      setShowLoginRequired(true);
+      return;
+    }
+
     if (!currentMembership) {
       handleBuyPlan(planName);
       return;
@@ -210,6 +228,15 @@ export default function PlansPage() {
     } else {
       handleUpgradePlan(planName);
     }
+  };
+
+  const handleLoginRedirect = () => {
+    setShowLoginRequired(false);
+    router.push(
+      `/patient/login?redirectTo=${encodeURIComponent(
+        "/patient/plan-selection/plans",
+      )}`,
+    );
   };
 
   const isButtonDisabled = (planName: string) => {
@@ -256,7 +283,7 @@ export default function PlansPage() {
             </p>
           </div>
 
-          <div className="mx-auto mt-10 grid max-w-[650px] gap-6 sm:grid-cols-1">
+          <div className="mx-auto mt-10 grid max-w-[750px] gap-6 sm:grid-cols-1">
             {MEMBERSHIP_PLANS.map((plan) => {
               const isCurrentPlan =
                 currentMembership?.currentPlanName === plan.name;
@@ -271,10 +298,10 @@ export default function PlansPage() {
               return (
                 <div
                   key={plan.name}
-                  className={`relative rounded-[28px] bg-[#12100D]/[0.82] px-6 py-8 text-left shadow-[0_30px_50px_-20px_rgba(0,0,0,0.35)] transition sm:px-8 sm:py-9 ${
+                  className={`relative rounded-[28px]  bg-[#56493A73] px-6 py-8 text-left shadow-[0_30px_50px_-20px_rgba(0,0,0,0.35)] transition sm:px-8 sm:py-9 ${
                     isCurrentPlan
                       ? "border-2 border-[var(--wt-amount)]"
-                      : "border border-[#56493A]/45 hover:border-[var(--wt-amount)]/40"
+                      : "border  border-white/15 hover:border-[var(--wt-amount)]/40"
                   }`}
                 >
                   {isCurrentPlan && (
@@ -353,6 +380,23 @@ export default function PlansPage() {
           </div>
         </section>
       </div>
+
+      <CustomConfirmationModal
+        theme="dark"
+        isOpen={showLoginRequired}
+        onClose={() => setShowLoginRequired(false)}
+        onConfirm={handleLoginRedirect}
+        title="Login Required"
+        description={
+          <>
+            You’ve selected a membership plan for your Wellness Appointments.
+            Please <strong>log in</strong> to your account to continue with
+            your selected plan and complete your purchase.
+          </>
+        }
+        confirmText="Log In"
+        cancelText="Cancel"
+      />
     </main>
   );
 }

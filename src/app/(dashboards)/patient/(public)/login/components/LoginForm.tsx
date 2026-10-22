@@ -23,6 +23,7 @@ import { formatDate } from "@/utils/formatDateTime";
 import { useVerifyPatient } from "@/services/patient/patientMutation";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import Link from "next/link";
+import { safeRedirectPath } from "@/lib/safeRedirect";
 
 export const patientSchema = z.object({
   firstName: z
@@ -111,8 +112,9 @@ function LoginContent() {
           
           if (data.email) {
             const otpParams = new URLSearchParams({ email: data.email });
-            if (redirectTo?.startsWith("/")) {
-              otpParams.set("redirectTo", redirectTo);
+            const safeRedirectTo = safeRedirectPath(redirectTo, "");
+            if (safeRedirectTo) {
+              otpParams.set("redirectTo", safeRedirectTo);
             }
             router.replace(`/patient/otp-verify?${otpParams.toString()}`);
           } else {

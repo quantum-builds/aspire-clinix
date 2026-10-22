@@ -1,35 +1,39 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { DENTALLY_ENDPOINTS } from "./config/api-config";
 import {
   PLAN_ACCESS_COOKIE,
   getExpectedToken,
   isAccessGateEnabled,
   safeEqual,
 } from "@/lib/planAccess";
-
-console.log("ENABLED:", JSON.stringify(process.env.PLAN_ACCESS_ENABLED), "gate:", isAccessGateEnabled());
-console.log(
-  "ENABLED:", JSON.stringify(process.env.PLAN_ACCESS_ENABLED),
-  "PASSWORD SET:", !!process.env.PLAN_ACCESS_PASSWORD,
-  "gate:", isAccessGateEnabled(),
- 
-);
+import { safeRedirectPath } from "@/lib/safeRedirect";
 
 const secret = process.env.NEXTAUTH_SECRET; // required for getToken
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  console.log("ENABLED:", JSON.stringify(process.env.PLAN_ACCESS_ENABLED), "gate:", isAccessGateEnabled());
-console.log(
-  "ENABLED:", JSON.stringify(process.env.PLAN_ACCESS_ENABLED),
-  "PASSWORD SET:", !!process.env.PLAN_ACCESS_PASSWORD,
-  "gate:", isAccessGateEnabled(),
- 
-);
+  // ---- Wellness booking flow ----
+  // Public (no login required) so visitors can book from the landing page
+  // or dashboard. The module is still under development, so the access
+  // password gate stays in place for everyone.
+  if (pathname.startsWith("/patient/plan-selection")) {
+    if (isAccessGateEnabled()) {
+      const accessCookie = request.cookies.get(PLAN_ACCESS_COOKIE)?.value ?? "";
+      const hasAccess =
+        accessCookie !== "" &&
+        safeEqual(accessCookie, await getExpectedToken());
 
+      if (!hasAccess) {
+        const accessUrl = new URL("/access", request.url);
+        accessUrl.searchParams.set("next", pathname + request.nextUrl.search);
+        return NextResponse.redirect(accessUrl);
+      }
+    }
+
+    return NextResponse.next();
+  }
 
   // Define public routes
   const patientPublic = [
@@ -103,46 +107,13 @@ console.log(
 
   const role = token.role as string;
 
-  // ---- Patient-only routes (explicit guard) ----
-  const patientOnlyRoutes = ["/patient/plan-selection"];
-  if (
-    patientOnlyRoutes.some((route) => pathname.startsWith(route)) &&
-    role !== "PATIENT"
-  ) {
-    if (role === "ADMIN") {
-      return NextResponse.redirect(new URL("/clinic", request.url));
-    }
-    if (role === "DENTALLY_PRACTITIONER" || role === "REFERRING_DENTIST") {
-      return NextResponse.redirect(new URL("/dentist", request.url));
-    }
-    return NextResponse.redirect(new URL("/403", request.url));
-  }
-
-  // ---- Plan-selection access gate (password cookie) ----
-  // Runs only for logged-in patients. If PLAN_ACCESS_PASSWORD is not set,
-  // the gate is off and everyone gets through.
-   if (
-    pathname.startsWith("/patient/plan-selection") &&
-    isAccessGateEnabled()
-  ) {
-    const accessCookie = request.cookies.get(PLAN_ACCESS_COOKIE)?.value ?? "";
-    const hasAccess =
-      accessCookie !== "" && safeEqual(accessCookie, await getExpectedToken());
-
-    if (!hasAccess) {
-      const accessUrl = new URL("/access", request.url);
-      accessUrl.searchParams.set("next", pathname + request.nextUrl.search);
-      return NextResponse.redirect(accessUrl);
-    }
-  }
-
   // Already logged-in patient should not see login/register/otp pages
   if (patientPublic.includes(pathname) && role === "PATIENT") {
-    const redirectTo = request.nextUrl.searchParams.get("redirectTo");
-    if (redirectTo?.startsWith("/")) {
-      return NextResponse.redirect(new URL(redirectTo, request.url));
-    }
-    return NextResponse.redirect(new URL("/patient", request.url));
+    const redirectTo = safeRedirectPath(
+      request.nextUrl.searchParams.get("redirectTo"),
+      "/patient",
+    );
+    return NextResponse.redirect(new URL(redirectTo, request.url));
   }
 
   // Already logged-in dentist should not see login/register/otp pages

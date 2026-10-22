@@ -3,7 +3,13 @@ import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
 import { createAppointment } from "@/dentallyHelpers/appointment";
 import { CreateAppointment } from "@/types/appointment";
-import { AppointmentReason } from "@/types/appointment";
+import prisma from "@/lib/db";
+import {
+  reserveTreatmentSlot,
+  TreatmentSlotException,
+} from "@/lib/treatment-session";
+import { TIMEZONE } from "@/utils/slotSelectionUtils";
+import { fromZonedTime } from "date-fns-tz";
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("stripe-signature");
@@ -111,7 +117,7 @@ export async function POST(req: NextRequest) {
           finishTime,
           practitionerId: Number(practitioner_id),
           patientId: Number(patient_id),
-          reason: AppointmentReason.OTHER,
+          reason: reason || "Wellness Appointment",
         };
 
         if (
@@ -153,6 +159,120 @@ export async function POST(req: NextRequest) {
           "Dentally appointment created successfully:",
           result.response,
         );
+      }
+
+      if (metadata?.payment_for === "treatment_session") {
+        const { treatment_id, patient_id, date, start_time } = metadata;
+
+        if (!treatment_id || !patient_id || !date || !start_time) {
+          console.error("Missing treatment session metadata:", metadata);
+
+          return NextResponse.json(
+            createResponse(false, "Missing required session metadata", null),
+            { status: 400 },
+          );
+        }
+
+        if (session.payment_status !== "paid") {
+          console.warn(
+            "Treatment session checkout completed but not paid:",
+            session.payment_status,
+          );
+
+          return NextResponse.json(
+            createResponse(
+              true,
+              "Webhook received but payment is not yet paid",
+              null,
+            ),
+          );
+        }
+
+        const dentallyId = Number(patient_id);
+        const patient = await prisma.patient.findUnique({
+          where: { dentallyId },
+        });
+
+        if (!patient) {
+          console.error("Patient not found for treatment session:", patient_id);
+
+          return NextResponse.json(
+            createResponse(false, "Patient not found", null),
+            { status: 400 },
+          );
+        }
+
+        try {
+          const created = await prisma.$transaction(async (tx) => {
+            // Webhook retries must not book or decrement twice. This runs
+            // before slot validation, since our own earlier booking may have
+            // filled the slot.
+            const duplicate = await tx.session.findFirst({
+              where: {
+                patientId: dentallyId,
+                treatmentId: treatment_id,
+                startTime: fromZonedTime(`${date}T${start_time}:00`, TIMEZONE),
+              },
+            });
+
+            if (duplicate) {
+              return null;
+            }
+
+            const { treatment: reservedTreatment, start, end } =
+              await reserveTreatmentSlot(
+              tx,
+              treatment_id,
+              date,
+              start_time,
+            );
+
+            return tx.session.create({
+              data: {
+                patientId: dentallyId,
+                patientName: patient.name,
+                practitionerId: reservedTreatment.practitionerId
+                  ? Number(reservedTreatment.practitionerId)
+                  : null,
+                practitionerName: reservedTreatment.practitionerName,
+                treatmentId: treatment_id,
+                startTime: start,
+                endTime: end,
+              },
+            });
+          });
+
+          console.log(
+            created
+              ? `Treatment session created: ${created.id}`
+              : "Treatment session already exists, skipping duplicate webhook",
+          );
+        } catch (error) {
+          if (
+            error instanceof TreatmentSlotException &&
+            error.code !== "SLOT_CONFLICT"
+          ) {
+            // The slot can no longer be booked (full, removed or in the
+            // past), so return the payment instead of creating a session.
+            console.error(
+              "Treatment session slot unavailable after payment, refunding:",
+              error.code,
+            );
+
+            if (session.payment_intent) {
+              await stripe.refunds.create({
+                payment_intent: session.payment_intent as string,
+              });
+            }
+
+            return NextResponse.json(
+              createResponse(true, "Slot unavailable, payment refunded", null),
+            );
+          }
+
+          // SLOT_CONFLICT and unexpected errors return 500 so Stripe retries.
+          throw error;
+        }
       }
     }
 

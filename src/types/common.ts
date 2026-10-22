@@ -1,11 +1,11 @@
-import { ReferralRequestStatus, ResoucrceType } from "@prisma/client";
+import { ResoucrceType } from "@prisma/client";
 import { StaticImageData } from "next/image";
 
 export interface Response<T> {
-  
   status: boolean;
   message: string;
   data: T;
+  code?: string;
 }
 
 export type SidebarPage = {
@@ -73,8 +73,8 @@ export type TPlan = {
 };
 
 export type TTreatment = {
+  name?: string;
   id: number;
-  name: string;
   description?: string | null;
   code?: string;
   price?: string | null;

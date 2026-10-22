@@ -2,9 +2,8 @@ import { stripe } from "@/utils/stripe";
 import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/db";
+import { getSubscriptionPeriod } from "@/lib/stripe-period";
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,6 +37,7 @@ export async function POST(req: NextRequest) {
 
     const currentMembership = await prisma.patientMembership.findFirst({
       where: { patientId: patient.id, status: "ACTIVE" },
+      include: { plan: true },
     });
 
     if (!currentMembership) {
@@ -47,23 +47,55 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Cancel the Stripe subscription at period end
-    await stripe.subscriptions.update(currentMembership.stripeSubscriptionId, {
+    if (currentMembership.cancelAtPeriodEnd) {
+      return NextResponse.json(
+        createResponse(false, "Membership is already set to cancel", null),
+        { status: 400 },
+      );
+    }
+
+    const subscription = await stripe.subscriptions.retrieve(
+      currentMembership.stripeSubscriptionId,
+    );
+
+    if (subscription.status === "canceled") {
+      return NextResponse.json(
+        createResponse(false, "Subscription is already cancelled", null),
+        { status: 400 },
+      );
+    }
+
+    const item = subscription.items.data[0];
+
+    if (item && item.price.id !== currentMembership.plan.stripePriceId) {
+      await stripe.subscriptionItems.update(item.id, {
+        price: currentMembership.plan.stripePriceId,
+        proration_behavior: "none",
+      });
+    }
+
+    const updated = await stripe.subscriptions.update(subscription.id, {
       cancel_at_period_end: true,
     });
 
-    // Update PatientMembership
+    // The membership stays usable until the current period ends, so that is
+    // the date the cancellation takes effect on.
+    const period = getSubscriptionPeriod(updated);
+    const endsAt =
+      period?.currentPeriodEnd ??
+      (updated.cancel_at ? new Date(updated.cancel_at * 1000) : null);
+
     await prisma.patientMembership.update({
       where: { id: currentMembership.id },
       data: {
         cancelAtPeriodEnd: true,
-        cancelledAt: new Date(),
+        cancelledAt: endsAt,
         pendingPlanId: null,
       },
     });
 
     return NextResponse.json(
-      createResponse(true, "Membership cancellation scheduled", null),
+      createResponse(true, "Membership cancellation scheduled", { endsAt }),
     );
   } catch (error) {
     console.error("Cancel membership error:", error);
@@ -71,7 +103,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       createResponse(
         false,
-        error instanceof Error ? error.message : "Cancel membership failed",
+        "Could not cancel the membership. Please try again.",
         null,
       ),
       { status: 500 },

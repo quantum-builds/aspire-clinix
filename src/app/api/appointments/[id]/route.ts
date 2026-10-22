@@ -11,6 +11,8 @@ import { Appointment } from "@/types/appointment";
 import prisma from "@/lib/db";
 import { getPatientById } from "@/dentallyHelpers/patient";
 import { notifyAppointmentStatus } from "@/notifications/appointmentNotifications";
+import { isValidCuid } from "@/utils/typeValidUtils";
+import { sessionToAppointment } from "@/lib/treatment-session";
 
 /**
  * @swagger
@@ -292,6 +294,66 @@ export async function GET(req: NextRequest) {
         { status: 400 },
       );
     }
+    if (isValidCuid(appointmentId)) {
+      const session = await prisma.session.findUnique({
+        where: { id: appointmentId },
+        include: { treatment: true },
+      });
+
+      const canView =
+        session &&
+        (isAdmin ||
+          (patiendDentallyId &&
+            session.patientId === Number(patiendDentallyId)) ||
+          (dentistDentallyId &&
+            session.practitionerId === Number(dentistDentallyId)));
+
+      if (!session || !canView) {
+        return NextResponse.json(
+          createResponse(false, "Appointment not found for the user.", null),
+          { status: 404 },
+        );
+      }
+
+      const sessionRecipientWhere =
+        token.role === TokenRoles.PATIENT
+          ? { recipientType: "PATIENT" as const }
+          : {};
+
+      const [patient, videos, pdfs] = await Promise.all([
+        prisma.patient.findUnique({
+          where: { dentallyId: session.patientId },
+        }),
+        prisma.report.findMany({
+          where: {
+            sessionId: session.id,
+            fileType: "VIDEO",
+            ...sessionRecipientWhere,
+          },
+          orderBy: { createdAt: "desc" },
+          include: { dentist: true },
+        }),
+        prisma.report.findMany({
+          where: {
+            sessionId: session.id,
+            fileType: "PDF",
+            ...sessionRecipientWhere,
+          },
+          orderBy: { createdAt: "desc" },
+          include: { dentist: true },
+        }),
+      ]);
+
+      return NextResponse.json(
+        createResponse(true, "Appointment fetched successfully.", {
+          appointment: sessionToAppointment(session),
+          reports: { videos, pdfs },
+          patient,
+        }),
+        { status: 200 },
+      );
+    }
+
     const response = await getAppointment(appointmentId);
     console.log("Response from getAppointment:", response);
 
@@ -312,8 +374,6 @@ export async function GET(req: NextRequest) {
     let appointmentOwner = null;
 
     if (isAdmin) {
-      // Admin (clinic) can view any appointment, so skip the ownership check.
-      // This guarantees appointments appear on the Admin Report page.
       appointmentOwner = null;
     } else if (patiendDentallyId) {
       appointmentOwner = await prisma.patient.findUnique({

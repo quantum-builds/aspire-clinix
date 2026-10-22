@@ -7,14 +7,14 @@ import {
   pickValidPriceOne,
 } from "./fee";
 
-const REQUIRED_WELLNESS_TREATMENTS = new Map<number, string>([
-  // [1367625, "Compression Therapy"],
-  [1367621, "Cryotherapy"],
-  [1367845, "Contrast Session (Cryo + Sauna)"],
-  [1367626, "Ice Bath"],
-  [1367623, "Hyperbaric Oxygen Chamber"],
-  [1367624, "Red Light Therapy"],
-  [1367622, "Infrared Sauna"],
+const REQUIRED_WELLNESS_TREATMENTS = new Set<number>([
+  // 1367625, // Compression Therapy
+  1367621,
+  1367845, // Contrast Session (Cryo + Sauna)
+  1367626, // Ice Bath
+  1367623, // Hyperbaric Oxygen Chamber
+  1367624, // Red Light Therapy
+  1367622, // Infrared Sauna
 ]);
 
 const TREATMENTS_PER_PAGE = 100;
@@ -37,7 +37,7 @@ export async function getWellnessTreatments() {
 
   const matched: {
     id: number;
-    name: string;
+    name?: string;
     description?: string | null;
     code?: string;
   }[] = [];
@@ -72,13 +72,13 @@ export async function getWellnessTreatments() {
         continue;
       }
 
-      const configuredName = REQUIRED_WELLNESS_TREATMENTS.get(treatment.id)!;
+    
 
       matchedIds.add(treatment.id);
 
       matched.push({
         id: treatment.id,
-        name: configuredName,
+        name: treatment.nomenclature?.trim() ?? "", 
         description: treatment.notes ?? treatment.description ?? null,
         code: treatment.code || undefined,
       });

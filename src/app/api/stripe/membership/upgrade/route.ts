@@ -1,10 +1,9 @@
 import { stripe } from "@/utils/stripe";
+import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { getSubscriptionPeriod } from "@/lib/stripe-period";
 
 export async function POST(req: NextRequest) {
   try {
@@ -48,9 +47,6 @@ export async function POST(req: NextRequest) {
 
     const currentMembership = await prisma.patientMembership.findFirst({
       where: { patientId: patient.id, status: "ACTIVE" },
-      include: {
-        plan: { select: { stripePriceId: true } },
-      },
     });
 
     if (!currentMembership) {
@@ -60,6 +56,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Note: newPlanId is matched against the plan's name, as before.
     const newPlan = await prisma.membershipPlan.findFirst({
       where: { name: newPlanId },
     });
@@ -85,45 +82,102 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get the subscription to find the current item
+    if (currentMembership.pendingPlanId === newPlan.id) {
+      return NextResponse.json(
+        createResponse(false, "This plan change is already scheduled", null),
+        { status: 400 },
+      );
+    }
+
+    if (currentMembership.cancelAtPeriodEnd) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "Membership is set to cancel. Reactivate it before changing plans.",
+          null,
+        ),
+        { status: 400 },
+      );
+    }
+
     const subscription = await stripe.subscriptions.retrieve(
       currentMembership.stripeSubscriptionId,
     );
 
-    // Find the subscription item with the current plan's price (to update)
-    const currentItem = subscription.items.data.find(
-      (item) => item.price.id === currentMembership.plan.stripePriceId,
-    );
-
-    // Update the existing item to the new price (no proration)
-    if (currentItem) {
-      await stripe.subscriptionItems.update(currentItem.id, {
-        price: newPlan.stripePriceId,
-        proration_behavior: "none",
-      });
+    if (subscription.cancel_at_period_end) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "Membership is set to cancel. Reactivate it before changing plans.",
+          null,
+        ),
+        { status: 400 },
+      );
     }
 
-    // Update PatientMembership with pending upgrade
+    if (!["active", "trialing"].includes(subscription.status)) {
+      return NextResponse.json(
+        createResponse(false, "Subscription is not in good standing", null),
+        { status: 400 },
+      );
+    }
+
+    // Only monthly prices keep the "starts next month" behaviour.
+    // A different interval would reset the billing cycle and invoice immediately.
+    const newPrice = await stripe.prices.retrieve(newPlan.stripePriceId);
+
+    if (
+      !newPrice.active ||
+      newPrice.recurring?.interval !== "month" ||
+      newPrice.recurring?.interval_count !== 1
+    ) {
+      throw new Error(
+        `Plan ${newPlan.id} has a non-monthly or inactive Stripe price`,
+      );
+    }
+
+    // One monthly plan = one subscription item. Use it directly rather than
+    // looking it up by the DB price, which breaks when a change is already pending.
+    const item = subscription.items.data[0];
+
+    if (!item) {
+      throw new Error(`Subscription ${subscription.id} has no items`);
+    }
+
+    // Swap the price with no proration: nothing is charged now,
+    // and the new price is billed at the next renewal.
+    await stripe.subscriptionItems.update(item.id, {
+      price: newPlan.stripePriceId,
+      proration_behavior: "none",
+    });
+
+    // Period end lives on the item in newer Stripe API versions,
+    // and on the subscription in older ones.
+    const period = getSubscriptionPeriod(subscription);
+
+    const effectiveDate =
+      period?.currentPeriodEnd ?? currentMembership.currentPeriodEnd;
+
+    // planId stays the same until the renewal invoice is paid;
+    // the invoice.paid webhook moves pendingPlanId into planId.
     await prisma.patientMembership.update({
       where: { id: currentMembership.id },
-      data: {
-        pendingPlanId: newPlan.id,
-      },
+      data: { pendingPlanId: newPlan.id },
     });
 
     return NextResponse.json(
-      createResponse(true, "Upgrade scheduled successfully", {
+      createResponse(true, "Plan change scheduled", {
         pendingPlanId: newPlan.id,
-        effectiveDate: currentMembership.currentPeriodEnd,
+        effectiveDate,
       }),
     );
   } catch (error) {
-    console.error("Membership upgrade error:", error);
+    console.error("Membership plan change error:", error);
 
     return NextResponse.json(
       createResponse(
         false,
-        error instanceof Error ? error.message : "Upgrade failed",
+        "Could not change the plan. Please try again.",
         null,
       ),
       { status: 500 },

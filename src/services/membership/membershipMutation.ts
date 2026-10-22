@@ -30,6 +30,9 @@ interface BookAppointmentData {
 
 interface BookAppointmentResponse {
   appointmentId: string;
+  mode?: "BOOKED" | "PAYMENT";
+  remainingTreatments?: number | null;
+  remainingHyperbaric?: number | null;
 }
 
 export const useBuyPlan = () => {
@@ -89,16 +92,16 @@ export const useReactivateMembership = () => {
   });
 };
 
-export const useBookMembershipAppointment = () => {
-  return useMutation({
-    mutationFn: async (
-      data: BookAppointmentData,
-    ): Promise<Response<BookAppointmentResponse>> => {
-      const response = await axiosInstance.post(
-        ENDPOINTS.membership.bookAppointment,
-        data,
-      );
-      return response.data;
-    },
-  });
-};
+// export const useBookMembershipAppointment = () => {
+//   return useMutation({
+//     mutationFn: async (
+//       data: BookAppointmentData,
+//     ): Promise<Response<BookAppointmentResponse>> => {
+//       const response = await axiosInstance.post(
+//         ENDPOINTS.membership.bookAppointment,
+//         data,
+//       );
+//       return response.data;
+//     },
+//   });
+// };

@@ -1,9 +1,88 @@
 import { stripe } from "@/utils/stripe";
 import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/db";
+import {
+  getInvoiceSubscriptionId,
+  getSubscriptionPeriod,
+  mapStripeStatus,
+} from "@/lib/stripe-period";
+import type Stripe from "stripe";
 
-const prisma = new PrismaClient();
+/**
+ * Bring the stored membership in line with Stripe.
+ *
+ * Shared by `customer.subscription.updated` and `invoice.paid` so both paths
+ * apply exactly the same rules:
+ * - the billing period is synced from Stripe (item level since Basil),
+ * - usage counters reset only when the period actually rolled over,
+ * - a scheduled plan change is promoted to the active plan only once the new
+ *   period has started, i.e. at renewal and not when the price is swapped.
+ */
+async function syncMembershipFromStripe(subscription: Stripe.Subscription) {
+  const period = getSubscriptionPeriod(subscription);
+
+  if (!period) {
+    console.error(
+      "Stripe subscription payload has no billing period:",
+      subscription.id,
+    );
+
+    return { synced: false, reason: "period_missing" } as const;
+  }
+
+  const membership = await prisma.patientMembership.findUnique({
+    where: { stripeSubscriptionId: subscription.id },
+  });
+
+  if (!membership) {
+    console.error(
+      "PatientMembership not found for subscription:",
+      subscription.id,
+    );
+
+    return { synced: false, reason: "not_found" } as const;
+  }
+
+  const periodRolledOver =
+    period.currentPeriodStart.getTime() !== membership.currentPeriodStart.getTime();
+
+  // The pending plan only takes effect once the new billing period starts.
+  const promotePendingPlan = Boolean(membership.pendingPlanId) && periodRolledOver;
+  const status = mapStripeStatus(subscription.status);
+
+  await prisma.patientMembership.update({
+    where: { id: membership.id },
+    data: {
+      ...(promotePendingPlan
+        ? { planId: membership.pendingPlanId!, pendingPlanId: null }
+        : {}),
+      currentPeriodStart: period.currentPeriodStart,
+      currentPeriodEnd: period.currentPeriodEnd,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      ...(status ? { status } : {}),
+      ...(periodRolledOver
+        ? {
+            usedTreatments: 0,
+            usedHyperbaric: 0,
+            usedBreathwork: 0,
+            usedGuestPasses: 0,
+          }
+        : {}),
+    },
+  });
+
+  if (promotePendingPlan) {
+    console.log(
+      "Scheduled plan change activated for membership:",
+      membership.id,
+      "new plan:",
+      membership.pendingPlanId,
+    );
+  }
+
+  return { synced: true } as const;
+}
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("stripe-signature");
@@ -114,12 +193,17 @@ export async function POST(req: NextRequest) {
             const subscription = await stripe.subscriptions.retrieve(
               stripeSubscriptionId,
             );
-            currentPeriodStart = new Date(
-              subscription.current_period_start * 1000,
-            );
-            currentPeriodEnd = new Date(
-              subscription.current_period_end * 1000,
-            );
+            const period = getSubscriptionPeriod(subscription);
+
+            if (period) {
+              currentPeriodStart = period.currentPeriodStart;
+              currentPeriodEnd = period.currentPeriodEnd;
+            } else {
+              console.error(
+                "Stripe subscription has no billing period:",
+                stripeSubscriptionId,
+              );
+            }
           } catch (subError) {
             console.error(
               "Failed to retrieve Stripe subscription:",
@@ -128,7 +212,6 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // Create the PatientMembership record
         await prisma.patientMembership.create({
           data: {
             patientId: patient.id,
@@ -161,76 +244,53 @@ export async function POST(req: NextRequest) {
       console.log("Stripe subscription updated:", {
         subscriptionId: subscription.id,
         status: subscription.status,
-        currentPeriodStart: subscription.current_period_start,
-        currentPeriodEnd: subscription.current_period_end,
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
       });
 
-      const stripeSubscriptionId = subscription.id;
+      const result = await syncMembershipFromStripe(subscription);
 
-      const membership = await prisma.patientMembership.findUnique({
-        where: { stripeSubscriptionId },
-      });
-
-      if (!membership) {
-        console.error(
-          "PatientMembership not found for subscription:",
-          stripeSubscriptionId,
-        );
+      if (!result.synced) {
+        if (result.reason === "period_missing") {
+          return NextResponse.json(
+            createResponse(false, "Subscription has no billing period", null),
+            { status: 400 },
+          );
+        }
 
         return NextResponse.json(
           createResponse(false, "Membership not found", null),
           { status: 404 },
         );
       }
+    }
 
-      // If there's a pending upgrade, activate it now
-      if (membership.pendingPlanId) {
-        const newPlan = await prisma.membershipPlan.findUnique({
-          where: { id: membership.pendingPlanId },
-        });
+    if (event.type === "invoice.paid") {
+      const invoice = event.data.object;
+      const stripeSubscriptionId = getInvoiceSubscriptionId(invoice);
 
-        if (newPlan) {
-          await prisma.patientMembership.update({
-            where: { id: membership.id },
-            data: {
-              planId: newPlan.id,
-              pendingPlanId: null,
-              currentPeriodStart: new Date(
-                subscription.current_period_start * 1000,
-              ),
-              currentPeriodEnd: new Date(
-                subscription.current_period_end * 1000,
-              ),
-              usedTreatments: 0,
-              usedHyperbaric: 0,
-              usedBreathwork: 0,
-              usedGuestPasses: 0,
-            },
-          });
+      if (!stripeSubscriptionId) {
+        console.log(
+          "Stripe invoice.paid without a subscription, ignoring:",
+          invoice.id,
+        );
+      } else {
+        // The renewal invoice is the authoritative signal that the new
+        // billing period started, so the scheduled plan change is applied
+        // here. The subscription is fetched through the SDK, which returns
+        // the fields in the version the SDK is pinned to.
+        try {
+          const subscription = await stripe.subscriptions.retrieve(
+            stripeSubscriptionId,
+          );
 
-          console.log(
-            "Upgrade activated for membership:",
-            membership.id,
-            "new plan:",
-            newPlan.name,
+          await syncMembershipFromStripe(subscription);
+        } catch (error) {
+          console.error(
+            "Failed to sync membership from invoice.paid:",
+            stripeSubscriptionId,
+            error,
           );
         }
-      } else {
-        // Just update period dates and cancel status
-        await prisma.patientMembership.update({
-          where: { id: membership.id },
-          data: {
-            currentPeriodStart: new Date(
-              subscription.current_period_start * 1000,
-            ),
-            currentPeriodEnd: new Date(
-              subscription.current_period_end * 1000,
-            ),
-            cancelAtPeriodEnd: subscription.cancel_at_period_end,
-            status:
-              subscription.status === "canceled" ? "CANCELLED" : "ACTIVE",
-          },
-        });
       }
     }
 
