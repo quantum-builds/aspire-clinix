@@ -217,6 +217,22 @@ export async function GET(req: NextRequest) {
 
     // If fileName is provided, return a single file object
     if (requestedFileName) {
+      try {
+        await s3.send(
+          new HeadObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME!,
+            Key: requestedFileName,
+          }),
+        );
+      } catch (error) {
+        // Only treat a definite 404 as missing; other errors (e.g. 403) fall through.
+        if ((error as { name?: string }).name === "NotFound") {
+          return NextResponse.json(
+            { success: false, message: "File not found" },
+            { status: 404 },
+          );
+        }
+      }
       const single = await getSignedFile(requestedFileName);
       console.log("Single file response:", single);
       return NextResponse.json(

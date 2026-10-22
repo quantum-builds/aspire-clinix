@@ -99,10 +99,17 @@ export default function AddResourceForm({ type }: AddResourceFormProps) {
     }
 
   
-    const uploaded = await uploadFile({
-      selectedFile: data.videoFile,
-      fileType: type,
-    });
+    let uploaded;
+    try {
+      uploaded = await uploadFile({
+        selectedFile: data.videoFile,
+        fileType: type,
+      });
+    } catch (error) {
+      console.error("Resource upload failed:", error);
+      showToast("error", "Error uploading file");
+      return;
+    }
 
     let fileUrl;
     if (type === ResoucrceType.VIDEO)
