@@ -301,6 +301,7 @@ export async function POST(req: NextRequest) {
           data: {
             membershipId: membership.id,
             appointmentId: String(appointmentId),
+            treatmentId: String(treatmentId),
           },
         });
 

@@ -5,6 +5,8 @@ import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { notifyReportsCreated } from "@/notifications/reportNotifications";
+import { isValidCuid } from "@/utils/typeValidUtils";
+import { findOrCreateDentistFromPractitioner } from "@/lib/practitioner-dentist";
 
 /**
  * @swagger
@@ -303,8 +305,44 @@ export async function POST(req: NextRequest) {
     }
 
     let dentist: { id: string } | null = null;
+    let sessionId: string | undefined;
 
-    if (isAdmin) {
+    // Session ids are cuids; Dentally appointment ids are numeric.
+    if (isValidCuid(appointmentId)) {
+      const session = await prisma.session.findUnique({
+        where: { id: appointmentId },
+      });
+
+      if (!session) {
+        return NextResponse.json(
+          createResponse(false, "Appointment not found for the dentist.", null),
+          { status: 404 },
+        );
+      }
+
+      if (session.practitionerId === null) {
+        return NextResponse.json(
+          createResponse(
+            false,
+            "This session has no practitioner assigned.",
+            null,
+          ),
+          { status: 400 },
+        );
+      }
+
+      if (!isAdmin && session.practitionerId !== Number(dentistId)) {
+        return NextResponse.json(
+          createResponse(false, "Appointment not found for the dentist.", null),
+          { status: 404 },
+        );
+      }
+
+      sessionId = session.id;
+      dentist = {
+        id: await findOrCreateDentistFromPractitioner(session.practitionerId),
+      };
+    } else if (isAdmin) {
       // Admin creates the report on behalf of the treating dentist of the
       // booked appointment, so link it to that dentist (not the admin).
       dentist = await prisma.dentist.findFirst({
@@ -336,6 +374,7 @@ export async function POST(req: NextRequest) {
     const reportsToCreate = reports.map((r) => ({
       ...r,
       dentistId: dentist.id,
+      ...(sessionId && { sessionId }),
     }));
 
     console.log("report to create ", reportsToCreate);

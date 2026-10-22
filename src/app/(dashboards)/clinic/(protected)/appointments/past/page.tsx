@@ -12,6 +12,9 @@ export default async function PastAppointments(props: {
     on?: string;
     before?: string;
     after?: string;
+    appointmentType?: string;
+    type?: string;
+    filter?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
@@ -19,6 +22,11 @@ export default async function PastAppointments(props: {
   const on = searchParams?.on || "";
   const after = searchParams?.after || "";
   const page = Number(searchParams?.page) || 1;
+  const appointmentType =
+    searchParams?.appointmentType ||
+    searchParams?.type ||
+    searchParams?.filter ||
+    "";
 
   // Default before date to today (YYYY-MM-DD format) for past appointments
   const today = new Date();
@@ -65,7 +73,7 @@ export default async function PastAppointments(props: {
           ]}
         />
         <Suspense
-          key={page + status + on + before + after}
+          key={page + status + on + before + after + appointmentType}
           fallback={<AppointmentGridSkeleton type="PAST" />}
         >
           <AppointmentGridWrapper
@@ -74,6 +82,7 @@ export default async function PastAppointments(props: {
             on={on}
             before={before}
             after={after}
+            appointmentType={appointmentType}
           />
         </Suspense>
       </div>

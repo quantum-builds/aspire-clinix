@@ -4,6 +4,7 @@ import {
   getTreatmentPlanCost,
   HYPERBARIC_TREATMENT_ID,
 } from "./plan-treatment-cost";
+import { getSubscriptionPeriod } from "./stripe-period";
 
 export type PlanEligibilityStatus =
   | "OK"
@@ -55,10 +56,15 @@ export async function syncMembershipPeriod(
       membership.stripeSubscriptionId,
     );
 
-    const currentPeriodStart = new Date(
-      subscription.current_period_start * 1000,
-    );
-    const currentPeriodEnd = new Date(subscription.current_period_end * 1000);
+    const period = getSubscriptionPeriod(subscription);
+
+    if (!period) {
+      throw new Error(
+        `Subscription ${membership.stripeSubscriptionId} has no billing period`,
+      );
+    }
+
+    const { currentPeriodStart, currentPeriodEnd } = period;
 
     const periodChanged =
       currentPeriodStart.getTime() !== membership.currentPeriodStart.getTime();

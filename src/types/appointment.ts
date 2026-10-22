@@ -3,7 +3,7 @@ import { TReport } from "./reports";
 
 export type TAppointment = {
   bindStatus?: "BOUND" | "UNBOUND";
-  id: number;
+  id: number | string;
   appointmentCancellationReasonId: number | null;
   arrivedAt: string | null;
   bookedViaApi: boolean;

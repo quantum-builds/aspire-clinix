@@ -169,13 +169,14 @@ export const ENDPOINTS = {
       after?: string,
       dateType?: AppointmentDateType | null,
       status?: string,
+      appointmentType?: string,
     ) =>
       `/api/appointments?page=${page ?? 1}&perPage=${perPage ?? 20}&search=${search ?? ""}&on=${
         on ?? ""
       }&before=${before ?? ""}&after=${after ?? ""}&dateType=${
         dateType ?? ""
       }&status=${status ?? ""}&practitioner_id=${practitionerId ?? ""}&site_id=${siteId}
-      &state${state}&updatedAfte${updatedAfte}`,
+      &state${state}&updatedAfte${updatedAfte}&appointmentType=${appointmentType ?? ""}`,
     post: "/api/appointments",
     patch: (id: number) => `/api/appointments/${id}`,
     getById: (id: string) => `/api/appointments/${id}`,

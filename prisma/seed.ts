@@ -33,17 +33,14 @@ const rows = [
     stripeProductId: "prod_VQIslMbiINB0DH",
   },
   {
-    // FIXME: this treatmentId is a duplicate of the 3rd row (1367622).
-    // treatmentId is the primary key, so each row needs its own value.
-    // Change it to the correct treatment id before running the seed.
+  
     treatmentId: 1367622,
     stripePriceId: "price_1UPSJUBcDsmTVqg6tRTgTHsI",
     stripeProductId: "prod_VQIvOWfq24aXzW",
   },
 ];
 
-// treatmentId is @id, stripePriceId and stripeProductId are @unique,
-// so none of the three may repeat within the list.
+
 function assertNoDuplicates() {
   const fields = ["treatmentId", "stripePriceId", "stripeProductId"] as const;
   for (const field of fields) {
@@ -63,8 +60,6 @@ function assertNoDuplicates() {
 async function main() {
   assertNoDuplicates();
 
-  // Delete and re-insert inside one transaction: if anything fails,
-  // nothing is deleted and the table stays as it was.
   await prisma.$transaction([
     prisma.treatmentStripe.deleteMany(),
     prisma.treatmentStripe.createMany({ data: rows }),

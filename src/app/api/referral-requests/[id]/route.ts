@@ -5,10 +5,10 @@ import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
 import type { JWT } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import { DentistRole, ReferralRequestStatus } from "@prisma/client";
-import { gettPractitionerById } from "@/dentallyHelpers/practitioners";
+import { ReferralRequestStatus } from "@prisma/client";
 import { getAppointment } from "@/dentallyHelpers/appointment";
 import ReferralForm from "@/components/ReferralForm";
+import { findOrCreateDentistFromPractitioner } from "@/lib/practitioner-dentist";
 import {
   notifyReferralAppointmentBound,
   notifyReferralDentistAssigned,
@@ -350,51 +350,6 @@ export async function GET(req: NextRequest) {
       status: 500,
     });
   }
-}
-
-async function findOrCreateDentistFromPractitioner(
-  practitionerId: number,
-): Promise<string> {
-  const existingDentist = await prisma.dentist.findFirst({
-    where: { dentallyId: practitionerId },
-  });
-
-  if (existingDentist) {
-    return existingDentist.id;
-  }
-
-  let firstName = "";
-  let lastName = "";
-  let email = "";
-  let gdcNo = "";
-
-  try {
-    const practitionerRes = await gettPractitionerById(String(practitionerId));
-    if (!practitionerRes.isError && practitionerRes.response?.practitioner) {
-      const prac = practitionerRes.response.practitioner;
-      firstName = prac.user.firstName || "";
-      lastName = prac.user.lastName || "";
-      email = prac.user.email || "";
-      gdcNo = prac.gdcNumber || "";
-    }
-  } catch (e) {
-    console.error("Failed to fetch practitioner from Dentally:", e);
-  }
-
-  const newDentist = await prisma.dentist.create({
-    data: {
-      email: email || `dentist+${practitionerId}@aspire-clinic.com`,
-      firstName: firstName || "Unknown",
-      lastName: lastName || "",
-      gdcNo: gdcNo,
-      dentallyId: practitionerId,
-      role: DentistRole.DENTALLY_PRACTITIONER,
-      otp: undefined,
-      otpInvalidationTime: undefined,
-    },
-  });
-
-  return newDentist.id;
 }
 
 export async function PATCH(req: NextRequest) {

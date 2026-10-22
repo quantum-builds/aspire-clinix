@@ -74,6 +74,7 @@ export default function PageTopBar({
                 showDateFilter={showDateFilter}
                 lockAfterDate={lockAfterDate}
                 lockBeforeDate={lockBeforeDate}
+                showAppointmentTypeFilter={true}
               />
             )}
             {showDropdown && (
@@ -125,6 +126,7 @@ export default function PageTopBar({
             showDateFilter={showDateFilter}
             lockAfterDate={lockAfterDate}
             lockBeforeDate={lockBeforeDate}
+            showAppointmentTypeFilter={true}
           />
         </div>
       )}

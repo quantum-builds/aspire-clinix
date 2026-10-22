@@ -1,4 +1,5 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, Session, Treatment } from "@prisma/client";
+import { AppointmentState, TAppointment } from "@/types/appointment";
 import { fromZonedTime } from "date-fns-tz";
 import { TIMEZONE } from "@/utils/slotSelectionUtils";
 import { TAvailability } from "@/types/treatment";
@@ -93,4 +94,48 @@ export async function reserveTreatmentSlot(
   }
 
   return { treatment, start: found.start, end: found.end };
+}
+
+/**
+ * Shapes a booked Session like a Dentally appointment so it can be listed and
+ * opened through the existing appointment cards and report pages.
+ */
+export function sessionToAppointment(
+  session: Session & { treatment: Treatment },
+): TAppointment {
+  return {
+    id: session.id,
+    appointmentCancellationReasonId: null,
+    arrivedAt: null,
+    bookedViaApi: false,
+    cancelledAt: null,
+    completedAt: null,
+    confirmedAt: session.createdAt.toISOString(),
+    createdAt: session.createdAt.toISOString(),
+    didNotAttendAt: null,
+    duration: Math.round(
+      (session.endTime.getTime() - session.startTime.getTime()) / 60000,
+    ),
+    finishTime: session.endTime.toISOString(),
+    importId: null,
+    inSurgeryAt: null,
+    metadata: {},
+    notes: null,
+    patientId: session.patientId,
+    patientImageUrl: "",
+    patientName: session.patientName,
+    paymentPlanId: null,
+    pendingAt: null,
+    practitionerId: session.practitionerId ?? 0,
+    reason: session.treatment.name,
+    roomId: null,
+    startTime: session.startTime.toISOString(),
+    state: AppointmentState.CONFIRMED,
+    treatmentDescription: session.treatment.description,
+    updatedAt: session.updatedAt.toISOString(),
+    userId: 0,
+    practitionerSiteId: "",
+    practitionerName: session.practitionerName ?? "",
+    uuid: session.id,
+  };
 }

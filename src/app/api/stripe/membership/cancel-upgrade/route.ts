@@ -1,10 +1,8 @@
 import { stripe } from "@/utils/stripe";
+import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,6 +36,7 @@ export async function POST(req: NextRequest) {
 
     const currentMembership = await prisma.patientMembership.findFirst({
       where: { patientId: patient.id, status: "ACTIVE" },
+      include: { plan: true },
     });
 
     if (!currentMembership) {
@@ -49,59 +48,54 @@ export async function POST(req: NextRequest) {
 
     if (!currentMembership.pendingPlanId) {
       return NextResponse.json(
-        createResponse(false, "No pending upgrade found", null),
+        createResponse(false, "No pending plan change found", null),
         { status: 400 },
       );
     }
 
-    // Look up the pending plan to get its price ID
-    const pendingPlan = await prisma.membershipPlan.findUnique({
-      where: { id: currentMembership.pendingPlanId },
-    });
-
-    if (!pendingPlan) {
-      return NextResponse.json(
-        createResponse(false, "Pending plan not found", null),
-        { status: 404 },
-      );
-    }
-
-    // Get the subscription to find the pending item
     const subscription = await stripe.subscriptions.retrieve(
       currentMembership.stripeSubscriptionId,
     );
 
-    // Find the subscription item with the pending plan's price (to remove)
-    const pendingItem = subscription.items.data.find(
-      (item) => item.price.id === pendingPlan.stripePriceId,
-    );
+    if (subscription.cancel_at_period_end) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          "Membership is set to cancel. Reactivate it before changing plans.",
+          null,
+        ),
+        { status: 400 },
+      );
+    }
 
-    // Only remove the pending item if there's more than one item in the subscription
-    // (Stripe requires at least one active item)
-    if (pendingItem && subscription.items.data.length > 1) {
-      await stripe.subscriptionItems.del(pendingItem.id, {
+    const item = subscription.items.data[0];
+
+    if (!item) {
+      throw new Error(`Subscription ${subscription.id} has no items`);
+    }
+
+    if (item.price.id !== currentMembership.plan.stripePriceId) {
+      await stripe.subscriptionItems.update(item.id, {
+        price: currentMembership.plan.stripePriceId,
         proration_behavior: "none",
       });
     }
 
-    // Clear the pending upgrade
     await prisma.patientMembership.update({
       where: { id: currentMembership.id },
-      data: {
-        pendingPlanId: null,
-      },
+      data: { pendingPlanId: null },
     });
 
     return NextResponse.json(
-      createResponse(true, "Upgrade cancelled successfully", null),
+      createResponse(true, "Pending plan change cancelled", null),
     );
   } catch (error) {
-    console.error("Cancel upgrade error:", error);
+    console.error("Cancel plan change error:", error);
 
     return NextResponse.json(
       createResponse(
         false,
-        error instanceof Error ? error.message : "Cancel upgrade failed",
+        "Could not cancel the plan change. Please try again.",
         null,
       ),
       { status: 500 },
