@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRef } from "react";
 
 interface UploadVideoFormProps {
-  onVideoSelect: (file: File) => void;
+  onVideoSelect: (files: File[]) => void;
 }
 
 export default function UploadVideoForm({
@@ -17,9 +17,9 @@ export default function UploadVideoForm({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onVideoSelect(file);
+    const files = Array.from(e.target.files ?? []);
+    if (files.length > 0) {
+      onVideoSelect(files);
       e.target.value = "";
     }
   };
@@ -43,6 +43,7 @@ export default function UploadVideoForm({
       <input
         type="file"
         accept="video/*"
+        multiple
         ref={fileInputRef}
         className="hidden"
         onChange={handleFileChange}

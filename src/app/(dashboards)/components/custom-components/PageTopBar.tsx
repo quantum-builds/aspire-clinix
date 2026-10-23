@@ -33,7 +33,7 @@ interface PageTopBarProps {
 export default function PageTopBar({
   pageHeading,
   showSearch,
-  searchPlaceHolder = "Enter Appointment Number",
+  searchPlaceHolder = "Search by patient or referral dentist",
   showFilters,
   showExport = false,
   extraBtns,

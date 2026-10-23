@@ -441,6 +441,28 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    if (on || before || after) {
+      const createdAt: Prisma.DateTimeFilter = {};
+
+      if (on) {
+        const onDate = new Date(on);
+        const nextDay = new Date(onDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        createdAt.gte = onDate;
+        createdAt.lt = nextDay;
+      }
+
+      if (before) {
+        createdAt.lte = new Date(before);
+      }
+
+      if (after) {
+        createdAt.gte = new Date(after);
+      }
+
+      andConditions.push({ createdAt });
+    }
+
     const where = andConditions.length ? { AND: andConditions } : {};
 
     const [referralRequests, totalCount] = await Promise.all([
