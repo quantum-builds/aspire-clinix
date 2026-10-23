@@ -17,9 +17,19 @@ interface DateFilterProps {
   showDateFilter?: boolean
   lockAfterDate?: boolean
   lockBeforeDate?: boolean
+  restrictAfterToToday?: boolean
+  restrictBeforeFromToday?: boolean
 }
 
-export default function DateFilter({ statusOptions, callStatusOptions, showDateFilter, lockAfterDate, lockBeforeDate }: DateFilterProps) {
+export default function DateFilter({
+  statusOptions,
+  callStatusOptions,
+  showDateFilter,
+  lockAfterDate,
+  lockBeforeDate,
+  restrictAfterToToday = false,
+  restrictBeforeFromToday = false,
+}: DateFilterProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -50,6 +60,9 @@ export default function DateFilter({ statusOptions, callStatusOptions, showDateF
     const day = String(date.getDate()).padStart(2, "0")
     return `${year}-${month}-${day}`
   }
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
 
   // const getStatusLabel = (value: string | null) => {
   //   if (!value || !statusOptions) return ""
@@ -268,6 +281,7 @@ export default function DateFilter({ statusOptions, callStatusOptions, showDateF
                         <Calendar
                           mode="single"
                           selected={afterDate || undefined}
+                          disabled={restrictAfterToToday ? { after: today } : restrictBeforeFromToday ? { before: today } : undefined}
                           onSelect={(date) => {
                             if (!date) return
                             setAfterDate(date)
@@ -328,6 +342,7 @@ export default function DateFilter({ statusOptions, callStatusOptions, showDateF
                         <Calendar
                           mode="single"
                           selected={beforeDate || undefined}
+                          disabled={restrictBeforeFromToday ? { before: today } : restrictAfterToToday ? { after: today } : undefined}
                           onSelect={(date) => {
                             if (!date) return
                             setBeforeDate(date)

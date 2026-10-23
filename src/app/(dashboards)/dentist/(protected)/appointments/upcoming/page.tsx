@@ -31,7 +31,8 @@ export default async function UpcomingAppointments(props: {
         pageHeading="Appointments"
         showSearch={false}
         showFilters={true}
-        lockAfterDate={true}
+        // lockAfterDate={true}
+        restrictBeforeFromToday={true}
         statusOptions={[
           {
             value: AppointmentState.PENDING,

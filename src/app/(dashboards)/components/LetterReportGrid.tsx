@@ -14,7 +14,7 @@ interface LetterReportGridProps {
   canDelete?: boolean;
   isNewUploadPage?: boolean;
   uploadedPdfs?: File[];
-  handlePdfSelect?: (file: File) => void;
+  handlePdfSelect?: (files: File[]) => void;
   handleRemovePdf?: (index: number) => void;
 }
 
@@ -33,9 +33,9 @@ export default function LetterReportGrid({
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && handlePdfSelect) {
-      handlePdfSelect(file);
+    const files = Array.from(event.target.files ?? []);
+    if (files.length > 0 && handlePdfSelect) {
+      handlePdfSelect(files);
       event.target.value = ""; // reset input for selecting same file again
     }
   };
@@ -65,6 +65,7 @@ export default function LetterReportGrid({
             <input
               type="file"
               accept="application/pdf"
+              multiple
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"

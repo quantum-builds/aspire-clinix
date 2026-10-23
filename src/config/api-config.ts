@@ -72,10 +72,21 @@ export const ENDPOINTS = {
       status?: string,
       pageType?: string,
       callStatus?: string,
-    ) =>
-      `/api/referral-requests?page=${page ?? 1}&search=${search ?? ""}&on=${
-        on ?? ""
-      }&before=${before ?? ""}&after=${after ?? ""}&status=${status ?? ""}&call-status=${callStatus ?? ""}&page-type=${pageType ?? ""}&stats-only=${statsOnly}`,
+    ) => {
+      const params = new URLSearchParams({
+        page: String(page ?? 1),
+        search: search ?? "",
+        on: on ?? "",
+        before: before ?? "",
+        after: after ?? "",
+        status: status ?? "",
+        "call-status": callStatus ?? "",
+        "page-type": pageType ?? "",
+        "stats-only": String(statsOnly),
+      });
+
+      return `/api/referral-requests?${params.toString()}`;
+    },
     getById: (id: string) => `/api/referral-requests/${id}`,
     patch: (id: string) => `/api/referral-requests/${id}`,
     delete: (id: string) => `/api/referral-requests/${id}`,
