@@ -5,6 +5,7 @@ import { TreatmentCardSkeleton } from "@/app/(dashboards)/patient/plan-selection
 import {
   CONTRAST_SESSION_TREATMENT_ID,
   HYPERBARIC_TREATMENT_ID,
+  SAUNA_TREATMENT_ID
 } from "@/lib/plan-treatment-cost";
 import { getCurrentMembership } from "@/services/membership/membershipQuery";
 import { TTreatment } from "@/types/common";
@@ -78,7 +79,7 @@ export default function TreatmentCard({
       showPrice = true;
     } else if (
       remainingTreatments < 2 &&
-      treatment.id === CONTRAST_SESSION_TREATMENT_ID
+      (treatment.id === CONTRAST_SESSION_TREATMENT_ID || treatment.id ===  SAUNA_TREATMENT_ID) 
     ) {
       showPrice = true;
     } else if (treatment.id === HYPERBARIC_TREATMENT_ID) {

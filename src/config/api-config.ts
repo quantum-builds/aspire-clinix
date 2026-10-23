@@ -178,7 +178,7 @@ export const ENDPOINTS = {
       }&status=${status ?? ""}&practitioner_id=${practitionerId ?? ""}&site_id=${siteId}
       &state${state}&updatedAfte${updatedAfte}&appointmentType=${appointmentType ?? ""}`,
     post: "/api/appointments",
-    patch: (id: number) => `/api/appointments/${id}`,
+    patch: (id: number | string) => `/api/appointments/${id}`,
     getById: (id: string) => `/api/appointments/${id}`,
     getByPatientName: (patientName: string) =>
       `/api/appointments/patient?patientName=${patientName}`,
