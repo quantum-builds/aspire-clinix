@@ -11,6 +11,7 @@ const REQUIRED_WELLNESS_TREATMENTS = new Set<number>([
   // 1367625, // Compression Therapy
   1367621,
   1367845, // Contrast Session (Cryo + Sauna)
+  1526324, // Contrast Session (Ice bath + Sauna)
   1367626, // Ice Bath
   1367623, // Hyperbaric Oxygen Chamber
   1367624, // Red Light Therapy
