@@ -1,3 +1,4 @@
+
 "use client";
 import { SearchIcon } from "@/assets";
 import Image from "next/image";
@@ -16,7 +17,9 @@ export default function SearchBar({
   const { replace } = useRouter();
 
   const [search, setSearch] = useState(searchParams.get(queryKey) || "");
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(
+    Boolean(searchParams.get(queryKey)?.trim())
+  );
   const [showInputContent, setShowInputContent] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -72,7 +75,7 @@ export default function SearchBar({
     if (e.key === "Escape") {
       if (isModalOpen) {
         setIsModalOpen(false);
-      } else {
+      } else if (!search.trim()) {
         setIsExpanded(false);
       }
     }
@@ -84,7 +87,10 @@ export default function SearchBar({
     if (containerRef.current?.contains(relatedTarget)) {
       return;
     }
-    setTimeout(() => setIsExpanded(false), 150);
+
+    if (!search.trim()) {
+      setTimeout(() => setIsExpanded(false), 150);
+    }
   };
 
   // Handle container click more intelligently
