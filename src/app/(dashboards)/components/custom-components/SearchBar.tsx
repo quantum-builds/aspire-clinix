@@ -4,12 +4,18 @@ import Image from "next/image";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export default function SearchBar({ placeholder }: { placeholder: string }) {
+export default function SearchBar({
+  placeholder,
+  queryKey = "query",
+}: {
+  placeholder: string;
+  queryKey?: string;
+}) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const [search, setSearch] = useState(searchParams.get("query") || "");
+  const [search, setSearch] = useState(searchParams.get(queryKey) || "");
   const [isExpanded, setIsExpanded] = useState(false);
   const [showInputContent, setShowInputContent] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,13 +50,13 @@ export default function SearchBar({ placeholder }: { placeholder: string }) {
     (query: string) => {
       const params = new URLSearchParams(searchParams);
       if (query) {
-        params.set("query", query);
+        params.set(queryKey, query);
       } else {
-        params.delete("query");
+        params.delete(queryKey);
       }
       replace(`${pathname}?${params.toString()}`);
     },
-    [pathname, replace, searchParams]
+    [pathname, queryKey, replace, searchParams]
   );
 
   // Debounced search trigger
