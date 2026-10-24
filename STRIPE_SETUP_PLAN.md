@@ -1,6 +1,6 @@
 # Stripe & Webhook Setup — Implementation Handoff
 
-Last updated: 2026-10-24
+Last updated: 2026-10-24 (steps 1–11 done)
 Owner: Muhammad Bilal
 Branch the review was done on: `updated-wellness-flow` (clean, equal to `main` at PR #155)
 
@@ -369,10 +369,10 @@ Each step: implement, `npx tsc --noEmit` (or `npm run build`), commit as `stripe
 
 ### 6.1 Local database
 
-`docker-compose.yml` defines Postgres 15 on port 5432, db `aspire_clinic`, trust auth.
+`docker-compose.yml` defines Postgres 15 on port 5432, db `aspire_clinic`, trust auth. If 5432 is taken (it is on the owner's machine), run it on 5433 instead; `scripts/stripe-local/README.md` has the exact commands.
 ```bash
-docker compose up -d
-export LOCAL_DB="postgresql://postgres@localhost:5432/aspire_clinic"
+docker run -d --name aspire-clinix-pg -p 127.0.0.1:5433:5432 -e POSTGRES_DB=aspire_clinic -e POSTGRES_HOST_AUTH_METHOD=trust postgres:15-alpine
+export LOCAL_DB="postgresql://postgres@localhost:5433/aspire_clinic"
 DATABASE_URL=$LOCAL_DB npx prisma migrate deploy
 DATABASE_URL=$LOCAL_DB npx prisma db seed
 ```
@@ -494,29 +494,52 @@ Redeploy after setting them (env vars are baked in at build for `NEXT_PUBLIC_*`)
 
 ## 8. Progress (keep updated)
 
+Branch: `feature/stripe-webhook-setup` (from `updated-wellness-flow`, see deviations).
+
 | Step | Status | Notes / IDs / commits |
 |---|---|---|
-| 1 Branch | not started | |
-| 2 Local DB | not started | |
-| 3 Client consolidation | not started | |
-| 4 Schema + migration | not started | |
-| 5 Idempotency helpers | not started | |
-| 6 Customer helper | not started | |
-| 7 Move handlers | not started | |
-| 8 Dispatcher | not started | |
-| 9 Checkout hardening | not started | |
-| 10 Seed + env files | not started | |
-| 11 Local verification | not started | |
-| 12 Prod DB repoint | not started | needs owner confirmation at execution time |
-| 13 Register endpoint | not started | endpoint id: |
-| 14 Vercel env vars | not started | |
+| 1 Branch | done | `d81b6d7` plan committed first |
+| 2 Local DB | done | container `aspire-clinix-pg` on **5433** |
+| 3 Client consolidation | done | `a90f699` – `src/lib/stripe/client.ts`; old files re-export |
+| 4 Schema + migration | done | `140100b` – `prisma/migrations/20261024150000_add_stripe_webhook_event_and_customer_id` (additive) |
+| 5 Idempotency helpers | done | `95656e0` – `src/lib/stripe/webhooks/events.ts` |
+| 6 Customer helper | done | `80238a4` – `src/lib/stripe/customer.ts`, wired into 3 checkouts |
+| 7 Move handlers | done | `ecdfa77` – `src/lib/stripe/webhooks/{booking,membership,result}.ts` |
+| 8 Dispatcher | done | `85aa19a` – `/api/webhooks/membership` deleted |
+| 9 Checkout hardening | done | `509c38e` guard; token patient in `80238a4` |
+| 10 Seed + env files | done | `9e12059`; `.env` whitespace fixed locally (gitignored, values unchanged) |
+| 11 Local verification | done | 26/26 booking + 30/30 membership checks, real `stripe listen` forward, `npm run build` ok. Harness in `scripts/stripe-local/` |
+| 12 Prod DB repoint + `migrate deploy` | **waiting for owner go-ahead** | SQL in 6.3 |
+| 13 Register endpoint | **waiting for owner go-ahead** | endpoint id: |
+| 14 Vercel env vars | waiting (owner pastes) | |
 | 15 Deploy + prod verify | not started | |
-| 16 PR | not started | |
+| 16 PR | not started | target branch to confirm with owner (`updated-wellness-flow` or `main`) |
 
-Deviations from this plan (record here with reason):
+Deviations from this plan (with reason):
 
-- none yet
+- **Branched from `updated-wellness-flow`, not `main`.** `main` lacks the treatment-session code (`/api/sessions`, `src/lib/stripe-period.ts`, `src/lib/treatment-session.ts`). `updated-wellness-flow` is 11 commits ahead of and 8 behind `origin/main`.
+- **Local Postgres on port 5433** via `docker run` (not `docker compose`), because a host Postgres already holds 5432.
+- **`prisma migrate dev` refuses non-interactive shells.** Migration SQL was generated with `prisma migrate diff --from-url <local> --to-schema-datamodel prisma/schema.prisma --script` and applied with `migrate deploy`. Drift check after: empty.
+- **Rejected events respond 400 and are marked processed.** Stripe retries every non-2xx including 400, so marking them processed stops 3 days of retries while the first failure stays visible in the dashboard. Only thrown errors release the claim (500).
+- **An in-progress duplicate delivery gets 409** so Stripe retries later instead of seeing success.
+- **If marking an event processed fails after its handler succeeded, the claim is kept**, so a retry cannot repeat a booking or refund (a stale claim can still be taken over after 5 minutes).
+- **Duplicate membership purchase** (patient already has a live subscription, e.g. two tabs) cancels the new subscription and refunds its first payment, instead of overwriting the row and orphaning a billing subscription.
+- **Customer helper re-validates a stored customer id** and recreates it if missing, so the test-to-live switch and dashboard deletions self-heal.
+- **The old `.env` `STRIPE_SECRET_WEBHOOK_KEY` is a `stripe listen` CLI secret**, not a registered endpoint's. It is the same value `stripe listen --print-secret` prints for this machine. Production needs the new endpoint's secret.
+- `stripe listen` delivers with API version **2020-03-02** (CLI default). The period helpers handle that shape too; verified with a real forwarded event.
 
-Open questions (none at time of writing; owner answered all on 2026-10-24):
+Local environment as left (for the next session):
 
-- none
+- `.env.local` (gitignored) overrides `DATABASE_URL` to local, `DENTALLY_ENDPOINT` to the mock, `NEXT_PUBLIC_APP_URL=http://localhost:3000`, `STRIPE_SECRET_WEBHOOK_KEY` to the `stripe listen` secret, `PLAN_ACCESS_ENABLED=false`. **Delete or rename it before running anything that must reach production from this machine.**
+- Docker container `aspire-clinix-pg` holds local test data (test patient dentallyId 777001).
+- Stripe test mode: the test clock and its subscriptions were deleted; a few refunded test payment intents and one customer (`metadata.app=aspire-clinix`) for the test patient remain, which is harmless.
+
+Follow-ups found during implementation (not in scope, owner to decide):
+
+- A Dentally `invalid_request_error` (e.g. slot taken in Dentally) after payment is retried for 3 days like an outage, then gives up with the patient charged. Same as before this work. Consider refunding on permanent Dentally errors.
+- Treatment-session payment for an unknown patient is rejected without a refund. Same as before.
+- The Breathwork `Treatment.price` column still says 150 while the Stripe price is £55 (owner chose to leave it).
+
+Open questions:
+
+- PR target branch: `updated-wellness-flow` or `main`?
