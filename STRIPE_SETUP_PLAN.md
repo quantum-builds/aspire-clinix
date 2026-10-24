@@ -513,7 +513,7 @@ Branch: `feature/stripe-webhook-setup` (from `updated-wellness-flow`, see deviat
 | 13 Register endpoint | done, **disabled** | `we_1UU1yPBcDsmTVqg6akeCdG9Z`, test mode, API `2025-02-24.acacia`, 5 events. Enable after step 15 (Dashboard → Developers → Webhooks, or `stripe.webhookEndpoints.update(id, { disabled: false })`). Secret handed to owner out of band, not in the repo |
 | 14 Vercel env vars | **owner to do** | set the 4 vars in 6.5 for Production, then redeploy |
 | 15 Deploy + prod verify | not started | |
-| 16 PR | opened | target `updated-wellness-flow` (owner's choice) |
+| 16 PR | branch pushed; **owner opens PR** | `gh` is logged in as an account that is not a collaborator. Compare link: https://github.com/quantum-builds/aspire-clinix/compare/updated-wellness-flow...feature/stripe-webhook-setup?expand=1 |
 
 Deviations from this plan (with reason):
 
