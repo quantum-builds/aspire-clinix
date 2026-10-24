@@ -1,4 +1,5 @@
-import { stripe } from "@/utils/stripe";
+import { stripe } from "@/lib/stripe/client";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
@@ -65,10 +66,33 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // One membership per patient. A cancelled membership that is still in
+    // its paid period is ACTIVE too: the patient reactivates it instead.
+    const activeMembership = await prisma.patientMembership.findFirst({
+      where: { patientId: patient.id, status: "ACTIVE" },
+    });
+
+    if (activeMembership) {
+      return NextResponse.json(
+        createResponse(
+          false,
+          activeMembership.cancelAtPeriodEnd
+            ? "Your membership is set to cancel. Reactivate it instead of buying a new one."
+            : "You already have an active membership. Change plan instead of buying a new one.",
+          null,
+        ),
+        { status: 400 },
+      );
+    }
+
     const origin =
       process.env.NEXT_PUBLIC_APP_URL || req.headers.get("origin") || "";
 
+    const customer = await getOrCreateStripeCustomer(patient);
+
     const session = await stripe.checkout.sessions.create({
+      customer,
+
       line_items: [
         {
           price: plan.stripePriceId,

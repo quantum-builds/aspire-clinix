@@ -7,7 +7,8 @@ import {
   TreatmentSlotException,
 } from "@/lib/treatment-session";
 import { createResponse } from "@/utils/createResponse";
-import { stripe } from "@/utils/stripe";
+import { stripe } from "@/lib/stripe/client";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
@@ -258,7 +259,11 @@ export async function POST(req: NextRequest) {
     const origin =
       process.env.NEXT_PUBLIC_APP_URL || req.headers.get("origin") || "";
 
+    const customer = await getOrCreateStripeCustomer(patient);
+
     const checkoutSession = await stripe.checkout.sessions.create({
+      customer,
+
       line_items: [
         {
           price: treatment.stripePriceId,
