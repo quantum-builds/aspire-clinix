@@ -1,6 +1,6 @@
 # Stripe & Webhook Setup — Implementation Handoff
 
-Last updated: 2026-10-24 (steps 1–11 done)
+Last updated: 2026-10-24 (steps 1–13 done; 14–15 with owner)
 Owner: Muhammad Bilal
 Branch the review was done on: `updated-wellness-flow` (clean, equal to `main` at PR #155)
 
@@ -509,11 +509,11 @@ Branch: `feature/stripe-webhook-setup` (from `updated-wellness-flow`, see deviat
 | 9 Checkout hardening | done | `509c38e` guard; token patient in `80238a4` |
 | 10 Seed + env files | done | `9e12059`; `.env` whitespace fixed locally (gitignored, values unchanged) |
 | 11 Local verification | done | 26/26 booking + 30/30 membership checks, real `stripe listen` forward, `npm run build` ok. Harness in `scripts/stripe-local/` |
-| 12 Prod DB repoint + `migrate deploy` | **waiting for owner go-ahead** | SQL in 6.3 |
-| 13 Register endpoint | **waiting for owner go-ahead** | endpoint id: |
-| 14 Vercel env vars | waiting (owner pastes) | |
+| 12 Prod DB repoint + `migrate deploy` | done 2026-10-24 | 5 rows repointed in one transaction (verified counts 1,1,1,1,1; no `Hk7R1EnJ3F` price IDs left). Backup table `_stripe_repoint_backup_20261024`. Migration `20261024150000_…` applied; `migrate status` up to date |
+| 13 Register endpoint | done, **disabled** | `we_1UU1yPBcDsmTVqg6akeCdG9Z`, test mode, API `2025-02-24.acacia`, 5 events. Enable after step 15 (Dashboard → Developers → Webhooks, or `stripe.webhookEndpoints.update(id, { disabled: false })`). Secret handed to owner out of band, not in the repo |
+| 14 Vercel env vars | **owner to do** | set the 4 vars in 6.5 for Production, then redeploy |
 | 15 Deploy + prod verify | not started | |
-| 16 PR | not started | target branch to confirm with owner (`updated-wellness-flow` or `main`) |
+| 16 PR | opened | target `updated-wellness-flow` (owner's choice) |
 
 Deviations from this plan (with reason):
 
@@ -542,4 +542,4 @@ Follow-ups found during implementation (not in scope, owner to decide):
 
 Open questions:
 
-- PR target branch: `updated-wellness-flow` or `main`?
+- **Production has one ACTIVE `PatientMembership`** (`0378c716-0d93-48f7-b149-eaa6224f436a`, plan Unlimited) whose `stripeSubscriptionId` `sub_1UTKVOHk7R1EnJ3Fdv6YDEuD` is in the wrong account (`Hk7R1EnJ3F`). With the Aspire Wellness key, cancel/upgrade/reactivate for that patient fail with "No such subscription", the new checkout guard blocks them from buying, and plan booking fails once its period ends. Likely test data. Owner to decide: delete the row, or mark it `CANCELLED`. Not touched.
