@@ -38,6 +38,12 @@ const rows = [
     stripePriceId: "price_1UPSJUBcDsmTVqg6tRTgTHsI",
     stripeProductId: "prod_VQIvOWfq24aXzW",
   },
+  {
+    // Contrast Session (Ice Bath + Sauna)
+    treatmentId: 1526324,
+    stripePriceId: "price_1UTjgaBcDsmTVqg6i8DX85pP",
+    stripeProductId: "prod_VUj8cVdcywb3n4",
+  },
 ];
 
 
