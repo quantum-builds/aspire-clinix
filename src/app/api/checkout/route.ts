@@ -2,9 +2,8 @@ import { stripe } from "@/utils/stripe";
 import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/db";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,16 +23,31 @@ export async function POST(req: NextRequest) {
       startTime,
       finishTime,
       reason,
-      patientId,
     } = body;
 
-    if (
-      !treatmentId ||
-      !practitionerId ||
-      !startTime ||
-      !finishTime ||
-      !patientId
-    ) {
+    // The patient always comes from the session, never from the request
+    // body, so nobody can book or pay under another patient's id.
+    const dentallyId = Number(token.id);
+
+    if (Number.isNaN(dentallyId)) {
+      return NextResponse.json(
+        createResponse(false, "Invalid patient session", null),
+        { status: 401 },
+      );
+    }
+
+    const patient = await prisma.patient.findUnique({
+      where: { dentallyId },
+    });
+
+    if (!patient) {
+      return NextResponse.json(
+        createResponse(false, "Patient not found", null),
+        { status: 404 },
+      );
+    }
+
+    if (!treatmentId || !practitionerId || !startTime || !finishTime) {
       return NextResponse.json(
         createResponse(false, "Missing required booking details", null),
         { status: 400 },
@@ -80,7 +94,11 @@ export async function POST(req: NextRequest) {
     const origin =
       process.env.NEXT_PUBLIC_APP_URL || req.headers.get("origin") || "";
 
+    const customer = await getOrCreateStripeCustomer(patient);
+
     const session = await stripe.checkout.sessions.create({
+      customer,
+
       line_items: [
         {
           price: treatmentMapping.stripePriceId,
@@ -97,7 +115,7 @@ export async function POST(req: NextRequest) {
 
         practitioner_id: String(practitionerId),
 
-        patient_id: String(patientId),
+        patient_id: String(dentallyId),
 
         start_time: parsedStartTime.toISOString(),
 

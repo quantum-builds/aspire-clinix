@@ -1,4 +1,5 @@
-import { stripe } from "@/utils/stripe";
+import { stripe } from "@/lib/stripe/client";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
@@ -68,7 +69,11 @@ export async function POST(req: NextRequest) {
     const origin =
       process.env.NEXT_PUBLIC_APP_URL || req.headers.get("origin") || "";
 
+    const customer = await getOrCreateStripeCustomer(patient);
+
     const session = await stripe.checkout.sessions.create({
+      customer,
+
       line_items: [
         {
           price: plan.stripePriceId,
