@@ -509,7 +509,7 @@ Branch: `feature/stripe-webhook-setup` (from `updated-wellness-flow`, see deviat
 | 9 Checkout hardening | done | `509c38e` guard; token patient in `80238a4` |
 | 10 Seed + env files | done | `9e12059`; `.env` whitespace fixed locally (gitignored, values unchanged) |
 | 11 Local verification | done | 26/26 booking + 30/30 membership checks, real `stripe listen` forward, `npm run build` ok. Harness in `scripts/stripe-local/` |
-| 12 Prod DB repoint + `migrate deploy` | done 2026-10-24 | 5 rows repointed in one transaction (verified counts 1,1,1,1,1; no `Hk7R1EnJ3F` price IDs left). Backup table `_stripe_repoint_backup_20261024`. Migration `20261024150000_…` applied; `migrate status` up to date |
+| 12 Prod DB repoint + `migrate deploy` | done 2026-10-24 | 5 rows repointed in one transaction (verified counts 1,1,1,1,1; no `Hk7R1EnJ3F` price IDs left). Backup table `_stripe_repoint_backup_20261024` (dropped 2026-10-27 after the new prices were verified in testing). Migration `20261024150000_…` applied; `migrate status` up to date |
 | 13 Register endpoint | done, **disabled** | `we_1UU1yPBcDsmTVqg6akeCdG9Z`, test mode, API `2025-02-24.acacia`, 5 events. Enable after step 15 (Dashboard → Developers → Webhooks, or `stripe.webhookEndpoints.update(id, { disabled: false })`). Secret handed to owner out of band, not in the repo |
 | 14 Vercel env vars | **owner to do** | set the 4 vars in 6.5 for Production, then redeploy |
 | 15 Deploy + prod verify | not started | |
