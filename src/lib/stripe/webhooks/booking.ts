@@ -9,6 +9,10 @@ import {
   TreatmentSlotException,
 } from "@/lib/treatment-session";
 import { TIMEZONE } from "@/utils/slotSelectionUtils";
+import {
+  notifyTreatmentSessionBooking,
+  notifyWellnessBooking,
+} from "@/notifications/wellnessNotifications";
 import { HandlerResult, ok, rejected, RetryableWebhookError } from "./result";
 
 /**
@@ -79,6 +83,12 @@ export async function onWellnessAppointmentPaid(
   }
 
   console.log("Dentally appointment created:", session.id, result.response?.id);
+
+  await notifyWellnessBooking({
+    treatmentId: metadata.treatment_id,
+    patientDentallyId: Number(patient_id),
+    startTime,
+  });
 
   return ok("Dentally appointment created");
 }
@@ -161,6 +171,13 @@ export async function onTreatmentSessionPaid(
     }
 
     console.log("Treatment session created:", created.id);
+
+    await notifyTreatmentSessionBooking({
+      treatmentId: treatment_id,
+      patientDentallyId: dentallyId,
+      startTime: created.startTime,
+      endTime: created.endTime,
+    });
     return ok("Treatment session created");
   } catch (error) {
     if (

@@ -17,6 +17,7 @@ import {
   evaluatePlanEligibility,
   syncMembershipPeriod,
 } from "@/lib/plan-booking";
+import { notifyWellnessBooking } from "@/notifications/wellnessNotifications";
 
 const prisma = new PrismaClient();
 
@@ -344,6 +345,12 @@ export async function POST(req: NextRequest) {
 
       throw error;
     }
+
+    await notifyWellnessBooking({
+      treatmentId,
+      patientDentallyId: dentallyId,
+      startTime,
+    });
 
     return NextResponse.json(
       createResponse(true, "Appointment booked successfully", {
