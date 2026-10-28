@@ -1,5 +1,7 @@
 import {
   bookingRows,
+  bookNextSession,
+  bulletList,
   changeBooking,
   greeting,
   numberedList,
@@ -65,6 +67,65 @@ export function breathworkPreEmail({
         "Please let us know in advance if you are pregnant, have a heart condition or high blood pressure, epilepsy, asthma or another breathing condition, a history of panic attacks, or have had recent surgery. This helps us make sure the session is right for you.",
       ) +
       changeBooking() +
+      signOff(),
+  );
+}
+
+export const BREATHWORK_POST_SUBJECT = "After your breathwork session";
+
+export function breathworkPostEmail({
+  firstName,
+}: WellnessBookingEmailData): string {
+  return wellnessEmailLayout(
+    "After Your Breathwork Session",
+    greeting(firstName) +
+      paragraph(
+        "Thank you for joining us for breathwork today. Here is a short guide to help you get the most from your session.",
+      ) +
+      sectionHeading("What You Had Today") +
+      paragraph(
+        "A guided group breathwork session, using deliberate, structured breathing patterns. Many guests describe leaving calmer, clearer and more grounded.",
+      ) +
+      sectionHeading("What You May Notice (All Normal)") +
+      bulletList([
+        "Tingling in your hands, feet or face during or shortly after the session",
+        "Feeling slightly light headed for a short time",
+        "Feeling more emotional than usual",
+        "A deep sense of calm, or a lift in energy",
+      ]) +
+      sectionHeading("Your Aftercare for the Rest of Today") +
+      numberedList([
+        {
+          title: "Hydrate.",
+          text: "Drink water through the rest of the day.",
+        },
+        {
+          title: "Eat something light.",
+          text: "A light meal or snack helps you feel settled.",
+        },
+        {
+          title: "Take a quiet moment.",
+          text: "Give yourself a few minutes before heading back into a busy day.",
+        },
+        {
+          title: "Keep it gentle at home.",
+          text: "A few slow, relaxed breaths are a simple way to return to that feeling of calm.",
+        },
+      ]) +
+      sectionHeading("Please Avoid") +
+      bulletList([
+        "Driving straight away if you feel light headed",
+        "Practising intense breathing techniques on your own, particularly in or near water, or while driving",
+      ]) +
+      sectionHeading("Before Your Next Session") +
+      paragraph(
+        "If anything changes with your health or medication, please let us know before you book again, so we can make sure breathwork is still right for you.",
+      ) +
+      sectionHeading("Make the Most of It") +
+      paragraph(
+        "Our breathwork session runs once a month, with places at £55. Breathwork is also included with our Perform and Unlimited memberships.",
+      ) +
+      bookNextSession() +
       signOff(),
   );
 }

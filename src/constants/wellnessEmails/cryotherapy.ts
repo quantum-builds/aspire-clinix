@@ -1,5 +1,7 @@
 import {
   bookingDetails,
+  bookNextSession,
+  bulletList,
   changeBooking,
   greeting,
   numberedList,
@@ -80,6 +82,66 @@ export function cryotherapyPreEmail({
         "Before your session, our team will ask a few questions about your health. Please let us know in advance if you are pregnant, have a heart or circulation condition, high blood pressure, Raynaud's or sensitivity to cold, or have recently been unwell. This helps us confirm cryotherapy is right for you.",
       ) +
       changeBooking() +
+      signOff(),
+  );
+}
+
+export const CRYOTHERAPY_POST_SUBJECT = "Your cryotherapy aftercare";
+
+export function cryotherapyPostEmail({
+  firstName,
+}: WellnessBookingEmailData): string {
+  return wellnessEmailLayout(
+    "Your Cryotherapy Aftercare",
+    greeting(firstName) +
+      paragraph(
+        "Thank you for visiting Aspire Wellness today. Here is a short guide to help you get the most from your whole body cryotherapy session.",
+      ) +
+      sectionHeading("What You Had Today") +
+      paragraph(
+        "A three to five minute session in our whole body cryotherapy chamber. This brief, carefully controlled cold exposure activates the nervous system, and many guests describe stepping out feeling alert, energised and clear headed.",
+      ) +
+      sectionHeading("What You May Notice (All Normal)") +
+      bulletList([
+        "Slightly pink or red skin, which usually fades as your body rewarms",
+        "A tingling sensation in the skin",
+        "A feeling of alertness or a lift in energy",
+        "A sense of mental clarity and a lift in mood",
+        "Feeling slightly cool for a short while afterwards",
+      ]) +
+      sectionHeading("Your Aftercare for the Rest of Today") +
+      numberedList([
+        {
+          title: "Rewarm gently.",
+          text: "Unless you are having a Contrast Session, light movement, such as a short walk, is the best way to let your body warm up naturally.",
+        },
+        {
+          title: "Wrap up.",
+          text: "Dress warmly when you leave, particularly on colder days.",
+        },
+        {
+          title: "Hydrate.",
+          text: "Drink water through the rest of the day.",
+        },
+        {
+          title: "Shower warm, not hot.",
+          text: "A warm shower is fine; give your body time to rewarm before a very hot shower or bath.",
+        },
+      ]) +
+      sectionHeading("Please Avoid") +
+      bulletList([
+        "A very hot bath, shower or sauna immediately after your session, unless it is part of a planned Contrast Session",
+        "Sitting still in a cold environment straight afterwards",
+      ]) +
+      sectionHeading("Before Your Next Session") +
+      paragraph(
+        "If anything changes with your health or medication, please let us know before you book again, so we can confirm cryotherapy is still right for you.",
+      ) +
+      sectionHeading("Make the Most of It") +
+      paragraph(
+        "Many clients pair cryotherapy with our Sunlighten&reg; Infrared Sauna in a Contrast Session, always cold first and then heat. If you would like to make cryotherapy part of your routine, our memberships start from £275 per month.",
+      ) +
+      bookNextSession() +
       signOff(),
   );
 }

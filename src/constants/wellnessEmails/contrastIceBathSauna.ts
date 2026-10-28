@@ -9,6 +9,7 @@ import {
   wellnessEmailLayout,
 } from "./layout";
 import type { WellnessBookingEmailData } from "./types";
+import { contrastPostEmail } from "./contrastCryoSauna";
 
 export const CONTRAST_ICE_BATH_SAUNA_PRE_SUBJECT =
   "Preparing for your Contrast Session";
@@ -83,5 +84,17 @@ export function contrastIceBathSaunaPreEmail({
       ) +
       changeBooking() +
       signOff(),
+  );
+}
+
+export const CONTRAST_ICE_BATH_SAUNA_POST_SUBJECT =
+  "Your Contrast Session aftercare";
+
+export function contrastIceBathSaunaPostEmail({
+  firstName,
+}: WellnessBookingEmailData): string {
+  return contrastPostEmail(
+    firstName,
+    "A Contrast Session: a three minute ice bath, followed by a session in our medical grade Sunlighten&reg; Infrared Sauna.",
   );
 }

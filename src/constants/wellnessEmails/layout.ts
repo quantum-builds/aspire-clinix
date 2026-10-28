@@ -72,6 +72,14 @@ export function changeBooking(): string {
   );
 }
 
+export function bookNextSession(): string {
+  const base = process.env.NEXT_PUBLIC_APP_URL;
+  const link = base
+    ? `<a href="${base}/patient/plan-selection/wellness-treatments" style="color:#B7A58D;">Book now</a>`
+    : "please call us on <strong>020 8081 9958</strong>";
+  return paragraph(`<strong>Book your next session:</strong> ${link}`);
+}
+
 export function signOff(): string {
   return (
     paragraph("Warm regards,<br/><strong>The Aspire Wellness Team</strong>") +

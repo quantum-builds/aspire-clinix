@@ -3,7 +3,9 @@ import prisma from "@/lib/db";
 import { sendEmail } from "@/lib/emailService";
 import {
   SESSION_BOOKING_EMAILS,
+  SESSION_POST_EMAILS,
   WELLNESS_BOOKING_EMAILS,
+  WELLNESS_POST_EMAILS,
   WellnessBookingEmail,
 } from "@/constants/wellnessEmails";
 import { TIMEZONE } from "@/utils/slotSelectionUtils";
@@ -66,6 +68,89 @@ export async function notifyTreatmentSessionBooking({
   }
 }
 
+/**
+ * Sends the treatment's post email when a wellness appointment is marked
+ * Completed. Only appointments recorded in WellnessAppointment are wellness.
+ * Never throws.
+ */
+export async function notifyWellnessCompleted(
+  appointmentId: string,
+  appointment: { patientId?: number | string; startTime?: string } | null,
+): Promise<void> {
+  try {
+    const wellnessAppointment = await prisma.wellnessAppointment.findUnique({
+      where: { appointmentId },
+      select: { treatmentId: true },
+    });
+    if (!wellnessAppointment) return;
+
+    const email = WELLNESS_POST_EMAILS[Number(wellnessAppointment.treatmentId)];
+    if (!email) {
+      console.warn(
+        "[WellnessNotifications] No post email for treatmentId:",
+        wellnessAppointment.treatmentId,
+      );
+      return;
+    }
+
+    if (!appointment?.patientId || !appointment.startTime) {
+      console.warn(
+        "[WellnessNotifications] Completed appointment missing patient or time:",
+        appointmentId,
+      );
+      return;
+    }
+
+    await sendBookingEmail(
+      email,
+      Number(appointment.patientId),
+      new Date(appointment.startTime),
+    );
+  } catch (err) {
+    console.error("[WellnessNotifications] Failed to send post email:", err);
+  }
+}
+
+/**
+ * Sends the post email when an admin-managed session (Breathwork, ...) is
+ * marked Completed. Matched on treatment name, like the session pre email.
+ * Never throws.
+ */
+export async function notifySessionCompleted(session: {
+  treatmentId: string;
+  patientId: number;
+  startTime: Date;
+  endTime: Date;
+}): Promise<void> {
+  try {
+    const treatment = await prisma.treatment.findUnique({
+      where: { id: session.treatmentId },
+      select: { name: true },
+    });
+    if (!treatment) return;
+
+    const email = SESSION_POST_EMAILS.find(({ matches }) =>
+      matches(treatment.name),
+    )?.email;
+    if (!email) {
+      console.warn(
+        "[WellnessNotifications] No post email for session treatment:",
+        treatment.name,
+      );
+      return;
+    }
+
+    await sendBookingEmail(
+      email,
+      session.patientId,
+      session.startTime,
+      session.endTime,
+    );
+  } catch (err) {
+    console.error("[WellnessNotifications] Failed to send session post email:", err);
+  }
+}
+
 async function sendBookingEmail(
   email: WellnessBookingEmail,
   patientDentallyId: number,
@@ -97,9 +182,6 @@ async function sendBookingEmail(
       }),
       sender: "wellness",
     });
-    console.log(
-      `[WellnessNotifications] Booking email sent to ${patient.email} (${email.subject})`,
-    );
   } catch (err) {
     console.error("[WellnessNotifications] Failed to send booking email:", err);
   }

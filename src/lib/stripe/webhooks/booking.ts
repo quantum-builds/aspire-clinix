@@ -82,7 +82,37 @@ export async function onWellnessAppointmentPaid(
     );
   }
 
-  console.log("Dentally appointment created:", session.id, result.response?.id);
+  // dentallyErrorHelper wraps the created appointment as { appointment, meta }.
+  const appointmentId =
+    result.response?.appointment?.id ?? result.response?.id;
+
+  console.log("Dentally appointment created:", session.id, appointmentId);
+
+  // The appointment exists now, so a failure here must not trigger a retry
+  // (that would book a second appointment).
+  if (appointmentId) {
+    try {
+      await prisma.wellnessAppointment.create({
+        data: {
+          appointmentId: String(appointmentId),
+          treatmentId: metadata.treatment_id ?? null,
+          appointmentType: "SINGLE_APPOINTMENT",
+        },
+      });
+    } catch (error) {
+      console.error(
+        "Failed to record single wellness appointment:",
+        session.id,
+        error,
+      );
+    }
+  } else {
+    console.error(
+      "Dentally appointment id missing; single wellness appointment not recorded:",
+      session.id,
+      result.response,
+    );
+  }
 
   await notifyWellnessBooking({
     treatmentId: metadata.treatment_id,
@@ -150,7 +180,7 @@ export async function onTreatmentSessionPaid(
         start_time,
       );
 
-      return tx.session.create({
+      const createdSession = await tx.session.create({
         data: {
           patientId: dentallyId,
           patientName: patient.name,
@@ -163,6 +193,16 @@ export async function onTreatmentSessionPaid(
           endTime: end,
         },
       });
+
+      await tx.wellnessAppointment.create({
+        data: {
+          appointmentId: createdSession.id,
+          treatmentId: treatment_id,
+          appointmentType: "SINGLE_APPOINTMENT",
+        },
+      });
+
+      return createdSession;
     });
 
     if (!created) {

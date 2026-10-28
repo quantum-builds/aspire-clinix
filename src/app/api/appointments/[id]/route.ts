@@ -7,12 +7,19 @@ import {
 import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import { Appointment } from "@/types/appointment";
+import { Appointment, AppointmentState } from "@/types/appointment";
 import prisma from "@/lib/db";
 import { getPatientById } from "@/dentallyHelpers/patient";
 import { notifyAppointmentStatus } from "@/notifications/appointmentNotifications";
+import {
+  notifySessionCompleted,
+  notifyWellnessCompleted,
+} from "@/notifications/wellnessNotifications";
 import { isValidCuid } from "@/utils/typeValidUtils";
-import { sessionToAppointment } from "@/lib/treatment-session";
+import {
+  sessionToAppointment,
+  stateToSessionStatus,
+} from "@/lib/treatment-session";
 
 /**
  * @swagger
@@ -659,6 +666,60 @@ export async function PATCH(req: NextRequest) {
         { status: 400 },
       );
     }
+
+    // Admin-managed sessions (Breathwork, ...) live only in our DB, so their
+    // status is updated here rather than in Dentally.
+    if (isValidCuid(appointmentId)) {
+      const session = await prisma.session.findUnique({
+        where: { id: appointmentId },
+      });
+
+      if (
+        !session ||
+        !dentistDentallyId ||
+        session.practitionerId !== Number(dentistDentallyId)
+      ) {
+        return NextResponse.json(
+          createResponse(false, "Appointment not found for the user.", null),
+          { status: 404 },
+        );
+      }
+
+      const newStatus = stateToSessionStatus(partialAppointment.state);
+
+      if (!newStatus) {
+        return NextResponse.json(
+          createResponse(false, "Invalid appointment status.", null),
+          { status: 400 },
+        );
+      }
+
+      // Only the request that actually moves the session to COMPLETED sends
+      // the post email, so repeated clicks do not send it twice.
+      const updated = await prisma.session.updateMany({
+        where: { id: session.id, status: { not: newStatus } },
+        data: { status: newStatus },
+      });
+
+      if (updated.count === 1 && newStatus === "COMPLETED") {
+        notifySessionCompleted(session).catch(console.error);
+      }
+
+      const fresh = await prisma.session.findUniqueOrThrow({
+        where: { id: session.id },
+        include: { treatment: true },
+      });
+
+      return NextResponse.json(
+        createResponse(
+          true,
+          "Appointment updated successfully",
+          sessionToAppointment(fresh),
+        ),
+        { status: 200 },
+      );
+    }
+
     let appointmentOwner = null;
 
     if (patiendDentallyId) {
@@ -694,6 +755,12 @@ export async function PATCH(req: NextRequest) {
     const status = partialAppointment.state;
     if (status === "Confirmed" || status === "Cancelled") {
       notifyAppointmentStatus(appointmentId, status).catch(console.error);
+    }
+    if (status === AppointmentState.COMPLETED && !response.isError) {
+      notifyWellnessCompleted(
+        appointmentId,
+        response.response.appointment ?? null,
+      ).catch(console.error);
     }
 
     return NextResponse.json(

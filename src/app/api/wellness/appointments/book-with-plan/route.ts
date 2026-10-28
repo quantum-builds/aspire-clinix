@@ -298,11 +298,12 @@ export async function POST(req: NextRequest) {
           throw new Error("LIMIT_GUARD_FAILED");
         }
 
-        await tx.membershipAppointment.create({
+        await tx.wellnessAppointment.create({
           data: {
             membershipId: membership.id,
             appointmentId: String(appointmentId),
             treatmentId: String(treatmentId),
+            appointmentType: "MEMBERSHIP_APPPOINTMENT",
           },
         });
 

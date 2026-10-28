@@ -1,5 +1,7 @@
 import {
   bookingDetails,
+  bookNextSession,
+  bulletList,
   changeBooking,
   greeting,
   numberedList,
@@ -86,6 +88,86 @@ export function contrastCryoSaunaPreEmail({
         "Before your session, our team will ask a few questions about your health. Please let us know in advance if you are pregnant, have a heart or circulation condition, high or low blood pressure, Raynaud's or sensitivity to cold, or have recently been unwell. This helps us confirm the Contrast Session is right for you.",
       ) +
       changeBooking() +
+      signOff(),
+  );
+}
+
+export const CONTRAST_CRYO_SAUNA_POST_SUBJECT = "Your Contrast Session aftercare";
+
+export function contrastCryoSaunaPostEmail({
+  firstName,
+}: WellnessBookingEmailData): string {
+  return contrastPostEmail(
+    firstName,
+    "A Contrast Session: between three and five minutes in our whole body cryotherapy chamber, followed by a session in our medical grade Sunlighten&reg; Infrared Sauna.",
+  );
+}
+
+/**
+ * Post email shared by both Contrast Sessions; only the description of the
+ * session differs.
+ */
+export function contrastPostEmail(
+  firstName: string | undefined,
+  sessionDescription: string,
+): string {
+  return wellnessEmailLayout(
+    "Your Contrast Session Aftercare",
+    greeting(firstName) +
+      paragraph(
+        "Thank you for visiting Aspire Wellness today. Here is a short guide to help you get the most from your Contrast Session.",
+      ) +
+      sectionHeading("What You Had Today") +
+      paragraph(sessionDescription) +
+      paragraph(
+        "The cold activates the nervous system and leaves many guests feeling alert and clear headed, while the deep warmth that follows helps muscles relax and circulation increase. Moving from cold to warmth creates a powerful contrast that many guests find both invigorating and deeply relaxing.",
+      ) +
+      sectionHeading("What You May Notice (All Normal)") +
+      bulletList([
+        "Slightly pink or red skin, which usually fades as your body settles",
+        "A tingling sensation in the skin",
+        "Feeling warm, and continuing to sweat lightly, for a while afterwards",
+        "A sense of alertness and a lift in energy",
+        "Feeling relaxed and pleasantly tired",
+      ]) +
+      sectionHeading("Your Aftercare for the Rest of Today") +
+      numberedList([
+        {
+          title: "Rehydrate.",
+          text: "This is the most important step. Drink water steadily over the next few hours, ideally with electrolytes, to replace what you lost through sweating.",
+        },
+        {
+          title: "Let your body settle.",
+          text: "Allow your body to return to its normal temperature at its own pace.",
+        },
+        {
+          title: "Rinse off.",
+          text: "A lukewarm shower, and a moisturiser afterwards, keep skin comfortable.",
+        },
+        {
+          title: "Eat well.",
+          text: "A balanced meal helps replace natural salts and minerals.",
+        },
+        {
+          title: "Wrap up.",
+          text: "Dress warmly when you leave, particularly on colder days.",
+        },
+      ]) +
+      sectionHeading("Please Avoid") +
+      bulletList([
+        "Alcohol for the rest of the day, as it adds to dehydration",
+        "Intense exercise straight after your session",
+        "A very hot bath or shower immediately afterwards",
+      ]) +
+      sectionHeading("Before Your Next Session") +
+      paragraph(
+        "If anything changes with your health or medication, please let us know before you book again, so we can confirm the Contrast Session is still right for you.",
+      ) +
+      sectionHeading("Make the Most of It") +
+      paragraph(
+        "Contrast Sessions are included in all of our memberships and count as two treatments. You can also vary your session each time, choosing cryotherapy or an ice bath for the cold, and the infrared sauna or the red light bed for the warmth.",
+      ) +
+      bookNextSession() +
       signOff(),
   );
 }

@@ -1,5 +1,7 @@
 import {
   bookingDetails,
+  bookNextSession,
+  bulletList,
   changeBooking,
   greeting,
   numberedList,
@@ -72,6 +74,69 @@ export function infraredSaunaPreEmail({
         "Before your session, our team will ask a few questions about your health. Please let us know in advance if you are pregnant, have a heart condition, high or low blood pressure, or have recently been unwell. This helps us confirm the sauna is right for you.",
       ) +
       changeBooking() +
+      signOff(),
+  );
+}
+
+export const INFRARED_SAUNA_POST_SUBJECT = "Your infrared sauna aftercare";
+
+export function infraredSaunaPostEmail({
+  firstName,
+}: WellnessBookingEmailData): string {
+  return wellnessEmailLayout(
+    "Your Infrared Sauna Aftercare",
+    greeting(firstName) +
+      paragraph(
+        "Thank you for visiting Aspire Wellness today. Here is a short guide to help you get the most from your infrared sauna session.",
+      ) +
+      sectionHeading("What You Had Today") +
+      paragraph(
+        "A session in our medical grade Sunlighten&reg; Infrared Sauna, combining red light with near, mid and far infrared.",
+      ) +
+      paragraph(
+        "As your core temperature rises, blood vessels dilate, circulation increases and muscles begin to relax. Heat also encourages the production of Heat Shock Proteins, protective molecules that form part of the body's natural maintenance and repair systems, and growing research continues to explore their role in healthy ageing and long term wellbeing. Many guests describe leaving with looser muscles, easier joints and a real sense of renewed energy.",
+      ) +
+      sectionHeading("What You May Notice (All Normal)") +
+      bulletList([
+        "Feeling warm, and continuing to sweat lightly, for a while afterwards",
+        "Flushed skin",
+        "Feeling relaxed, loose and pleasantly tired",
+        "Muscles and joints feeling looser and more comfortable",
+      ]) +
+      sectionHeading("Your Aftercare for the Rest of Today") +
+      numberedList([
+        {
+          title: "Rehydrate.",
+          text: "This is the most important step. Drink water steadily over the next few hours, ideally with electrolytes, to replace what you lost through sweating.",
+        },
+        {
+          title: "Cool down gradually.",
+          text: "Let your body return to its normal temperature at its own pace.",
+        },
+        {
+          title: "Rinse off.",
+          text: "A lukewarm shower washes away sweat, and a moisturiser afterwards keeps skin comfortable.",
+        },
+        {
+          title: "Eat well.",
+          text: "A balanced meal helps replace natural salts and minerals.",
+        },
+      ]) +
+      sectionHeading("Please Avoid") +
+      bulletList([
+        "Alcohol for the rest of the day, as it adds to dehydration",
+        "Intense exercise straight after your session",
+        "A hot bath immediately afterwards",
+      ]) +
+      sectionHeading("Before Your Next Session") +
+      paragraph(
+        "If anything changes with your health or medication, please let us know before you book again. Please arrive well hydrated, and avoid alcohol beforehand.",
+      ) +
+      sectionHeading("Make the Most of It") +
+      paragraph(
+        "Many clients begin with cold before heat. Our Contrast Session pairs cryotherapy or an ice bath with the Sunlighten&reg; Infrared Sauna, and is included in all of our memberships.",
+      ) +
+      bookNextSession() +
       signOff(),
   );
 }

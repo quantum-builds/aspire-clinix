@@ -191,10 +191,12 @@ export async function POST(req: NextRequest) {
               },
             });
 
-            await tx.membershipAppointment.create({
+            await tx.wellnessAppointment.create({
               data: {
                 membershipId: synced.id,
                 appointmentId: session.id,
+                treatmentId,
+                appointmentType: "MEMBERSHIP_APPPOINTMENT",
               },
             });
 

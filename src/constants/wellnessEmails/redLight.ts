@@ -1,5 +1,7 @@
 import {
   bookingDetails,
+  bookNextSession,
+  bulletList,
   changeBooking,
   greeting,
   numberedList,
@@ -70,6 +72,60 @@ export function redLightPreEmail({
         "Before your session, our team will ask a few questions about your health. Please let us know in advance if you are pregnant, are sensitive to light or take medication that increases light sensitivity, or have recently been unwell. This helps us confirm red light therapy is right for you.",
       ) +
       changeBooking() +
+      signOff(),
+  );
+}
+
+export const RED_LIGHT_POST_SUBJECT = "Your red light therapy aftercare";
+
+export function redLightPostEmail({
+  firstName,
+}: WellnessBookingEmailData): string {
+  return wellnessEmailLayout(
+    "Your Red Light Therapy Aftercare",
+    greeting(firstName) +
+      paragraph(
+        "Thank you for visiting Aspire Wellness today. Here is a short guide to help you get the most from your red light therapy session.",
+      ) +
+      sectionHeading("What You Had Today") +
+      paragraph(
+        "A 10 minute session on our full body Red Light Therapy bed. Specific wavelengths of red and near infrared light are absorbed by the mitochondria, the energy producing engines of our cells, and growing research continues to explore their role in recovery and overall wellbeing.",
+      ) +
+      sectionHeading("What You May Notice (All Normal)") +
+      bulletList([
+        "A gentle warmth in the skin",
+        "Slight pinkness of the skin, which usually fades within a short time",
+        "Feeling calm, relaxed and settled",
+        "A sense of renewed energy",
+      ]) +
+      sectionHeading("Your Aftercare for the Rest of Today") +
+      numberedList([
+        {
+          title: "Hydrate.",
+          text: "Drink water through the rest of the day.",
+        },
+        {
+          title: "Carry on as normal.",
+          text: "There is no downtime, so you can return to your day straight away.",
+        },
+        {
+          title: "Keep skin comfortable.",
+          text: "If your skin feels warm or dry, a gentle moisturiser can help.",
+        },
+      ]) +
+      sectionHeading("Please Avoid") +
+      bulletList([
+        "Tanning beds or long periods in strong sunlight for the rest of the day",
+      ]) +
+      sectionHeading("Before Your Next Session") +
+      paragraph(
+        "If anything changes with your health or medication, especially any new medication that may increase light sensitivity, please let us know before you book again, so we can confirm red light therapy is still right for you.",
+      ) +
+      sectionHeading("Make the Most of It") +
+      paragraph(
+        "Red light therapy is included in all of our memberships, which start from £275 per month. It can also be the warm stage of a Contrast Session, following cryotherapy or an ice bath.",
+      ) +
+      bookNextSession() +
       signOff(),
   );
 }
