@@ -5,9 +5,34 @@ interface EmailPayload {
   to: string;
   subject: string;
   html: string;
+  /** "wellness" sends from WELLNESS_EMAIL_FROM as "Aspire Wellness". */
+  sender?: "clinic" | "wellness";
 }
 
-export async function sendEmail({ to, subject, html }: EmailPayload): Promise<void> {
+function resolveSender(sender: "clinic" | "wellness") {
+  if (sender === "wellness") {
+    if (process.env.WELLNESS_EMAIL_FROM) {
+      return {
+        from: `Aspire Wellness <${process.env.WELLNESS_EMAIL_FROM}>`,
+        replyTo: process.env.WELLNESS_EMAIL_FROM,
+      };
+    }
+    console.error(
+      "[EmailService] WELLNESS_EMAIL_FROM is not set; sending from EMAIL_FROM.",
+    );
+  }
+  return {
+    from: `Aspire Clinic <${process.env.EMAIL_FROM}>`,
+    replyTo: process.env.REPLAY_TO_EMAIL || process.env.EMAIL_FROM,
+  };
+}
+
+export async function sendEmail({
+  to,
+  subject,
+  html,
+  sender = "clinic",
+}: EmailPayload): Promise<void> {
   if (!to) {
     return;
   }
@@ -16,13 +41,18 @@ export async function sendEmail({ to, subject, html }: EmailPayload): Promise<vo
     return;
   }
   try {
-    await resend.emails.send({
-      from: `Aspire Clinic <${process.env.EMAIL_FROM}>`,
+    const { from, replyTo } = resolveSender(sender);
+    // Resend returns { data, error } instead of throwing on API errors.
+    const { error } = await resend.emails.send({
+      from,
       to,
       subject,
       html,
-      replyTo: process.env.REPLAY_TO_EMAIL || process.env.EMAIL_FROM,
+      replyTo,
     });
+    if (error) {
+      console.error(`[EmailService] Resend rejected email to ${to}:`, error);
+    }
   } catch (err) {
     console.error(`[EmailService] Failed to send to ${to}:`, err);
   }

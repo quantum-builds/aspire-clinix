@@ -11,6 +11,7 @@ import { stripe } from "@/lib/stripe/client";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { Prisma } from "@prisma/client";
+import { notifyTreatmentSessionBooking } from "@/notifications/wellnessNotifications";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -190,10 +191,12 @@ export async function POST(req: NextRequest) {
               },
             });
 
-            await tx.membershipAppointment.create({
+            await tx.wellnessAppointment.create({
               data: {
                 membershipId: synced.id,
                 appointmentId: session.id,
+                treatmentId,
+                appointmentType: "MEMBERSHIP_APPPOINTMENT",
               },
             });
 
@@ -204,6 +207,13 @@ export async function POST(req: NextRequest) {
             return { session, updatedMembership };
           },
         );
+
+        await notifyTreatmentSessionBooking({
+          treatmentId,
+          patientDentallyId: dentallyId,
+          startTime: session.startTime,
+          endTime: session.endTime,
+        });
 
         return NextResponse.json(
           createResponse(true, "Session booked successfully", {

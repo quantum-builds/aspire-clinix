@@ -92,7 +92,7 @@ function parsePositiveInteger(
 }
 
 // Calculate membership usage using treatmentId
-// from MembershipAppointment table
+// from WellnessAppointment table
 function getUsageCost(
   treatmentId: string | null,
 ): { treatments: number; hyperbaric: number } | null {
@@ -145,9 +145,9 @@ async function restoreMembershipUsage(
 
   await prisma.$transaction(
     async (tx) => {
-      // Step 1: Find MembershipAppointment
+      // Step 1: Find WellnessAppointment
       const booking =
-        await tx.membershipAppointment.findUnique({
+        await tx.wellnessAppointment.findUnique({
           where: {
             appointmentId,
           },
@@ -163,6 +163,14 @@ async function restoreMembershipUsage(
       if (!booking) {
         console.log(
           `Dentally appointment ${appointmentId}: no membership booking found`,
+        );
+        return;
+      }
+
+      // Single (paid) bookings did not use plan balance, so nothing to restore.
+      if (booking.appointmentType !== "MEMBERSHIP_APPPOINTMENT" || !booking.membership) {
+        console.log(
+          `Dentally appointment ${appointmentId}: not a membership booking`,
         );
         return;
       }
@@ -189,12 +197,12 @@ async function restoreMembershipUsage(
         return;
       }
 
-      // Step 4: Get treatment ID from MembershipAppointment
+      // Step 4: Get treatment ID from WellnessAppointment
       const treatmentId = booking.treatmentId;
 
       if (!treatmentId) {
         console.warn(
-          `Dentally appointment ${appointmentId}: treatmentId missing in MembershipAppointment`,
+          `Dentally appointment ${appointmentId}: treatmentId missing in WellnessAppointment`,
         );
         return;
       }
@@ -229,7 +237,7 @@ async function restoreMembershipUsage(
 
       // Step 7: Claim booking to prevent duplicate restoration
       const claim =
-        await tx.membershipAppointment.deleteMany({
+        await tx.wellnessAppointment.deleteMany({
           where: {
             id: booking.id,
           },

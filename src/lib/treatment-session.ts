@@ -1,4 +1,9 @@
-import { Prisma, Session, Treatment } from "@prisma/client";
+import {
+  AppointmentStatus,
+  Prisma,
+  Session,
+  Treatment,
+} from "@prisma/client";
 import { AppointmentState, TAppointment } from "@/types/appointment";
 import { fromZonedTime } from "date-fns-tz";
 import { TIMEZONE } from "@/utils/slotSelectionUtils";
@@ -96,6 +101,24 @@ export async function reserveTreatmentSlot(
   return { treatment, start: found.start, end: found.end };
 }
 
+// Session.status (DB enum) <-> the Dentally-style state used by the UI.
+const SESSION_STATUS_TO_STATE: Record<AppointmentStatus, AppointmentState> = {
+  PENDING: AppointmentState.PENDING,
+  CONFIRMED: AppointmentState.CONFIRMED,
+  ARRIVED: AppointmentState.ARRIVED,
+  IN_SURGERY: AppointmentState.INSURGERY,
+  COMPLETED: AppointmentState.COMPLETED,
+  CANCELLED: AppointmentState.CANCELLED,
+  DID_NOT_ATTEND: AppointmentState.DIDNOTATTEND,
+};
+
+export function stateToSessionStatus(state: unknown): AppointmentStatus | null {
+  const entry = Object.entries(SESSION_STATUS_TO_STATE).find(
+    ([, value]) => value === state,
+  );
+  return entry ? (entry[0] as AppointmentStatus) : null;
+}
+
 /**
  * Shapes a booked Session like a Dentally appointment so it can be listed and
  * opened through the existing appointment cards and report pages.
@@ -109,7 +132,10 @@ export function sessionToAppointment(
     arrivedAt: null,
     bookedViaApi: false,
     cancelledAt: null,
-    completedAt: null,
+    completedAt:
+      session.status === AppointmentStatus.COMPLETED
+        ? session.updatedAt.toISOString()
+        : null,
     confirmedAt: session.createdAt.toISOString(),
     createdAt: session.createdAt.toISOString(),
     didNotAttendAt: null,
@@ -130,7 +156,7 @@ export function sessionToAppointment(
     reason: session.treatment.name,
     roomId: null,
     startTime: session.startTime.toISOString(),
-    state: AppointmentState.CONFIRMED,
+    state: SESSION_STATUS_TO_STATE[session.status],
     treatmentDescription: session.treatment.description,
     updatedAt: session.updatedAt.toISOString(),
     userId: 0,
