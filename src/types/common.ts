@@ -10,7 +10,7 @@ export interface Response<T> {
 
 export type SidebarPage = {
   name: string;
-  icon: StaticImageData;
+  icon: StaticImageData | string;
   href?: string;
   pages?: SidebarPage[];
 };

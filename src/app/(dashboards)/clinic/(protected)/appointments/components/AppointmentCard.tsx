@@ -1,22 +1,62 @@
 "use client";
 
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
-import { CalenderInputIconV2, TimeIconV2 } from "@/assets";
-import { TAppointment } from "@/types/appointment";
+import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
+import { CalenderInputIconV2, CancelIcon, TimeIconV2 } from "@/assets";
+import { useChangeAppointmentState } from "@/services/appointments/appointmentMutation";
+import { AppointmentState, TAppointment } from "@/types/appointment";
 import { AppointmentDateType } from "@/types/common";
+import { showToast } from "@/utils/defaultToastOptions";
 import { formatDate } from "@/utils/formatDateTime";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { TIMEZONE } from "@/utils/slotSelectionUtils";
 import { formatInTimeZone } from "date-fns-tz";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
   type: AppointmentDateType;
+  showCancel?: boolean;
 }
+
+const CANCELLABLE_STATES = [AppointmentState.PENDING, AppointmentState.CONFIRMED];
 
 export default function UpcomingAppointmentCard({
   appointment,
+  type,
+  showCancel = false,
 }: UpcomingAppointmentCardProps) {
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const { mutate: cancelAppointment, isPending: isCancelAppointment } =
+    useChangeAppointmentState();
+  const { refresh } = useRouter();
+
+  // The clinic may cancel at any time; only the patient has the 24 h window.
+  const canCancel =
+    showCancel &&
+    type === AppointmentDateType.UPCOMING &&
+    CANCELLABLE_STATES.includes(appointment.state);
+
+  const handleCancelAppointment = () => {
+    cancelAppointment(
+      {
+        appointment: { state: AppointmentState.CANCELLED },
+        id: appointment.id,
+      },
+      {
+        onSuccess: () => {
+          refresh();
+          setIsCancelModalOpen(false);
+        },
+        onError: (error) => {
+          showToast("error", getAxiosErrorMessage(error));
+        },
+      },
+    );
+  };
+
   return (
     <div className="flex flex-col gap-6 p-5 rounded-2xl bg-gray">
       <div className="flex items-center justify-between">
@@ -97,8 +137,30 @@ export default function UpcomingAppointmentCard({
             text="See Reports"
             href={`/clinic/appointments/${appointment.id}/reports`}
           />
+
+          {canCancel && (
+            <CustomButton
+              style="white"
+              handleOnClick={() => setIsCancelModalOpen(true)}
+              text="Cancel Appointment"
+            />
+          )}
         </div>
       </div>
+
+      {canCancel && (
+        <ConfirmationModal
+          icon={CancelIcon}
+          isOpen={isCancelModalOpen}
+          onClose={() => setIsCancelModalOpen(false)}
+          onConfirm={handleCancelAppointment}
+          isPending={isCancelAppointment}
+          title="Cancel Appointment"
+          description="Cancel this Breathwork session? If the patient paid, they get a full refund; if they used their plan, the session goes back to their plan."
+          cancelText="No"
+          confirmText="Yes"
+        />
+      )}
     </div>
   );
 }

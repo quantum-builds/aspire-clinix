@@ -5,7 +5,7 @@ import {
   Treatment,
 } from "@prisma/client";
 import { AppointmentState, TAppointment } from "@/types/appointment";
-import { fromZonedTime } from "date-fns-tz";
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import { TIMEZONE } from "@/utils/slotSelectionUtils";
 import { TAvailability } from "@/types/treatment";
 
@@ -99,6 +99,58 @@ export async function reserveTreatmentSlot(
   }
 
   return { treatment, start: found.start, end: found.end };
+}
+
+/**
+ * Inverse of reserveTreatmentSlot: gives the cancelled session's place back
+ * to its slot. A slot that has since been removed from the treatment is left
+ * alone. Throws SLOT_CONFLICT if the treatment changed concurrently.
+ */
+export async function releaseTreatmentSlot(
+  tx: Prisma.TransactionClient,
+  treatmentId: string,
+  sessionStart: Date,
+) {
+  const treatment = await tx.treatment.findUnique({
+    where: { id: treatmentId },
+  });
+
+  if (!treatment) return;
+
+  const date = formatInTimeZone(sessionStart, TIMEZONE, "yyyy-MM-dd");
+  const startTime = formatInTimeZone(sessionStart, TIMEZONE, "HH:mm");
+  const slots = (Array.isArray(treatment.availabilities)
+    ? treatment.availabilities
+    : []) as unknown as TAvailability[];
+
+  const index = slots.findIndex(
+    (slot) => slot.date === date && slot.startTime === startTime,
+  );
+
+  if (index === -1) {
+    console.warn(
+      `Released session slot ${date} ${startTime} no longer exists on treatment ${treatmentId}`,
+    );
+    return;
+  }
+
+  const availabilities = slots.map((slot, i) =>
+    i === index
+      ? {
+          ...slot,
+          remainingLimit: Math.min(slot.totalLimit, slot.remainingLimit + 1),
+        }
+      : slot,
+  );
+
+  const updateResult = await tx.treatment.updateMany({
+    where: { id: treatment.id, updatedAt: treatment.updatedAt },
+    data: { availabilities },
+  });
+
+  if (updateResult.count === 0) {
+    throw new TreatmentSlotException("SLOT_CONFLICT");
+  }
 }
 
 // Session.status (DB enum) <-> the Dentally-style state used by the UI.

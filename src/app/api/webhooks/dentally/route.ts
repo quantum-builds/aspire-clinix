@@ -7,6 +7,7 @@ import {
   getTreatmentPlanCost,
   HYPERBARIC_TREATMENT_ID,
 } from "@/lib/plan-treatment-cost";
+import { refundCancelledDentallyAppointment } from "@/lib/stripe/refunds";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,6 +18,8 @@ type Appointment = {
   id?: number | string;
   patient_id?: number | string | null;
   state?: string;
+  start_time?: string | null;
+  reason?: string | null;
 };
 
 type WebhookPayload = {
@@ -305,6 +308,27 @@ async function restoreMembershipUsage(
   );
 }
 
+// Refund a paid appointment on cancellation/deletion. Every cancel of a paid
+// appointment is refunded: patients can only cancel in the app within 24 h of
+// booking, so any other cancel comes from the clinic (REFUND_PLAN.md
+// section 2).
+// Throws RetryableRefundError on a transient Stripe failure, so the caller
+// answers 500 and Dentally retries.
+async function refundCancelledAppointment(
+  appointment: Appointment,
+): Promise<void> {
+  await refundCancelledDentallyAppointment(
+    String(appointment.id).trim(),
+    {
+      patientDentallyId: parsePositiveInteger(
+        appointment.patient_id,
+      ),
+      reason: appointment.reason,
+      startTime: appointment.start_time,
+    },
+  );
+}
+
 // Dentally webhook endpoint
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
@@ -378,9 +402,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Restore membership usage
+  // Restore membership usage (plan bookings) and refund (paid bookings).
+  // An appointment is one or the other, so at most one of these does work.
   try {
     await restoreMembershipUsage(appointment);
+    await refundCancelledAppointment(appointment);
 
     return NextResponse.json(
       {

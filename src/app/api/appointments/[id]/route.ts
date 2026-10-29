@@ -1,7 +1,6 @@
 import { TokenRoles } from "@/constants/UserRoles";
 import {
   editAppointment,
-  deleteAppointment,
   getAppointment,
 } from "@/dentallyHelpers/appointment";
 import { createResponse } from "@/utils/createResponse";
@@ -19,7 +18,14 @@ import { isValidCuid } from "@/utils/typeValidUtils";
 import {
   sessionToAppointment,
   stateToSessionStatus,
+  TreatmentSlotException,
 } from "@/lib/treatment-session";
+import { cancelTreatmentSession } from "@/lib/session-cancellation";
+import { refundCancelledDentallyAppointment } from "@/lib/stripe/refunds";
+import {
+  canPatientCancel,
+  LATE_CANCEL_MESSAGE,
+} from "@/utils/cancellationPolicy";
 
 /**
  * @swagger
@@ -119,59 +125,6 @@ import {
  *             example:
  *               status: false
  *               message: "Appointment not found for the user."
- *               data: null
- *       500:
- *         description: Internal Server Error
- *         content:
- *           application/json:
- *             example:
- *               status: false
- *               message: "Internal Server Error"
- *               data: null
- *   delete:
- *     summary: Delete an appointment by ID
- *     tags: [Appointments]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Appointment ID to delete
- *     responses:
- *       204:
- *         description: Appointment deleted successfully
- *         content:
- *           application/json:
- *             example:
- *               status: true
- *               message: "Appointment deleted successfully"
- *               data: null
- *       400:
- *         description: Invalid Appointment ID
- *         content:
- *           application/json:
- *             example:
- *               status: false
- *               message: "Invalid Appointment."
- *               data: null
- *       403:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             example:
- *               status: false
- *               message: "Unauthorized"
- *               data: null
- *       404:
- *         description: Appointment not found
- *         content:
- *           application/json:
- *             example:
- *               status: false
- *               message: "Failed to delete appointment"
  *               data: null
  *       500:
  *         description: Internal Server Error
@@ -523,105 +476,9 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function DELETE(req: NextRequest) {
-  try {
-    const token = await getToken({
-      req,
-    });
-
-    if (!token) {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
-    }
-
-    if (token.role === TokenRoles.REFERRING_DENTIST) {
-      return NextResponse.json(createResponse(false, "Forbidden", null), {
-        status: 403,
-      });
-    }
-
-    let patiendDentallyId = "";
-    let dentistDentallyId = "";
-
-    if (token && token.role === TokenRoles.PATIENT) {
-      patiendDentallyId = token.sub || "";
-    } else if (token && token.role === TokenRoles.DENTALLY_PRACTITIONER) {
-      dentistDentallyId = token.sub || "";
-    }
-
-    const appointmentId = req.nextUrl.pathname.split("/").pop();
-
-    if (!appointmentId) {
-      return NextResponse.json(
-        createResponse(false, "Invalid Appointment.", null),
-        { status: 400 },
-      );
-    }
-
-    const response = await deleteAppointment(appointmentId);
-    if (response.isError) {
-      return NextResponse.json(
-        createResponse(false, "Failed to delete appointment", null),
-        { status: 404 },
-      );
-    }
-
-    let appointment = null;
-
-    if (patiendDentallyId) {
-      appointment = await prisma.patient.findUnique({
-        where: { dentallyId: Number(patiendDentallyId) },
-        select: { id: true, appointmentIds: true },
-      });
-    }
-    if (dentistDentallyId) {
-      appointment = await prisma.patient.findFirst({
-        where: { dentallyId: Number(dentistDentallyId) },
-        select: { id: true, appointmentIds: true },
-      });
-    }
-
-    const currentAppointmentIds: string[] = Array.isArray(
-      appointment?.appointmentIds,
-    )
-      ? (appointment.appointmentIds as string[])
-      : [];
-
-    if (appointment && currentAppointmentIds.includes(appointmentId)) {
-      if (patiendDentallyId) {
-        await prisma.patient.update({
-          where: { id: appointment.id },
-          data: {
-            appointmentIds: currentAppointmentIds.filter(
-              (id: string) => id !== appointmentId,
-            ),
-          },
-        });
-      } else if (dentistDentallyId) {
-        await prisma.dentist.update({
-          where: { id: appointment.id },
-          data: {
-            appointmentIds: currentAppointmentIds.filter(
-              (id: string) => id !== appointmentId,
-            ),
-          },
-        });
-      }
-    }
-
-    return NextResponse.json(
-      createResponse(true, "Appointment deleted successfully", null),
-      { status: 204 },
-    );
-  } catch (error) {
-    console.error("Error deleting appointment", error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(createResponse(false, errorMessage, null), {
-      status: 500,
-    });
-  }
-}
+// No DELETE handler: appointments are cancelled through PATCH (state
+// "Cancelled") so the Dentally webhook can refund or restore credits. See
+// REFUND_PLAN.md D5/D6.
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -672,13 +529,22 @@ export async function PATCH(req: NextRequest) {
     if (isValidCuid(appointmentId)) {
       const session = await prisma.session.findUnique({
         where: { id: appointmentId },
+        include: { treatment: true },
       });
 
-      if (
-        !session ||
-        !dentistDentallyId ||
-        session.practitionerId !== Number(dentistDentallyId)
-      ) {
+      const isPractitioner =
+        !!session &&
+        !!dentistDentallyId &&
+        session.practitionerId === Number(dentistDentallyId);
+      const isPatientOwner =
+        !!session &&
+        !!patiendDentallyId &&
+        session.patientId === Number(patiendDentallyId);
+      // The admin (clinic dashboard) manages every session, like its
+      // practitioner does.
+      const isClinic = isPractitioner || token.role === TokenRoles.ADMIN;
+
+      if (!session || !(isClinic || isPatientOwner)) {
         return NextResponse.json(
           createResponse(false, "Appointment not found for the user.", null),
           { status: 404 },
@@ -694,15 +560,55 @@ export async function PATCH(req: NextRequest) {
         );
       }
 
-      // Only the request that actually moves the session to COMPLETED sends
-      // the post email, so repeated clicks do not send it twice.
-      const updated = await prisma.session.updateMany({
-        where: { id: session.id, status: { not: newStatus } },
-        data: { status: newStatus },
-      });
+      // Patients may only cancel their own session, within 24 h of booking
+      // and before it starts. The practitioner or admin may cancel at any time
+      // (REFUND_PLAN.md R2/R3).
+      if (!isClinic) {
+        if (newStatus !== "CANCELLED") {
+          return NextResponse.json(
+            createResponse(false, "Forbidden", null),
+            { status: 403 },
+          );
+        }
 
-      if (updated.count === 1 && newStatus === "COMPLETED") {
-        notifySessionCompleted(session).catch(console.error);
+        if (!canPatientCancel(sessionToAppointment(session))) {
+          return NextResponse.json(
+            createResponse(false, LATE_CANCEL_MESSAGE, null),
+            { status: 400 },
+          );
+        }
+      }
+
+      if (newStatus === "CANCELLED") {
+        try {
+          const result = await cancelTreatmentSession(
+            session,
+            isClinic ? "CLINIC" : "PATIENT",
+          );
+          console.log(`Session ${session.id} cancel:`, result);
+        } catch (error) {
+          if (
+            error instanceof TreatmentSlotException &&
+            error.code === "SLOT_CONFLICT"
+          ) {
+            return NextResponse.json(
+              createResponse(false, "Please try again.", null),
+              { status: 409 },
+            );
+          }
+          throw error;
+        }
+      } else {
+        // Only the request that actually moves the session to COMPLETED
+        // sends the post email, so repeated clicks do not send it twice.
+        const updated = await prisma.session.updateMany({
+          where: { id: session.id, status: { not: newStatus } },
+          data: { status: newStatus },
+        });
+
+        if (updated.count === 1 && newStatus === "COMPLETED") {
+          notifySessionCompleted(session).catch(console.error);
+        }
       }
 
       const fresh = await prisma.session.findUniqueOrThrow({
@@ -741,7 +647,19 @@ export async function PATCH(req: NextRequest) {
       ? (appointmentOwner.appointmentIds as string[])
       : [];
 
-    const isExist = currentAppointmentIds.includes(appointmentId);
+    const isCancel = partialAppointment.state === AppointmentState.CANCELLED;
+
+    // A paid booking belongs to the patient who paid, even before the
+    // appointments list has added it to appointmentIds.
+    const isExist =
+      currentAppointmentIds.includes(appointmentId) ||
+      (!!patiendDentallyId &&
+        (await prisma.appointmentPayment.count({
+          where: {
+            dentallyAppointmentId: appointmentId,
+            patientDentallyId: Number(patiendDentallyId),
+          },
+        })) > 0);
 
     if (!isExist) {
       return NextResponse.json(
@@ -750,7 +668,58 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    // Patients can cancel only within 24 h of booking and before the start
+    // (REFUND_PLAN.md R2). Checked against Dentally's created_at and
+    // start_time, not anything the client sent.
+    if (isCancel && patiendDentallyId) {
+      const current = await getAppointment(appointmentId);
+      const currentAppointment = current.isError
+        ? null
+        : ((current.response.appointment ?? null) as Appointment | null);
+
+      if (!currentAppointment) {
+        return NextResponse.json(
+          createResponse(false, "Appointment not found.", null),
+          { status: 404 },
+        );
+      }
+
+      if (!canPatientCancel(currentAppointment)) {
+        return NextResponse.json(
+          createResponse(false, LATE_CANCEL_MESSAGE, null),
+          { status: 400 },
+        );
+      }
+    }
+
+    // Stamped before the Dentally call so the webhook sees who cancelled.
+    if (isCancel) {
+      await prisma.appointmentPayment.updateMany({
+        where: { dentallyAppointmentId: appointmentId },
+        data: { cancelledBy: patiendDentallyId ? "PATIENT" : "CLINIC" },
+      });
+    }
+
     const response = await editAppointment(appointmentId, partialAppointment);
+
+    // The Dentally webhook refunds too; doing it here as well means an in-app
+    // cancel is refunded even if that webhook is late or not delivered. The
+    // refund helper makes the second attempt a no-op.
+    if (isCancel && !response.isError) {
+      const cancelled = (response.response.appointment ?? null) as
+        | Appointment
+        | null;
+
+      await refundCancelledDentallyAppointment(appointmentId, {
+        reason: cancelled?.reason,
+        startTime: cancelled?.startTime,
+      }).catch((error) =>
+        console.error(
+          `Refund after cancelling ${appointmentId} failed; the Dentally webhook will retry:`,
+          error,
+        ),
+      );
+    }
 
     const status = partialAppointment.state;
     if (status === "Confirmed" || status === "Cancelled") {

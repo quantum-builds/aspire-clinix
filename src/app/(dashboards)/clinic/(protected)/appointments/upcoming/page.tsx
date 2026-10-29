@@ -38,6 +38,7 @@ export default async function UpcomingAppointments(props: {
     <div className="min-h-screen flex flex-col gap-5">
       <PageTopBar
         pageHeading="Appointments"
+        showBreathworkNote
         showSearch={false}
         showFilters={true}
         lockAfterDate={true}

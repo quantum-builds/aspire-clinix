@@ -38,6 +38,7 @@ export default async function PastAppointments(props: {
     <div className="min-h-[103vh] flex flex-col gap-5">
       <PageTopBar
         pageHeading="Appointments"
+        showBreathworkNote
         showSearch={false}
         showFilters={true}
         filtersBelow={true}

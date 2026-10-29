@@ -53,7 +53,7 @@ const SIDEBAR_CONTENT: SidebarPage[] = [
   },
   {
     name: "Treatments",
-    icon: PlansIcon,
+    icon: "stethoscope" ,
     href: "/clinic/treatments",
   },
 ];

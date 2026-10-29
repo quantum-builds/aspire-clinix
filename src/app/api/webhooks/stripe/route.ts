@@ -23,6 +23,7 @@ import {
   onSubscriptionDeleted,
   onSubscriptionUpdated,
 } from "@/lib/stripe/webhooks/membership";
+import { onRefundEvent } from "@/lib/stripe/webhooks/refunds";
 
 /**
  * The only Stripe webhook endpoint for aspire-clinix.
@@ -33,6 +34,9 @@ import {
  *   customer.subscription.deleted
  *   invoice.paid
  *   invoice.payment_failed
+ *   refund.created
+ *   refund.updated
+ *   refund.failed
  *
  * The Stripe account is shared with other apps, which receive the same
  * events. Checkouts are routed by `metadata.payment_for`; anything that is
@@ -74,6 +78,10 @@ async function dispatch(event: Stripe.Event): Promise<HandlerResult> {
       return onInvoicePaid(event.data.object);
     case "invoice.payment_failed":
       return onInvoicePaymentFailed(event.data.object);
+    case "refund.created":
+    case "refund.updated":
+    case "refund.failed":
+      return onRefundEvent(event.data.object);
     default:
       return ok(`Event type ${event.type} not handled, ignored`);
   }

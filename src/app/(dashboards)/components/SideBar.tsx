@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -7,6 +8,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { SidebarPage } from "@/types/common";
 import CustomButton from "./custom-components/CustomButton";
+import { Stethoscope } from "lucide-react";
 
 interface SideBarProps {
   sideBarContnent: SidebarPage[];
@@ -27,7 +29,6 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
       if (section.pages) {
         section.pages.forEach((page) => {
           if (page.href && pathname.startsWith(page.href)) {
-           
             setActiveSection(section.name);
             setOpenSection(section.name);
             setActivePage(page.name);
@@ -35,10 +36,13 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
           }
         });
 
-      
-        // to show black bg when on reports page
-        if (section.href && !matched && !pathname.includes("/profile") && pathname.includes(section.href)) {
-         
+        // To show black bg when on reports page
+        if (
+          section.href &&
+          !matched &&
+          !pathname.includes("/profile") &&
+          pathname.includes(section.href)
+        ) {
           setActiveSection(section.name);
           setOpenSection(null);
           setActivePage(null);
@@ -53,12 +57,11 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
     });
 
     if (!matched) {
-  
       setActiveSection(null);
       setOpenSection(null);
       setActivePage(null);
     }
-  }, [pathname]);
+  }, [pathname, sideBarContnent]);
 
   const handleSectionClick = (
     section: {
@@ -66,12 +69,12 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
       href?: string;
       pages?: { name: string; href?: string }[];
     },
-    havePages: boolean
+    havePages: boolean,
   ) => {
     setActiveSection(section.name);
 
     if (havePages && section.pages && section.pages.length > 0) {
-      // auto-select first page
+      // Auto-select first page
       const firstPage = section.pages[0];
       setActivePage(firstPage.name);
       setOpenSection(section.name);
@@ -80,7 +83,7 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
         router.push(firstPage.href);
       }
     } else {
-      // no subpages, navigate directly
+      // No subpages, navigate directly
       if (section.href) router.push(section.href);
       setOpenSection(null);
       setActivePage(null);
@@ -98,7 +101,9 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
             height={60}
           />
         </div>
+
         <p className="text-base">MENU</p>
+
         <nav>
           {sideBarContnent.map((section) => {
             const isActiveSection = activeSection === section.name;
@@ -113,26 +118,44 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
                       handleSectionClick(section, false);
                     }
                   }}
-                  className={`w-full flex items-center justify-between px-4 py-3 border border-gray-200 rounded-2xl transition 
-                  ${isActiveSection
+                  className={`w-full flex items-center justify-between px-4 py-3 border border-gray-200 rounded-2xl transition ${
+                    isActiveSection
                       ? "bg-black text-white"
                       : "hover:bg-gray-50 text-dashboardTextBlack"
-                    }`}
+                  }`}
                 >
                   <div className="flex items-center">
-                    <Image
-                      src={section.icon}
-                      alt={`${section.name} Icon`}
-                      className={`w-5 h-5 mr-2 ${isActiveSection ? "invert brightness-0" : ""
+                    {section.icon === "stethoscope" ? (
+                      <Stethoscope
+                        size={20}
+                        className="mr-2"
+                      />
+                    ) : (
+                      <Image
+                        src={section.icon}
+                        alt={`${section.name} Icon`}
+                        width={20}
+                        height={20}
+                        className={`w-5 h-5 mr-2 ${
+                          isActiveSection
+                            ? "invert brightness-0"
+                            : ""
                         }`}
-                    />
-                    <span className="text-[17px]">{section.name}</span>
+                      />
+                    )}
+
+                    <span className="text-[17px]">
+                      {section.name}
+                    </span>
                   </div>
                 </button>
 
                 <div
-                  className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${openSection === section.name ? "max-h-40" : "max-h-0"
-                    }`}
+                  className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${
+                    openSection === section.name
+                      ? "max-h-40"
+                      : "max-h-0"
+                  }`}
                 >
                   {section.pages && (
                     <ul className="mt-2 pl-10 space-y-2">
@@ -140,23 +163,34 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
                         <li key={page.name}>
                           <Link
                             href={page.href ? page.href : "/"}
-                            className={`flex items-center transition ${activePage === page.name
+                            className={`flex items-center transition ${
+                              activePage === page.name
                                 ? "text-primary font-semibold"
                                 : "hover:text-primary"
-                              }`}
+                            }`}
                             onClick={() => {
                               setActivePage(page.name);
                             }}
                           >
-                            <Image
-                              src={
-                                activePage === page.name
-                                  ? ActiveIcon
-                                  : page.icon
-                              }
-                              alt={`${page.name} Icon`}
-                              className="w-4 h-4 mr-2"
-                            />
+                            {page.icon === "stethoscope" ? (
+                              <Stethoscope
+                                size={16}
+                                className="mr-2"
+                              />
+                            ) : (
+                              <Image
+                                src={
+                                  activePage === page.name
+                                    ? ActiveIcon
+                                    : page.icon
+                                }
+                                alt={`${page.name} Icon`}
+                                width={16}
+                                height={16}
+                                className="w-4 h-4 mr-2"
+                              />
+                            )}
+
                             {page.name}
                           </Link>
                         </li>
@@ -169,7 +203,12 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
           })}
         </nav>
       </div>
-      <CustomButton text="Back to Website" icon={BackToWebsiteIcon} href="https://www.theaspireclinic.com/" />
+
+      <CustomButton
+        text="Back to Website"
+        icon={BackToWebsiteIcon}
+        href="https://www.theaspireclinic.com/"
+      />
     </div>
   );
 }

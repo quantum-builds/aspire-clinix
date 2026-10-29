@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import prisma from "@/lib/db";
 import { stripe } from "@/lib/stripe/client";
+import { idOf } from "@/lib/stripe/ids";
 import {
   getInvoiceSubscriptionId,
   getSubscriptionPeriod,
@@ -39,11 +40,6 @@ const LIVE_SUBSCRIPTION_STATUSES: Stripe.Subscription.Status[] = [
   "unpaid",
   "incomplete",
 ];
-
-function idOf(value: string | { id: string } | null | undefined): string | null {
-  if (!value) return null;
-  return typeof value === "string" ? value : value.id;
-}
 
 /**
  * Bring the stored membership in line with Stripe.

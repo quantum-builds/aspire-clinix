@@ -405,6 +405,49 @@ model StripeWebhookEvent {
   processedAt DateTime?
 }
 
+/// Links a paid booking to its Stripe payment so a cancellation can be
+/// refunded. One row per paid Checkout Session. See REFUND_PLAN.md 4.1.
+model AppointmentPayment {
+  id                      String                 @id @default(cuid())
+  kind                    AppointmentPaymentKind
+  dentallyAppointmentId   String?                @unique // WELLNESS_APPOINTMENT, set after the Dentally create
+  sessionId               String?                @unique // TREATMENT_SESSION
+  patientDentallyId       Int
+  patientId               String?                // Patient.id, null if no Patient row was found
+  stripeCheckoutSessionId String                 @unique
+  stripePaymentIntentId   String                 @unique
+  amount                  Int                    // minor units (pence), as charged
+  currency                String
+  refundStatus            RefundStatus           @default(NONE)
+  stripeRefundId          String?                @unique
+  refundReason            String?                // patient_cancel | clinic_cancel | slot_unavailable | dashboard
+  refundError             String?
+  refundedAt              DateTime?
+  cancelledBy             CancelledBy?           // stamped by the app; null = cancelled in Dentally directly
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
+
+  @@index([patientId])
+  @@index([patientDentallyId])
+}
+
+enum AppointmentPaymentKind {
+  WELLNESS_APPOINTMENT
+  TREATMENT_SESSION
+}
+
+enum RefundStatus {
+  NONE
+  PENDING
+  REFUNDED
+  FAILED
+}
+
+enum CancelledBy {
+  PATIENT
+  CLINIC
+}
+
 model Session {
   id               String   @id @default(cuid())
   patientId        Int

@@ -13,6 +13,11 @@ import { useState } from "react";
 import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { showToast } from "@/utils/defaultToastOptions";
+import {
+  cancelDeadline,
+  canPatientCancel,
+  LATE_CANCEL_MESSAGE,
+} from "@/utils/cancellationPolicy";
 
 interface UpcomingAppointmentCardProps {
   appointment: TAppointment;
@@ -27,6 +32,9 @@ export default function UpcomingAppointmentCard({
   const { mutate: cancelAppointment, isPending: isCancelAppointment } =
     useChangeAppointmentState();
   const { refresh } = useRouter();
+
+  const canCancel = canPatientCancel(appointment);
+  const deadline = cancelDeadline(appointment.createdAt, appointment.startTime);
 
   const handleCancelAppointment = () => {
     cancelAppointment(
@@ -134,7 +142,7 @@ export default function UpcomingAppointmentCard({
             href={`/patient/appointments/${appointment.id}/reports`}
           />
 
-          {appointment.state !== AppointmentState.CANCELLED && (
+          {canCancel && (
             <CustomButton
               style="white"
               handleOnClick={() => setIsCancelModalOpen(true)}
@@ -143,6 +151,15 @@ export default function UpcomingAppointmentCard({
           )}
         </div>
       </div>
+      {appointment.state !== AppointmentState.CANCELLED &&
+        (canCancel && deadline ? (
+          <p className="text-sm italic">
+            You can cancel until{" "}
+            {formatInTimeZone(deadline, TIMEZONE, "d MMM yyyy, HH:mm")}.
+          </p>
+        ) : (
+          <p className="text-sm italic">{LATE_CANCEL_MESSAGE}</p>
+        ))}
       <ConfirmationModal
         icon={CancelIcon}
         isOpen={isCancelModalOpen}
@@ -150,7 +167,7 @@ export default function UpcomingAppointmentCard({
         onConfirm={handleCancelAppointment}
         isPending={isCancelAppointment}
         title="Cancel Appointment"
-        description="Are you sure you want to cancel this appointment? This action cannot be undone."
+        description="Are you sure you want to cancel this appointment? This action cannot be undone. If you paid for it, you will receive a full refund."
         cancelText="No"
         confirmText="Yes  "
       />

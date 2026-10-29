@@ -297,6 +297,64 @@ export function bindReferringDentistEmail(
   );
 }
 
+export function patientCancelledReferringDentistEmail(data: {
+  patientName: string;
+  referringDentistName?: string;
+  treatmentDetails?: string;
+}): string {
+  return wrapHtml(
+    "Appointment Cancelled",
+    `
+      <p style="font-size:15px;line-height:1.6;">
+        Dear ${data.referringDentistName || "Referring Dentist"},
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        We are writing to let you know that your patient,
+        <strong>${data.patientName}</strong>, has cancelled their appointment
+        with Aspire Clinic. As a result, this referral has now been closed.
+      </p>
+
+      <h3 style="margin:20px 0 10px;">
+        Referral Details
+      </h3>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Patient</strong><br/>
+        ${data.patientName}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        <strong>Treatment</strong><br/>
+        ${data.treatmentDetails || "N/A"}
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        If the patient would like to go ahead in the future, you are welcome
+        to send us a new referral, or contact our team and we will be happy
+        to help.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Thank you for your continued trust in Aspire Clinic.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Kind regards,<br/>
+        <strong>Aspire Clinic Team</strong>
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;">
+        Eve Front of House — Aspire Dental Clinic<br/>
+        020 8081 9958 | info@theaspireclinic.com<br/>
+        29-35 Mortimer Street<br/>
+        London<br/>
+        W1T 3JG
+      </p>
+    `,
+  );
+}
+
 export function assignedPatientEmail(data: ReferralNotificationData): string {
   return wrapHtml(
     "Referral Assigned",
