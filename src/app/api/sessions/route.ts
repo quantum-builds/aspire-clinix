@@ -7,9 +7,11 @@ import {
   TreatmentSlotException,
 } from "@/lib/treatment-session";
 import { createResponse } from "@/utils/createResponse";
-import { stripe } from "@/utils/stripe";
+import { stripe } from "@/lib/stripe/client";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { Prisma } from "@prisma/client";
+import { notifyTreatmentSessionBooking } from "@/notifications/wellnessNotifications";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -189,10 +191,12 @@ export async function POST(req: NextRequest) {
               },
             });
 
-            await tx.membershipAppointment.create({
+            await tx.wellnessAppointment.create({
               data: {
                 membershipId: synced.id,
                 appointmentId: session.id,
+                treatmentId,
+                appointmentType: "MEMBERSHIP_APPPOINTMENT",
               },
             });
 
@@ -203,6 +207,13 @@ export async function POST(req: NextRequest) {
             return { session, updatedMembership };
           },
         );
+
+        await notifyTreatmentSessionBooking({
+          treatmentId,
+          patientDentallyId: dentallyId,
+          startTime: session.startTime,
+          endTime: session.endTime,
+        });
 
         return NextResponse.json(
           createResponse(true, "Session booked successfully", {
@@ -258,7 +269,11 @@ export async function POST(req: NextRequest) {
     const origin =
       process.env.NEXT_PUBLIC_APP_URL || req.headers.get("origin") || "";
 
+    const customer = await getOrCreateStripeCustomer(patient);
+
     const checkoutSession = await stripe.checkout.sessions.create({
+      customer,
+
       line_items: [
         {
           price: treatment.stripePriceId,

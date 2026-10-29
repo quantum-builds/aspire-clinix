@@ -17,6 +17,7 @@ import {
   evaluatePlanEligibility,
   syncMembershipPeriod,
 } from "@/lib/plan-booking";
+import { notifyWellnessBooking } from "@/notifications/wellnessNotifications";
 
 const prisma = new PrismaClient();
 
@@ -297,11 +298,12 @@ export async function POST(req: NextRequest) {
           throw new Error("LIMIT_GUARD_FAILED");
         }
 
-        await tx.membershipAppointment.create({
+        await tx.wellnessAppointment.create({
           data: {
             membershipId: membership.id,
             appointmentId: String(appointmentId),
             treatmentId: String(treatmentId),
+            appointmentType: "MEMBERSHIP_APPPOINTMENT",
           },
         });
 
@@ -344,6 +346,12 @@ export async function POST(req: NextRequest) {
 
       throw error;
     }
+
+    await notifyWellnessBooking({
+      treatmentId,
+      patientDentallyId: dentallyId,
+      startTime,
+    });
 
     return NextResponse.json(
       createResponse(true, "Appointment booked successfully", {

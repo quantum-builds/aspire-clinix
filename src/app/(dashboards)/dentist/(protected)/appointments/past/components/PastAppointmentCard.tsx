@@ -41,11 +41,14 @@ export default function PastAppointmentCard({
   const { refresh } = useRouter();
 
   const statusOptions: AppointmentState[] = [
-    AppointmentState.CONFIRMED,
-    AppointmentState.CANCELLED,
+    // AppointmentState.CONFIRMED,
+    // AppointmentState.CANCELLED,
     AppointmentState.DIDNOTATTEND,
     AppointmentState.ARRIVED,
     AppointmentState.INSURGERY,
+    AppointmentState.COMPLETED,
+    // AppointmentState.PENDING,
+    
   ];
 
   const handleStatusChange = () => {

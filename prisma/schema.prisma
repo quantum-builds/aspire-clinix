@@ -120,6 +120,7 @@ model Patient {
   appointmentIds      String[]
   name                String              @unique
   dentallyId          Int                 @unique
+  stripeCustomerId    String?             @unique
   imageUrl            String?
   referralForms       ReferralForm[]
   reports             Report[]
@@ -359,20 +360,21 @@ model PatientMembership {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  appointments MembershipAppointment[]
+  appointments WellnessAppointment[]
 
   @@index([patientId, status])
   @@index([planId])
 }
 
-model MembershipAppointment {
+model WellnessAppointment {
   id            String            @id @default(uuid())
-  membershipId  String
+  membershipId  String?
   appointmentId String            @unique
   treatmentId   String?
-  membership    PatientMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  membership    PatientMembership? @relation(fields: [membershipId], references: [id], onDelete: Cascade)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
+  appointmentType WellnessAppointmentType?
 
   @@index([membershipId])
 }
@@ -394,6 +396,15 @@ model Treatment {
   session        Session[]
 }
 
+/// One row per Stripe webhook event, so retried or duplicate deliveries are
+/// processed once. See src/lib/stripe/webhooks/events.ts.
+model StripeWebhookEvent {
+  id          String    @id
+  type        String
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+}
+
 model Session {
   id               String   @id @default(cuid())
   patientId        Int
@@ -403,6 +414,7 @@ model Session {
   treatmentId      String
   startTime        DateTime
   endTime          DateTime
+  status           AppointmentStatus @default(CONFIRMED)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -528,4 +540,10 @@ enum MembershipStatus {
   ACTIVE
   CANCELLED
   EXPIRED
+}
+
+enum WellnessAppointmentType {
+  MEMBERSHIP_APPPOINTMENT
+  SINGLE_APPOINTMENT
+  
 }

@@ -51,12 +51,17 @@ const treatmentFormSchema = z.object({
         remainingLimit: z.string(),
       })
       .superRefine((slot, ctx) => {
-        if (!timeRegex.test(slot.startTime) || !timeRegex.test(slot.finishTime)) {
+        if (
+          !timeRegex.test(slot.startTime) ||
+          !timeRegex.test(slot.finishTime)
+        ) {
           return;
         }
 
         const [startHour, startMinute] = slot.startTime.split(":").map(Number);
-        const [finishHour, finishMinute] = slot.finishTime.split(":").map(Number);
+        const [finishHour, finishMinute] = slot.finishTime
+          .split(":")
+          .map(Number);
         const windowMinutes =
           finishHour * 60 + finishMinute - (startHour * 60 + startMinute);
 
@@ -71,17 +76,23 @@ const treatmentFormSchema = z.object({
         const duration = Number(slot.duration);
         if (
           slot.duration &&
-          (!Number.isInteger(duration) || duration <= 0 || duration > windowMinutes)
+          (!Number.isInteger(duration) ||
+            duration <= 0 ||
+            duration > windowMinutes)
         ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ["duration"],
-            message: "Duration must be a positive whole number that fits the time window",
+            message:
+              "Duration must be a positive whole number that fits the time window",
           });
         }
 
         const totalLimit = Number(slot.totalLimit);
-        if (slot.totalLimit && (!Number.isInteger(totalLimit) || totalLimit <= 0)) {
+        if (
+          slot.totalLimit &&
+          (!Number.isInteger(totalLimit) || totalLimit <= 0)
+        ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ["totalLimit"],
@@ -102,7 +113,7 @@ const treatmentFormSchema = z.object({
             message: "Remaining limit must be between 0 and total limit",
           });
         }
-      })
+      }),
   ),
 });
 
@@ -199,7 +210,9 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
       stripeProductId: data.stripeProductId,
       stripePriceId: data.stripePriceId,
       practitionerId: selectedPractitioner ? selectedPractitioner.value : null,
-      practitionerName: selectedPractitioner ? selectedPractitioner.label : null,
+      practitionerName: selectedPractitioner
+        ? selectedPractitioner.label
+        : null,
       availabilities: data.availabilities.map((slot) => ({
         date: slot.date,
         startTime: slot.startTime,
@@ -218,7 +231,7 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
           "success",
           treatment
             ? "Treatment updated successfully"
-            : "Treatment created successfully"
+            : "Treatment created successfully",
         );
         queryClient.invalidateQueries({ queryKey: ["treatments"] });
         replace("/clinic/treatments");
@@ -239,7 +252,10 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
   const isSaving = createTreatmentLoader || patchTreatmentLoader;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 overflow-y-hidden">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-6 overflow-y-hidden"
+    >
       <div className="bg-dashboardBarBackground rounded-2xl">
         {/* Section 1: Treatment Form */}
         <div className="rounded-2xl p-6 space-y-10">
@@ -249,7 +265,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
           <div className="grid grid-cols-2 gap-6">
             {/* Name */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Name
+              <Label className="text-lg font-medium">
+                Name
                 <span className="text-red-500 text-sm ml-1">*</span>
               </Label>
               <Controller
@@ -270,7 +287,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
 
             {/* Price */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Price (£)
+              <Label className="text-lg font-medium">
+                Price (£)
                 <span className="text-red-500 text-sm ml-1">*</span>
               </Label>
               <Controller
@@ -318,7 +336,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
 
             {/* Status Dropdown */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Status
+              <Label className="text-lg font-medium">
+                Status
                 <span className="text-red-500 text-sm ml-1">*</span>
               </Label>
               <Controller
@@ -342,7 +361,9 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
                 )}
               />
               {errors.isActive && (
-                <p className="text-sm text-red-500">{errors.isActive.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.isActive.message}
+                </p>
               )}
             </div>
           </div>
@@ -351,7 +372,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
           <div className="grid grid-cols-2 gap-6">
             {/* Stripe Product ID */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Stripe Product ID
+              <Label className="text-lg font-medium">
+                Stripe Product ID
                 <span className="text-red-500 text-sm ml-1">*</span>
               </Label>
               <Controller
@@ -374,7 +396,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
 
             {/* Stripe Price ID */}
             <div className="space-y-2">
-              <Label className="text-lg font-medium">Stripe Price ID
+              <Label className="text-lg font-medium">
+                Stripe Price ID
                 <span className="text-red-500 text-sm ml-1">*</span>
               </Label>
               <Controller
@@ -450,7 +473,10 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
 
           <div className="space-y-6">
             {fields.map((field, index) => (
-              <div key={field.id} className="space-y-4 border-b pb-6 last:border-b-0">
+              <div
+                key={field.id}
+                className="space-y-4 border-b pb-6 last:border-b-0"
+              >
                 <div className="flex justify-between items-center">
                   <p className="text-lg font-medium">Slot {index + 1}</p>
                   <button
@@ -465,7 +491,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
                 <div className="grid grid-cols-3 gap-6 items-start">
                   {/* Date */}
                   <div className="space-y-2">
-                    <Label className="text-lg font-medium">Date
+                    <Label className="text-lg font-medium">
+                      Date
                       <span className="text-red-500 text-sm ml-1">*</span>
                     </Label>
                     <Controller
@@ -488,7 +515,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
 
                   {/* Start Time */}
                   <div className="space-y-2">
-                    <Label className="text-lg font-medium">Start Time
+                    <Label className="text-lg font-medium">
+                      Start Time
                       <span className="text-red-500 text-sm ml-1">*</span>
                     </Label>
                     <div className="relative">
@@ -518,7 +546,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
 
                   {/* Finish Time */}
                   <div className="space-y-2">
-                    <Label className="text-lg font-medium">Finish Time
+                    <Label className="text-lg font-medium">
+                      Finish Time
                       <span className="text-red-500 text-sm ml-1">*</span>
                     </Label>
                     <div className="relative">
@@ -550,7 +579,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
                 <div className="grid grid-cols-3 gap-6 items-start">
                   {/* Duration */}
                   <div className="space-y-2">
-                    <Label className="text-lg font-medium">Duration (minutes)
+                    <Label className="text-lg font-medium">
+                      Duration (minutes)
                       <span className="text-red-500 text-sm ml-1">*</span>
                     </Label>
                     <Controller
@@ -575,7 +605,8 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
 
                   {/* Total Limit */}
                   <div className="space-y-2">
-                    <Label className="text-lg font-medium">Total Limit
+                    <Label className="text-lg font-medium">
+                      Total Limit
                       <span className="text-red-500 text-sm ml-1">*</span>
                     </Label>
                     <Controller
@@ -600,7 +631,9 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
 
                   {/* Remaining Limit */}
                   <div className="space-y-2">
-                    <Label className="text-lg font-medium">Remaining Limit</Label>
+                    <Label className="text-lg font-medium">
+                      Remaining Limit
+                    </Label>
                     <Controller
                       name={`availabilities.${index}.remainingLimit`}
                       control={control}

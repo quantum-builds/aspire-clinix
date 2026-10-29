@@ -33,8 +33,10 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    // Only a live membership is "current". A CANCELLED or EXPIRED row stays
+    // in the table for a later re-purchase, but the patient has no plan.
     const membership = await prisma.patientMembership.findFirst({
-      where: { patientId: patient.id },
+      where: { patientId: patient.id, status: "ACTIVE" },
       orderBy: { createdAt: "desc" },
       include: {
         plan: {

@@ -604,7 +604,7 @@ export default function SlotSelection({
             ? "Confirm Your Appointment"
             : confirmationMode === "plan"
               ? "Confirm Your Wellness Appointment"
-              : "Confirm Appointment"
+              : "Confirm"
         }
         description={
           confirmationMode === "login"
