@@ -49,7 +49,7 @@ export default function UpcomingAppointmentsContent({
         showSearch={false}
         showFilters={true}
         filtersBelow={true}
-        lockAfterDate={true}
+        restrictBeforeFromToday={true}
         statusOptions={[
           { value: AppointmentState.PENDING, label: AppointmentState.PENDING },
           {
