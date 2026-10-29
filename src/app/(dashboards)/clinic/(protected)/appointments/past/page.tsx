@@ -38,9 +38,11 @@ export default async function PastAppointments(props: {
       <div className="min-h-screen flex flex-col gap-5">
         <PageTopBar
           pageHeading="Appointments"
+          showBreathworkNote
           showSearch={false}
           showFilters={true}
-          lockBeforeDate={true}
+          // lockBeforeDate={true}
+          
           statusOptions={[
             {
               value: AppointmentState.PENDING,

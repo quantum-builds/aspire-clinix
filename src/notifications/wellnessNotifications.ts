@@ -8,6 +8,10 @@ import {
   WELLNESS_POST_EMAILS,
   WellnessBookingEmail,
 } from "@/constants/wellnessEmails";
+import {
+  CANCELLATION_REFUND_SUBJECT,
+  cancellationRefundEmail,
+} from "@/constants/wellnessEmails/cancellation";
 import { TIMEZONE } from "@/utils/slotSelectionUtils";
 
 /**
@@ -148,6 +152,59 @@ export async function notifySessionCompleted(session: {
     );
   } catch (err) {
     console.error("[WellnessNotifications] Failed to send session post email:", err);
+  }
+}
+
+/**
+ * Tells the patient a cancelled appointment or session was refunded.
+ * Never throws.
+ */
+export async function notifyCancellationRefund({
+  patientDentallyId,
+  treatment,
+  startTime,
+  amount,
+  currency,
+}: {
+  patientDentallyId: number;
+  treatment: string;
+  startTime: Date | null;
+  amount: number;
+  currency: string;
+}): Promise<void> {
+  try {
+    const patient = await prisma.patient.findUnique({
+      where: { dentallyId: patientDentallyId },
+      select: { email: true, name: true },
+    });
+
+    if (!patient?.email) {
+      console.warn(
+        "[WellnessNotifications] No patient email for refund, dentallyId:",
+        patientDentallyId,
+      );
+      return;
+    }
+
+    await sendEmail({
+      to: patient.email,
+      subject: CANCELLATION_REFUND_SUBJECT,
+      html: cancellationRefundEmail({
+        firstName: patient.name.trim().split(/\s+/)[0],
+        treatment,
+        date: startTime
+          ? formatInTimeZone(startTime, TIMEZONE, "EEEE d MMMM yyyy")
+          : "your booked date",
+        time: startTime ? formatInTimeZone(startTime, TIMEZONE, "h:mm a") : "",
+        amount: new Intl.NumberFormat("en-GB", {
+          style: "currency",
+          currency: currency.toUpperCase(),
+        }).format(amount / 100),
+      }),
+      sender: "wellness",
+    });
+  } catch (err) {
+    console.error("[WellnessNotifications] Failed to send refund email:", err);
   }
 }
 

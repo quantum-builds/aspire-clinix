@@ -57,6 +57,9 @@ export default async function AppointmentGridWrapper({
       <AppointmentGrid
         appointments={appointments}
         type={AppointmentDateType.UPCOMING}
+        // Breathwork sessions live only in our DB, so the clinic cancels them
+        // here; Dentally appointments are cancelled in Dentally.
+        showCancel={appointmentType?.toLowerCase() === "breathwork"}
       />
       {total > 1 && <Pagination page={page} />}
     </>

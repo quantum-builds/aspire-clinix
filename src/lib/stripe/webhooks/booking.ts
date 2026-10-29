@@ -1,7 +1,9 @@
 import type Stripe from "stripe";
+import { AppointmentPaymentKind, Prisma } from "@prisma/client";
 import { fromZonedTime } from "date-fns-tz";
 import prisma from "@/lib/db";
 import { stripe } from "@/lib/stripe/client";
+import { idOf } from "@/lib/stripe/ids";
 import { createAppointment } from "@/dentallyHelpers/appointment";
 import { CreateAppointment } from "@/types/appointment";
 import {
@@ -70,6 +72,35 @@ export async function onWellnessAppointmentPaid(
     return rejected("Invalid practitioner or patient ID");
   }
 
+  const patientDentallyId = Number(patient_id);
+
+  const patient = await prisma.patient.findUnique({
+    where: { dentallyId: patientDentallyId },
+    select: { id: true, appointmentIds: true },
+  });
+
+  if (!patient) {
+    // Not a reason to block the booking or a later refund.
+    console.error("Patient row not found for paid wellness appointment:", patient_id);
+  }
+
+  // Recorded before the Dentally create so a retried event can tell the
+  // appointment already exists, and so a cancellation can be refunded.
+  const payment = await upsertPayment(session, {
+    kind: "WELLNESS_APPOINTMENT",
+    patientDentallyId,
+    patientId: patient?.id ?? null,
+  });
+
+  if (payment?.dentallyAppointmentId) {
+    console.log(
+      "Dentally appointment already created for checkout, skipping:",
+      session.id,
+      payment.dentallyAppointmentId,
+    );
+    return ok("Dentally appointment already created");
+  }
+
   console.log("Creating Dentally appointment:", session.id, appointmentData);
 
   const result = await createAppointment(appointmentData);
@@ -91,6 +122,35 @@ export async function onWellnessAppointmentPaid(
   // The appointment exists now, so a failure here must not trigger a retry
   // (that would book a second appointment).
   if (appointmentId) {
+    if (payment) {
+      try {
+        await prisma.appointmentPayment.update({
+          where: { id: payment.id },
+          data: { dentallyAppointmentId: String(appointmentId) },
+        });
+      } catch (error) {
+        console.error(
+          "Failed to link payment to Dentally appointment; cancellation will not auto-refund:",
+          session.id,
+          appointmentId,
+          error,
+        );
+      }
+    }
+
+    // Ownership for PATCH /api/appointments/[id] is checked against
+    // appointmentIds, which is otherwise only filled by the list endpoint.
+    if (patient && !patient.appointmentIds.includes(String(appointmentId))) {
+      await prisma.patient
+        .update({
+          where: { id: patient.id },
+          data: { appointmentIds: { push: String(appointmentId) } },
+        })
+        .catch((error) =>
+          console.error("Failed to add appointment to patient:", appointmentId, error),
+        );
+    }
+
     try {
       await prisma.wellnessAppointment.create({
         data: {
@@ -202,6 +262,17 @@ export async function onTreatmentSessionPaid(
         },
       });
 
+      await upsertPayment(
+        session,
+        {
+          kind: "TREATMENT_SESSION",
+          patientDentallyId: dentallyId,
+          patientId: patient.id,
+          sessionId: createdSession.id,
+        },
+        tx,
+      );
+
       return createdSession;
     });
 
@@ -232,16 +303,31 @@ export async function onTreatmentSessionPaid(
         error.code,
       );
 
-      if (session.payment_intent) {
-        await stripe.refunds.create(
-          {
-            payment_intent:
-              typeof session.payment_intent === "string"
-                ? session.payment_intent
-                : session.payment_intent.id,
-          },
+      const paymentIntent = idOf(session.payment_intent);
+
+      if (paymentIntent) {
+        const refund = await stripe.refunds.create(
+          { payment_intent: paymentIntent },
           // A retried event must not try to refund twice.
           { idempotencyKey: `refund-slot-unavailable-${session.id}` },
+        );
+
+        await upsertPayment(
+          session,
+          {
+            kind: "TREATMENT_SESSION",
+            patientDentallyId: dentallyId,
+            patientId: patient.id,
+          },
+          prisma,
+          {
+            refundStatus: "REFUNDED",
+            refundReason: "slot_unavailable",
+            stripeRefundId: refund.id,
+            refundedAt: new Date(refund.created * 1000),
+          },
+        ).catch((recordError) =>
+          console.error("Failed to record slot-unavailable refund:", session.id, recordError),
         );
       }
 
@@ -255,4 +341,41 @@ export async function onTreatmentSessionPaid(
 
     throw error;
   }
+}
+
+/**
+ * Creates the AppointmentPayment row for a paid checkout, or returns the
+ * existing one on a retried event. Returns null (and logs) when the session
+ * has no PaymentIntent, which should not happen for `mode: "payment"`.
+ */
+async function upsertPayment(
+  session: Stripe.Checkout.Session,
+  link: {
+    kind: AppointmentPaymentKind;
+    patientDentallyId: number;
+    patientId: string | null;
+    sessionId?: string;
+  },
+  db: Prisma.TransactionClient = prisma,
+  extra: Partial<Prisma.AppointmentPaymentUncheckedCreateInput> = {},
+) {
+  const paymentIntent = idOf(session.payment_intent);
+
+  if (!paymentIntent) {
+    console.error("Paid checkout has no payment_intent; refunds will not work:", session.id);
+    return null;
+  }
+
+  return db.appointmentPayment.upsert({
+    where: { stripeCheckoutSessionId: session.id },
+    create: {
+      ...link,
+      stripeCheckoutSessionId: session.id,
+      stripePaymentIntentId: paymentIntent,
+      amount: session.amount_total ?? 0,
+      currency: session.currency ?? "gbp",
+      ...extra,
+    },
+    update: {},
+  });
 }

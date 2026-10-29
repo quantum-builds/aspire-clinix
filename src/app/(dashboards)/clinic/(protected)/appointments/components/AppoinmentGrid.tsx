@@ -4,10 +4,12 @@ import { TAppointment } from "@/types/appointment";
 interface AppointmentGridProps {
   appointments: TAppointment[];
   type: AppointmentDateType;
+  showCancel?: boolean;
 }
 export default function AppointmentGrid({
   appointments,
   type,
+  showCancel = false,
 }: AppointmentGridProps) {
   return (
     <div className="flex flex-col gap-6 bg-dashboardBarBackground rounded-2xl py-6 px-8">
@@ -25,7 +27,12 @@ export default function AppointmentGrid({
       </div>
       <div className="grid 1xl:grid-cols-2 gap-x-4 gap-y-4">
         {appointments.map((appointment, index) => (
-          <AppointmentCard key={index} appointment={appointment} type={type} />
+          <AppointmentCard
+            key={index}
+            appointment={appointment}
+            type={type}
+            showCancel={showCancel}
+          />
         ))}
       </div>
     </div>

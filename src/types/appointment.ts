@@ -90,6 +90,7 @@ export interface Appointment {
   createdByUserId: number;
 
   // Timeline
+  createdAt?: string;
   startTime: string;
   finishTime: string;
   pendingAt?: string;
