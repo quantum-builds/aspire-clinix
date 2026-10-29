@@ -33,7 +33,8 @@ export default async function PastAppointments(props: {
         showSearch={false}
         showFilters={true}
         filtersBelow={true}
-        lockBeforeDate={true}
+        restrictAfterToToday = {true}
+        
         statusOptions={[
           {
             value: AppointmentState.PENDING,
