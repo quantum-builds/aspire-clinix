@@ -49,12 +49,13 @@ import { PaymentStatus } from "@prisma/client";
  *       - checkout.session.completed
  *       - checkout.session.async_payment_succeeded
  *       - payment_intent.payment_failed
+ *       - charge.refunded
  *       - charge.refund.updated
  */
 export async function POST(request: NextRequest) {
   const body = await request.text();
   const sig = request.headers.get("stripe-signature");
-  const endpointSecret = process.env.STRIPE_SECRET_WEBHOOK_KEY!;
+  const endpointSecret = (process.env.STRIPE_CHECKOUT_WEBHOOK_SECRET)!;
 
   let event: Stripe.Event;
 
@@ -299,7 +300,7 @@ const handleItemRefundUpdated = async (refund: Stripe.Refund) => {
       await tx.productPayment.update({
         where: {
           email_paymentIntent: {
-            email,
+      email,
             paymentIntent: paymentIntentId as string,
           },
         },
