@@ -1,9 +1,7 @@
 import { stripe } from "@/utils/stripe";
 import { createResponse } from "@/utils/createResponse";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("stripe-signature");
@@ -23,7 +21,7 @@ export async function POST(req: NextRequest) {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_SECRET_WEBHOOK_KEY!,
+      (process.env.STRIPE_MEMBERSHIP_WEBHOOK_SECRET)!
     );
   } catch (error) {
     console.error("Stripe webhook signature verification failed:", error);
@@ -132,18 +130,18 @@ export async function POST(req: NextRequest) {
         await prisma.patientMembership.create({
           data: {
             patientId: patient.id,
-            planId: plan.id,
-            stripeCustomerId,
-            stripeSubscriptionId,
+          planId: plan.id,
+          stripeCustomerId,
+          stripeSubscriptionId,
             status: "ACTIVE",
-            currentPeriodStart,
-            currentPeriodEnd,
-            cancelAtPeriodEnd: false,
-            usedTreatments: 0,
-            usedHyperbaric: 0,
-            usedBreathwork: 0,
-            usedGuestPasses: 0,
-          },
+          currentPeriodStart,
+          currentPeriodEnd,
+          cancelAtPeriodEnd: false,
+          usedTreatments: 0,
+          usedHyperbaric: 0,
+          usedBreathwork: 0,
+          usedGuestPasses: 0,
+        },
         });
 
         console.log(
