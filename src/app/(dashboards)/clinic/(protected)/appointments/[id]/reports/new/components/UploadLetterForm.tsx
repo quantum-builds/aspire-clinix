@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useRef } from "react";
 
 interface UploadLetterFormProps {
-  onPdfSelect: (file: File) => void;
+  onPdfSelect: (files: File[]) => void;
 }
 
 export default function UploadLetterForm({
@@ -20,9 +20,9 @@ export default function UploadLetterForm({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onPdfSelect(file); 
+    const files = Array.from(e.target.files ?? []);
+    if (files.length > 0) {
+      onPdfSelect(files);
       e.target.value = ""; 
     }
   };
@@ -46,6 +46,7 @@ export default function UploadLetterForm({
       <input
         type="file"
         accept="application/pdf"
+        multiple
         ref={fileInputRef}
         className="hidden"
         onChange={handleFileChange}

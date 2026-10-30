@@ -35,8 +35,7 @@ export default async function ReferralHistory(props: {
     <div className="min-h-screen flex flex-col gap-5">
       <PageTopBar
         pageHeading="Referrals"
-        showSearch={false}
-        searchPlaceHolder="Search By Name"
+        showSearch={true}
         showFilters={true}
         statusOptions={[
           {
@@ -76,7 +75,15 @@ export default async function ReferralHistory(props: {
         <StatsCardWrapper />
       </Suspense>
       <Suspense
-        key={query + page + status + callStatus + ts + on + before + after}
+        key={
+          query + page +
+          status +
+          callStatus +
+          ts +
+          on +
+          before +
+          after
+        }
         fallback={<ReferralDataTableSkeleton />}
       >
         <ReferralatDaTableWrapper

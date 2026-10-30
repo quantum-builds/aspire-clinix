@@ -38,12 +38,12 @@ export default function ReportGrid({
   const recipientTypeFromParams =
     (searchParams?.get("recipientType") as string) ?? "PATIENT";
 
-  const handlePdfSelect = (file: File) => {
-    setUploadedPdfs((prev) => [...prev, file]);
+  const handlePdfSelect = (files: File[]) => {
+    setUploadedPdfs((prev) => [...prev, ...files]);
   };
 
-  const handleVideoSelect = (file: File) => {
-    setUploadedVideos((prev) => [...prev, file]);
+  const handleVideoSelect = (files: File[]) => {
+    setUploadedVideos((prev) => [...prev, ...files]);
   };
 
   const handleRemoveVideo = (index: number) => {

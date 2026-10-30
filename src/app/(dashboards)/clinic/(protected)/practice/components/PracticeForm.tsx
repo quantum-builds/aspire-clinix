@@ -152,12 +152,18 @@ export default function PracticeForm() {
 
     let fileUrl = undefined;
     if (data.logo instanceof File) {
-      const imageUploaded = await uploadFile({
-        selectedFile: data.logo,
-        fileType: ResoucrceType.IMAGES,
-      });
+      try {
+        const imageUploaded = await uploadFile({
+          selectedFile: data.logo,
+          fileType: ResoucrceType.IMAGES,
+        });
 
-      fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+        fileUrl = `uploads/aspire-clinic/images/${imageUploaded.name}`;
+      } catch (error) {
+        console.error("Logo upload failed:", error);
+        showToast("error", "Failed to upload logo");
+        return;
+      }
     }
 
     const openingHours: OpeningHours = {};

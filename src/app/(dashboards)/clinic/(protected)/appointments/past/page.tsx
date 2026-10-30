@@ -41,8 +41,7 @@ export default async function PastAppointments(props: {
           showBreathworkNote
           showSearch={false}
           showFilters={true}
-          // lockBeforeDate={true}
-          
+          restrictAfterToToday={true}
           statusOptions={[
             {
               value: AppointmentState.PENDING,

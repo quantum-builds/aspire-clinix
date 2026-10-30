@@ -12,7 +12,7 @@ interface VideoReportGridProps {
   canDelete?: boolean;
   isNewUploadPage?: boolean;
   uploadedVideos?: File[];
-  handleVideoSelect?: (file: File) => void;
+  handleVideoSelect?: (files: File[]) => void;
   handleRemoveVideo?: (index: number) => void;
 }
 
@@ -32,9 +32,9 @@ export default function VideoReportGrid({
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && handleVideoSelect) {
-      handleVideoSelect(file);
+    const files = Array.from(event.target.files ?? []);
+    if (files.length > 0 && handleVideoSelect) {
+      handleVideoSelect(files);
       event.target.value = ""; // reset input for selecting same file again
     }
   };
@@ -63,6 +63,7 @@ export default function VideoReportGrid({
             <input
               type="file"
               accept="video/*"
+              multiple
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"

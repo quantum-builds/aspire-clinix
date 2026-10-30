@@ -26,6 +26,8 @@ interface PageTopBarProps {
   callStatusOptions?: { value: string; label: string }[];
   lockAfterDate?: boolean;
   lockBeforeDate?: boolean;
+  restrictAfterToToday?: boolean;
+  restrictBeforeFromToday?: boolean;
   showDropdown?: boolean;
   filtersBelow?: boolean;
   showBreathworkNote?: boolean;
@@ -34,7 +36,7 @@ interface PageTopBarProps {
 export default function PageTopBar({
   pageHeading,
   showSearch,
-  searchPlaceHolder = "Enter Appointment Number",
+  searchPlaceHolder = "Search by patient or referral dentist",
   showFilters,
   showExport = false,
   extraBtns,
@@ -45,6 +47,8 @@ export default function PageTopBar({
   showBackBtn = false,
   lockAfterDate = false,
   lockBeforeDate = false,
+  restrictAfterToToday = false,
+  restrictBeforeFromToday = false,
   showDropdown = false,
   filtersBelow = false,
   showBreathworkNote = false,
@@ -84,7 +88,8 @@ export default function PageTopBar({
                 showDateFilter={showDateFilter}
                 lockAfterDate={lockAfterDate}
                 lockBeforeDate={lockBeforeDate}
-                showAppointmentTypeFilter={true}
+                restrictAfterToToday={restrictAfterToToday}
+                restrictBeforeFromToday={restrictBeforeFromToday}
               />
             )}
             {showDropdown && (
@@ -136,7 +141,8 @@ export default function PageTopBar({
             showDateFilter={showDateFilter}
             lockAfterDate={lockAfterDate}
             lockBeforeDate={lockBeforeDate}
-            showAppointmentTypeFilter={true}
+            restrictAfterToToday={restrictAfterToToday}
+            restrictBeforeFromToday={restrictBeforeFromToday}
           />
         </div>
       )}
