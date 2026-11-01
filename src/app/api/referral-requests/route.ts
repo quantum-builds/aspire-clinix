@@ -162,11 +162,6 @@ export async function GET(req: NextRequest) {
     const { localDentistId: referralDentistId } =
       await resolveReferralDentistId(token);
 
-    /*
-     * ================================
-     * Referral Statistics
-     * ================================
-     */
     if (statsOnly) {
       const now = new Date();
 

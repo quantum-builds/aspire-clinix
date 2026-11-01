@@ -5,6 +5,11 @@ import prisma from "@/lib/db";
 import { DentistRole } from "@prisma/client";
 import { getPractitioners } from "@/dentallyHelpers/practitioners";
 import { createResponse } from "@/utils/createResponse";
+import { sendEmail } from "@/lib/emailService";
+import {
+  WELLNESS_MEMBERSHIPS_SUBJECT,
+  wellnessMembershipsEmail,
+} from "@/constants/wellnessEmailTemplates";
 
 /**
  * @swagger
@@ -179,6 +184,8 @@ export async function POST(req: NextRequest) {
       const patientData = createRes.response.patient;
       const fullName = `${firstName} ${lastName}`;
 
+      
+
       const createdPatient = await prisma.patient.create({
         data: {
           uuid: patientData.uuid,
@@ -193,6 +200,13 @@ export async function POST(req: NextRequest) {
       await prisma.referralForm.updateMany({
         where: { patientEmail: createdPatient.email },
         data: { patientId: createdPatient.id },
+      });
+
+      await sendEmail({
+        to: email,
+        subject: WELLNESS_MEMBERSHIPS_SUBJECT,
+        html: wellnessMembershipsEmail(fullName),
+        sender: "wellness",
       });
     } else if (role === TokenRoles.REFERRING_DENTIST) {
       const { gdcNo, firstName, lastName, email } = body;

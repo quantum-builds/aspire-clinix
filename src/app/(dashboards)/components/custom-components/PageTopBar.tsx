@@ -30,6 +30,7 @@ interface PageTopBarProps {
   restrictBeforeFromToday?: boolean;
   showDropdown?: boolean;
   filtersBelow?: boolean;
+  showBreathworkNote?: boolean;
 }
 
 export default function PageTopBar({
@@ -50,6 +51,7 @@ export default function PageTopBar({
   restrictBeforeFromToday = false,
   showDropdown = false,
   filtersBelow = false,
+  showBreathworkNote = false,
 }: PageTopBarProps) {
   const router = useRouter();
   const [participantType, setParticipantType] = useState<string>("patient");
@@ -65,7 +67,15 @@ export default function PageTopBar({
               <Image src={BackButtonIcon} alt="back" />
             </div>
           )}
-          <PageHeading text={pageHeading} />
+          <div className="flex flex-col gap-1">
+            <PageHeading text={pageHeading} />
+            {showBreathworkNote && (
+              <p className="text-sm italic text-[#1D120C]">
+                *Note: If you want to view Breathwork appointments, please
+                select Breathwork from the appointment filter.
+              </p>
+            )}
+          </div>
         </div>
         <Suspense>
           <div className="flex justify-end gap-3">
@@ -80,6 +90,7 @@ export default function PageTopBar({
                 lockBeforeDate={lockBeforeDate}
                 restrictAfterToToday={restrictAfterToToday}
                 restrictBeforeFromToday={restrictBeforeFromToday}
+                showAppointmentTypeFilter={showBreathworkNote}
               />
             )}
             {showDropdown && (
@@ -133,6 +144,7 @@ export default function PageTopBar({
             lockBeforeDate={lockBeforeDate}
             restrictAfterToToday={restrictAfterToToday}
             restrictBeforeFromToday={restrictBeforeFromToday}
+            showAppointmentTypeFilter={showBreathworkNote}
           />
         </div>
       )}

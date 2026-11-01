@@ -9,7 +9,7 @@ export const useChangeAppointmentState = () => {
       id,
     }: {
       appointment: TChangeAppointmentState;
-      id: number;
+      id: number | string;
       patientId?: number;
       dentistId?: number;
     }) => {
@@ -34,4 +34,3 @@ export const useGetAppointmentsByPatient = (patientName: string) => {
     enabled: !!patientName,
   });
 };
-

@@ -3,7 +3,9 @@
 import { CalenderInputIconV2, TimeIconV2 } from "@/assets";
 import Image from "next/image";
 import { TAppointment } from "@/types/appointment";
-import { formatDate, formatTime } from "@/utils/formatDateTime";
+import { formatDate } from "@/utils/formatDateTime";
+import { TIMEZONE } from "@/utils/slotSelectionUtils";
+import { formatInTimeZone } from "date-fns-tz";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import StatusBage from "@/app/(dashboards)/components/StatusBadge";
 
@@ -32,8 +34,8 @@ export default function PastAppointmentCard({
             <Image src={TimeIconV2} alt="TIme Icon" className="w-4 h-4" />
             <p className="text-lg">
               {" "}
-              {formatTime(appointment.startTime)} -{" "}
-              {formatTime(appointment.finishTime)}
+              {formatInTimeZone(new Date(appointment.startTime), TIMEZONE, "HH:mm")} -{" "}
+              {formatInTimeZone(new Date(appointment.finishTime), TIMEZONE, "HH:mm")}
             </p>
           </div>
         </div>

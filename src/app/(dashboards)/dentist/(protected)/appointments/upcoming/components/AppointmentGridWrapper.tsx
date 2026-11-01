@@ -11,6 +11,7 @@ interface AppointmentGridWrapperProps {
   on: string;
   before: string;
   after: string;
+  appointmentType?: string;
 }
 
 export default async function AppointmentGridWrapper({
@@ -19,6 +20,7 @@ export default async function AppointmentGridWrapper({
   on,
   before,
   after,
+  appointmentType,
 }: AppointmentGridWrapperProps) {
   const response: Response<TAppointmentResponse> = await getAppointments({
     dateType: AppointmentDateType.UPCOMING,
@@ -27,6 +29,7 @@ export default async function AppointmentGridWrapper({
     on,
     before,
     after,
+    appointmentType,
   });
 
   if (

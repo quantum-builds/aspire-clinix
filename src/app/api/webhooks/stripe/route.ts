@@ -1,12 +1,103 @@
-import { stripe } from "@/utils/stripe";
-import { createResponse } from "@/utils/createResponse";
+import type Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
-import { createAppointment } from "@/dentallyHelpers/appointment";
-import { CreateAppointment } from "@/types/appointment";
-import { AppointmentReason } from "@/types/appointment";
+import { stripe } from "@/lib/stripe/client";
+import { createResponse } from "@/utils/createResponse";
+import {
+  claimEvent,
+  markProcessed,
+  releaseEvent,
+} from "@/lib/stripe/webhooks/events";
+import {
+  HandlerResult,
+  ok,
+  RetryableWebhookError,
+} from "@/lib/stripe/webhooks/result";
+import {
+  onTreatmentSessionPaid,
+  onWellnessAppointmentPaid,
+} from "@/lib/stripe/webhooks/booking";
+import {
+  onInvoicePaid,
+  onInvoicePaymentFailed,
+  onMembershipCheckoutCompleted,
+  onSubscriptionDeleted,
+  onSubscriptionUpdated,
+} from "@/lib/stripe/webhooks/membership";
+import { onRefundEvent } from "@/lib/stripe/webhooks/refunds";
+
+/**
+ * The only Stripe webhook endpoint for aspire-clinix.
+ *
+ * Registered in Stripe as `<app url>/api/webhooks/stripe` with the events:
+ *   checkout.session.completed
+ *   customer.subscription.updated
+ *   customer.subscription.deleted
+ *   invoice.paid
+ *   invoice.payment_failed
+ *   refund.created
+ *   refund.updated
+ *   refund.failed
+ *
+ * The Stripe account is shared with other apps, which receive the same
+ * events. Checkouts are routed by `metadata.payment_for`; anything that is
+ * not ours is acknowledged with a 200 and ignored.
+ *
+ * See STRIPE_SETUP_PLAN.md for the full design.
+ */
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const maxDuration = 30;
+
+async function handleCheckoutCompleted(
+  session: Stripe.Checkout.Session,
+): Promise<HandlerResult> {
+  const paymentFor = session.metadata?.payment_for;
+
+  switch (paymentFor) {
+    case "wellness_appointment":
+      return onWellnessAppointmentPaid(session);
+    case "treatment_session":
+      return onTreatmentSessionPaid(session);
+    case "membership":
+      return onMembershipCheckoutCompleted(session);
+    default:
+      return ok(`Checkout not handled by this app (payment_for=${paymentFor ?? "none"}), ignored`);
+  }
+}
+
+async function dispatch(event: Stripe.Event): Promise<HandlerResult> {
+  switch (event.type) {
+    case "checkout.session.completed":
+      return handleCheckoutCompleted(event.data.object);
+    case "customer.subscription.updated":
+      return onSubscriptionUpdated(event.data.object);
+    case "customer.subscription.deleted":
+      return onSubscriptionDeleted(event.data.object);
+    case "invoice.paid":
+      return onInvoicePaid(event.data.object);
+    case "invoice.payment_failed":
+      return onInvoicePaymentFailed(event.data.object);
+    case "refund.created":
+    case "refund.updated":
+    case "refund.failed":
+      return onRefundEvent(event.data.object);
+    default:
+      return ok(`Event type ${event.type} not handled, ignored`);
+  }
+}
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("stripe-signature");
+  const secret = process.env.STRIPE_SECRET_WEBHOOK_KEY?.trim();
+
+  if (!secret) {
+    console.error("STRIPE_SECRET_WEBHOOK_KEY is not set");
+    return NextResponse.json(
+      createResponse(false, "Webhook secret not configured", null),
+      { status: 500 },
+    );
+  }
 
   if (!signature) {
     return NextResponse.json(
@@ -15,150 +106,45 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let event;
+  let event: Stripe.Event;
 
   try {
     const body = await req.text();
-
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_SECRET_WEBHOOK_KEY!,
-    );
+    event = stripe.webhooks.constructEvent(body, signature, secret);
   } catch (error) {
     console.error("Stripe webhook signature verification failed:", error);
-
     return NextResponse.json(createResponse(false, "Invalid signature", null), {
       status: 400,
     });
   }
 
+  const claim = await claimEvent(event.id, event.type);
+
+  if (claim !== "claimed") {
+    console.log(`Stripe event ${event.id} (${event.type}) skipped: ${claim}`);
+
+    // In progress elsewhere: answer 409 so Stripe retries later and the
+    // other run's outcome decides.
+    return NextResponse.json(
+      createResponse(true, `Event ${claim}`, null),
+      { status: claim === "duplicate" ? 200 : 409 },
+    );
+  }
+
+  let result: HandlerResult;
+
   try {
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object;
-      const metadata = session.metadata;
-
-      console.log("Stripe checkout completed:", {
-        sessionId: session.id,
-        paymentStatus: session.payment_status,
-        metadata,
-      });
-
-      if (metadata?.payment_for === "wellness_appointment") {
-        const { start_time, finish_time, practitioner_id, patient_id, reason } =
-          metadata;
-
-        if (!start_time || !finish_time || !practitioner_id || !patient_id) {
-          console.error("Missing Dentally appointment metadata:", metadata);
-
-          return NextResponse.json(
-            createResponse(
-              false,
-              "Missing required appointment metadata",
-              null,
-            ),
-            { status: 400 },
-          );
-        }
-
-        if (session.payment_status !== "paid") {
-          console.warn(
-            "Checkout completed but payment is not marked as paid:",
-            session.payment_status,
-          );
-
-          return NextResponse.json(
-            createResponse(
-              true,
-              "Webhook received but payment is not yet paid",
-              null,
-            ),
-          );
-        }
-
-        const startTime = new Date(start_time);
-        const finishTime = new Date(finish_time);
-
-        if (
-          Number.isNaN(startTime.getTime()) ||
-          Number.isNaN(finishTime.getTime())
-        ) {
-          console.error("Invalid appointment date/time:", {
-            start_time,
-            finish_time,
-          });
-
-          return NextResponse.json(
-            createResponse(false, "Invalid appointment date/time", null),
-            { status: 400 },
-          );
-        }
-
-        if (finishTime <= startTime) {
-          console.error("Invalid appointment time range:", {
-            start_time,
-            finish_time,
-          });
-
-          return NextResponse.json(
-            createResponse(false, "Finish time must be after start time", null),
-            { status: 400 },
-          );
-        }
-
-        const appointmentData: CreateAppointment = {
-          startTime,
-          finishTime,
-          practitionerId: Number(practitioner_id),
-          patientId: Number(patient_id),
-          reason: AppointmentReason.OTHER,
-        };
-
-        if (
-          Number.isNaN(appointmentData.practitionerId) ||
-          Number.isNaN(appointmentData.patientId)
-        ) {
-          return NextResponse.json(
-            createResponse(false, "Invalid practitioner or patient ID", null),
-            { status: 400 },
-          );
-        }
-
-        console.log(
-          "Creating Dentally appointment with data:",
-          appointmentData,
-        );
-
-        const result = await createAppointment(appointmentData);
-
-        console.log("Dentally appointment result:", result);
-
-        if (result.isError) {
-          console.error(
-            "Failed to create Dentally appointment:",
-            result.response,
-          );
-
-          return NextResponse.json(
-            createResponse(
-              false,
-              "Payment succeeded but Dentally appointment creation failed",
-              result.response,
-            ),
-            { status: 500 },
-          );
-        }
-
-        console.log(
-          "Dentally appointment created successfully:",
-          result.response,
-        );
-      }
-    }
-
-    return NextResponse.json(createResponse(true, "Webhook received", null));
+    result = await dispatch(event);
   } catch (error) {
-    console.error("Stripe webhook processing error:", error);
+    await releaseEvent(event.id).catch((releaseError) =>
+      console.error("Failed to release Stripe event claim:", releaseError),
+    );
+
+    console.error(
+      `Stripe event ${event.id} (${event.type}) failed, Stripe will retry:`,
+      error,
+      error instanceof RetryableWebhookError ? error.details : undefined,
+    );
 
     return NextResponse.json(
       createResponse(
@@ -169,4 +155,17 @@ export async function POST(req: NextRequest) {
       { status: 500 },
     );
   }
+
+  // The work is done at this point. If recording that fails, keep the claim
+  // rather than releasing it, so a retry cannot repeat a booking or refund.
+  await markProcessed(event.id).catch((markError) =>
+    console.error("Failed to mark Stripe event processed:", event.id, markError),
+  );
+
+  console.log(`Stripe event ${event.id} (${event.type}): ${result.message}`);
+
+  return NextResponse.json(
+    createResponse(result.outcome === "ok", result.message, result.data ?? null),
+    { status: result.outcome === "ok" ? 200 : 400 },
+  );
 }

@@ -2,6 +2,8 @@
 
 import { TAppointment } from "@/types/appointment";
 import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
+import { TIMEZONE } from "@/utils/slotSelectionUtils";
 import { Calendar, Clock, User, Stethoscope } from "lucide-react";
 
 interface AppointmentListItemProps {
@@ -23,7 +25,7 @@ export default function AppointmentListItem({
   const endDate = new Date(appointment.finishTime);
 
   const formatDate = (date: Date) => format(date, "MMM d, yyyy");
-  const formatTime = (date: Date) => format(date, "h:mm a");
+  const formatTime = (date: Date) => formatInTimeZone(date, TIMEZONE, "HH:mm");
 
   const isBound = appointment.bindStatus === "BOUND";
 

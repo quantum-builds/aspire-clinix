@@ -46,6 +46,7 @@ export default function UpcomingAppointmentsContent({
     <div className="min-h-[103vh] flex flex-col gap-5">
       <PageTopBar
         pageHeading="Appointments"
+        showBreathworkNote
         showSearch={false}
         showFilters={true}
         filtersBelow={true}
@@ -77,7 +78,7 @@ export default function UpcomingAppointmentsContent({
         preBtns={
           <CustomButton
             text="Book Wellness Appointment"
-            href="/patient/plan-selection"
+            href="/patient/plan-selection/wellness-treatments"
             style="white"
             className="border border-green hover:bg-[#ede9e4] "
 

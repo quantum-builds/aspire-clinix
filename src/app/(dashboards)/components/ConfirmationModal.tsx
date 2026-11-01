@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -11,7 +12,7 @@ interface CustomConfirmationModalProps {
   onConfirm: () => void;
   isPending?: boolean;
   title: string;
-  description: string;
+  description: ReactNode;
   cancelText?: string;
   icon?: string;
   confirmText?: string;
@@ -67,7 +68,7 @@ export default function CustomConfirmationModal({
             className={cn(
               "relative",
               isDark
-                ? "w-full max-w-[520px] rounded-[28px] border border-[#56493A]/45 bg-[var(--wt-card)] px-6 py-8 text-center shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)] sm:px-8 sm:py-10"
+                ? "w-full max-w-[520px] rounded-[28px] border border-white/15 bg-[#2D261F] px-6 py-8 text-center sm:px-8 sm:py-10"
                 : "w-[520px] rounded-2xl bg-dashboardBarBackground px-6 py-8 shadow-lg dark:bg-neutral-900",
             )}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}

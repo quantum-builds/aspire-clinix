@@ -1,7 +1,9 @@
 import Button from "@/app/(dashboards)/components/Button";
 import { CalenderGreenIcon, TimeIcon } from "@/assets";
 import { TAppointment } from "@/types/appointment";
-import { formatDate, formatTime } from "@/utils/formatDateTime";
+import { formatDate } from "@/utils/formatDateTime";
+import { TIMEZONE } from "@/utils/slotSelectionUtils";
+import { formatInTimeZone } from "date-fns-tz";
 import Image from "next/image";
 
 export default function AssignedAppointmentCard({
@@ -31,8 +33,8 @@ export default function AssignedAppointmentCard({
                 </p>
                 <p className="flex items-center gap-2 text-xl">
                   <Image src={TimeIcon} alt="Time icon" />
-                  {formatTime(appointment.startTime)} -{" "}
-                  {formatTime(appointment.finishTime)}
+                  {formatInTimeZone(new Date(appointment.startTime), TIMEZONE, "HH:mm")} -{" "}
+                  {formatInTimeZone(new Date(appointment.finishTime), TIMEZONE, "HH:mm")}
                 </p>
               </div>
             </div>

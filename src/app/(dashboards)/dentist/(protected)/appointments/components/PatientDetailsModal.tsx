@@ -1,7 +1,9 @@
 import { CalenderInputIconV2, CloseIcon, TimeIconV2 } from "@/assets";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { TAppointment } from "@/types/appointment";
-import { formatDate, formatTime } from "@/utils/formatDateTime";
+import { formatDate } from "@/utils/formatDateTime";
+import { TIMEZONE } from "@/utils/slotSelectionUtils";
+import { formatInTimeZone } from "date-fns-tz";
 import Image from "next/image";
 
 export default function PatientDetailsModal({
@@ -142,8 +144,8 @@ export default function PatientDetailsModal({
                 {" "}
                 Time:{" "}
                 <span className="font-medium text-lg">
-                  {formatTime(appointment.startTime)} -{" "}
-                  {formatTime(appointment.finishTime)}
+                  {formatInTimeZone(new Date(appointment.startTime), TIMEZONE, "HH:mm")} -{" "}
+                  {formatInTimeZone(new Date(appointment.finishTime), TIMEZONE, "HH:mm")}
                 </span>
               </p>
             </div>

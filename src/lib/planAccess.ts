@@ -37,5 +37,5 @@ export function safeEqual(a: string, b: string): boolean {
 // Only allow redirects to paths inside your own site
 export function safeNextPath(next: string | null): string {
   if (next && next.startsWith("/") && !next.startsWith("//")) return next;
-  return "/patient/plan-selection";
+  return "/patient/plan-selection/wellness-treatments";
 }

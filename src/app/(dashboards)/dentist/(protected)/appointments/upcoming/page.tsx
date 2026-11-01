@@ -12,6 +12,9 @@ export default async function UpcomingAppointments(props: {
     on?: string;
     before?: string;
     after?: string;
+    appointmentType?: string;
+    type?: string;
+    filter?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
@@ -19,6 +22,11 @@ export default async function UpcomingAppointments(props: {
   const on = searchParams?.on || "";
   const before = searchParams?.before || "";
   const page = Number(searchParams?.page) || 1;
+  const appointmentType =
+    searchParams?.appointmentType ||
+    searchParams?.type ||
+    searchParams?.filter ||
+    "";
 
   // Default after date to today (YYYY-MM-DD format) for upcoming appointments
   const today = new Date();
@@ -29,6 +37,7 @@ export default async function UpcomingAppointments(props: {
     <div className="min-h-screen flex flex-col gap-5">
       <PageTopBar
         pageHeading="Appointments"
+        showBreathworkNote
         showSearch={false}
         showFilters={true}
         // lockAfterDate={true}
@@ -65,7 +74,7 @@ export default async function UpcomingAppointments(props: {
         ]}
       />
       <Suspense
-        key={page + status + on + before + after}
+        key={page + status + on + before + after + appointmentType}
         fallback={<AppointmentGridSkeleton />}
       >
         <AppointmentGridWrapper
@@ -74,6 +83,7 @@ export default async function UpcomingAppointments(props: {
           on={on}
           before={before}
           after={after}
+          appointmentType={appointmentType}
         />{" "}
       </Suspense>
     </div>

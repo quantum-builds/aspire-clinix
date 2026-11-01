@@ -9,11 +9,13 @@ export default async function UpcomingAppointments(props: {
     before?: string;
     after?: string;
     session_id?: string;
+    appointmentType?: string;
+    type?: string;
+    filter?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
   const sessionId = searchParams?.session_id;
-
 
   let statusResponse = null;
   if (sessionId && sessionId.trim() !== "") {
@@ -23,6 +25,11 @@ export default async function UpcomingAppointments(props: {
   const status = searchParams?.status || "";
   const on = searchParams?.on || "";
   const before = searchParams?.before || "";
+  const appointmentType =
+    searchParams?.appointmentType ||
+    searchParams?.type ||
+    searchParams?.filter ||
+    "";
 
   const today = new Date();
   const todayFormatted = today.toISOString().split("T")[0];
@@ -33,7 +40,7 @@ export default async function UpcomingAppointments(props: {
       status={statusResponse}
       searchParams={searchParams}
     >
-      <AppointmentGridWrapper status={status} on={on} before={before} after={after} />
+      <AppointmentGridWrapper status={status} on={on} before={before} after={after} appointmentType={appointmentType} />
     </UpcomingAppointmentsContent>
   );
 }

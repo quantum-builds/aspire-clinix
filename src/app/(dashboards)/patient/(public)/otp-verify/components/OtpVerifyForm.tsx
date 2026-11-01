@@ -16,6 +16,7 @@ import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import Link from "next/link";
 import { TokenRoles } from "@/constants/UserRoles";
+import { safeRedirectPath } from "@/lib/safeRedirect";
 
 const otpSchema = z.object({
   otp: z.string().min(1, "OTP is required"),
@@ -42,7 +43,7 @@ function OtpVerificationForm() {
   const router = useRouter();
   const patientEmail = searchParams.get("email") ?? "";
   const redirectTo = searchParams.get("redirectTo");
-  const destination = redirectTo?.startsWith("/") ? redirectTo : "/patient";
+  const destination = safeRedirectPath(redirectTo, "/patient");
 
   const { mutate: verifyOtp, isPending: isVerifying } = loginMutation();
 

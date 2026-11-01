@@ -29,7 +29,7 @@ export default function SlotSelectionShell({
             </p>
           </div>
 
-          <div className="mx-auto mt-8 max-w-[650px] rounded-[28px] border  border-[#56493A73] bg-[#12100D] opacity-0.82 px-6 py-8 shadow-[0_30px_50px_-20px_rgba(0,0,0,0.35)] sm:px-8 sm:py-9">
+          <div className="mx-auto mt-8 max-w-[800px] rounded-[28px] border  border-white/15 bg-[#56493A73] opacity-0.82 px-6 py-8 shadow-[0_30px_50px_-20px_rgba(0,0,0,0.35)] sm:px-8 sm:py-9">
             <SlotSelection
               practitionerId={practitionerId}
               treatmentId={treatmentId}

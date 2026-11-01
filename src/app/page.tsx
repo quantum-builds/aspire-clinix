@@ -1,21 +1,12 @@
-"use client";
-
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+
+const WELLNESS_BOOKING_HREF = "/patient/plan-selection/wellness-treatments";
 
 export default function LandingPage() {
-  const { data: session, status } = useSession();
-
-  const isLoggedInPatient =
-    status === "authenticated" && session?.user?.role === "PATIENT";
-
-  const wellnessHref = isLoggedInPatient
-    ? "/patient/plan-selection"
-    : "/patient/login?redirectTo=/patient/plan-selection";
 
   return (
-    <main className="absolute inset-0 h-full w-full object-cover">
-      <video
+    <main className="absolute inset-0 h-full w-full object-cover bg-[#130D09]">
+      {/* <video
         autoPlay
         muted
         loop
@@ -23,11 +14,11 @@ export default function LandingPage() {
         className="absolute inset-0 h-full w-full object-cover"
       >
         <source src="/videos/landing-page-video-1.mp4" type="video/mp4" />
-      </video>
+      </video> */}
 
       <div
-        className="absolute inset-0 z-[1]"
-        style={{ backgroundColor: "rgba(11, 10, 8, 0.6)" }}
+        aria-hidden
+        className="pointer-events-none absolute  left-[-250px] top-0 h-[750px] w-[1100px] bg-[radial-gradient(ellipse_at_center,rgba(214,188,160,0.18)_0%,rgba(255,255,255,0)_65%)]"
       />
 
       <div className="relative z-10 flex h-full items-center justify-center px-4">
@@ -43,7 +34,7 @@ export default function LandingPage() {
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               href="https://aspire-dental.portal.dental/"
-              className="group relative flex h-14 w-[220px] items-center justify-center overflow-hidden rounded-full bg-[#423C36] font-gillSans text-[20px] font-medium tracking-wide text-white"
+              className="group relative flex h-16 w-[251px] items-center justify-center overflow-hidden rounded-full bg-[#423C36] font-gillSans text-[23px] font-medium tracking-wide text-white"
             >
               <span className="relative z-10 font-[family-name:var(--font-cormorant)]">
                 {/* The circle: anchored to the start of the text */}
@@ -58,14 +49,14 @@ export default function LandingPage() {
             </Link>
 
             <Link
-              href={wellnessHref}
-              className="group relative flex h-14 w-[230px] items-center justify-center overflow-hidden rounded-full bg-[#E3DFD3]  font-gillSans text-[20px] font-medium tracking-wide text-[#0B0A08]"
+              href={WELLNESS_BOOKING_HREF}
+              className="group relative flex h-16 w-[269px] items-center justify-center overflow-hidden rounded-full bg-[#E3DFD3]  font-gillSans text-[23px] font-medium tracking-wide text-[#0B0A08]"
             >
               <span className="relative z-10 font-[family-name:var(--font-cormorant)]">
                 {/* The circle: anchored to the start of the text */}
                 <span
                   aria-hidden
-                  className="absolute -left-3 top-1/2 -z-10 h-9 w-9 -translate-y-1/2 rounded-full bg-[#C9BCA9]
+                  className="absolute -left-3 top-1/2 -z-10 h-9 w-9 -translate-y-1/2 rounded-full  bg-[#C9BCA9]
            transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
            group-hover:scale-[16]"
                 />

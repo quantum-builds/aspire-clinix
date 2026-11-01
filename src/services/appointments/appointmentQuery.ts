@@ -18,6 +18,7 @@ export async function getAppointments({
   dateType,
   status,
   perPage = 20,
+  appointmentType,
 }: {
   page?: number;
   perPage?: number;
@@ -27,6 +28,7 @@ export async function getAppointments({
   after?: string;
   dateType?: AppointmentDateType | null;
   status?: string;
+  appointmentType?: string;
 }) {
   try {
     const serverAxios = await createServerAxios();
@@ -44,6 +46,7 @@ export async function getAppointments({
         after,
         dateType,
         status,
+        appointmentType,
       ),
     );
 

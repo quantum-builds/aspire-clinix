@@ -1,23 +1,23 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { getCurrentMembership } from "@/services/membership/membershipQuery";
 
 export default function MembershipCard() {
-  const searchParams = useSearchParams();
-  const isMembership = searchParams.get("type") === "membership";
+  const { status } = useSession();
+  const isPatient = status === "authenticated";
 
   const { data: membershipData } = useQuery({
     queryKey: ["currentMembership"],
     queryFn: getCurrentMembership,
-    enabled: isMembership,
+    enabled: isPatient,
   });
 
   const membership = membershipData?.data;
   const plan = membership?.plan;
 
-  if (!isMembership || !membership || !plan) return null;
+  if (!isPatient || !membership || !plan) return null;
 
   const getTotal = (limit: number | null) => {
     return limit === null ? "Unlimited" : limit.toString();

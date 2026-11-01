@@ -11,6 +11,7 @@ interface AppointmentGridWrapperProps {
   on: string;
   before: string;
   after: string;
+  appointmentType?: string;
 }
 
 export default async function AppointmentGridWrapper({
@@ -19,6 +20,7 @@ export default async function AppointmentGridWrapper({
   on,
   before,
   after,
+  appointmentType,
 }: AppointmentGridWrapperProps) {
   const response: Response<TAppointmentResponse> = await getAppointments({
     dateType: AppointmentDateType.UPCOMING,
@@ -27,6 +29,7 @@ export default async function AppointmentGridWrapper({
     on,
     before,
     after,
+    appointmentType,
   });
 
   if (
@@ -54,6 +57,9 @@ export default async function AppointmentGridWrapper({
       <AppointmentGrid
         appointments={appointments}
         type={AppointmentDateType.UPCOMING}
+        // Breathwork sessions live only in our DB, so the clinic cancels them
+        // here; Dentally appointments are cancelled in Dentally.
+        showCancel={appointmentType?.toLowerCase() === "breathwork"}
       />
       {total > 1 && <Pagination page={page} />}
     </>

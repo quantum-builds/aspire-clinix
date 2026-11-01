@@ -1,8 +1,7 @@
 import { getPractitioners } from "@/dentallyHelpers/practitioners";
 import { TPractitioner } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
-import { getToken } from "next-auth/jwt";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 type DentallyPractitioner = {
   id: number;
@@ -16,16 +15,8 @@ type DentallyPractitioner = {
   } | null;
 };
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const token = await getToken({ req });
-
-    if (!token) {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
-    }
-
     const practitionersResponse = await getPractitioners();
 
     if (practitionersResponse.isError) {

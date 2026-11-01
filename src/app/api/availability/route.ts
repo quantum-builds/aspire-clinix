@@ -1,7 +1,6 @@
 import { getAvailability } from "@/dentallyHelpers/availability";
 import { TAvailabilitySlot } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
-import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
@@ -37,14 +36,6 @@ function getErrorMessage(error: unknown): string {
 
 export async function GET(req: NextRequest) {
   try {
-    const token = await getToken({ req });
-
-    if (!token) {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
-    }
-
     const { searchParams } = req.nextUrl;
     const practitionerIdRaw = searchParams.get("practitionerId");
     const startTime = searchParams.get("startTime");

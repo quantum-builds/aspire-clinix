@@ -19,6 +19,7 @@ interface DateFilterProps {
   lockBeforeDate?: boolean
   restrictAfterToToday?: boolean
   restrictBeforeFromToday?: boolean
+  showAppointmentTypeFilter?: boolean
 }
 
 export default function DateFilter({
@@ -29,6 +30,7 @@ export default function DateFilter({
   lockBeforeDate,
   restrictAfterToToday = false,
   restrictBeforeFromToday = false,
+  showAppointmentTypeFilter = false,
 }: DateFilterProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -38,6 +40,7 @@ export default function DateFilter({
   const [beforeDate, setBeforeDate] = useState<Date | null>(null)
   const [status, setStatus] = useState<string | null>("")
   const [callStatus, setCallStatus] = useState<string | null>("")
+  const [appointmentType, setAppointmentType] = useState<string | null>("")
 
   useEffect(() => {
     const on = searchParams.get("on")
@@ -45,12 +48,18 @@ export default function DateFilter({
     const before = searchParams.get("before")
     const statusParam = searchParams.get("status")
     const callStatusParam = searchParams.get("callStatus")
+    const appointmentTypeParam =
+      searchParams.get("appointmentType") ||
+      searchParams.get("type") ||
+      searchParams.get("filter") ||
+      ""
 
     if (on) setOnDate(new Date(on))
     if (after) setAfterDate(new Date(after))
     if (before) setBeforeDate(new Date(before))
     if (statusParam) setStatus(statusParam)
     if (callStatusParam) setCallStatus(callStatusParam)
+    setAppointmentType(appointmentTypeParam || "")
   }, [searchParams])
 
   const formatDate = (date: Date | null) => {
@@ -88,12 +97,26 @@ export default function DateFilter({
       setStatus(value)
     } else if (key === "callStatus") {
       setCallStatus(value)
+    } else if (key === "appointmentType" || key === "type" || key === "filter") {
+      setAppointmentType(value)
+      // Use consistent param name
+      if (value) {
+        params.set("appointmentType", value)
+        params.delete("type")
+        params.delete("filter")
+      } else {
+        params.delete("appointmentType")
+        params.delete("type")
+        params.delete("filter")
+      }
+      router.push(`?${params.toString()}`)
+      return
     }
 
     router.push(`?${params.toString()}`)
   }
 
-  const activeFilterCount = (status ? 1 : 0) + (callStatus ? 1 : 0) + (onDate ? 1 : 0) + (afterDate ? 1 : 0) + (beforeDate ? 1 : 0)
+  const activeFilterCount = (status ? 1 : 0) + (callStatus ? 1 : 0) + (onDate ? 1 : 0) + (afterDate ? 1 : 0) + (beforeDate ? 1 : 0) + (appointmentType ? 1 : 0)
 
   return (
     <CustomPopover
@@ -186,6 +209,24 @@ export default function DateFilter({
                   value={callStatus ?? ""}
                   onValueChange={(newValue) => updateQuery("callStatus", newValue)}
                   placeholder="Select Call Status"
+                  className="w-full"
+                  triggerClassName="w-full border border-green p-3 h-10 rounded-lg flex justify-between items-center cursor-pointer"
+                  contentClassName="w-full border border-green rounded-lg bg-white mt-2"
+                  showClearOption={true}
+                />
+              </div>
+            )}
+
+            {showAppointmentTypeFilter && (
+              <div className="w-full space-y-[2px]">
+                <p className="text-green font-medium">Appointment Type</p>
+                <Dropdown
+                  options={[
+                    { value: "breathwork", label: "Breathwork" },
+                  ]}
+                  value={appointmentType ?? ""}
+                  onValueChange={(newValue) => updateQuery("appointmentType", newValue)}
+                  placeholder="Select Appointment Type"
                   className="w-full"
                   triggerClassName="w-full border border-green p-3 h-10 rounded-lg flex justify-between items-center cursor-pointer"
                   contentClassName="w-full border border-green rounded-lg bg-white mt-2"

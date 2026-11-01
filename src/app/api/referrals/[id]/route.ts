@@ -6,6 +6,7 @@ import { createResponse } from "@/utils/createResponse";
 import { TokenRoles } from "@/constants/UserRoles";
 import { getPatientById } from "@/dentallyHelpers/patient";
 import { CallStatus, ReferralRequestStatus } from "@prisma/client";
+import { notifyReferralRejectedByPatient } from "@/notifications/referralNotifications";
 
 function isCallStatus(value: string): value is CallStatus {
   return (Object.values(CallStatus) as string[]).includes(value);
@@ -434,6 +435,15 @@ export async function PATCH(req: NextRequest) {
           : {}),
       },
     });
+
+    // Only when the status changes to REJECTED, so saving it again does not
+    // send the referring dentist a second email.
+    if (
+      normalizedCallStatus === CallStatus.REJECTED &&
+      referralForm.callStatus !== CallStatus.REJECTED
+    ) {
+      notifyReferralRejectedByPatient(referralForm).catch(console.error);
+    }
 
     return NextResponse.json(
       createResponse(true, "Referral call status updated successfully.", {

@@ -1,3 +1,2 @@
-import Stripe from "stripe";
-
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Kept for existing imports. The client lives in `@/lib/stripe/client`.
+export { stripe } from "@/lib/stripe/client";

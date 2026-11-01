@@ -13,6 +13,7 @@ import {
   bindReferringDentistEmail,
   bindPractitionerEmail,
   referralCreatedAdminEmail,
+  patientCancelledReferringDentistEmail,
 } from "@/constants/referralEmailTemplates";
 
 async function buildNotificationData(referralRequestId: string): Promise<ReferralNotificationData | null> {
@@ -133,6 +134,31 @@ export async function notifyReferralResponded(referralRequestId: string): Promis
       html: responseAdminEmail(data),
     }),
   ]);
+}
+
+// its triggered when the call status of a referral is set to REJECTED by ==>> Admin
+// (the patient cancelled the appointment). Tells the referring dentist.
+export async function notifyReferralRejectedByPatient(referralForm: {
+  patientName: string;
+  referralName: string;
+  referralEmail: string;
+  treatmentDetails: string | null;
+}): Promise<void> {
+  if (!referralForm.referralEmail) return;
+
+  try {
+    await sendEmail({
+      to: referralForm.referralEmail,
+      subject: `Appointment cancelled by ${referralForm.patientName}`,
+      html: patientCancelledReferringDentistEmail({
+        patientName: referralForm.patientName,
+        referringDentistName: referralForm.referralName,
+        treatmentDetails: referralForm.treatmentDetails ?? undefined,
+      }),
+    });
+  } catch (err) {
+    console.error("[ReferralNotification] Failed to notify referring dentist of patient cancel:", err);
+  }
 }
 
 export async function notifyReferralCreated(referralForm: any): Promise<void> {

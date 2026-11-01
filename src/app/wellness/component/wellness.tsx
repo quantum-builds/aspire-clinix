@@ -1,20 +1,11 @@
 "use client";
 
-import Button from "@/app/(dashboards)/components/Button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+
+const WELLNESS_BOOKING_HREF = "/patient/plan-selection/wellness-treatments";
 
 export default function WellnessPage() {
-  const { data: session, status } = useSession();
-
-  const isLoggedInPatient =
-    status === "authenticated" && session?.user?.role === "PATIENT";
-
-  const wellnessHref = isLoggedInPatient
-    ? "/patient/plan-selection"
-    : "/patient/login?redirectTo=/patient/plan-selection";
-
   const BOOKING_OPTIONS = [
     {
       title: "Dental Appointment",
@@ -24,7 +15,7 @@ export default function WellnessPage() {
     {
       title: "Wellness Appointment",
       description: "Continue to the Wellness experience.",
-      href: wellnessHref,
+      href: WELLNESS_BOOKING_HREF,
     },
   ];
 

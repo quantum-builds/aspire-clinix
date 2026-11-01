@@ -1,19 +1,10 @@
 import { getWellnessTreatments } from "@/dentallyHelpers/treatment";
 import { TTreatment } from "@/types/common";
 import { createResponse } from "@/utils/createResponse";
-import { getToken } from "next-auth/jwt";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const token = await getToken({ req });
-
-    if (!token) {
-      return NextResponse.json(createResponse(false, "Unauthorized", null), {
-        status: 401,
-      });
-    }
-
     const treatmentsResponse = await getWellnessTreatments();
 
     if (treatmentsResponse.isError) {

@@ -6,7 +6,9 @@ import CustomButton from "@/app/(dashboards)/components/custom-components/Custom
 import { CalenderInputIconV2, CancelIcon, DropDownIcon, TimeIcon, TimeIconV2 } from "@/assets";
 import { useChangeAppointmentState } from "@/services/appointments/appointmentMutation";
 import { AppointmentState, TAppointment } from "@/types/appointment";
-import { formatDate, formatTime } from "@/utils/formatDateTime";
+import { formatDate } from "@/utils/formatDateTime";
+import { TIMEZONE } from "@/utils/slotSelectionUtils";
+import { formatInTimeZone } from "date-fns-tz";
 import { AppointmentStatus } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -98,7 +100,7 @@ export default function AppointmentCard({
                 </p>
                 <p className="flex items-center gap-2 text-xl">
                   <Image src={TimeIconV2} alt="Time icon" />
-                  {formatTime(appointment.startTime)}{" "} - {" "}{formatTime(appointment.finishTime)}
+                  {formatInTimeZone(new Date(appointment.startTime), TIMEZONE, "HH:mm")}{" "} - {" "}{formatInTimeZone(new Date(appointment.finishTime), TIMEZONE, "HH:mm")}
                 </p>
               </div>
             </div>

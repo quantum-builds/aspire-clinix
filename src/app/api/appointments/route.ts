@@ -8,7 +8,10 @@ import {
   Appointment,
   AppointmentState,
   ListAppointment,
+  TAppointment,
 } from "@/types/appointment";
+import { Prisma } from "@prisma/client";
+import { isBreathworkTreatment, sessionToAppointment } from "@/lib/treatment-session";
 
 /**
  * @swagger
@@ -143,33 +146,50 @@ export async function GET(req: NextRequest) {
     const before = searchParams.get("before") || "";
     const after = searchParams.get("after") || "";
     const state = searchParams.get("status") || "";
+    const appointmentType =
+      searchParams.get("appointmentType") ||
+      searchParams.get("type") ||
+      searchParams.get("filter") ||
+      "";
 
-    const appointmentParams: ListAppointment = {
-      page: Number(page),
-      perPage: Number(perPage),
-      ...(on && { on: new Date(on) }),
-      ...(before && { before: new Date(before) }),
-      ...(after && { after: new Date(after) }),
-      ...(dentistDentallyId && { practitionerId: dentistDentallyId }),
-      ...(patiendDentallyId && { patientId: patiendDentallyId }),
-      ...(state && { state: state as AppointmentState }),
-    };
+    const normalizedAppointmentType = appointmentType.toLowerCase();
+    const isBreathworkFilter = normalizedAppointmentType === "breathwork";
 
-    const response = await listAppointment(appointmentParams);
-    if (response.isError) return response.response;
+    let response: any = null;
+    let appointments: Appointment[] = [];
 
-    console.log(
-      "Appointments fetched successfully:",
-      JSON.stringify(response.response, null, 2),
-    );
+    if (isBreathworkFilter) {
+      // When filtering for breathwork, only show breathwork appointments (no dentally)
+      response = { response: { appointments: [], meta: { total: 0, currentPage: 1, totalPages: 1 } } };
+      appointments = [];
+    } else {
+      const appointmentParams: ListAppointment = {
+        page: Number(page),
+        perPage: Number(perPage),
+        ...(on && { on: new Date(on) }),
+        ...(before && { before: new Date(before) }),
+        ...(after && { after: new Date(after) }),
+        ...(dentistDentallyId && { practitionerId: dentistDentallyId }),
+        ...(patiendDentallyId && { patientId: patiendDentallyId }),
+        ...(state && { state: state as AppointmentState }),
+      };
 
-    const appointments = (
-      (response.response.appointments ?? []) as Appointment[]
-    ).filter((apt) => apt.patientId != null);
-    console.log(
-      "Filtered appointments with valid patient IDs:",
-      JSON.stringify(appointments, null, 2),
-    );
+      response = await listAppointment(appointmentParams);
+      if (response.isError) return response.response;
+
+      console.log(
+        "Appointments fetched successfully:",
+        JSON.stringify(response.response, null, 2),
+      );
+
+      appointments = (
+        (response.response.appointments ?? []) as Appointment[]
+      ).filter((apt) => apt.patientId != null);
+      console.log(
+        "Filtered appointments with valid patient IDs:",
+        JSON.stringify(appointments, null, 2),
+      );
+    }
 
     const dentallyPatientIds = Array.from(
       new Set(
@@ -287,11 +307,59 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    // Sessions booked for our own (DB) treatments are listed alongside the
+    // Dentally appointments. They aren't paginated, so they only go on page 1.
+    let sessionAppointments: TAppointment[] = [];
+
+    if (
+      Number(page) === 1 &&
+      (!state || state === AppointmentState.CONFIRMED)
+    ) {
+      const sessionWhere: Prisma.SessionWhereInput = {
+        ...(patiendDentallyId && { patientId: Number(patiendDentallyId) }),
+        ...(dentistDentallyId && {
+          practitionerId: Number(dentistDentallyId),
+        }),
+      };
+
+      if (on) {
+        const dayStart = new Date(on);
+        const dayEnd = new Date(dayStart);
+        dayEnd.setDate(dayEnd.getDate() + 1);
+        sessionWhere.startTime = { gte: dayStart, lt: dayEnd };
+      } else if (before || after) {
+        sessionWhere.startTime = {
+          ...(before && { lt: new Date(before) }),
+          ...(after && { gte: new Date(after) }),
+        };
+      }
+
+      const sessions = await prisma.session.findMany({
+        where: sessionWhere,
+        include: { treatment: true },
+        orderBy: { startTime: "asc" },
+      });
+
+      if (isBreathworkFilter) {
+        sessionAppointments = sessions
+          .filter((session) => isBreathworkTreatment(session.treatment.name))
+          .map(sessionToAppointment);
+      } else {
+        // Otherwise, show all dentally appointments (no breathwork sessions)
+        sessionAppointments = [];
+      }
+    }
+
+    const mergedAppointments = [...appointments, ...sessionAppointments].sort(
+      (a, b) =>
+        new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
+    );
+
     return NextResponse.json(
 
       createResponse(true, "Appointments fetched successfully", {
         ...response.response,
-        appointments,
+        appointments: mergedAppointments,
       }),
       { status: 200 },
     );
