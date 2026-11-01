@@ -90,6 +90,7 @@ export default function PageTopBar({
                 lockBeforeDate={lockBeforeDate}
                 restrictAfterToToday={restrictAfterToToday}
                 restrictBeforeFromToday={restrictBeforeFromToday}
+                showAppointmentTypeFilter={showBreathworkNote}
               />
             )}
             {showDropdown && (
@@ -143,6 +144,7 @@ export default function PageTopBar({
             lockBeforeDate={lockBeforeDate}
             restrictAfterToToday={restrictAfterToToday}
             restrictBeforeFromToday={restrictBeforeFromToday}
+            showAppointmentTypeFilter={showBreathworkNote}
           />
         </div>
       )}

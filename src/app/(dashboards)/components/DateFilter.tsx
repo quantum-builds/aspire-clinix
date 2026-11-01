@@ -19,6 +19,7 @@ interface DateFilterProps {
   lockBeforeDate?: boolean
   restrictAfterToToday?: boolean
   restrictBeforeFromToday?: boolean
+  showAppointmentTypeFilter?: boolean
 }
 
 export default function DateFilter({
@@ -29,6 +30,7 @@ export default function DateFilter({
   lockBeforeDate,
   restrictAfterToToday = false,
   restrictBeforeFromToday = false,
+  showAppointmentTypeFilter = false,
 }: DateFilterProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
