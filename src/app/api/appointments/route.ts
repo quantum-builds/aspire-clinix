@@ -316,6 +316,7 @@ export async function GET(req: NextRequest) {
       (!state || state === AppointmentState.CONFIRMED)
     ) {
       const sessionWhere: Prisma.SessionWhereInput = {
+        status: { not: "CANCELLED" },
         ...(patiendDentallyId && { patientId: Number(patiendDentallyId) }),
         ...(dentistDentallyId && {
           practitionerId: Number(dentistDentallyId),
