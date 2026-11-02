@@ -151,7 +151,7 @@ export default function UpcomingAppointmentCard({
           )}
         </div>
       </div>
-      {appointment.state !== AppointmentState.CANCELLED &&
+      {/* {appointment.state !== AppointmentState.CANCELLED &&
         (canCancel && deadline ? (
           <p className="text-sm italic">
             You can cancel until{" "}
@@ -159,7 +159,7 @@ export default function UpcomingAppointmentCard({
           </p>
         ) : (
           <p className="text-sm italic">{LATE_CANCEL_MESSAGE}</p>
-        ))}
+        ))} */}
       <ConfirmationModal
         icon={CancelIcon}
         isOpen={isCancelModalOpen}
