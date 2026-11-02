@@ -226,6 +226,7 @@ export async function onTreatmentSessionPaid(
           patientId: dentallyId,
           treatmentId: treatment_id,
           startTime: fromZonedTime(`${date}T${start_time}:00`, TIMEZONE),
+          status: { not: "CANCELLED" },
         },
       });
 

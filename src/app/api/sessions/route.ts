@@ -93,7 +93,12 @@ export async function POST(req: NextRequest) {
     }
 
     const existingSession = await prisma.session.findFirst({
-      where: { patientId: dentallyId, treatmentId, startTime: found.start },
+      where: {
+        patientId: dentallyId,
+        treatmentId,
+        startTime: found.start,
+        status: { not: "CANCELLED" },
+      },
     });
 
     if (existingSession) {
@@ -170,7 +175,12 @@ export async function POST(req: NextRequest) {
             }
 
             const duplicate = await tx.session.findFirst({
-              where: { patientId: dentallyId, treatmentId, startTime: start },
+              where: {
+                patientId: dentallyId,
+                treatmentId,
+                startTime: start,
+                status: { not: "CANCELLED" },
+              },
             });
 
             if (duplicate) {
