@@ -6,6 +6,15 @@ export const STORAGE_KEY = "selectedTreatmentSlot";
 export const TIMEZONE = "Europe/London";
 export const DAY_FMT = "yyyy-MM-dd";
 
+// Places left on a treatment slot, keeping any already booked on the saved slot.
+export function getRemainingLimit(
+  totalLimit: number,
+  saved?: { totalLimit: number; remainingLimit: number },
+) {
+  const booked = saved ? saved.totalLimit - saved.remainingLimit : 0;
+  return Math.max(0, totalLimit - booked);
+}
+
 export type StoredSlot = {
  
   startTime: string;

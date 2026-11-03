@@ -89,9 +89,9 @@ export default async function AppointmentBookedPage({
       <div className="relative mx-auto flex min-h-screen w-full max-w-[1000px] items-center justify-center px-4 py-20 sm:px-6 lg:px-8">
         <section className="w-full max-w-[650px]">
           <div className="rounded-[28px] border  border-white/15 bg-[#56493A73 px-6 py-10 text-center shadow-[0_30px_50px_-20px_rgba(0,0,0,0.35)] sm:px-8 sm:py-12">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full ">
               <CheckCircle2
-                className="h-9 w-9 text-emerald-400"
+                className="h-9 w-9 "
                 strokeWidth={1.5}
                 aria-hidden="true"
               />
@@ -104,30 +104,30 @@ export default async function AppointmentBookedPage({
             <div className="mt-6 space-y-2 font-gillSans text-base leading-7 text-[var(--wt-desc)] sm:text-lg">
               {treatmentName && <p>Treatment: {treatmentName}</p>}
               {slotLabel && <p>{slotLabel}</p>}
-              {params.appointmentId && (
-                <p className="text-sm text-[var(--wt-desc)]/70">
-                  Reference: {params.appointmentId}
-                </p>
-              )}
+              {/* {params.appointmentId && (
+                // <p className="text-sm text-[var(--wt-desc)]/70">
+                //   Reference: {params.appointmentId}
+                // </p>
+              )} */}
             </div>
 
             {(remainingLabel || remainingHyperbaricLabel) && (
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 {remainingLabel && (
-                  <p className="inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-500/10 px-4 py-2 font-gillSans text-sm font-medium text-emerald-300">
+                  <p className="inline-flex items-center gap-2 rounded-full border px-4 py-2 font-gillSans text-sm font-medium ">
                     <span
                       aria-hidden
-                      className="h-1.5 w-1.5 rounded-full bg-emerald-400"
+                      className="h-1.5 w-1.5 rounded-ful"
                     />
                     {remainingLabel}
                   </p>
                 )}
 
                 {remainingHyperbaricLabel && (
-                  <p className="inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-500/10 px-4 py-2 font-gillSans text-sm font-medium text-cyan-300">
+                  <p className="inline-flex items-center gap-2 rounded-full border px-4 py-2 font-gillSans text-sm font-medium ">
                     <span
                       aria-hidden
-                      className="h-1.5 w-1.5 rounded-full bg-cyan-400"
+                      className="h-1.5 w-1.5 rounded-full "
                     />
                     {remainingHyperbaricLabel}
                   </p>

@@ -30,9 +30,7 @@ export type TTreatmentCreate = {
   stripePriceId: string;
   practitionerId?: string | null;
   practitionerName?: string | null;
-  availabilities?: (Omit<TAvailability, "remainingLimit"> & {
-    remainingLimit?: number;
-  })[];
+  availabilities?: Omit<TAvailability, "remainingLimit">[];
   isActive?: boolean;
 };
 

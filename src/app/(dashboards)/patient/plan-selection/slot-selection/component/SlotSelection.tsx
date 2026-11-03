@@ -629,7 +629,7 @@ export default function SlotSelection({
           confirmationMode === "login"
             ? "Log In"
             : confirmationMode === "plan"
-              ? "Confirm Appointment"
+              ? "Confirm"
               : "Confirm"
         }
         cancelText="Cancel"

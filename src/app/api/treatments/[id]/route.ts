@@ -1,6 +1,8 @@
 import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
+import { TAvailability } from "@/types/treatment";
 import { createResponse } from "@/utils/createResponse";
+import { getRemainingLimit } from "@/utils/slotSelectionUtils";
 import { isValidCuid } from "@/utils/typeValidUtils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
@@ -171,10 +173,12 @@ export async function PATCH(req: NextRequest) {
 
     const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
     const validAvailabilities = [];
+    const savedSlots = (Array.isArray(existingTreatment.availabilities)
+      ? existingTreatment.availabilities
+      : []) as unknown as TAvailability[];
 
     for (const [index, slot] of (availabilities ?? []).entries()) {
       const { date, startTime, finishTime, duration, totalLimit } = slot ?? {};
-      const remainingLimit = slot?.remainingLimit ?? totalLimit;
 
       if (
         typeof date !== "string" ||
@@ -225,16 +229,9 @@ export async function PATCH(req: NextRequest) {
         );
       }
 
-      if (
-        !Number.isInteger(remainingLimit) ||
-        remainingLimit < 0 ||
-        remainingLimit > totalLimit
-      ) {
-        return NextResponse.json(
-          createResponse(false, `Availability ${index}: remainingLimit must be an integer between 0 and totalLimit.`, null),
-          { status: 400 },
-        );
-      }
+      const savedSlot = savedSlots.find(
+        (saved) => saved.date === date && saved.startTime === startTime,
+      );
 
       validAvailabilities.push({
         date,
@@ -242,7 +239,7 @@ export async function PATCH(req: NextRequest) {
         finishTime,
         duration: duration as number,
         totalLimit: totalLimit as number,
-        remainingLimit: remainingLimit as number,
+        remainingLimit: getRemainingLimit(totalLimit, savedSlot),
       });
     }
 
