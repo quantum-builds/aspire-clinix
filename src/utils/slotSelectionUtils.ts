@@ -15,6 +15,47 @@ export function getRemainingLimit(
   return Math.max(0, totalLimit - booked);
 }
 
+// Validates a treatment's optional active / total experience minutes.
+// Returns an error message, or null when valid.
+export function validateTreatmentTimes(
+  activeTime: unknown,
+  totalExperienceTime: unknown,
+): string | null {
+  const isValid = (value: unknown) =>
+    value === undefined ||
+    value === null ||
+    (typeof value === "number" && Number.isInteger(value) && value > 0);
+
+  if (!isValid(activeTime)) {
+    return "Active time must be a positive whole number of minutes.";
+  }
+
+  if (!isValid(totalExperienceTime)) {
+    return "Total experience time must be a positive whole number of minutes.";
+  }
+
+  if (
+    typeof activeTime === "number" &&
+    typeof totalExperienceTime === "number" &&
+    activeTime > totalExperienceTime
+  ) {
+    return "Active time cannot be longer than the total experience time.";
+  }
+
+  return null;
+}
+
+// Date and time of a slot in clinic time, for confirmation modals.
+export function formatSlotDateTime(startIso: string, finishIso: string) {
+  const start = new Date(startIso);
+  const finish = new Date(finishIso);
+
+  return {
+    date: formatInTimeZone(start, TIMEZONE, "EEEE d MMMM yyyy"),
+    time: `${formatInTimeZone(start, TIMEZONE, "HH:mm")} – ${formatInTimeZone(finish, TIMEZONE, "HH:mm")}`,
+  };
+}
+
 export type StoredSlot = {
  
   startTime: string;

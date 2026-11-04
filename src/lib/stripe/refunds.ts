@@ -6,7 +6,8 @@ import { notifyCancellationRefund } from "@/notifications/wellnessNotifications"
 export type RefundReason =
   | "patient_cancel"
   | "clinic_cancel"
-  | "slot_unavailable";
+  | "slot_unavailable"
+  | "dentally_rejected";
 
 export type RefundOutcome =
   | { status: "refunded"; amount: number; currency: string }
@@ -44,7 +45,7 @@ export async function refundCancelledDentallyAppointment(
   });
 
   if (!payment) {
-    console.log(`Dentally appointment ${dentallyAppointmentId}: no payment to refund`);
+    // console.log(`Dentally appointment ${dentallyAppointmentId}: no payment to refund`);
     return null;
   }
 
@@ -52,9 +53,9 @@ export async function refundCancelledDentallyAppointment(
     appointment.patientDentallyId &&
     payment.patientDentallyId !== appointment.patientDentallyId
   ) {
-    console.warn(
-      `Dentally appointment ${dentallyAppointmentId}: payment patient mismatch, not refunded`,
-    );
+    // console.warn(
+      // `Dentally appointment ${dentallyAppointmentId}: payment patient mismatch, not refunded`,
+    // );
     return null;
   }
 
@@ -95,7 +96,7 @@ export async function refundAppointmentPayment(
   });
 
   if (claim.count === 0) {
-    console.log(`Refund for payment ${paymentId}: already handled`);
+    // console.log(`Refund for payment ${paymentId}: already handled`);
     return { status: "already_handled" };
   }
 
@@ -106,7 +107,9 @@ export async function refundAppointmentPayment(
   const idempotencyKey =
     payment.kind === "TREATMENT_SESSION"
       ? `refund-session-${payment.sessionId}`
-      : `refund-appointment-${payment.dentallyAppointmentId}`;
+      : // No appointment id when Dentally rejected the booking; the payment
+        // id keeps the key unique.
+        `refund-appointment-${payment.dentallyAppointmentId ?? payment.id}`;
 
   try {
     const refund = await stripe.refunds.create(
@@ -129,10 +132,10 @@ export async function refundAppointmentPayment(
       },
     });
 
-    console.log(
-      `Refund for payment ${payment.id}: ${refund.id} (${refund.status}), ` +
-        `${refund.amount} ${refund.currency}, reason=${reason}`,
-    );
+    // console.log(
+      // `Refund for payment ${payment.id}: ${refund.id} (${refund.status}), ` +
+        // `${refund.amount} ${refund.currency}, reason=${reason}`,
+    // );
 
     return {
       status: "refunded",
@@ -171,13 +174,13 @@ export async function refundAppointmentPayment(
       data: { refundStatus: "FAILED", refundError: stripeError.message },
     });
 
-    console.error(
-      `REFUND FAILED for payment ${payment.id} (PI ${payment.stripePaymentIntentId}). ` +
-        "Needs manual action in the Stripe dashboard:",
-      stripeError.type,
-      stripeError.code,
-      stripeError.message,
-    );
+    // console.error(
+      // `REFUND FAILED for payment ${payment.id} (PI ${payment.stripePaymentIntentId}). ` +
+        // "Needs manual action in the Stripe dashboard:",
+      // stripeError.type,
+      // stripeError.code,
+      // stripeError.message,
+    // );
 
     return { status: "failed", error: stripeError.message };
   }

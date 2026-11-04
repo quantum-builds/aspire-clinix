@@ -1,10 +1,12 @@
 import type Stripe from "stripe";
+import axios from "axios";
 import { AppointmentPaymentKind, Prisma } from "@prisma/client";
 import { fromZonedTime } from "date-fns-tz";
 import prisma from "@/lib/db";
 import { stripe } from "@/lib/stripe/client";
 import { idOf } from "@/lib/stripe/ids";
 import { createAppointment } from "@/dentallyHelpers/appointment";
+import { refundAppointmentPayment } from "@/lib/stripe/refunds";
 import { CreateAppointment } from "@/types/appointment";
 import {
   reserveTreatmentSlot,
@@ -12,6 +14,7 @@ import {
 } from "@/lib/treatment-session";
 import { TIMEZONE } from "@/utils/slotSelectionUtils";
 import {
+  notifyCancellationRefund,
   notifyTreatmentSessionBooking,
   notifyWellnessBooking,
 } from "@/notifications/wellnessNotifications";
@@ -34,6 +37,11 @@ export async function onWellnessAppointmentPaid(
     console.error("Missing Dentally appointment metadata:", metadata);
     return rejected("Missing required appointment metadata");
   }
+
+  console.log("[PAID-BOOKING webhook] payment status", {
+    checkoutSession: session.id,
+    paymentStatus: session.payment_status,
+  });
 
   if (session.payment_status !== "paid") {
     console.warn(

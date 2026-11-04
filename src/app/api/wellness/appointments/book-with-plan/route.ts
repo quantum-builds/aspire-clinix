@@ -2,12 +2,16 @@ import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma, PrismaClient } from "@prisma/client";
-import axios from "axios";
 import {
   createAppointment,
   editAppointment,
 } from "@/dentallyHelpers/appointment";
 import { getAvailability } from "@/dentallyHelpers/availability";
+import {
+  logDentallyError,
+  PATIENT_OVERLAP_MESSAGE,
+  patientHasOverlap,
+} from "@/dentallyHelpers/patientOverlap";
 import { AppointmentState } from "@/types/appointment";
 import {
   getTreatmentPlanCost,
@@ -23,24 +27,6 @@ const prisma = new PrismaClient();
 
 const AVAILABILITY_PADDING_MS = 12 * 60 * 60 * 1000;
 const MIN_AVAILABILITY_RANGE_MS = 24 * 60 * 60 * 1000;
-
-function logDentallyError(context: string, error: unknown) {
-  if (axios.isAxiosError(error)) {
-    console.error(`[Dentally ${context}] request failed`, {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      responseData: error.response?.data,
-      method: error.config?.method,
-      url: error.config?.url,
-      requestData: error.config?.data,
-      responseHeaders: error.response?.headers,
-      message: error.message,
-    });
-    return;
-  }
-
-  console.error(`[Dentally ${context}] unexpected error`, error);
-}
 
 type DentallyAvailabilityEntry = {
   startTime?: string | null;
@@ -84,21 +70,14 @@ export async function POST(req: NextRequest) {
       practitionerId,
       startTime,
       finishTime,
-      patientId,
       reason,
     } = body;
 
-    console.log("HIT THE BOOK WITH PLAN API");
+    // console.log("HIT THE BOOK WITH PLAN API");
 
-    console.log("Received booking request with body:", body);
+    // console.log("Received booking request with body:", body);
 
-    if (
-      !treatmentId ||
-      !practitionerId ||
-      !startTime ||
-      !finishTime ||
-      !patientId
-    ) {
+    if (!treatmentId || !practitionerId || !startTime || !finishTime) {
       return NextResponse.json(
         createResponse(false, "Missing required booking details", null),
         { status: 400 },
@@ -124,9 +103,9 @@ export async function POST(req: NextRequest) {
         { status: 404 },
       );
     }
-    console.log(
-      "BEFORE FETCHING MEMBERSHIP AND ADD CHECK MEMERSHIP IS ACTIVE OR NOT",
-    );
+    // console.log(
+      // "BEFORE FETCHING MEMBERSHIP AND ADD CHECK MEMERSHIP IS ACTIVE OR NOT",
+    // );
     const membership = await prisma.patientMembership.findFirst({
       where: { patientId: patient.id, status: "ACTIVE" },
       include: { plan: true },
@@ -144,7 +123,7 @@ export async function POST(req: NextRequest) {
     const isHyperbaric = Number(treatmentId) === HYPERBARIC_TREATMENT_ID;
     const cost = getTreatmentPlanCost(Number(treatmentId));
 
-    console.log("BEFORE ELIGIBILITY CHECK ");
+    // console.log("BEFORE ELIGIBILITY CHECK ");
 
     const eligibility = evaluatePlanEligibility(
       synced,
@@ -200,7 +179,7 @@ export async function POST(req: NextRequest) {
       throw error;
     }
 
-    console.log("Availability response:", availabilityResponse);
+    // console.log("Availability response:", availabilityResponse);
 
     const slotFree =
       availabilityResponse.isError ||
@@ -222,18 +201,30 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const hasOverlap = await patientHasOverlap(dentallyId, startTime, finishTime);
+
+    if (hasOverlap) {
+      return NextResponse.json(
+        createResponse(true, PATIENT_OVERLAP_MESSAGE, {
+          status: "PATIENT_OVERLAP",
+        }),
+        { status: 200 },
+      );
+    }
+
+    // The patient comes from the session, never from the request body.
     const appointmentData = {
       startTime: new Date(startTime),
       finishTime: new Date(finishTime),
       practitionerId: Number(practitionerId),
-      patientId: Number(patientId),
+      patientId: dentallyId,
       reason: reason || "Wellness Appointment",
     };
 
-    console.log(
-      "Creating Dentally appointment with data (Book with plan):",
-      appointmentData,
-    );
+    // console.log(
+      // "Creating Dentally appointment with data (Book with plan):",
+      // appointmentData,
+    // );
 
     let result: Awaited<ReturnType<typeof createAppointment>>;
 
@@ -244,16 +235,16 @@ export async function POST(req: NextRequest) {
       throw error;
     }
 
-    console.log(
-      "Dentally appointment creation result:(Book with plan)",
-      result,
-    );
+    // console.log(
+      // "Dentally appointment creation result:(Book with plan)",
+      // result,
+    // );
 
     if (result.isError) {
-      console.error(
-        "Failed to create Dentally appointment (Book with plan):",
-        result.response,
-      );
+      // console.error(
+        // "Failed to create Dentally appointment (Book with plan):",
+        // result.response,
+      // );
 
       return NextResponse.json(
         createResponse(
@@ -321,10 +312,10 @@ export async function POST(req: NextRequest) {
             state: AppointmentState.CANCELLED,
           });
         } catch (cancelError) {
-          console.error(
-            "Failed to cancel Dentally appointment after balance guard failure:",
-            cancelError,
-          );
+          // console.error(
+            // "Failed to cancel Dentally appointment after balance guard failure:",
+            // cancelError,
+          // );
         }
 
         const fresh = await prisma.patientMembership.findFirst({
@@ -376,7 +367,7 @@ export async function POST(req: NextRequest) {
     );
   } catch (error) {
     logDentallyError("book-with-plan", error);
-    console.error("Plan booking error:", error);
+    // console.error("Plan booking error:", error);
 
     return NextResponse.json(
       createResponse(

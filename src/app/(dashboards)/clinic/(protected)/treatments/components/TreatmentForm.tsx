@@ -41,6 +41,18 @@ const treatmentFormSchema = z.object({
   stripeProductId: z.string().trim().min(1, "Stripe product ID is required"),
   stripePriceId: z.string().trim().min(1, "Stripe price ID is required"),
   practitionerId: z.string(),
+  activeTime: z
+    .string()
+    .refine(
+      (val) => !val || (Number.isInteger(Number(val)) && Number(val) > 0),
+      { message: "Active time must be a positive whole number" },
+    ),
+  totalExperienceTime: z
+    .string()
+    .refine(
+      (val) => !val || (Number.isInteger(Number(val)) && Number(val) > 0),
+      { message: "Total experience time must be a positive whole number" },
+    ),
   availabilities: z.array(
     z
       .object({
@@ -101,6 +113,18 @@ const treatmentFormSchema = z.object({
         }
       }),
   ),
+}).superRefine((data, ctx) => {
+  if (
+    data.activeTime &&
+    data.totalExperienceTime &&
+    Number(data.activeTime) > Number(data.totalExperienceTime)
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["activeTime"],
+      message: "Active time cannot be longer than the total experience time",
+    });
+  }
 });
 
 type FormData = z.infer<typeof treatmentFormSchema>;
@@ -135,6 +159,10 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
     stripeProductId: treatment?.stripeProductId ?? "",
     stripePriceId: treatment?.stripePriceId ?? "",
     practitionerId: treatment?.practitionerId ?? "",
+    activeTime: treatment?.activeTime ? String(treatment.activeTime) : "",
+    totalExperienceTime: treatment?.totalExperienceTime
+      ? String(treatment.totalExperienceTime)
+      : "",
     availabilities: (treatment?.availabilities ?? []).map((slot) => ({
       date: slot.date,
       startTime: slot.startTime,
@@ -212,6 +240,10 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
       practitionerId: selectedPractitioner ? selectedPractitioner.value : null,
       practitionerName: selectedPractitioner
         ? selectedPractitioner.label
+        : null,
+      activeTime: data.activeTime ? Number(data.activeTime) : null,
+      totalExperienceTime: data.totalExperienceTime
+        ? Number(data.totalExperienceTime)
         : null,
       availabilities: data.availabilities.map((slot) => ({
         date: slot.date,
@@ -445,6 +477,59 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
               {errors.practitionerId && (
                 <p className="text-sm text-red-500">
                   {errors.practitionerId.message}
+                </p>
+              )}
+            </div>
+
+            {/* Active Time */}
+            <div className="space-y-2">
+              <Label className="text-lg font-medium">
+                Active Time (minutes)
+              </Label>
+              <Controller
+                name="activeTime"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    min="1"
+                    placeholder="e.g. 30"
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              {errors.activeTime && (
+                <p className="text-sm text-red-500">
+                  {errors.activeTime.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 5 */}
+          <div className="grid grid-cols-2 gap-6">
+            {/* Total Experience Time */}
+            <div className="space-y-2">
+              <Label className="text-lg font-medium">
+                Total Experience Time (minutes)
+              </Label>
+              <Controller
+                name="totalExperienceTime"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    min="1"
+                    placeholder="e.g. 60"
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              {errors.totalExperienceTime && (
+                <p className="text-sm text-red-500">
+                  {errors.totalExperienceTime.message}
                 </p>
               )}
             </div>

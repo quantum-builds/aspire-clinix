@@ -8,7 +8,19 @@ export type EligibilityStatus =
   | "HYPERBARIC_LIMIT_REACHED"
   | "NO_ACTIVE_PLAN";
 
-export type BookingOutcome = EligibilityStatus | "SLOT_TAKEN";
+export type BookingOutcome =
+  | EligibilityStatus
+  | "SLOT_TAKEN"
+  | "PATIENT_OVERLAP";
+
+export interface CheckPatientSlotData {
+  startTime: string;
+  finishTime: string;
+}
+
+export interface CheckPatientSlotResponse {
+  status: "OK" | "PATIENT_OVERLAP";
+}
 
 export interface CheckEligibilityData {
   treatmentId: number;
@@ -24,7 +36,6 @@ export interface BookWithPlanData {
   startTime: string;
   finishTime: string;
   reason: string;
-  patientId: string;
 }
 
 export interface BookWithPlanResponse {
@@ -41,6 +52,20 @@ export const useCheckEligibility = () => {
     ): Promise<Response<CheckEligibilityResponse>> => {
       const response = await axiosInstance.post(
         ENDPOINTS.wellnessAppointments.checkEligibility,
+        data,
+      );
+      return response.data;
+    },
+  });
+};
+
+export const useCheckPatientSlot = () => {
+  return useMutation({
+    mutationFn: async (
+      data: CheckPatientSlotData,
+    ): Promise<Response<CheckPatientSlotResponse>> => {
+      const response = await axiosInstance.post(
+        ENDPOINTS.wellnessAppointments.checkPatientSlot,
         data,
       );
       return response.data;

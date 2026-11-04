@@ -9,7 +9,9 @@ import { useCreateCheckoutSession } from "@/services/checkout/checkoutMutation";
 import {
   useBookWithPlan,
   useCheckEligibility,
+  useCheckPatientSlot,
 } from "@/services/wellness/wellnessAppointmentMutation";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { format, isSameDay } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { CalendarDays } from "lucide-react";
@@ -31,6 +33,7 @@ import {
   buildRange,
   DAY_FMT,
   dayLabel,
+  formatSlotDateTime,
   groupByDate,
   keyToLocalDate,
   SlotChip,
@@ -41,6 +44,7 @@ import {
 } from "@/utils/slotSelectionUtils";
 
 import { SlotSelectionSkeleton } from "./skeletons/SlotSelectionSkeleton";
+import SlotDateTime from "@/app/(dashboards)/patient/plan-selection/components/SlotDateTime";
 
 interface SlotSelectionProps {
   practitionerId?: string;
@@ -77,7 +81,12 @@ export default function SlotSelection({
     chip: SlotChip;
   } | null>(null);
 
-  const prepareConfirmation = useCallback(async () => {
+  const { mutateAsync: checkPatientSlot } = useCheckPatientSlot();
+
+  const prepareConfirmation = useCallback(async (slot: {
+    startTime: string;
+    finishTime: string;
+  }) => {
     if (status === "loading") return;
 
     if (status !== "authenticated") {
@@ -89,6 +98,23 @@ export default function SlotSelection({
     setIsCheckingPlan(true);
 
     try {
+      // Dentally will not book the patient twice at the same time, so stop
+      // here before any confirmation or payment.
+      const slotRes = await checkPatientSlot(slot);
+
+      console.log("[PAID-BOOKING 2] patient slot check", {
+        status: slotRes.data?.status,
+      });
+
+      if (slotRes.data?.status === "PATIENT_OVERLAP") {
+        showToast("error", slotRes.message);
+        setPendingSlot(null);
+        setSelectedSlotKey(null);
+        setStored(null);
+        window.sessionStorage.removeItem(STORAGE_KEY);
+        return;
+      }
+
       const membershipRes = await getCurrentMembership();
       const membership =
         membershipRes?.status && membershipRes.data
@@ -98,6 +124,8 @@ export default function SlotSelection({
         membership && membership.status === "ACTIVE" && membership.plan,
       );
 
+      console.log("[PAID-BOOKING 3] membership", { hasActivePlan });
+
       setConfirmationMode(hasActivePlan ? "plan" : "standard");
       setShowConfirmation(true);
     } catch (error) {
@@ -106,7 +134,7 @@ export default function SlotSelection({
     } finally {
       setIsCheckingPlan(false);
     }
-  }, [status]);
+  }, [status, checkPatientSlot]);
 
   const appointmentDuration = useMemo(() => {
     const parsed = Number(duration);
@@ -156,7 +184,7 @@ export default function SlotSelection({
           });
 
           setSelectedDay(keyToLocalDate(dayKey));
-          void prepareConfirmation();
+          void prepareConfirmation(parsed);
         }
       }
     } catch (error) {
@@ -187,13 +215,19 @@ export default function SlotSelection({
   const { mutateAsync: bookWithPlan } = useBookWithPlan();
 
   const handleSelect = (dayKey: string, chip: SlotChip) => {
-    console.log("Slot clicked:", {
-      dayKey,
-      chip,
-      treatmentId,
-      practitionerId,
+    // console.log("Slot clicked:", {
+      // dayKey,
+      // chip,
+      // treatmentId,
+      // practitionerId,
+      // startTime: chip.startTime,
+      // finishTime: chip.finishTime,
+    // });
+    console.log("[PAID-BOOKING 1] slot clicked", {
       startTime: chip.startTime,
       finishTime: chip.finishTime,
+      treatmentId,
+      practitionerId,
     });
 
     setSelectedSlotKey(chip.key);
@@ -210,13 +244,13 @@ export default function SlotSelection({
 
       setStored(storedSlot);
     } catch (error) {
-      console.error("Failed to store selected slot:", error);
+      // console.error("Failed to store selected slot:", error);
     }
 
   
     const nextPendingSlot = { dayKey, chip };
     setPendingSlot(nextPendingSlot);
-    void prepareConfirmation();
+    void prepareConfirmation(chip);
   };
 
   const clearPendingBooking = () => {
@@ -246,22 +280,35 @@ export default function SlotSelection({
       },
       {
         onSuccess: (data) => {
-          console.log("Checkout success:", data);
+          // console.log("Checkout success:", data);
+          console.log("[PAID-BOOKING 6] going to Stripe", {
+            checkoutUrlPresent: Boolean(data.data?.checkoutUrl),
+          });
 
           if (data.status && data.data?.checkoutUrl) {
             window.location.href = data.data.checkoutUrl;
             return;
           }
 
-          console.error("Checkout URL not returned:", data);
+          // console.error("Checkout URL not returned:", data);
 
           alert("Unable to start checkout. Please try again.");
         },
 
         onError: (error) => {
-          console.error("Checkout failed:", error);
+          // console.error("Checkout failed:", error);
+          console.error("[PAID-BOOKING 6] checkout FAILED", {
+            message: getAxiosErrorMessage(error),
+          });
 
-          alert("Failed to start checkout. Please try again.");
+          showToast(
+            "error",
+            getAxiosErrorMessage(
+              error,
+              "Failed to start checkout. Please try again.",
+            ),
+          );
+          clearPendingBooking();
         },
       },
     );
@@ -289,7 +336,7 @@ export default function SlotSelection({
     try {
       window.sessionStorage.setItem(PENDING_CONFIRMATION_KEY, "true");
     } catch (error) {
-      console.error("Failed to store pending confirmation:", error);
+      // console.error("Failed to store pending confirmation:", error);
     }
 
     const slotUrl = `/patient/plan-selection/slot-selection?practitionerId=${
@@ -304,6 +351,8 @@ export default function SlotSelection({
   const handlePaidAppointmentConfirm = () => {
     if (!pendingSlot) return;
 
+    console.log('[PAID-BOOKING 5] paid popup "Yes" clicked');
+
     setPaidModalType(null);
     handleCheckoutFallback();
   };
@@ -315,15 +364,12 @@ export default function SlotSelection({
     submittingRef.current = true;
     setIsProcessingPlanBooking(true);
 
-    const patientId = (session?.user as { id?: string })?.id ?? "";
-
     const bookingPayload = {
       treatmentId: Number(treatmentId),
       practitionerId: practitionerId ?? "",
       startTime: pendingSlot.chip.startTime,
       finishTime: pendingSlot.chip.finishTime,
       reason: "Wellness Appointment",
-      patientId,
     };
 
     try {
@@ -332,6 +378,8 @@ export default function SlotSelection({
       });
 
       const eligibility = eligibilityRes.data?.status;
+
+      console.log("[PAID-BOOKING 4] plan eligibility", { status: eligibility });
 
       if (eligibility === "PLAN_LIMIT_REACHED") {
         setShowConfirmation(false);
@@ -384,6 +432,12 @@ export default function SlotSelection({
         return;
       }
 
+      if (outcome === "PATIENT_OVERLAP") {
+        showToast("error", bookingRes.message);
+        clearPendingBooking();
+        return;
+      }
+
       if (outcome === "SLOT_TAKEN") {
         showToast(
           "error",
@@ -411,7 +465,7 @@ export default function SlotSelection({
       setConfirmationMode(null);
       handleCheckoutFallback();
     } catch (error) {
-      console.error("Plan booking failed:", error);
+      // console.error("Plan booking failed:", error);
       showToast("error", "Failed to book appointment. Please try again.");
     } finally {
       setIsProcessingPlanBooking(false);
@@ -506,6 +560,10 @@ export default function SlotSelection({
       </div>
     );
   }
+
+  const slotDateTime = pendingSlot
+    ? formatSlotDateTime(pendingSlot.chip.startTime, pendingSlot.chip.finishTime)
+    : null;
 
   const storedMatches = Boolean(
     stored &&
@@ -607,23 +665,24 @@ export default function SlotSelection({
               : "Confirm"
         }
         description={
-          confirmationMode === "login"
-            ? (
-                <>
-                  You’ve selected a time slot for your Wellness Appointment.
-                  Please <strong>log in</strong> to your account to continue
-                  and confirm your booking.
-                </>
-              )
-            : confirmationMode === "plan"
-              ? "You’ve selected a time slot for your Wellness Appointment. This appointment will be booked using your current membership plan. Do you want to continue?"
-                : (
-                    <>
-                      Are you sure you want to proceed with booking this
-                      appointment? After confirmation, you’ll be redirected to{" "}
-                      <strong>Stripe</strong> to complete your payment.
-                    </>
-                  )
+          <>
+            {slotDateTime && <SlotDateTime {...slotDateTime} />}
+            {confirmationMode === "login" ? (
+              <>
+                You’ve selected a time slot for your Wellness Appointment.
+                Please <strong>log in</strong> to your account to continue
+                and confirm your booking.
+              </>
+            ) : confirmationMode === "plan" ? (
+              "You’ve selected a time slot for your Wellness Appointment. This appointment will be booked using your current membership plan. Do you want to continue?"
+            ) : (
+              <>
+                Are you sure you want to proceed with booking this
+                appointment? After confirmation, you’ll be redirected to{" "}
+                <strong>Stripe</strong> to complete your payment.
+              </>
+            )}
+          </>
         }
         confirmText={
           confirmationMode === "login"
@@ -647,9 +706,12 @@ export default function SlotSelection({
             : "Hyperbaric Sessions Used"
         }
         description={
-          paidModalType === "PLAN_LIMIT"
-            ? "You have used all treatments in your current plan this month. Would you like to book a single paid appointment?"
-            : "You have used all Hyperbaric sessions included in your plan this month. Would you like to book a single paid appointment?"
+          <>
+            {slotDateTime && <SlotDateTime {...slotDateTime} />}
+            {paidModalType === "PLAN_LIMIT"
+              ? "You have used all treatments in your current plan this month. Would you like to book a single paid appointment?"
+              : "You have used all Hyperbaric sessions included in your plan this month. Would you like to book a single paid appointment?"}
+          </>
         }
         confirmText="Yes"
         cancelText="No"

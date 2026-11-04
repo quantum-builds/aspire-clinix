@@ -1,6 +1,7 @@
 import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
+import { validateTreatmentTimes } from "@/utils/slotSelectionUtils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -56,7 +57,17 @@ export async function POST(req: NextRequest) {
       stripePriceId,
       practitionerId,
       practitionerName,
+      activeTime,
+      totalExperienceTime,
     } = await req.json();
+
+    const timesError = validateTreatmentTimes(activeTime, totalExperienceTime);
+
+    if (timesError) {
+      return NextResponse.json(createResponse(false, timesError, null), {
+        status: 400,
+      });
+    }
 
     if (
       practitionerId !== undefined &&
@@ -208,6 +219,8 @@ export async function POST(req: NextRequest) {
         description,
         price,
         isActive,
+        activeTime: activeTime ?? null,
+        totalExperienceTime: totalExperienceTime ?? null,
         ...(Array.isArray(availabilities) && {
           availabilities: validAvailabilities,
         }),
