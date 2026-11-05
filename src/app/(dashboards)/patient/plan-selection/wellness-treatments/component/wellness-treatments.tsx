@@ -37,13 +37,14 @@ export default function WellnessTreatmentsPage() {
 
           <div className="mx-auto mt-10 w-full">
             <Suspense fallback={<TreatmentGridSkeleton />}>
-              <TreatmentGridWrapper />
+              {/* Admin treatments sit between the Dentally ones and the
+                  Contrast Sessions, which are listed last. */}
+              <TreatmentGridWrapper>
+                <Suspense fallback={null}>
+                  <DbTreatmentGrid />
+                </Suspense>
+              </TreatmentGridWrapper>
             </Suspense>
-            <div className="mt-6">
-              <Suspense fallback={null}>
-                <DbTreatmentGrid />
-              </Suspense>
-            </div>
           </div>
         </section>
       </div>

@@ -18,6 +18,9 @@ interface TreatmentCardProps {
   treatment: Omit<TTreatment, "id"> & { id: number | string };
   practitionerId?: string | null;
   slotsHref?: string;
+  // Admin treatments store these; Dentally ones carry them in the description.
+  activeTime?: number | null;
+  totalTime?: number | null;
 }
 
 function parseTreatmentTimes(description: string | null | undefined) {
@@ -40,10 +43,14 @@ export default function TreatmentCard({
   treatment,
   practitionerId,
   slotsHref,
+  activeTime: activeTimeProp,
+  totalTime: totalTimeProp,
 }: TreatmentCardProps) {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
-  const { activeTime, totalTime } = parseTreatmentTimes(treatment.description);
+  const parsedTimes = parseTreatmentTimes(treatment.description);
+  const activeTime = activeTimeProp ?? parsedTimes.activeTime;
+  const totalTime = totalTimeProp ?? parsedTimes.totalTime;
 
   const { status: sessionStatus } = useSession();
   const isPatient = sessionStatus === "authenticated";
@@ -123,32 +130,36 @@ export default function TreatmentCard({
       <div className="mt-8 h-px w-full bg-white/10" />
 
       <div className="mt-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-        {activeTime && totalTime ? (
+        {activeTime || totalTime ? (
           <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-3 font-gillSans text-sm text-[var(--wt-desc)] sm:text-base">
-              <Clock
-                className="h-5 w-5 shrink-0 text-[var(--wt-name)]"
-                strokeWidth={1.5}
-              />
-              <span>
-                Active treatment time:{" "}
-                <span className="font-medium text-[var(--wt-name)]">
-                  {activeTime} minutes
+            {activeTime ? (
+              <div className="flex items-center gap-3 font-gillSans text-sm text-[var(--wt-desc)] sm:text-base">
+                <Clock
+                  className="h-5 w-5 shrink-0 text-[var(--wt-name)]"
+                  strokeWidth={1.5}
+                />
+                <span>
+                  Active treatment time:{" "}
+                  <span className="font-medium text-[var(--wt-name)]">
+                    {activeTime} minutes
+                  </span>
                 </span>
-              </span>
-            </div>
-            <div className="flex items-center gap-3 font-gillSans text-sm text-[var(--wt-desc)] sm:text-base">
-              <Clock
-                className="h-5 w-5 shrink-0 text-[var(--wt-name)]"
-                strokeWidth={1.5}
-              />
-              <span>
-                Total experience time:{" "}
-                <span className="font-medium text-[var(--wt-name)]">
-                  {totalTime} minutes
+              </div>
+            ) : null}
+            {totalTime ? (
+              <div className="flex items-center gap-3 font-gillSans text-sm text-[var(--wt-desc)] sm:text-base">
+                <Clock
+                  className="h-5 w-5 shrink-0 text-[var(--wt-name)]"
+                  strokeWidth={1.5}
+                />
+                <span>
+                  Total experience time:{" "}
+                  <span className="font-medium text-[var(--wt-name)]">
+                    {totalTime} minutes
+                  </span>
                 </span>
-              </span>
-            </div>
+              </div>
+            ) : null}
           </div>
         ) : treatment.duration ? (
           <div className="flex items-center gap-3 font-gillSans text-sm text-[var(--wt-desc)] sm:text-base">

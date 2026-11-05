@@ -255,6 +255,7 @@ export const ENDPOINTS = {
   wellnessAppointments: {
     checkEligibility: "/api/wellness/appointments/check-eligibility",
     bookWithPlan: "/api/wellness/appointments/book-with-plan",
+    checkPatientSlot: "/api/wellness/appointments/check-patient-slot",
   },
 
   checkout: {

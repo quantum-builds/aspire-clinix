@@ -389,6 +389,8 @@ model Treatment {
   practitionerName String?
   price          Decimal  @db.Decimal(10, 2)
   availabilities Json?
+  activeTime          Int?     // minutes
+  totalExperienceTime Int?     // minutes
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

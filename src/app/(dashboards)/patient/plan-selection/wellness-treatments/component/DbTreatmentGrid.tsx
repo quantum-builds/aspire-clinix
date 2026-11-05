@@ -31,6 +31,8 @@ export default function DbTreatmentGrid() {
             price: treatment.price,
           }}
           slotsHref={`/patient/plan-selection/wellness-treatments/${treatment.id}/slots`}
+          activeTime={treatment.activeTime}
+          totalTime={treatment.totalExperienceTime}
         />
       ))}
     </div>

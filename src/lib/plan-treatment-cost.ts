@@ -7,6 +7,8 @@ export const TREATMENT_PLAN_COST: Record<number, number> = {
 export const HYPERBARIC_TREATMENT_ID = 1367623;
 export const SAUNA_TREATMENT_ID = 1367624;
 export const CONTRAST_SESSION_TREATMENT_ID = 1367845;
+// Cryo + Sauna, Ice Bath + Sauna; listed last on the treatments page.
+export const CONTRAST_TREATMENT_IDS = [1367845, 1526324];
 
 
 

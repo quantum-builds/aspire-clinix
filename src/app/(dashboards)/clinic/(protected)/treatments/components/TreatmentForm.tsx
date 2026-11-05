@@ -1,5 +1,5 @@
 "use client";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { useForm, Controller, useFieldArray, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { getRemainingLimit } from "@/utils/slotSelectionUtils";
 import {
   useCreateTreatment,
   usePatchTreatment,
@@ -40,6 +41,18 @@ const treatmentFormSchema = z.object({
   stripeProductId: z.string().trim().min(1, "Stripe product ID is required"),
   stripePriceId: z.string().trim().min(1, "Stripe price ID is required"),
   practitionerId: z.string(),
+  activeTime: z
+    .string()
+    .refine(
+      (val) => !val || (Number.isInteger(Number(val)) && Number(val) > 0),
+      { message: "Active time must be a positive whole number" },
+    ),
+  totalExperienceTime: z
+    .string()
+    .refine(
+      (val) => !val || (Number.isInteger(Number(val)) && Number(val) > 0),
+      { message: "Total experience time must be a positive whole number" },
+    ),
   availabilities: z.array(
     z
       .object({
@@ -48,7 +61,6 @@ const treatmentFormSchema = z.object({
         finishTime: z.string().regex(timeRegex, "Finish time is required"),
         duration: z.string().min(1, "Duration is required"),
         totalLimit: z.string().min(1, "Total limit is required"),
-        remainingLimit: z.string(),
       })
       .superRefine((slot, ctx) => {
         if (
@@ -99,22 +111,20 @@ const treatmentFormSchema = z.object({
             message: "Total limit must be a positive whole number",
           });
         }
-
-        const remainingLimit = Number(slot.remainingLimit);
-        if (
-          slot.remainingLimit !== "" &&
-          (!Number.isInteger(remainingLimit) ||
-            remainingLimit < 0 ||
-            remainingLimit > totalLimit)
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ["remainingLimit"],
-            message: "Remaining limit must be between 0 and total limit",
-          });
-        }
       }),
   ),
+}).superRefine((data, ctx) => {
+  if (
+    data.activeTime &&
+    data.totalExperienceTime &&
+    Number(data.activeTime) > Number(data.totalExperienceTime)
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["activeTime"],
+      message: "Active time cannot be longer than the total experience time",
+    });
+  }
 });
 
 type FormData = z.infer<typeof treatmentFormSchema>;
@@ -125,7 +135,6 @@ const emptySlot = {
   finishTime: "17:00",
   duration: "",
   totalLimit: "",
-  remainingLimit: "",
 };
 
 interface TreatmentFormProps {
@@ -150,13 +159,16 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
     stripeProductId: treatment?.stripeProductId ?? "",
     stripePriceId: treatment?.stripePriceId ?? "",
     practitionerId: treatment?.practitionerId ?? "",
+    activeTime: treatment?.activeTime ? String(treatment.activeTime) : "",
+    totalExperienceTime: treatment?.totalExperienceTime
+      ? String(treatment.totalExperienceTime)
+      : "",
     availabilities: (treatment?.availabilities ?? []).map((slot) => ({
       date: slot.date,
       startTime: slot.startTime,
       finishTime: slot.finishTime,
       duration: String(slot.duration),
       totalLimit: String(slot.totalLimit),
-      remainingLimit: String(slot.remainingLimit),
     })),
   };
 
@@ -174,6 +186,22 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
     control,
     name: "availabilities",
   });
+
+  const watchedSlots = useWatch({ control, name: "availabilities" });
+
+  // Read-only preview of the value the API saves for this slot.
+  const getRemainingLimitPreview = (index: number) => {
+    const slot = watchedSlots?.[index];
+
+    if (!slot?.totalLimit) return "";
+
+    const savedSlot = treatment?.availabilities?.find(
+      (saved) =>
+        saved.date === slot.date && saved.startTime === slot.startTime,
+    );
+
+    return String(getRemainingLimit(Number(slot.totalLimit), savedSlot));
+  };
 
   const practitionerOptions = (practitioners ?? []).map(
     (practitioner: TDentallyPractitioner) => ({
@@ -213,15 +241,16 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
       practitionerName: selectedPractitioner
         ? selectedPractitioner.label
         : null,
+      activeTime: data.activeTime ? Number(data.activeTime) : null,
+      totalExperienceTime: data.totalExperienceTime
+        ? Number(data.totalExperienceTime)
+        : null,
       availabilities: data.availabilities.map((slot) => ({
         date: slot.date,
         startTime: slot.startTime,
         finishTime: slot.finishTime,
         duration: Number(slot.duration),
         totalLimit: Number(slot.totalLimit),
-        ...(slot.remainingLimit !== "" && {
-          remainingLimit: Number(slot.remainingLimit),
-        }),
       })),
     };
 
@@ -451,6 +480,59 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
                 </p>
               )}
             </div>
+
+            {/* Active Time */}
+            <div className="space-y-2">
+              <Label className="text-lg font-medium">
+                Active Time (minutes)
+              </Label>
+              <Controller
+                name="activeTime"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    min="1"
+                    placeholder="e.g. 30"
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              {errors.activeTime && (
+                <p className="text-sm text-red-500">
+                  {errors.activeTime.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 5 */}
+          <div className="grid grid-cols-2 gap-6">
+            {/* Total Experience Time */}
+            <div className="space-y-2">
+              <Label className="text-lg font-medium">
+                Total Experience Time (minutes)
+              </Label>
+              <Controller
+                name="totalExperienceTime"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    min="1"
+                    placeholder="e.g. 60"
+                    className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
+                  />
+                )}
+              />
+              {errors.totalExperienceTime && (
+                <p className="text-sm text-red-500">
+                  {errors.totalExperienceTime.message}
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -634,24 +716,13 @@ export default function TreatmentForm({ treatment }: TreatmentFormProps) {
                     <Label className="text-lg font-medium">
                       Remaining Limit
                     </Label>
-                    <Controller
-                      name={`availabilities.${index}.remainingLimit`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          {...field}
-                          type="number"
-                          min="0"
-                          placeholder="Defaults to total limit"
-                          className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
-                        />
-                      )}
+                    <Input
+                      type="number"
+                      value={getRemainingLimitPreview(index)}
+                      placeholder="Same as total limit"
+                      disabled
+                      className="bg-gray px-6 py-3 h-[52px] rounded-2xl"
                     />
-                    {errors.availabilities?.[index]?.remainingLimit && (
-                      <p className="text-sm text-red-500">
-                        {errors.availabilities[index]?.remainingLimit?.message}
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>

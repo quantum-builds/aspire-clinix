@@ -10,6 +10,7 @@ import { TAvailability } from "@/types/treatment";
 import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { dayLabel, TIMEZONE } from "@/utils/slotSelectionUtils";
+import SlotDateTime from "@/app/(dashboards)/patient/plan-selection/components/SlotDateTime";
 import { fromZonedTime } from "date-fns-tz";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
@@ -196,6 +197,13 @@ export default function TreatmentSlots() {
     }
   };
 
+  const slotDateTime = pendingChip
+    ? {
+        date: dayLabel(pendingChip.date),
+        time: `${pendingChip.startTime} – ${pendingChip.finishTime}`,
+      }
+    : null;
+
   let slotsContent: ReactNode;
 
   if (isLoading) {
@@ -322,22 +330,22 @@ export default function TreatmentSlots() {
             : "Confirm Your Wellness Appointment"
         }
         description={
-          confirmationMode === "login" ? (
-            <>
-              You’ve selected a time slot for your Wellness Appointment.
-              Please <strong>log in</strong> to your account to continue and
-              confirm your booking.
-            </>
-          ) : (
-            <>
-              {pendingChip
-                ? `${dayLabel(pendingChip.date)}, ${pendingChip.startTime} – ${pendingChip.finishTime}. `
-                : ""}
-              If you have an active membership plan, this appointment will be
-              booked using your plan. Otherwise you’ll be redirected to{" "}
-              <strong>Stripe</strong> to complete your payment.
-            </>
-          )
+          <>
+            {slotDateTime && <SlotDateTime {...slotDateTime} />}
+            {confirmationMode === "login" ? (
+              <>
+                You’ve selected a time slot for your Wellness Appointment.
+                Please <strong>log in</strong> to your account to continue and
+                confirm your booking.
+              </>
+            ) : (
+              <>
+                If you have an active membership plan, this appointment will be
+                booked using your plan. Otherwise you’ll be redirected to{" "}
+                <strong>Stripe</strong> to complete your payment.
+              </>
+            )}
+          </>
         }
         confirmText={confirmationMode === "login" ? "Log In" : "Confirm"}
         cancelText="Cancel"
@@ -355,9 +363,12 @@ export default function TreatmentSlots() {
             : "Plan Treatments Used"
         }
         description={
-          paidModalType === "BREATHWORK_LIMIT_REACHED"
-            ? "You have used all Breathwork sessions included in your plan this month. Would you like to book a single paid appointment?"
-            : "You have used all treatments in your current plan this month. Would you like to book a single paid appointment?"
+          <>
+            {slotDateTime && <SlotDateTime {...slotDateTime} />}
+            {paidModalType === "BREATHWORK_LIMIT_REACHED"
+              ? "You have used all Breathwork sessions included in your plan this month. Would you like to book a single paid appointment?"
+              : "You have used all treatments in your current plan this month. Would you like to book a single paid appointment?"}
+          </>
         }
         confirmText="Yes"
         cancelText="No"

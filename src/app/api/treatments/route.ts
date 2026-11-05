@@ -1,6 +1,7 @@
 import { TokenRoles } from "@/constants/UserRoles";
 import prisma from "@/lib/db";
 import { createResponse } from "@/utils/createResponse";
+import { validateTreatmentTimes } from "@/utils/slotSelectionUtils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -56,7 +57,17 @@ export async function POST(req: NextRequest) {
       stripePriceId,
       practitionerId,
       practitionerName,
+      activeTime,
+      totalExperienceTime,
     } = await req.json();
+
+    const timesError = validateTreatmentTimes(activeTime, totalExperienceTime);
+
+    if (timesError) {
+      return NextResponse.json(createResponse(false, timesError, null), {
+        status: 400,
+      });
+    }
 
     if (
       practitionerId !== undefined &&
@@ -138,7 +149,6 @@ export async function POST(req: NextRequest) {
 
     for (const [index, slot] of (availabilities ?? []).entries()) {
       const { date, startTime, finishTime, duration, totalLimit } = slot ?? {};
-      const remainingLimit = slot?.remainingLimit ?? totalLimit;
 
       if (
         typeof date !== "string" ||
@@ -189,24 +199,13 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      if (
-        !Number.isInteger(remainingLimit) ||
-        remainingLimit < 0 ||
-        remainingLimit > totalLimit
-      ) {
-        return NextResponse.json(
-          createResponse(false, `Availability ${index}: remainingLimit must be an integer between 0 and totalLimit.`, null),
-          { status: 400 },
-        );
-      }
-
       validAvailabilities.push({
         date,
         startTime,
         finishTime,
         duration: duration as number,
         totalLimit: totalLimit as number,
-        remainingLimit: remainingLimit as number,
+        remainingLimit: totalLimit as number,
       });
     }
 
@@ -220,6 +219,8 @@ export async function POST(req: NextRequest) {
         description,
         price,
         isActive,
+        activeTime: activeTime ?? null,
+        totalExperienceTime: totalExperienceTime ?? null,
         ...(Array.isArray(availabilities) && {
           availabilities: validAvailabilities,
         }),

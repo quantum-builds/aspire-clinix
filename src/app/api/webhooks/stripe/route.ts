@@ -143,7 +143,7 @@ export async function POST(req: NextRequest) {
     console.error(
       `Stripe event ${event.id} (${event.type}) failed, Stripe will retry:`,
       error,
-      error instanceof RetryableWebhookError ? error.details : undefined,
+        error instanceof RetryableWebhookError ? error.details : undefined,
     );
 
     return NextResponse.json(

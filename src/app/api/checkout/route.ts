@@ -4,6 +4,10 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import {
+  PATIENT_OVERLAP_MESSAGE,
+  patientHasOverlap,
+} from "@/dentallyHelpers/patientOverlap";
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,6 +42,15 @@ export async function POST(req: NextRequest) {
 
     const patient = await prisma.patient.findUnique({
       where: { dentallyId },
+    });
+
+    console.log("[PAID-BOOKING checkout] request", {
+      dentallyId,
+      treatmentId,
+      practitionerId,
+      startTime,
+      finishTime,
+      patientFound: Boolean(patient),
     });
 
     if (!patient) {
@@ -78,6 +91,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Dentally rejects an appointment that overlaps another of the patient's,
+    // so check before taking payment.
+    const hasOverlap = await patientHasOverlap(
+      dentallyId,
+      parsedStartTime.toISOString(),
+      parsedFinishTime.toISOString(),
+    );
+
+    console.log(
+      "[PAID-BOOKING checkout] patient overlap",
+      hasOverlap === null ? "null (lookup failed)" : hasOverlap,
+    );
+
+    if (hasOverlap) {
+      return NextResponse.json(
+        createResponse(false, PATIENT_OVERLAP_MESSAGE, null),
+        { status: 409 },
+      );
+    }
+
     const treatmentMapping = await prisma.treatmentStripe.findUnique({
       where: {
         treatmentId: Number(treatmentId),
@@ -85,6 +118,11 @@ export async function POST(req: NextRequest) {
     });
 
     if (!treatmentMapping) {
+      console.error(
+        "[PAID-BOOKING checkout] FAILED",
+        { message: "No TreatmentStripe row", treatmentId },
+      );
+
       return NextResponse.json(
         createResponse(false, "Treatment not found", null),
         { status: 404 },
@@ -129,6 +167,11 @@ export async function POST(req: NextRequest) {
       cancel_url: `${origin}/patient/plan-selection/wellness-treatments`,
     });
 
+    console.log("[PAID-BOOKING checkout] Stripe session", {
+      id: session.id,
+      priceId: treatmentMapping.stripePriceId,
+    });
+
     return NextResponse.json(
       createResponse(true, "Checkout session created", {
         checkoutUrl: session.url,
@@ -136,7 +179,10 @@ export async function POST(req: NextRequest) {
       }),
     );
   } catch (error) {
-    console.error("Checkout error:", error);
+    // console.error("Checkout error:", error);
+    console.error("[PAID-BOOKING checkout] FAILED", {
+      message: error instanceof Error ? error.message : String(error),
+    });
 
     return NextResponse.json(
       createResponse(
@@ -192,7 +238,7 @@ export async function GET(req: NextRequest) {
       );
     }
   } catch (error) {
-    console.error("Stripe Error:", error);
+    // console.error("Stripe Error:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(createResponse(false, errorMessage, null), {
       status: 500,
