@@ -4,11 +4,9 @@ import { useMutation } from "@tanstack/react-query";
 
 interface CheckoutSessionData {
   treatmentId: number;
-  practitionerId: string;
   startTime: string;
   finishTime: string;
   reason: string;
-  patientId: string;
 }
 
 interface CheckoutSessionResponse {

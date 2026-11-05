@@ -1,11 +1,13 @@
 import Image from "next/image";
+import { ReactNode } from "react";
 import { NoContentIcon } from "@/assets";
 
 interface NoContent1Props {
   text?: string
   appointmentFlow?: boolean
+  action?: ReactNode
 }
-export default function NoContent1({ text = "The data you have searched is not found at this moment", appointmentFlow = false }: NoContent1Props) {
+export default function NoContent1({ text = "The data you have searched is not found at this moment", appointmentFlow = false, action }: NoContent1Props) {
   return (
     <div className={`${appointmentFlow ? '' : 'bg-dashboardBarBackground'}  py-[60px] px-6 flex flex-col items-center justify-center gap-4 rounded-2xl`}>
       <Image
@@ -19,6 +21,7 @@ export default function NoContent1({ text = "The data you have searched is not f
           {text}
         </p>
       </div>
+      {action}
     </div>
   );
 }

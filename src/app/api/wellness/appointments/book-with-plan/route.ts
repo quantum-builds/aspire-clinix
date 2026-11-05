@@ -12,6 +12,10 @@ import {
   PATIENT_OVERLAP_MESSAGE,
   patientHasOverlap,
 } from "@/dentallyHelpers/patientOverlap";
+import {
+  resolveWellnessTreatment,
+  WellnessTreatmentError,
+} from "@/lib/wellness-booking";
 import { AppointmentState } from "@/types/appointment";
 import {
   getTreatmentPlanCost,
@@ -65,24 +69,45 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const {
-      treatmentId,
-      practitionerId,
-      startTime,
-      finishTime,
-      reason,
-    } = body;
+    // practitionerId and finishTime are worked out from the treatment below;
+    // any values sent by the browser are ignored.
+    const { treatmentId, startTime, reason } = body;
 
     // console.log("HIT THE BOOK WITH PLAN API");
 
     // console.log("Received booking request with body:", body);
 
-    if (!treatmentId || !practitionerId || !startTime || !finishTime) {
+    if (!treatmentId || !startTime) {
       return NextResponse.json(
         createResponse(false, "Missing required booking details", null),
         { status: 400 },
       );
     }
+
+    if (Number.isNaN(new Date(startTime).getTime())) {
+      return NextResponse.json(
+        createResponse(false, "Invalid appointment date/time", null),
+        { status: 400 },
+      );
+    }
+
+    let resolved: Awaited<ReturnType<typeof resolveWellnessTreatment>>;
+
+    try {
+      resolved = await resolveWellnessTreatment(treatmentId);
+    } catch (error) {
+      if (error instanceof WellnessTreatmentError) {
+        return NextResponse.json(createResponse(false, error.message, null), {
+          status: error.status,
+        });
+      }
+      throw error;
+    }
+
+    const { practitionerId } = resolved;
+    const finishTime = new Date(
+      new Date(startTime).getTime() + resolved.duration * 60 * 1000,
+    ).toISOString();
 
     const dentallyId = Number(token.id);
 
@@ -161,9 +186,7 @@ export async function POST(req: NextRequest) {
       ),
     );
 
-    const durationMinutes = Math.round(
-      (new Date(finishTime).getTime() - new Date(startTime).getTime()) / 60000,
-    );
+    const durationMinutes = resolved.duration;
 
     let availabilityResponse: Awaited<ReturnType<typeof getAvailability>>;
 

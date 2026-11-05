@@ -29,6 +29,13 @@ type DentallyTreatment = {
   code?: string | null;
 };
 
+export async function getTreatmentById(treatmentId: number) {
+  const response = await axiosDentallyInstance.get(
+    DENTALLY_ENDPOINTS.treatment.get(String(treatmentId)),
+  );
+  return dentallyErrorHelper(response.data, DATA_TYPE.TREATMENT);
+}
+
 export async function getWellnessTreatments() {
   const siteId = process.env.DENTALLY_SITE_ID;
 

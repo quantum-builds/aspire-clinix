@@ -57,12 +57,9 @@ export function formatSlotDateTime(startIso: string, finishIso: string) {
 }
 
 export type StoredSlot = {
- 
   startTime: string;
   finishTime: string;
-  practitionerId: string;
   treatmentId?: string;
-
 };
 
 export type SlotChip = {
