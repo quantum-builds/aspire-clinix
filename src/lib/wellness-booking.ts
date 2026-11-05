@@ -33,6 +33,7 @@ type DentallyPractitioner = {
 };
 
 type DentallyTreatment = {
+  nomenclature?: string | null;
   notes?: string | null;
   description?: string | null;
 };
@@ -132,5 +133,7 @@ export async function resolveWellnessTreatment(treatmentIdRaw: unknown) {
     treatmentId,
     practitionerId: Number(practitioner.id),
     duration,
+    // Display only.
+    name: treatment?.nomenclature?.trim() || null,
   };
 }

@@ -1,6 +1,7 @@
 import { TAvailabilitySlot } from "@/types/common";
 import { addMinutes, format, isAfter } from "date-fns";
 import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
+import { DISPLAY_DATE_FORMAT } from "@/utils/formatDateTime";
 
 export const STORAGE_KEY = "selectedTreatmentSlot";
 export const TIMEZONE = "Europe/London";
@@ -51,7 +52,7 @@ export function formatSlotDateTime(startIso: string, finishIso: string) {
   const finish = new Date(finishIso);
 
   return {
-    date: formatInTimeZone(start, TIMEZONE, "EEEE d MMMM yyyy"),
+    date: formatInTimeZone(start, TIMEZONE, DISPLAY_DATE_FORMAT),
     time: `${formatInTimeZone(start, TIMEZONE, "HH:mm")} – ${formatInTimeZone(finish, TIMEZONE, "HH:mm")}`,
   };
 }
@@ -84,7 +85,7 @@ export function keyToLocalDate(dayKey: string): Date {
 
 export function dayLabel(
   dayKey: string,
-  pattern = "EEEE d MMMM yyyy",
+  pattern = DISPLAY_DATE_FORMAT,
 ): string {
   return format(keyToLocalDate(dayKey), pattern);
 }

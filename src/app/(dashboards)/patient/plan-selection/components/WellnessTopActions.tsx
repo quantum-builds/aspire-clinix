@@ -43,7 +43,7 @@ function TopActions({ search }: { search: string }) {
                 href={loginHref}
                 className="text-[var(--wt-amount)] hover:underline decoration-[var(--wt-amount)]/50 underline-offset-4 transition hover:decoration-[var(--wt-amount)]"
               >
-                Sign in to access your discounted prices.
+                Sign in to access your plan prices.
               </Link>
             </p>
 

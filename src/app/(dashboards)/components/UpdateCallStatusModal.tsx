@@ -9,6 +9,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useUpdateCallStatus } from "@/services/referralRequest/referralRequestMutation";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { showToast } from "@/utils/defaultToastOptions";
+import { formatDate } from "@/utils/formatDateTime";
 import CustomButton from "./custom-components/CustomButton";
 import { CallStatus } from "@prisma/client";
 
@@ -159,11 +160,7 @@ export default function UpdateCallStatusModal({
                     >
                       <span className={callDate ? "" : "text-gray-400"}>
                         {callDate
-                          ? callDate.toLocaleDateString("en-GB", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })
+                          ? formatDate(callDate)
                           : "Select date"}
                       </span>
                       <CalendarIcon className="h-4 w-4 text-dashboardTextBlack opacity-50" />

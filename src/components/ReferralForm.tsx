@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckboxInput } from "@/components/ui/CheckboxInput";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useState, useRef } from "react";
+import { formatDate } from "@/utils/formatDateTime";
 import Image from "next/image";
 import { CalenderInputIconV2, UploadPDFIcon } from "@/assets";
 import { TCreateReferralForm } from "@/types/referral-form";
@@ -488,7 +489,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
                     >
                       {field.value ? (
                         <span className="mr-auto">
-                          {field.value.toLocaleDateString()}
+                          {formatDate(field.value)}
                         </span>
                       ) : (
                         <span className="mr-auto">Select date</span>
@@ -537,7 +538,7 @@ export default function ReferralForm({ practices }: ReferralFormProps) {
                     >
                       {field.value ? (
                         <span className="mr-auto text-[28px] ">
-                          {field.value.toLocaleDateString()}
+                          {formatDate(field.value)}
                         </span>
                       ) : (
                         <span className="mr-auto">Select date</span>

@@ -42,6 +42,7 @@ import {
 
 import { SlotSelectionSkeleton } from "./skeletons/SlotSelectionSkeleton";
 import SlotDateTime from "@/app/(dashboards)/patient/plan-selection/components/SlotDateTime";
+import BookingSummary from "@/app/(dashboards)/patient/plan-selection/components/BookingSummary";
 
 interface SlotSelectionProps {
   treatmentId?: string;
@@ -530,6 +531,15 @@ export default function SlotSelection({ treatmentId }: SlotSelectionProps) {
     ? formatSlotDateTime(pendingSlot.chip.startTime, pendingSlot.chip.finishTime)
     : null;
 
+  // Booking summary layout for the plan and single paid confirmations.
+  const showSummary =
+    confirmationMode === "plan" || confirmationMode === "standard";
+  const summaryDetails = {
+    durationMinutes: data?.data?.duration,
+    serviceName: data?.data?.treatmentName,
+    price: data?.data?.price,
+  };
+
   const storedMatches = Boolean(
     stored && stored.treatmentId === treatmentId,
   );
@@ -594,7 +604,7 @@ export default function SlotSelection({ treatmentId }: SlotSelectionProps) {
             {formatInTimeZone(
               new Date(stored.startTime),
               TIMEZONE,
-              "EEEE, dd MMMM yyyy 'at' HH:mm",
+              "dd-MM-yyyy 'at' HH:mm",
             )}
           </p>
         </div>
@@ -625,7 +635,22 @@ export default function SlotSelection({ treatmentId }: SlotSelectionProps) {
             ? "Confirm Your Appointment"
             : confirmationMode === "plan"
               ? "Confirm Your Wellness Appointment"
-              : "Confirm"
+              : confirmationMode === "standard"
+                ? "Confirm appointment"
+                : "Confirm"
+        }
+        eyebrow={showSummary ? "Review your booking" : undefined}
+        showClose={showSummary}
+        // Plan booking or single paid appointment: booking summary layout.
+        content={
+          showSummary && slotDateTime ? (
+            <BookingSummary
+              {...summaryDetails}
+              date={slotDateTime.date}
+              time={slotDateTime.time}
+              mode={confirmationMode === "plan" ? "plan" : "stripe"}
+            />
+          ) : undefined
         }
         description={
           <>
@@ -667,6 +692,24 @@ export default function SlotSelection({ treatmentId }: SlotSelectionProps) {
           paidModalType === "PLAN_LIMIT"
             ? "Plan Treatments Used"
             : "Hyperbaric Sessions Used"
+        }
+        eyebrow={slotDateTime ? "Review your booking" : undefined}
+        showClose={Boolean(slotDateTime)}
+        content={
+          slotDateTime ? (
+            <BookingSummary
+              {...summaryDetails}
+              date={slotDateTime.date}
+              time={slotDateTime.time}
+              mode="stripe"
+              showUpsell={false}
+              notice={
+                paidModalType === "PLAN_LIMIT"
+                  ? "You have used all treatments in your current plan this month. Would you like to book a single paid appointment?"
+                  : "You have used all Hyperbaric sessions included in your plan this month. Would you like to book a single paid appointment?"
+              }
+            />
+          ) : undefined
         }
         description={
           <>

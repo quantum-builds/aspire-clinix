@@ -8,6 +8,7 @@ import { CalenderInputIconV2, PDFImage, UploadImageSmalIcon } from "@/assets";
 import Image from "next/image";
 import { X } from "lucide-react";
 import { useRef } from "react";
+import { formatDate } from "@/utils/formatDateTime";
 
 interface LetterReportGridProps {
   reports: TReport[];
@@ -123,7 +124,7 @@ export default function LetterReportGrid({
                     className="w-5 h-5"
                   />
                   <p className="text-lg">
-                    {new Date().toLocaleDateString("en-US")}
+                    {formatDate(new Date())}
                   </p>
                 </div>
               </div>

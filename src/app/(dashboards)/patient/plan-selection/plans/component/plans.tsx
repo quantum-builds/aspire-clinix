@@ -15,6 +15,7 @@ import {
 } from "@/services/membership/membershipMutation";
 import { getCurrentMembership } from "@/services/membership/membershipQuery";
 import { showToast } from "@/utils/defaultToastOptions";
+import { formatDate } from "@/utils/formatDateTime";
 
 const MEMBERSHIP_PLANS = [
   {
@@ -257,12 +258,7 @@ export default function PlansPage() {
 
   const getEffectiveDate = () => {
     if (!currentMembership?.currentPeriodEnd) return "";
-    const date = new Date(currentMembership.currentPeriodEnd);
-    return date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
+    return formatDate(currentMembership.currentPeriodEnd);
   };
 
   return (

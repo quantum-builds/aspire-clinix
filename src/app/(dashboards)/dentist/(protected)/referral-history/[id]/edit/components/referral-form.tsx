@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { formatDate } from "@/utils/formatDateTime";
 import { Button } from "@/components/ui/button";
 import { CalenderGreenIcon, TextInputIcon, UploadPDFIcon } from "@/assets";
 import { z } from "zod";
@@ -245,7 +246,7 @@ export default function ReferralForm() {
                       id="dateOfBirth"
                       type="text"
                       readOnly
-                      value={field.value ? field.value.toDateString() : ""}
+                      value={formatDate(field.value)}
                       placeholder="Select Date"
                       className="bg-gray px-6 py-3 h-[52px] w-full rounded-2xl border text-left"
                     />

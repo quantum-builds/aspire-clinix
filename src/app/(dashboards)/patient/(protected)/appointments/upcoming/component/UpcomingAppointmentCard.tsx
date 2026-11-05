@@ -155,7 +155,7 @@ export default function UpcomingAppointmentCard({
         (canCancel && deadline ? (
           <p className="text-sm italic">
             You can cancel until{" "}
-            {formatInTimeZone(deadline, TIMEZONE, "d MMM yyyy, HH:mm")}.
+            {formatInTimeZone(deadline, TIMEZONE, "dd-MM-yyyy, HH:mm")}.
           </p>
         ) : (
           <p className="text-sm italic">{LATE_CANCEL_MESSAGE}</p>

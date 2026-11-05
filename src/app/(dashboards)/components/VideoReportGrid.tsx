@@ -6,6 +6,7 @@ import VideoReportCard from "./VideoReportCard";
 import { X } from "lucide-react";
 import { VideoModal } from "./VideoModal";
 import { useRef } from "react";
+import { formatDate } from "@/utils/formatDateTime";
 
 interface VideoReportGridProps {
   reports: TReport[];
@@ -129,7 +130,7 @@ export default function VideoReportGrid({
                     className="w-5 h-5"
                   />
                   <p className="text-lg">
-                    {new Date().toLocaleDateString("en-US")}
+                    {formatDate(new Date())}
                   </p>
                 </div>
               </div>

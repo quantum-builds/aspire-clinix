@@ -2,6 +2,7 @@
 import { CalenderInputIconV2, UploadVideoIcon, UploadVideoIconV2 } from "@/assets";
 import Image from "next/image";
 import { useRef } from "react";
+import { formatDate } from "@/utils/formatDateTime";
 
 interface UploadVideoFormProps {
   onVideoSelect: (files: File[]) => void;
@@ -36,7 +37,7 @@ export default function UploadVideoForm({
             alt="calendar-icon"
             className="w-5 h-5"
           />
-          <p className="text-lg">{new Date().toLocaleDateString("en-US")}</p>
+          <p className="text-lg">{formatDate(new Date())}</p>
         </div>
       </div>
 

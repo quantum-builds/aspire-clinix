@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRef } from "react";
+import { formatDate } from "@/utils/formatDateTime";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { useUploadFile } from "@/services/s3/s3Mutatin";
 import { useCreateResource } from "@/services/resources/resorurceMutation";
@@ -246,7 +247,7 @@ export default function AddResourceForm({ type }: AddResourceFormProps) {
                     <div className="flex gap-3 items-center justify-end">
                       <div className="flex gap-1 items-center">
                         <Image src={CalenderInputIconV2} alt="calendar-icon" className="w-5 h-5" />
-                        <p className="text-lg">{new Date().toLocaleDateString("en-US")}</p>
+                        <p className="text-lg">{formatDate(new Date())}</p>
                       </div>
                       <div className="flex gap-1 items-center">
                         <Image src={TimeIconV2} alt="time-icon" className="w-5 h-5" />
