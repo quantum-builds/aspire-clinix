@@ -7,6 +7,8 @@ import axios from "axios";
 export interface WellnessSlotsResponse {
   treatmentId: number;
   duration: number;
+  treatmentName: string | null;
+  price: string | null;
   days: { date: string; slots: SlotChip[] }[];
 }
 

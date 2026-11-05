@@ -58,7 +58,7 @@ export default async function AppointmentBookedPage({
     ? formatInTimeZone(
         new Date(params.startTime),
         TIMEZONE,
-        "EEEE, dd MMMM yyyy 'at' HH:mm",
+        "dd-MM-yyyy 'at' HH:mm",
       )
     : null;
 
@@ -140,14 +140,14 @@ export default async function AppointmentBookedPage({
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Link
                 href="/patient/plan-selection/wellness-treatments"
-                className="inline-flex h-9 w-full items-center justify-center rounded-full bg-[var(--wt-btn)] px-6 py-[10px] font-gillSans text-sm font-medium uppercase tracking-wide text-[#0b0a08] transition hover:opacity-90 sm:w-auto"
+                className="inline-flex h-9 w-full items-center justify-center rounded-full bg-[var(--wt-btn)] px-6 py-[10px] font-gillSans text-sm font-medium uppercase tracking-wide text-white transition hover:opacity-90 sm:w-auto"
               >
                 Book Another Treatment
               </Link>
 
               <Link
                 href="/patient/appointments/upcoming"
-                className="inline-flex h-9 w-full items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-[10px] font-gillSans text-sm font-medium uppercase tracking-wide text-[var(--wt-name)] transition hover:bg-white/10 sm:w-auto"
+                className="inline-flex h-9 w-full items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-[10px] font-gillSans text-sm font-medium uppercase tracking-wide text-white transition hover:bg-white/10 sm:w-auto"
               >
                 View Appointments
               </Link>

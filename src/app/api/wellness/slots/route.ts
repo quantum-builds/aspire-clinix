@@ -1,5 +1,10 @@
 import { getAvailability } from "@/dentallyHelpers/availability";
 import {
+  DentallyFee,
+  getFeesByTreatment,
+  pickValidPriceOne,
+} from "@/dentallyHelpers/fee";
+import {
   resolveWellnessTreatment,
   WellnessTreatmentError,
 } from "@/lib/wellness-booking";
@@ -59,7 +64,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const { treatmentId, practitionerId, duration } =
+    const { treatmentId, practitionerId, duration, name } =
       await resolveWellnessTreatment(treatmentIdRaw);
 
     const range = buildRange(date);
@@ -69,12 +74,21 @@ export async function GET(req: NextRequest) {
     const startTime =
       new Date(range.startTime) <= now ? now.toISOString() : range.startTime;
 
-    const availabilityResponse = await getAvailability({
-      practitionerId,
-      startTime,
-      finishTime: range.finishTime,
-      duration,
-    });
+    // Price is display only (the charge comes from Stripe); never fail on it.
+    const [availabilityResponse, feeResult] = await Promise.all([
+      getAvailability({
+        practitionerId,
+        startTime,
+        finishTime: range.finishTime,
+        duration,
+      }),
+      getFeesByTreatment(treatmentId).catch(() => null),
+    ]);
+
+    const price =
+      feeResult && !feeResult.isError
+        ? pickValidPriceOne((feeResult.response.fees || []) as DentallyFee[])
+        : null;
 
     if (availabilityResponse.isError) {
       return availabilityResponse.response;
@@ -113,6 +127,8 @@ export async function GET(req: NextRequest) {
       createResponse(true, "Slots fetched successfully.", {
         treatmentId,
         duration,
+        treatmentName: name,
+        price,
         days,
       }),
       { status: 200 },

@@ -11,6 +11,7 @@ import { showToast } from "@/utils/defaultToastOptions";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { dayLabel, TIMEZONE } from "@/utils/slotSelectionUtils";
 import SlotDateTime from "@/app/(dashboards)/patient/plan-selection/components/SlotDateTime";
+import BookingSummary from "@/app/(dashboards)/patient/plan-selection/components/BookingSummary";
 import { fromZonedTime } from "date-fns-tz";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
@@ -204,6 +205,19 @@ export default function TreatmentSlots() {
       }
     : null;
 
+  // "HH:mm" → minutes, for the duration shown in the booking summary.
+  const toMinutes = (hhmm: string) => {
+    const [h, m] = hhmm.split(":").map(Number);
+    return h * 60 + m;
+  };
+  const summaryDetails = {
+    durationMinutes: pendingChip
+      ? toMinutes(pendingChip.finishTime) - toMinutes(pendingChip.startTime)
+      : null,
+    serviceName: treatment?.name ?? null,
+    price: treatment?.price ?? null,
+  };
+
   let slotsContent: ReactNode;
 
   if (isLoading) {
@@ -327,7 +341,21 @@ export default function TreatmentSlots() {
         title={
           confirmationMode === "login"
             ? "Confirm Your Appointment"
-            : "Confirm Your Wellness Appointment"
+            : "Confirm appointment"
+        }
+        eyebrow={
+          confirmationMode === "book" ? "Review your booking" : undefined
+        }
+        showClose={confirmationMode === "book"}
+        content={
+          confirmationMode === "book" && slotDateTime ? (
+            <BookingSummary
+              {...summaryDetails}
+              date={slotDateTime.date}
+              time={slotDateTime.time}
+              mode="plan-or-stripe"
+            />
+          ) : undefined
         }
         description={
           <>
@@ -361,6 +389,24 @@ export default function TreatmentSlots() {
           paidModalType === "BREATHWORK_LIMIT_REACHED"
             ? "Breathwork Sessions Used"
             : "Plan Treatments Used"
+        }
+        eyebrow={slotDateTime ? "Review your booking" : undefined}
+        showClose={Boolean(slotDateTime)}
+        content={
+          slotDateTime ? (
+            <BookingSummary
+              {...summaryDetails}
+              date={slotDateTime.date}
+              time={slotDateTime.time}
+              mode="stripe"
+              showUpsell={false}
+              notice={
+                paidModalType === "BREATHWORK_LIMIT_REACHED"
+                  ? "You have used all Breathwork sessions included in your plan this month. Would you like to book a single paid appointment?"
+                  : "You have used all treatments in your current plan this month. Would you like to book a single paid appointment?"
+              }
+            />
+          ) : undefined
         }
         description={
           <>

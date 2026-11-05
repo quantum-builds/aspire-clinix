@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useRef, useState } from "react";
+import { formatDate } from "@/utils/formatDateTime";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 
 const productFormSchema = z.object({
@@ -224,7 +225,7 @@ export default function AddProductForm() {
                         className="w-5 h-5"
                       />
                       <p className="text-lg">
-                        {new Date().toLocaleDateString("en-US")}
+                        {formatDate(new Date())}
                       </p>
                     </div>
                   </div>

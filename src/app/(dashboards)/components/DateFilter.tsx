@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { CalenderInputIconV2, CalenderIcon, DropDownIcon } from "@/assets"
 import { TStatusOption } from "@/types/common"
 import { capitalize } from "@/utils/formatWords"
+import { formatDate as displayDate } from "@/utils/formatDateTime"
 import CustomPopover from "./custom-components/Popover"
 import Dropdown from "./custom-components/DropDown"
 
@@ -62,7 +63,8 @@ export default function DateFilter({
     setAppointmentType(appointmentTypeParam || "")
   }, [searchParams])
 
-  const formatDate = (date: Date | null) => {
+  // yyyy-MM-dd for the URL / API. Display uses displayDate (dd-MM-yyyy).
+  const toQueryDate = (date: Date | null) => {
     if (!date) return ""
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, "0")
@@ -248,7 +250,7 @@ export default function DateFilter({
                           type="text"
                           placeholder="Select Date"
                           readOnly
-                          value={formatDate(onDate)}
+                          value={displayDate(onDate)}
                           className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
                         />
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
@@ -264,7 +266,7 @@ export default function DateFilter({
                       onSelect={(date) => {
                         if (!date) return
                         setOnDate(date)
-                        updateQuery("on", formatDate(date))
+                        updateQuery("on", toQueryDate(date))
                       }}
                       showOutsideDays={false}
                     />
@@ -295,7 +297,7 @@ export default function DateFilter({
                           placeholder="Current Date"
                           readOnly
                           disabled
-                          value={formatDate(afterDate)}
+                          value={displayDate(afterDate)}
                           className="w-full border border-gray-300 bg-gray-100 p-3 h-10 rounded-lg focus:outline-none cursor-not-allowed text-gray-500"
                         />
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center opacity-50">
@@ -310,7 +312,7 @@ export default function DateFilter({
                               type="text"
                               placeholder="Select Date"
                               readOnly
-                              value={formatDate(afterDate)}
+                              value={displayDate(afterDate)}
                               className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
                             />
                             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
@@ -326,7 +328,7 @@ export default function DateFilter({
                           onSelect={(date) => {
                             if (!date) return
                             setAfterDate(date)
-                            updateQuery("after", formatDate(date))
+                            updateQuery("after", toQueryDate(date))
                           }}
                           showOutsideDays={false}
                         />
@@ -356,7 +358,7 @@ export default function DateFilter({
                           placeholder="Current Date"
                           readOnly
                           disabled
-                          value={formatDate(beforeDate)}
+                          value={displayDate(beforeDate)}
                           className="w-full border border-gray-300 bg-gray-100 p-3 h-10 rounded-lg focus:outline-none cursor-not-allowed text-gray-500"
                         />
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center opacity-50">
@@ -371,7 +373,7 @@ export default function DateFilter({
                               type="text"
                               placeholder="Select Date"
                               readOnly
-                              value={formatDate(beforeDate)}
+                              value={displayDate(beforeDate)}
                               className="w-full border border-green p-3 h-10 rounded-lg focus:outline-none cursor-auto"
                             />
                             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex justify-center items-center">
@@ -387,7 +389,7 @@ export default function DateFilter({
                           onSelect={(date) => {
                             if (!date) return
                             setBeforeDate(date)
-                            updateQuery("before", formatDate(date))
+                            updateQuery("before", toQueryDate(date))
                           }}
                           showOutsideDays={false}
                         />

@@ -1,5 +1,14 @@
-export const formatDate = (date: string | Date) =>
-  new Date(date).toLocaleDateString();
+import { format, isValid } from "date-fns";
+
+// Date pattern shown in the UI everywhere.
+export const DISPLAY_DATE_FORMAT = "dd-MM-yyyy";
+
+// Display only (browser local time, same as before). Never send this to an API.
+export const formatDate = (date: string | Date | null | undefined) => {
+  if (!date) return "";
+  const parsed = new Date(date);
+  return isValid(parsed) ? format(parsed, DISPLAY_DATE_FORMAT) : "";
+};
 
 export const formatTime = (date: string | Date) =>
   new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
