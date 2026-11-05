@@ -8,6 +8,10 @@ import {
   PATIENT_OVERLAP_MESSAGE,
   patientHasOverlap,
 } from "@/dentallyHelpers/patientOverlap";
+import {
+  resolveWellnessTreatment,
+  WellnessTreatmentError,
+} from "@/lib/wellness-booking";
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,13 +25,9 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const {
-      treatmentId,
-      practitionerId,
-      startTime,
-      finishTime,
-      reason,
-    } = body;
+    // practitionerId and finishTime are worked out from the treatment below;
+    // any values sent by the browser are ignored.
+    const { treatmentId, startTime, reason } = body;
 
     // The patient always comes from the session, never from the request
     // body, so nobody can book or pay under another patient's id.
@@ -47,9 +47,7 @@ export async function POST(req: NextRequest) {
     console.log("[PAID-BOOKING checkout] request", {
       dentallyId,
       treatmentId,
-      practitionerId,
       startTime,
-      finishTime,
       patientFound: Boolean(patient),
     });
 
@@ -60,7 +58,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!treatmentId || !practitionerId || !startTime || !finishTime) {
+    if (!treatmentId || !startTime) {
       return NextResponse.json(
         createResponse(false, "Missing required booking details", null),
         { status: 400 },
@@ -68,28 +66,38 @@ export async function POST(req: NextRequest) {
     }
 
     const parsedStartTime = new Date(startTime);
-    const parsedFinishTime = new Date(finishTime);
 
-    if (
-      Number.isNaN(parsedStartTime.getTime()) ||
-      Number.isNaN(parsedFinishTime.getTime())
-    ) {
+    if (Number.isNaN(parsedStartTime.getTime())) {
       return NextResponse.json(
         createResponse(false, "Invalid appointment date/time", null),
         { status: 400 },
       );
     }
 
-    if (parsedFinishTime <= parsedStartTime) {
+    if (parsedStartTime.getTime() <= Date.now()) {
       return NextResponse.json(
-        createResponse(
-          false,
-          "Finish time must be greater than start time",
-          null,
-        ),
+        createResponse(false, "This slot is in the past", null),
         { status: 400 },
       );
     }
+
+    let resolved: Awaited<ReturnType<typeof resolveWellnessTreatment>>;
+
+    try {
+      resolved = await resolveWellnessTreatment(treatmentId);
+    } catch (error) {
+      if (error instanceof WellnessTreatmentError) {
+        return NextResponse.json(createResponse(false, error.message, null), {
+          status: error.status,
+        });
+      }
+      throw error;
+    }
+
+    const { practitionerId, duration } = resolved;
+    const parsedFinishTime = new Date(
+      parsedStartTime.getTime() + duration * 60 * 1000,
+    );
 
     // Dentally rejects an appointment that overlaps another of the patient's,
     // so check before taking payment.

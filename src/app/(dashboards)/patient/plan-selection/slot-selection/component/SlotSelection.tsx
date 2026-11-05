@@ -4,7 +4,8 @@ import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import CustomConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { useGetAvailability } from "@/services/availability/availabilityMutation";
+import { useGetWellnessSlots } from "@/services/wellness/wellnessSlotsQuery";
+import Link from "next/link";
 import { useCreateCheckoutSession } from "@/services/checkout/checkoutMutation";
 import {
   useBookWithPlan,
@@ -19,7 +20,6 @@ import {
   ReactNode,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -29,12 +29,9 @@ import { showToast } from "@/utils/defaultToastOptions";
 import { getCurrentMembership } from "@/services/membership/membershipQuery";
 
 import {
-  buildChips,
-  buildRange,
   DAY_FMT,
   dayLabel,
   formatSlotDateTime,
-  groupByDate,
   keyToLocalDate,
   SlotChip,
   STORAGE_KEY,
@@ -47,19 +44,13 @@ import { SlotSelectionSkeleton } from "./skeletons/SlotSelectionSkeleton";
 import SlotDateTime from "@/app/(dashboards)/patient/plan-selection/components/SlotDateTime";
 
 interface SlotSelectionProps {
-  practitionerId?: string;
   treatmentId?: string;
-  duration?: string;
 }
 
 const PENDING_CONFIRMATION_KEY = "pendingWellnessConfirmation";
 
-export default function SlotSelection({
-  practitionerId,
-  treatmentId,
-  duration,
-}: SlotSelectionProps) {
-  const { data: session, status } = useSession();
+export default function SlotSelection({ treatmentId }: SlotSelectionProps) {
+  const { status } = useSession();
   const router = useRouter();
   const submittingRef = useRef(false);
 
@@ -98,8 +89,6 @@ export default function SlotSelection({
     setIsCheckingPlan(true);
 
     try {
-      // Dentally will not book the patient twice at the same time, so stop
-      // here before any confirmation or payment.
       const slotRes = await checkPatientSlot(slot);
 
       console.log("[PAID-BOOKING 2] patient slot check", {
@@ -136,12 +125,6 @@ export default function SlotSelection({
     }
   }, [status, checkPatientSlot]);
 
-  const appointmentDuration = useMemo(() => {
-    const parsed = Number(duration);
-
-    return duration && Number.isInteger(parsed) && parsed > 0 ? parsed : null;
-  }, [duration]);
-
   useEffect(() => {
     try {
       const raw = window.sessionStorage.getItem(STORAGE_KEY);
@@ -152,10 +135,7 @@ export default function SlotSelection({
 
       setStored(parsed);
 
-      if (
-        parsed.practitionerId === practitionerId &&
-        parsed.treatmentId === treatmentId
-      ) {
+      if (parsed.treatmentId === treatmentId) {
         setSelectedSlotKey(parsed.startTime);
 
         if (
@@ -190,19 +170,16 @@ export default function SlotSelection({
     } catch (error) {
       console.error("Failed to load stored slot:", error);
     }
-  }, [prepareConfirmation, practitionerId, treatmentId]);
+  }, [prepareConfirmation, treatmentId]);
 
   const todayKey = todayKeyLondon();
 
   const selectedKey = selectedDay ? format(selectedDay, DAY_FMT) : todayKey;
 
-  const range = useMemo(() => buildRange(selectedKey), [selectedKey]);
-
-  const { data, isLoading, refetch: refetchAvailability } = useGetAvailability({
-    practitionerId,
-    startTime: range.startTime,
-    finishTime: range.finishTime,
-    duration: appointmentDuration,
+  // The API picks the practitioner and slot length from the treatment.
+  const { data, isLoading, refetch: refetchAvailability } = useGetWellnessSlots({
+    treatmentId,
+    date: selectedKey,
   });
 
   const {
@@ -227,13 +204,11 @@ export default function SlotSelection({
       startTime: chip.startTime,
       finishTime: chip.finishTime,
       treatmentId,
-      practitionerId,
     });
 
     setSelectedSlotKey(chip.key);
 
     const storedSlot: StoredSlot = {
-      practitionerId: practitionerId ?? "",
       treatmentId: treatmentId ?? "",
       startTime: chip.startTime,
       finishTime: chip.finishTime,
@@ -267,16 +242,12 @@ export default function SlotSelection({
   const handleCheckoutFallback = () => {
     if (!pendingSlot) return;
 
-    const patientId = (session?.user as { id?: string })?.id ?? "";
-
     createCheckoutSession(
       {
         treatmentId: Number(treatmentId),
-        practitionerId: practitionerId ?? "",
         startTime: pendingSlot.chip.startTime,
         finishTime: pendingSlot.chip.finishTime,
         reason: "Wellness Appointment",
-        patientId,
       },
       {
         onSuccess: (data) => {
@@ -339,10 +310,8 @@ export default function SlotSelection({
       // console.error("Failed to store pending confirmation:", error);
     }
 
-    const slotUrl = `/patient/plan-selection/slot-selection?practitionerId=${
-      practitionerId ?? ""
-    }&treatmentId=${treatmentId ?? ""}${
-      duration ? `&duration=${encodeURIComponent(duration)}` : ""
+    const slotUrl = `/patient/plan-selection/slot-selection?treatmentId=${
+      treatmentId ?? ""
     }`;
 
     router.push(`/patient/login?redirectTo=${encodeURIComponent(slotUrl)}`);
@@ -366,7 +335,6 @@ export default function SlotSelection({
 
     const bookingPayload = {
       treatmentId: Number(treatmentId),
-      practitionerId: practitionerId ?? "",
       startTime: pendingSlot.chip.startTime,
       finishTime: pendingSlot.chip.finishTime,
       reason: "Wellness Appointment",
@@ -473,44 +441,41 @@ export default function SlotSelection({
     }
   };
 
-  if (!practitionerId) {
+  const backToTreatments = (
+    <Link
+      href="/patient/plan-selection/wellness-treatments"
+      className="inline-flex h-9 items-center justify-center rounded-full bg-[var(--wt-btn)] px-6 py-[10px] font-gillSans text-sm font-medium uppercase tracking-wide text-[#0b0a08] transition hover:opacity-90"
+    >
+      Back to Treatments
+    </Link>
+  );
+
+  if (!treatmentId) {
     return (
-      <NoContent1 text="No practitioner selected. Please go back and choose a practitioner." appointmentFlow={true} />
+      <NoContent1
+        text="Invalid treatment id."
+        appointmentFlow={true}
+        action={backToTreatments}
+      />
     );
   }
 
-  const slots = data && data.status ? (data.data ?? []) : [];
-
-  const allDayKeys: string[] = [];
-
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(`${selectedKey}T12:00:00`);
-
-    date.setDate(date.getDate() + i);
-
-    allDayKeys.push(format(date, DAY_FMT));
-  }
-
-  const grouped = groupByDate(slots);
-
-  const rows = allDayKeys.map((dayKey) => {
-    const daySlots = grouped.find(([key]) => key === dayKey)?.[1] ?? [];
-
-    return {
-      dayKey,
-      chips: daySlots.flatMap((slot) => buildChips(slot, appointmentDuration)),
-    };
-  });
+  const rows = (data?.status ? (data.data?.days ?? []) : []).map((day) => ({
+    dayKey: day.date,
+    chips: day.slots,
+  }));
 
   let slotsContent: ReactNode;
 
   if (isLoading) {
     slotsContent = <SlotSelectionSkeleton />;
   } else if (!data || !data.status) {
-    slotsContent = (
+    // Unknown treatment, no practitioner, no duration or a Dentally error.
+    return (
       <NoContent1
         text={data?.message || "Unable to load availability right now."}
         appointmentFlow={true}
+        action={backToTreatments}
       />
     );
   } else {
@@ -566,9 +531,7 @@ export default function SlotSelection({
     : null;
 
   const storedMatches = Boolean(
-    stored &&
-    stored.practitionerId === practitionerId &&
-    stored.treatmentId === treatmentId,
+    stored && stored.treatmentId === treatmentId,
   );
 
   return (

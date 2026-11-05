@@ -8,6 +8,7 @@ import {
   SAUNA_TREATMENT_ID
 } from "@/lib/plan-treatment-cost";
 import { getCurrentMembership } from "@/services/membership/membershipQuery";
+import { parseTreatmentTimes } from "@/lib/treatment-times";
 import { TTreatment } from "@/types/common";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
@@ -21,22 +22,6 @@ interface TreatmentCardProps {
   // Admin treatments store these; Dentally ones carry them in the description.
   activeTime?: number | null;
   totalTime?: number | null;
-}
-
-function parseTreatmentTimes(description: string | null | undefined) {
-  if (!description) return { activeTime: null, totalTime: null };
-
-  const activeMatch = description.match(
-    /Active treatment time\s*:?\s*(\d+)\s*minutes?/i,
-  );
-  const totalMatch = description.match(
-    /Total experience time\s*:?\s*(\d+)\s*minutes?/i,
-  );
-
-  return {
-    activeTime: activeMatch ? parseInt(activeMatch[1]) : null,
-    totalTime: totalMatch ? parseInt(totalMatch[1]) : null,
-  };
 }
 
 export default function TreatmentCard({
@@ -94,12 +79,11 @@ export default function TreatmentCard({
     }
   }
 
+  // Practitioner and duration are worked out by the slots API, not the URL.
   const bookHref = practitionerId
-    ? `/patient/plan-selection/slot-selection?practitionerId=${encodeURIComponent(
-        practitionerId,
-      )}&treatmentId=${treatment.id}${
-        treatment.duration ? `&duration=${treatment.duration}` : ""
-      }${type ? `&type=${type}` : ""}`
+    ? `/patient/plan-selection/slot-selection?treatmentId=${treatment.id}${
+        type ? `&type=${type}` : ""
+      }`
     : null;
 
   return (

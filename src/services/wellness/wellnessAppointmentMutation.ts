@@ -32,7 +32,6 @@ export interface CheckEligibilityResponse {
 
 export interface BookWithPlanData {
   treatmentId: number;
-  practitionerId: string;
   startTime: string;
   finishTime: string;
   reason: string;

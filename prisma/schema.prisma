@@ -389,8 +389,8 @@ model Treatment {
   practitionerName String?
   price          Decimal  @db.Decimal(10, 2)
   availabilities Json?
-  activeTime          Int?     // minutes
-  totalExperienceTime Int?     // minutes
+  activeTime          Int?    
+  totalExperienceTime Int?     
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -398,8 +398,6 @@ model Treatment {
   session        Session[]
 }
 
-/// One row per Stripe webhook event, so retried or duplicate deliveries are
-/// processed once. See src/lib/stripe/webhooks/events.ts.
 model StripeWebhookEvent {
   id          String    @id
   type        String
