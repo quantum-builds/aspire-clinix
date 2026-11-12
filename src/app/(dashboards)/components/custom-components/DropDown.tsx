@@ -149,6 +149,7 @@
 import { DropDownIcon } from "@/assets"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
+import { X } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 
 interface DropdownOption {
@@ -253,12 +254,27 @@ export default function Dropdown({
             >
               {selectedOption?.label || placeholder}
             </p>
-            <Image
-              src={DropDownIcon}
-              alt="Dropdown"
-              className={`w-4 h-4 ml-2 transition-transform duration-300 ${isOpen ? "rotate-180" : "rotate-0"
-                }`}
-            />
+            <div className="flex items-center gap-3  shrink-0">
+              {showClearOption && value && !disabled && (
+                <button
+                  type="button"
+                  aria-label="Clear selection"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleSelect(null)
+                  }}
+                  className="text-gray-400 hover:text-green transition"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+              <Image
+                src={DropDownIcon}
+                alt="Dropdown"
+                className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : "rotate-0"
+                  }`}
+              />
+            </div>
           </>
         )}
       </div>
@@ -291,18 +307,6 @@ export default function Dropdown({
             ))
           ) : (
             <div className="text-gray-500 text-sm py-2 px-2">{emptyText}</div>
-          )}
-
-          {showClearOption && (
-            <>
-              <div className="border-t border-gray-200 my-2" />
-              <div
-                className="py-2 px-2 text-sm text-gray-500 cursor-pointer hover:text-green transition"
-                onClick={() => handleSelect(null)}
-              >
-                Clear Selection
-              </div>
-            </>
           )}
         </div>
       )}

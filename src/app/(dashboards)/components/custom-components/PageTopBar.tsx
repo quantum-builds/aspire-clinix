@@ -55,8 +55,17 @@ export default function PageTopBar({
 }: PageTopBarProps) {
   const router = useRouter();
   const [participantType, setParticipantType] = useState<string>("patient");
+
+  const showBottomFilters = showFilters && filtersBelow;
+  const showBottomRow = showBreathworkNote || showBottomFilters;
+
   return (
-    <div className={cn("flex justify-between", filtersBelow ? "flex-col gap-3" : "items-center")}>
+    <div
+      className={cn(
+        "flex justify-between",
+        showBottomRow ? "flex-col gap-3" : "items-center"
+      )}
+    >
       <div className="flex w-full items-center justify-between ">
         <div className="flex items-center gap-3">
           {showBackBtn && (
@@ -67,15 +76,7 @@ export default function PageTopBar({
               <Image src={BackButtonIcon} alt="back" />
             </div>
           )}
-          <div className="flex flex-col gap-1">
-            <PageHeading text={pageHeading} />
-            {showBreathworkNote && (
-              <p className="text-sm italic text-[#1D120C]">
-                *Note: If you want to view Breathwork appointments, please
-                select Breathwork from the appointment filter.
-              </p>
-            )}
-          </div>
+          <PageHeading text={pageHeading} />
         </div>
         <Suspense>
           <div className="flex justify-end gap-3">
@@ -125,7 +126,7 @@ export default function PageTopBar({
                     placeholderClassName="text-gray-600"
                     triggerClassName="px-2 py-0 text-base leading-6 min-w-[100px] min-h-0 flex items-center justify-between"
                     contentClassName="min-w-[160px] rounded-xl"
-                    showClearOption= {false}
+                    showClearOption={false}
                   />
                 </div>
               </div>
@@ -134,18 +135,32 @@ export default function PageTopBar({
           </div>
         </Suspense>
       </div>
-      {showFilters && filtersBelow && (
-        <div className="flex justify-end">
-          <DateFilter
-            statusOptions={statusOptions}
-            callStatusOptions={callStatusOptions}
-            showDateFilter={showDateFilter}
-            lockAfterDate={lockAfterDate}
-            lockBeforeDate={lockBeforeDate}
-            restrictAfterToToday={restrictAfterToToday}
-            restrictBeforeFromToday={restrictBeforeFromToday}
-            showAppointmentTypeFilter={showBreathworkNote}
-          />
+
+      {/* Bottom row: note on the left (sits right above the white card), filters on the right */}
+      {showBottomRow && (
+        <div className="flex items-end justify-between gap-3">
+          {showBreathworkNote ? (
+            <p className="text-sm italic text-[#1D120C]">
+              *Note: If you want to view Breathwork appointments, please select
+              Breathwork from the appointment filter.
+            </p>
+          ) : (
+            <span />
+          )}
+          {showBottomFilters && (
+            <Suspense>
+              <DateFilter
+                statusOptions={statusOptions}
+                callStatusOptions={callStatusOptions}
+                showDateFilter={showDateFilter}
+                lockAfterDate={lockAfterDate}
+                lockBeforeDate={lockBeforeDate}
+                restrictAfterToToday={restrictAfterToToday}
+                restrictBeforeFromToday={restrictBeforeFromToday}
+                showAppointmentTypeFilter={showBreathworkNote}
+              />
+            </Suspense>
+          )}
         </div>
       )}
     </div>
