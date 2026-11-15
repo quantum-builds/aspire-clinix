@@ -96,7 +96,7 @@ export async function GET(req: NextRequest) {
     }
     const { searchParams } = new URL(req.url);
     const patientName = searchParams.get("patientName") || "";
-    const [firstName, lastName] = patientName.split(" ")
+    const [firstName, lastName] = patientName.trim().split(/\s+/);
 
     console.log("[/api/appointments/patient] patient id is ", patientName)
     if (!firstName || !lastName) {
@@ -124,7 +124,8 @@ export async function GET(req: NextRequest) {
     if (activePatients.length > 0) {
       const matchingPatients = activePatients.filter(
         (patient: any) =>
-          patient.firstName === firstName && patient.lastName === lastName,
+          (patient.firstName ?? "").trim() === firstName &&
+          (patient.lastName ?? "").trim() === lastName,
       );
 
       activePatients = matchingPatients;
