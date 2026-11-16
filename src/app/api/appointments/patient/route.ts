@@ -96,6 +96,8 @@ export async function GET(req: NextRequest) {
     }
     const { searchParams } = new URL(req.url);
     const patientName = searchParams.get("patientName") || "";
+    // Optional: restrict results to the referral's assigned dentist (Dentally practitioner id)
+    const practitionerId = searchParams.get("practitionerId") || undefined;
     const [firstName, lastName] = patientName.trim().split(/\s+/);
 
     console.log("[/api/appointments/patient] patient id is ", patientName)
@@ -150,6 +152,7 @@ export async function GET(req: NextRequest) {
     const appointmentRes = await listAppointment({
       patientId: active.id,
       perPage: 100, // Get more appointments to show in the list
+      practitionerId,
     });
 
     if (appointmentRes.isError) {
@@ -159,8 +162,11 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const appointments = (appointmentRes.response.appointments ??
-      []) as TAppointment[];
+    const appointments = (
+      (appointmentRes.response.appointments ?? []) as TAppointment[]
+    ).filter(
+      (apt) => !practitionerId || String(apt.practitionerId) === practitionerId,
+    );
     const appointmentIds = appointments.map((a) => String(a.id));
 
     const referralBindings = await prisma.referralRequest.findMany({
