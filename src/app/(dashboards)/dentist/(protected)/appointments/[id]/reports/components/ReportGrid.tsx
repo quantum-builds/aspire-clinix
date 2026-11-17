@@ -7,6 +7,9 @@ import NoContent1 from "@/app/(dashboards)/components/NoContent1";
 import { Patient } from "@/types/patient";
 import { TAppointmentDetail } from "@/types/appointment";
 import { getAppointment } from "@/services/appointments/appointmentQuery";
+import { authOptions } from "@/lib/auth";
+import { TokenRoles } from "@/constants/UserRoles";
+import { getServerSession } from "next-auth";
 
 interface ResourceGridWrapperProps {
   query: string;
@@ -18,12 +21,15 @@ interface ReportGridProps {
   letterReports: TReport[];
   patientDetails?: Patient | null;
   isNewUploadPage?: boolean;
+  canDelete?: boolean;
 }
 
 export default async function ReportGridWrapper({
   appointmentId,
 }: ResourceGridWrapperProps) {
   const response: Response<TAppointmentDetail> = await getAppointment(appointmentId);
+  const session = await getServerSession(authOptions);
+  const canDelete = session?.user.role === TokenRoles.DENTALLY_PRACTITIONER || session?.user.role === TokenRoles.ADMIN;
 
   if (
     !response.status ||
@@ -43,6 +49,7 @@ export default async function ReportGridWrapper({
         videoReports={videos ?? []}
         letterReports={pdfs ?? []}
         patientDetails={response.data.patient}
+        canDelete={canDelete}
       />
     </>
   );
@@ -53,6 +60,7 @@ function ReportGrid({
   letterReports,
   patientDetails,
   isNewUploadPage = false,
+  canDelete = false,
 }: ReportGridProps) {
   return (
     <div className="flex flex-col gap-7 bg-dashboardBackground">
@@ -61,12 +69,12 @@ function ReportGrid({
         <VideoReportGrid
           reports={videoReports}
           isNewUploadPage={isNewUploadPage}
-          canDelete
+          canDelete={canDelete}
         />
         <LetterReportGrid
           reports={letterReports}
           isNewUploadPage={isNewUploadPage}
-          canDelete
+          canDelete={canDelete}
         />
       </div>
     </div>

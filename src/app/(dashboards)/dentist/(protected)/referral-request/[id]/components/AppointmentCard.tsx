@@ -72,13 +72,13 @@ export default function AppointmentCard({
   };
 
   const statusOptions: AppointmentState[] = [
-    AppointmentState.COMPLETED,
+    AppointmentState.PENDING,
     AppointmentState.CONFIRMED,
     AppointmentState.CANCELLED,
-    AppointmentState.DIDNOTATTEND,
-    AppointmentState.ARRIVED,
-    AppointmentState.INSURGERY,
-    AppointmentState.PENDING
+    // AppointmentState.COMPLETED,
+    // AppointmentState.DIDNOTATTEND,
+    // AppointmentState.ARRIVED,
+    // AppointmentState.INSURGERY,
   ];
   return (
     <div className="bg-dashboardBarBackground rounded-2xl p-6 space-y-10">
@@ -109,7 +109,7 @@ export default function AppointmentCard({
                 {/* Status: {appointment.state} */}
                 The Appointment as been Assigned             </p>
             </div>
-            {appointment.state !== AppointmentState.PENDING &&
+            {
               <div className="flex justify-between items-center mt-2">
                 <div className="flex gap-1 items-center">
                   {/* <p className="text-lg flex gap-1 items-center">
@@ -124,8 +124,8 @@ export default function AppointmentCard({
                     }))}
                     value={selectedStatus || ""}
                     onValueChange={(newStatus) => {
-                      setSelectedStatus(newStatus as AppointmentState);
-                      setIsUpdateModalOpen(true);
+                      setSelectedStatus(newStatus as AppointmentState | null);
+                      if (newStatus) setIsUpdateModalOpen(true);
                     }}
                     placeholder="Select Status"
                     triggerClassName="text-green text-lg font-semibold cursor-pointer"
@@ -145,7 +145,7 @@ export default function AppointmentCard({
                     text="See Reports"
                     href={`/dentist/appointments/${appointment.id}/reports`}
                   />
-                  {role !== TokenRoles.ADMIN &&
+                  {/* {role !== TokenRoles.ADMIN &&
                     <CustomButton
                       text="Confirm Appointment"
                       handleOnClick={() => {
@@ -164,7 +164,7 @@ export default function AppointmentCard({
                     text="Cancel"
                     style="white"
                     className="hover:bg-lightGray"
-                  />
+                  /> */}
                 </div>
               }
               {appointment.state !== AppointmentState.PENDING &&
@@ -173,7 +173,7 @@ export default function AppointmentCard({
                     text="See Reports"
                     href={`/dentist/appointments/${appointment.id}/reports`}
                   />
-                  <CustomButton
+                  {/* <CustomButton
                     handleOnClick={() => {
                       setSelectedStatus(AppointmentState.CANCELLED)
                       setIsCancelModalOpen(true)
@@ -182,7 +182,7 @@ export default function AppointmentCard({
                     text="Cancel"
                     style="white"
                     className="hover:bg-lightGray"
-                  />
+                  /> */}
                 </div>
               }
             </div>
@@ -220,6 +220,7 @@ export default function AppointmentCard({
         isOpen={isUpdateModalOpen}
         onClose={() => {
           setIsUpdateModalOpen(false);
+          setSelectedStatus(null);
           setMenuOpen(false);
         }}
         isPending={updateAppointmentLoader}

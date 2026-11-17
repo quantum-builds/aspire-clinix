@@ -5,6 +5,7 @@ import { TAppointment } from "@/types/appointment";
 import AppointmentListItem from "./AppointmentListItem";
 import { X, Loader2 } from "lucide-react";
 import { showToast } from "@/utils/defaultToastOptions";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { useGetAppointmentsByPatient } from "@/services/appointments/appointmentMutation";
 import { useAppointmentBindingMutation } from "@/services/referralRequest/referralRequestMutation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -13,6 +14,7 @@ interface BindAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   patientName: string;
+  practitionerId: number | null;
   referralRequestId: string;
   onAppointmentBound: () => void;
 }
@@ -21,6 +23,7 @@ export default function BindAppointmentModal({
   isOpen,
   onClose,
   patientName,
+  practitionerId,
   referralRequestId,
   onAppointmentBound,
 }: BindAppointmentModalProps) {
@@ -39,7 +42,7 @@ export default function BindAppointmentModal({
     data: appointments,
     isPending,
     error,
-  } = useGetAppointmentsByPatient(patientName);
+  } = useGetAppointmentsByPatient(patientName, practitionerId);
   const { mutate: updateAppointmentBinding, isPending: isUpdatingBinding } =
     useAppointmentBindingMutation();
 
@@ -80,7 +83,8 @@ export default function BindAppointmentModal({
         onError: (error) => {
           showToast(
             "error",
-            error.message || "An error occurred while binding appointment",
+            getAxiosErrorMessage(error) ||
+              "An error occurred while binding appointment",
           );
         },
       },
@@ -185,7 +189,14 @@ export default function BindAppointmentModal({
               </div>
             </div>
           )}
-          {isPending ? (
+          {!practitionerId ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <p className="text-gray-500 mb-2">
+                The assigned dentist is not linked to Dentally, so their
+                appointments can&apos;t be loaded.
+              </p>
+            </div>
+          ) : isPending ? (
             <div className="flex flex-col items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-green mb-3" />
               <p className="text-gray-500">Loading appointments...</p>
@@ -213,7 +224,7 @@ export default function BindAppointmentModal({
           ) : !appointments || appointments.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <p className="text-gray-500 mb-2">
-                No appointments found for this patient
+                No appointments found for this patient with the assigned dentist
               </p>
               <p className="text-sm text-gray-400">
                 Appointments must be created in Dentally first

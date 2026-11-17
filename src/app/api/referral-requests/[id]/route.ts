@@ -468,8 +468,6 @@ export async function PATCH(req: NextRequest) {
 
     // --- BIND APPOINTMENT (existing flow) ---
     if (requestStatus === "ASSIGNED") {
-      notifyReferralAppointmentBound(referralRequestId).catch(console.error);
-
       if (!appointmentId) {
         return NextResponse.json(
           createResponse(
@@ -481,27 +479,67 @@ export async function PATCH(req: NextRequest) {
         );
       }
 
-      let resolvedDentistId: string | undefined;
-
-      if (practitionerId) {
-        resolvedDentistId = await findOrCreateDentistFromPractitioner(
-          Number(practitionerId),
+      // The appointment's practitioner must be the referral's assigned dentist
+      if (!referral.assignedDentistId) {
+        return NextResponse.json(
+          createResponse(
+            false,
+            "Referral must be assigned to a dentist before binding an appointment.",
+            null,
+          ),
+          { status: 400 },
         );
       }
 
-      const updateData: any = {
-        appointmentId,
-        requestStatus: ReferralRequestStatus.ASSIGNED,
-      };
+      // Fetch the assigned dentist and the Dentally appointment in parallel.
+      // Use the practitioner from Dentally, not the one sent by the client.
+      const [assignedDentist, aptRes] = await Promise.all([
+        prisma.dentist.findUnique({
+          where: { id: referral.assignedDentistId },
+          select: { dentallyId: true },
+        }),
+        getAppointment(String(appointmentId)),
+      ]);
 
-      if (resolvedDentistId) {
-        updateData.assignedDentistId = resolvedDentistId;
+      if (!assignedDentist?.dentallyId) {
+        return NextResponse.json(
+          createResponse(false, "Assigned dentist is not linked to Dentally.", null),
+          { status: 400 },
+        );
+      }
+
+      const dentallyAppointment =
+        !aptRes.isError ? aptRes.response?.appointment : null;
+
+      if (!dentallyAppointment) {
+        return NextResponse.json(
+          createResponse(false, "Appointment not found in Dentally.", null),
+          { status: 404 },
+        );
+      }
+
+      if (
+        Number(dentallyAppointment.practitionerId) !== assignedDentist.dentallyId
+      ) {
+        return NextResponse.json(
+          createResponse(
+            false,
+            "This appointment belongs to a different practitioner than the assigned dentist.",
+            null,
+          ),
+          { status: 400 },
+        );
       }
 
       await prisma.referralRequest.update({
         where: { id: referralRequestId },
-        data: updateData,
+        data: {
+          appointmentId,
+          requestStatus: ReferralRequestStatus.ASSIGNED,
+        },
       });
+
+      notifyReferralAppointmentBound(referralRequestId).catch(console.error);
 
       const result = await prisma.referralRequest.findUnique({
         where: { id: referralRequestId },

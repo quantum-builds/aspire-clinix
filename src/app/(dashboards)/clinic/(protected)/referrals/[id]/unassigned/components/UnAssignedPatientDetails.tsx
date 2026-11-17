@@ -252,6 +252,7 @@ export default function UnAssignedPatientDetails({
         isOpen={isBindModalOpen}
         onClose={() => setIsBindModalOpen(false)}
         patientName={patientDetials.name}
+        practitionerId={assignedDentist?.dentallyId ?? null}
         referralRequestId={referralRequestId}
         onAppointmentBound={handleAppointmentBound}
       />

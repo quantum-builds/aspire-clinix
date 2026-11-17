@@ -3,12 +3,6 @@ import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import StatusBage from "@/app/(dashboards)/components/StatusBadge";
 import { CalenderInputIconV2, DropDownIcon, TimeIconV2 } from "@/assets";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useChangeAppointmentState } from "@/services/appointments/appointmentMutation";
 import { AppointmentState, TAppointment } from "@/types/appointment";
 import { formatDate } from "@/utils/formatDateTime";
@@ -17,7 +11,7 @@ import { TIMEZONE } from "@/utils/slotSelectionUtils";
 import { formatInTimeZone } from "date-fns-tz";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 import { showToast } from "@/utils/defaultToastOptions";
 
@@ -33,7 +27,20 @@ export default function UpcomingAppointmentCard({
   const [selectedStatus, setSelectedStatus] = useState<AppointmentState | null>(
     null,
   );
+  const menuRef = useRef<HTMLDivElement>(null);
   const { refresh } = useRouter();
+
+  // Close the status menu when clicking outside it
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
   const { mutate: updateAppointment, isPending: updateAppointmentLoader } =
     useChangeAppointmentState();
 
@@ -103,41 +110,43 @@ export default function UpcomingAppointmentCard({
           Status: <StatusBage status={appointment.state} />
         </p>
         <div className="relative">
-          <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
-            <DropdownMenuTrigger className="relative flex gap-1 items-center focus:outline-none">
+          {/* Rendered inline (no portal): the global `html { zoom }` in globals.css
+              breaks Radix's portal positioning, so the menu sits under the trigger here. */}
+          <div ref={menuRef} className="relative">
+            <button
+              type="button"
+              className="relative flex gap-1 items-center focus:outline-none"
+              onClick={() => setMenuOpen((open) => !open)}
+            >
               <p className="text-green text-lg font-semibold cursor-pointer">
                 Select Status:
               </p>
               <Image
                 src={DropDownIcon}
                 alt="Dropdown icon"
-                className="w-3 h-3"
+                className={`w-3 h-3 transition-transform duration-300 ${menuOpen ? "rotate-180" : "rotate-0"}`}
               />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="min-w-[var(--radix-dropdown-menu-trigger-width)] border border-green rounded-lg bg-white z-50"
-              align="start"
-              side="bottom"
-              sideOffset={5}
-              avoidCollisions={false}
-            >
-              {statusOptions.map((status) => (
-                <DropdownMenuItem
-                  key={status}
-                  className={`px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors ${
-                    appointment.state === status ? "bg-green-50" : ""
-                  }`}
-                  onClick={() => {
-                    setSelectedStatus(status);
-                    setIsConfirmModalOpen(true);
-                    setMenuOpen(false);
-                  }}
-                >
-                  {capitalize(status)}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </button>
+            {menuOpen && (
+              <div className="absolute left-0 top-full mt-[5px] min-w-full w-max border border-green rounded-lg bg-white z-50 p-1 shadow-md">
+                {statusOptions.map((status) => (
+                  <div
+                    key={status}
+                    className={`px-3 py-2 rounded-sm text-sm cursor-pointer hover:bg-gray-50 transition-colors ${
+                      appointment.state === status ? "bg-green-50" : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedStatus(status);
+                      setIsConfirmModalOpen(true);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    {capitalize(status)}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

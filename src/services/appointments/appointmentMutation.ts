@@ -22,15 +22,18 @@ export const useChangeAppointmentState = () => {
   });
 };
 
-export const useGetAppointmentsByPatient = (patientName: string) => {
+export const useGetAppointmentsByPatient = (
+  patientName: string,
+  practitionerId?: number | null
+) => {
   return useQuery({
-    queryKey: ["appointments", "patient", patientName],
+    queryKey: ["appointments", "patient", patientName, practitionerId],
     queryFn: async () => {
       const response = await axiosInstance.get(
-        ENDPOINTS.appointemt.getByPatientName(patientName)
+        ENDPOINTS.appointemt.getByPatientName(patientName, practitionerId)
       );
       return response.data.data as TAppointment[];
     },
-    enabled: !!patientName,
+    enabled: !!patientName && !!practitionerId,
   });
 };
