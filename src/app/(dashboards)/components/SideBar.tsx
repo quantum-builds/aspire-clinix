@@ -8,7 +8,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { SidebarPage } from "@/types/common";
 import CustomButton from "./custom-components/CustomButton";
-import { Stethoscope } from "lucide-react";
+import { ChartColumn, Stethoscope } from "lucide-react";
 
 interface SideBarProps {
   sideBarContnent: SidebarPage[];
@@ -127,6 +127,11 @@ export default function Sidebar({ sideBarContnent }: SideBarProps) {
                   <div className="flex items-center">
                     {section.icon === "stethoscope" ? (
                       <Stethoscope
+                        size={20}
+                        className="mr-2"
+                      />
+                    ) : section.icon === "chart" ? (
+                      <ChartColumn
                         size={20}
                         className="mr-2"
                       />

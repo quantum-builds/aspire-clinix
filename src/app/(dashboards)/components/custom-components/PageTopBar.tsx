@@ -31,6 +31,7 @@ interface PageTopBarProps {
   showDropdown?: boolean;
   filtersBelow?: boolean;
   showBreathworkNote?: boolean;
+  note?: ReactNode;
 }
 
 export default function PageTopBar({
@@ -52,12 +53,13 @@ export default function PageTopBar({
   showDropdown = false,
   filtersBelow = false,
   showBreathworkNote = false,
+  note,
 }: PageTopBarProps) {
   const router = useRouter();
   const [participantType, setParticipantType] = useState<string>("patient");
 
   const showBottomFilters = showFilters && filtersBelow;
-  const showBottomRow = showBreathworkNote || showBottomFilters;
+  const showBottomRow = showBreathworkNote || showBottomFilters || !!note;
 
   return (
     <div
@@ -144,6 +146,8 @@ export default function PageTopBar({
               *Note: If you want to view Breathwork appointments, please select
               Breathwork from the appointment filter.
             </p>
+          ) : note ? (
+            <p className="text-sm italic text-[#1D120C]">*Note: {note}</p>
           ) : (
             <span />
           )}
