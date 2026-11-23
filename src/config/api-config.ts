@@ -96,6 +96,58 @@ export const ENDPOINTS = {
     patch: (id: string) => `/api/referrals/${id}`,
   },
 
+  analytics: {
+    referralTrend: (
+      after?: string,
+      before?: string,
+      specialty?: string,
+      practice?: string,
+      interval?: string,
+    ) => {
+      const params = new URLSearchParams({
+        after: after ?? "",
+        before: before ?? "",
+        specialty: specialty ?? "",
+        practice: practice ?? "",
+        interval: interval ?? "",
+      });
+
+      return `/api/analytics/referrals/trend?${params.toString()}`;
+    },
+    referralBreakdown: (
+      after?: string,
+      before?: string,
+      specialty?: string,
+      practice?: string,
+    ) => {
+      const params = new URLSearchParams({
+        after: after ?? "",
+        before: before ?? "",
+        specialty: specialty ?? "",
+        practice: practice ?? "",
+      });
+
+      return `/api/analytics/referrals/breakdown?${params.toString()}`;
+    },
+    topReferrers: (
+      after?: string,
+      before?: string,
+      specialty?: string,
+      practice?: string,
+      limit?: number,
+    ) => {
+      const params = new URLSearchParams({
+        after: after ?? "",
+        before: before ?? "",
+        specialty: specialty ?? "",
+        practice: practice ?? "",
+        limit: String(limit ?? 10),
+      });
+
+      return `/api/analytics/referrals/top-referrers?${params.toString()}`;
+    },
+  },
+
   email: {
     sendEmail: "/api/send-email",
     sendEmailToAdmin: "/api/send-email-to-admin",

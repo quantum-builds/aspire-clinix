@@ -15,6 +15,11 @@ import { getAdmin } from "@/services/admin/adminQuery";
 import TopBarWrapper from "../../components/TopBarWrapper";
 
 const SIDEBAR_CONTENT: SidebarPage[] = [
+   {
+    name: "Overview",
+    icon: "chart",
+    href: "/clinic/analytics",
+  },
   {
     name: "Appointments",
     icon: AppointmentsIcon,
