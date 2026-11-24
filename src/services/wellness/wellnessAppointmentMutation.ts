@@ -28,6 +28,7 @@ export interface CheckEligibilityData {
 
 export interface CheckEligibilityResponse {
   status: EligibilityStatus;
+  memberDiscountPercent?: number | null;
 }
 
 export interface BookWithPlanData {

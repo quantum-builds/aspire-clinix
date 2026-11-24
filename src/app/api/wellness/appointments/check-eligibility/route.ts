@@ -6,6 +6,7 @@ import {
   evaluatePlanEligibility,
   syncMembershipPeriod,
 } from "@/lib/plan-booking";
+import { getMemberDiscountPercent } from "@/lib/member-discount";
 
 const prisma = new PrismaClient();
 
@@ -71,6 +72,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       createResponse(true, "Eligibility check complete", {
         status: outcome,
+        // Discount applied at checkout for extra treatments, if the plan has one.
+        memberDiscountPercent:
+          outcome === "OK" ? null : getMemberDiscountPercent(synced.plan.name),
       }),
       { status: 200 },
     );

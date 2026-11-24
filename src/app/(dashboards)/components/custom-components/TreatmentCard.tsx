@@ -2,12 +2,13 @@
 
 import Button from "@/app/(dashboards)/components/Button";
 import { TreatmentCardSkeleton } from "@/app/(dashboards)/patient/plan-selection/wellness-treatments/component/skeletons/TreatmentGridSkeleton";
-import {
-  CONTRAST_SESSION_TREATMENT_ID,
-  HYPERBARIC_TREATMENT_ID,
-  SAUNA_TREATMENT_ID
-} from "@/lib/plan-treatment-cost";
 import { getCurrentMembership } from "@/services/membership/membershipQuery";
+import {
+  applyMemberDiscount,
+  getPlanAllowanceCost,
+  getPlanAllowanceKind,
+  isPlanAllowanceUsed,
+} from "@/lib/member-discount";
 import { parseTreatmentTimes } from "@/lib/treatment-times";
 import { TTreatment } from "@/types/common";
 import { useQuery } from "@tanstack/react-query";
@@ -54,28 +55,24 @@ export default function TreatmentCard({
   const plan = membership?.plan;
 
   let showPrice = false;
+  // Set when an Essentials/Perform member has to pay for this treatment.
+  let discountPercent: number | null = null;
 
   if (!membership || !plan || membership.status !== "ACTIVE") {
     showPrice = true;
   } else {
-    const remainingTreatments =
-      plan.treatmentLimit === null
-        ? Infinity
-        : Math.max(0, plan.treatmentLimit - membership.usedTreatments);
-    const remainingHyperbaric =
-      plan.hyperbaricLimit === null
-        ? Infinity
-        : Math.max(0, plan.hyperbaricLimit - membership.usedHyperbaric);
+    // Each allowance controls its own treatments: Breathwork only its own
+    // limit, Hyperbaric its limit or the treatment limit, others the
+    // treatment limit. Same rule as the checkout.
+    showPrice = isPlanAllowanceUsed(
+      getPlanAllowanceKind(treatment.id, treatment.name),
+      getPlanAllowanceCost(treatment.id),
+      membership,
+      plan,
+    );
 
-    if (remainingTreatments === 0) {
-      showPrice = true;
-    } else if (
-      remainingTreatments < 2 &&
-      (treatment.id === CONTRAST_SESSION_TREATMENT_ID || treatment.id ===  SAUNA_TREATMENT_ID) 
-    ) {
-      showPrice = true;
-    } else if (treatment.id === HYPERBARIC_TREATMENT_ID) {
-      showPrice = remainingHyperbaric <= 0;
+    if (showPrice) {
+      discountPercent = membership.memberDiscountPercent ?? null;
     }
   }
 
@@ -95,10 +92,24 @@ export default function TreatmentCard({
 
         {showPrice && (treatment.price || treatment.code) && (
           <div className="flex flex-col items-end gap-1 text-right">
-            {treatment.price && (
-              <span className="font-[family-name:var(--font-cormorant)] text-[36px] font-normal leading-none text-[var(--wt-amount)] sm:text-[44px]">
-                £{treatment.price}
-              </span>
+            {treatment.price && discountPercent ? (
+              <>
+                <span className="font-gillSans text-base text-[var(--wt-desc)] line-through">
+                  £{treatment.price}
+                </span>
+                <span className="font-[family-name:var(--font-cormorant)] text-[36px] font-normal leading-none text-[var(--wt-amount)] sm:text-[44px]">
+                  £{applyMemberDiscount(treatment.price, discountPercent)}
+                </span>
+                <span className="mt-1 rounded-full border border-[var(--wt-amount)]/50 px-3 py-1 font-gillSans text-xs uppercase tracking-wide text-[var(--wt-amount)]">
+                  {discountPercent}% member price
+                </span>
+              </>
+            ) : (
+              treatment.price && (
+                <span className="font-[family-name:var(--font-cormorant)] text-[36px] font-normal leading-none text-[var(--wt-amount)] sm:text-[44px]">
+                  £{treatment.price}
+                </span>
+              )
             )}
           </div>
         )}

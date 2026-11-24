@@ -8,8 +8,10 @@ import {
   Lock,
   MapPin,
   Star,
+  Tag,
 } from "lucide-react";
 import { ReactNode } from "react";
+import { applyMemberDiscount } from "@/lib/member-discount";
 
 // How the appointment will be paid for:
 // - "stripe": single paid appointment (redirect to Stripe)
@@ -28,6 +30,8 @@ interface BookingSummaryProps {
   notice?: ReactNode;
   // Membership upsell link; defaults to on for "stripe" only.
   showUpsell?: boolean;
+  // Member discount on extra treatments (e.g. 15). Applied at Stripe checkout.
+  discountPercent?: number | null;
 }
 
 function formatDuration(minutes?: number | null) {
@@ -80,11 +84,13 @@ export default function BookingSummary({
   mode,
   notice,
   showUpsell = mode === "stripe",
+  discountPercent,
 }: BookingSummaryProps) {
   const duration = formatDuration(durationMinutes);
   const iconProps = { className: "h-5 w-5", strokeWidth: 1.6 };
   const noteIconProps = { className: "h-[18px] w-[18px]", strokeWidth: 1.6 };
   const hasPrice = price !== null && price !== undefined && price !== "";
+  const hasDiscount = Boolean(discountPercent) && mode === "stripe";
 
   return (
     <div className="flex flex-col gap-6 font-gillSans">
@@ -107,9 +113,20 @@ export default function BookingSummary({
             value={serviceName}
             extra={
               hasPrice && mode !== "plan" ? (
-                <span className="text-base font-medium text-[#F2EBE0]">
-                  £{price}
-                </span>
+                hasDiscount ? (
+                  <span className="flex items-baseline gap-2">
+                    <span className="text-sm text-[#8F8477] line-through">
+                      £{price}
+                    </span>
+                    <span className="text-base font-medium text-[#F2EBE0]">
+                      £{applyMemberDiscount(price!, discountPercent!)}
+                    </span>
+                  </span>
+                ) : (
+                  <span className="text-base font-medium text-[#F2EBE0]">
+                    £{price}
+                  </span>
+                )
               ) : null
             }
           />
@@ -117,6 +134,15 @@ export default function BookingSummary({
       </dl>
 
       {notice && <Note icon={<Info {...noteIconProps} />}>{notice}</Note>}
+
+      {hasDiscount && (
+        <Note icon={<Tag {...noteIconProps} />}>
+          <strong>Member discount: {discountPercent}% off</strong> the list
+          price. As a member, you get {discountPercent}% off every extra
+          treatment once your plan treatments are used. It&apos;s applied
+          automatically at checkout.
+        </Note>
+      )}
 
       {mode === "stripe" && (
         <Note icon={<Lock {...noteIconProps} />}>

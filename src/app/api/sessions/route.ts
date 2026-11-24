@@ -1,5 +1,10 @@
 import prisma from "@/lib/db";
-import { syncMembershipPeriod } from "@/lib/plan-booking";
+import { MembershipWithPlan, syncMembershipPeriod } from "@/lib/plan-booking";
+import {
+  getMemberDiscountPercent,
+  isPlanAllowanceUsed,
+} from "@/lib/member-discount";
+import { getMemberExtraDiscount } from "@/lib/stripe/member-discount";
 import {
   findTreatmentSlot,
   isBreathworkTreatment,
@@ -25,6 +30,19 @@ const SLOT_ERROR_RESPONSES: Record<string, { message: string; status: number }> 
     status: 409,
   },
 };
+
+// True when the plan has no allowance left for one more session.
+function isSessionLimitReached(
+  membership: MembershipWithPlan,
+  isBreathwork: boolean,
+): boolean {
+  return isPlanAllowanceUsed(
+    isBreathwork ? "breathwork" : "treatment",
+    1,
+    membership,
+    membership.plan,
+  );
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -113,30 +131,30 @@ export async function POST(req: NextRequest) {
       include: { plan: true },
     });
 
+    const isBreathwork = isBreathworkTreatment(treatment.name);
+
     if (membership && !payWithStripe) {
       const synced = await syncMembershipPeriod(prisma, membership);
       const plan = synced.plan;
-      const isBreathwork = isBreathworkTreatment(treatment.name);
+      const memberDiscountPercent = getMemberDiscountPercent(plan.name);
 
       // Breathwork uses its own allowance and does not count towards
       // usedTreatments.
-      if (
-        !isBreathwork &&
-        plan.treatmentLimit !== null &&
-        synced.usedTreatments + 1 > plan.treatmentLimit
-      ) {
+      if (!isBreathwork && isSessionLimitReached(synced, false)) {
         return NextResponse.json(
           createResponse(true, "Not eligible for plan booking", {
             status: "PLAN_LIMIT_REACHED",
+            memberDiscountPercent,
           }),
           { status: 200 },
         );
       }
 
-      if (isBreathwork && synced.usedBreathwork + 1 > plan.breathworkLimit) {
+      if (isBreathwork && isSessionLimitReached(synced, true)) {
         return NextResponse.json(
           createResponse(true, "Not eligible for plan booking", {
             status: "BREATHWORK_LIMIT_REACHED",
+            memberDiscountPercent,
           }),
           { status: 200 },
         );
@@ -260,6 +278,7 @@ export async function POST(req: NextRequest) {
               status: isBreathwork
                 ? "BREATHWORK_LIMIT_REACHED"
                 : "PLAN_LIMIT_REACHED",
+              memberDiscountPercent,
             }),
             { status: 200 },
           );
@@ -281,6 +300,13 @@ export async function POST(req: NextRequest) {
 
     const customer = await getOrCreateStripeCustomer(patient);
 
+    // Re-checked here: the client's payWithStripe flag is not trusted.
+    const memberDiscount = membership
+      ? await getMemberExtraDiscount(patient.id, (m) =>
+          isSessionLimitReached(m, isBreathwork),
+        )
+      : null;
+
     const checkoutSession = await stripe.checkout.sessions.create({
       customer,
 
@@ -291,9 +317,16 @@ export async function POST(req: NextRequest) {
         },
       ],
 
+      ...(memberDiscount
+        ? { discounts: [{ coupon: memberDiscount.couponId }] }
+        : {}),
+
       mode: "payment",
 
       metadata: {
+        ...(memberDiscount
+          ? { member_discount: String(memberDiscount.percent) }
+          : {}),
         payment_for: "treatment_session",
         treatment_id: treatmentId,
         patient_id: String(dentallyId),
