@@ -22,6 +22,7 @@ export interface BookSessionResponse {
   remainingBreathwork?: number;
   checkoutUrl?: string;
   sessionId?: string;
+  memberDiscountPercent?: number | null;
 }
 
 export const useBookSession = () => {

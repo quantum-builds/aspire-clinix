@@ -12,6 +12,8 @@ import {
   resolveWellnessTreatment,
   WellnessTreatmentError,
 } from "@/lib/wellness-booking";
+import { evaluatePlanEligibility } from "@/lib/plan-booking";
+import { getMemberExtraDiscount } from "@/lib/stripe/member-discount";
 
 export async function POST(req: NextRequest) {
   try {
@@ -142,6 +144,18 @@ export async function POST(req: NextRequest) {
 
     const customer = await getOrCreateStripeCustomer(patient);
 
+    // Essentials/Perform members who have used their plan allowance get the
+    // member coupon on extra treatments.
+    const memberDiscount = await getMemberExtraDiscount(
+      patient.id,
+      (membership) =>
+        evaluatePlanEligibility(
+          membership,
+          membership.plan,
+          Number(treatmentId),
+        ) !== "OK",
+    );
+
     const session = await stripe.checkout.sessions.create({
       customer,
 
@@ -152,9 +166,17 @@ export async function POST(req: NextRequest) {
         },
       ],
 
+      ...(memberDiscount
+        ? { discounts: [{ coupon: memberDiscount.couponId }] }
+        : {}),
+
       mode: "payment",
 
       metadata: {
+        ...(memberDiscount
+          ? { member_discount: String(memberDiscount.percent) }
+          : {}),
+
         payment_for: "wellness_appointment",
 
         treatment_id: String(treatmentId),
@@ -178,6 +200,7 @@ export async function POST(req: NextRequest) {
     console.log("[PAID-BOOKING checkout] Stripe session", {
       id: session.id,
       priceId: treatmentMapping.stripePriceId,
+      memberDiscount: memberDiscount?.percent ?? null,
     });
 
     return NextResponse.json(

@@ -2,6 +2,7 @@ import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { getMemberDiscountPercent } from "@/lib/member-discount";
 
 export async function GET(req: NextRequest) {
   try {
@@ -53,7 +54,18 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(
-      createResponse(true, "Membership retrieved", membership),
+      createResponse(
+        true,
+        "Membership retrieved",
+        membership
+          ? {
+              ...membership,
+              memberDiscountPercent: getMemberDiscountPercent(
+                membership.plan?.name,
+              ),
+            }
+          : null,
+      ),
     );
   } catch (error) {
     console.error("Get current membership error:", error);

@@ -23,6 +23,8 @@ interface MembershipResponse {
   usedBreathwork: number;
   usedGuestPasses: number;
   plan: MembershipPlan | null;
+  // % off extra treatments once the plan allowance is used (null = none).
+  memberDiscountPercent: number | null;
 }
 
 export async function getCurrentMembership(): Promise<Response<MembershipResponse> | null> {

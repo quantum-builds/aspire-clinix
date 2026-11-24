@@ -68,6 +68,11 @@ export default function SlotSelection({ treatmentId }: SlotSelectionProps) {
   const [paidModalType, setPaidModalType] = useState<
     "PLAN_LIMIT" | "HYPERBARIC_LIMIT" | null
   >(null);
+  // Member discount on extra treatments (Essentials/Perform), shown when the
+  // plan allowance is used up and the patient pays for a single appointment.
+  const [memberDiscountPercent, setMemberDiscountPercent] = useState<
+    number | null
+  >(null);
   const [pendingSlot, setPendingSlot] = useState<{
     dayKey: string;
     chip: SlotChip;
@@ -115,6 +120,10 @@ export default function SlotSelection({ treatmentId }: SlotSelectionProps) {
       );
 
       console.log("[PAID-BOOKING 3] membership", { hasActivePlan });
+
+      setMemberDiscountPercent(
+        hasActivePlan ? (membership?.memberDiscountPercent ?? null) : null,
+      );
 
       setConfirmationMode(hasActivePlan ? "plan" : "standard");
       setShowConfirmation(true);
@@ -350,6 +359,10 @@ export default function SlotSelection({ treatmentId }: SlotSelectionProps) {
 
       console.log("[PAID-BOOKING 4] plan eligibility", { status: eligibility });
 
+      if (eligibilityRes.data?.memberDiscountPercent !== undefined) {
+        setMemberDiscountPercent(eligibilityRes.data.memberDiscountPercent);
+      }
+
       if (eligibility === "PLAN_LIMIT_REACHED") {
         setShowConfirmation(false);
         setConfirmationMode(null);
@@ -540,6 +553,16 @@ export default function SlotSelection({ treatmentId }: SlotSelectionProps) {
     price: data?.data?.price,
   };
 
+  const paidLimitNotice = `${
+    paidModalType === "PLAN_LIMIT"
+      ? "You have used all treatments in your current plan this month."
+      : "You have used all Hyperbaric sessions included in your plan this month."
+  }${
+    memberDiscountPercent
+      ? ` As a member, you get ${memberDiscountPercent}% off extra treatments.`
+      : ""
+  } Would you like to book a single paid appointment?`;
+
   const storedMatches = Boolean(
     stored && stored.treatmentId === treatmentId,
   );
@@ -703,20 +726,15 @@ export default function SlotSelection({ treatmentId }: SlotSelectionProps) {
               time={slotDateTime.time}
               mode="stripe"
               showUpsell={false}
-              notice={
-                paidModalType === "PLAN_LIMIT"
-                  ? "You have used all treatments in your current plan this month. Would you like to book a single paid appointment?"
-                  : "You have used all Hyperbaric sessions included in your plan this month. Would you like to book a single paid appointment?"
-              }
+              discountPercent={memberDiscountPercent}
+              notice={paidLimitNotice}
             />
           ) : undefined
         }
         description={
           <>
             {slotDateTime && <SlotDateTime {...slotDateTime} />}
-            {paidModalType === "PLAN_LIMIT"
-              ? "You have used all treatments in your current plan this month. Would you like to book a single paid appointment?"
-              : "You have used all Hyperbaric sessions included in your plan this month. Would you like to book a single paid appointment?"}
+            {paidLimitNotice}
           </>
         }
         confirmText="Yes"

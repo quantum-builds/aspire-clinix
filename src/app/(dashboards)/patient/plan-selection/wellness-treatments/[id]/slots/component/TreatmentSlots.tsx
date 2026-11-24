@@ -62,6 +62,10 @@ export default function TreatmentSlots() {
   const [paidModalType, setPaidModalType] = useState<
     "PLAN_LIMIT_REACHED" | "BREATHWORK_LIMIT_REACHED" | null
   >(null);
+  // Member discount on extra treatments (Essentials/Perform), from the API.
+  const [memberDiscountPercent, setMemberDiscountPercent] = useState<
+    number | null
+  >(null);
 
   // Restore the slot picked before login and reopen its confirmation.
   useEffect(() => {
@@ -183,6 +187,7 @@ export default function TreatmentSlots() {
         outcome === "BREATHWORK_LIMIT_REACHED"
       ) {
         setConfirmationMode(null);
+        setMemberDiscountPercent(bookingRes.data?.memberDiscountPercent ?? null);
         setPaidModalType(outcome);
         return;
       }
@@ -217,6 +222,16 @@ export default function TreatmentSlots() {
     serviceName: treatment?.name ?? null,
     price: treatment?.price ?? null,
   };
+
+  const paidLimitNotice = `${
+    paidModalType === "BREATHWORK_LIMIT_REACHED"
+      ? "You have used all Breathwork sessions included in your plan this month."
+      : "You have used all treatments in your current plan this month."
+  }${
+    memberDiscountPercent
+      ? ` As a member, you get ${memberDiscountPercent}% off extra treatments.`
+      : ""
+  } Would you like to book a single paid appointment?`;
 
   let slotsContent: ReactNode;
 
@@ -400,20 +415,15 @@ export default function TreatmentSlots() {
               time={slotDateTime.time}
               mode="stripe"
               showUpsell={false}
-              notice={
-                paidModalType === "BREATHWORK_LIMIT_REACHED"
-                  ? "You have used all Breathwork sessions included in your plan this month. Would you like to book a single paid appointment?"
-                  : "You have used all treatments in your current plan this month. Would you like to book a single paid appointment?"
-              }
+              discountPercent={memberDiscountPercent}
+              notice={paidLimitNotice}
             />
           ) : undefined
         }
         description={
           <>
             {slotDateTime && <SlotDateTime {...slotDateTime} />}
-            {paidModalType === "BREATHWORK_LIMIT_REACHED"
-              ? "You have used all Breathwork sessions included in your plan this month. Would you like to book a single paid appointment?"
-              : "You have used all treatments in your current plan this month. Would you like to book a single paid appointment?"}
+            {paidLimitNotice}
           </>
         }
         confirmText="Yes"
