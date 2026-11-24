@@ -25,10 +25,10 @@ export type PlanAllowanceKind = "breathwork" | "hyperbaric" | "treatment";
 
 export function getPlanAllowanceKind(
   id: number | string,
-  name: string,
+  name?: string | null,
 ): PlanAllowanceKind {
   // Same test as isBreathworkTreatment (src/lib/treatment-session.ts).
-  if (name.toLowerCase().includes("breathwork")) return "breathwork";
+  if ((name ?? "").toLowerCase().includes("breathwork")) return "breathwork";
   if (Number(id) === HYPERBARIC_TREATMENT_ID) return "hyperbaric";
   return "treatment";
 }
