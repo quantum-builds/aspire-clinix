@@ -42,8 +42,6 @@ export async function getPatient(query: patientQuery) {
 const PATIENT_SEARCH_PAGE_SIZE = 100;
 // Pages fetched at the same time, so Dentally isn't flooded with requests.
 const PATIENT_SEARCH_CONCURRENCY = 2;
-// Safety cap: at most 1,000 patients per query.
-const PATIENT_SEARCH_MAX_PAGES = 10;
 
 async function fetchPatientsPage(query: string, page: number) {
   const response = await axiosDentallyInstance.get(
@@ -57,10 +55,7 @@ export async function searchAllPatients(query: string) {
   if (first.isError) return first;
 
   const patients = [...(first.response.patients ?? [])];
-  const totalPages = Math.min(
-    Number(first.response.meta?.totalPages) || 1,
-    PATIENT_SEARCH_MAX_PAGES,
-  );
+  const totalPages = Number(first.response.meta?.totalPages) || 1;
 
   for (let page = 2; page <= totalPages; page += PATIENT_SEARCH_CONCURRENCY) {
     const batch = Array.from(
