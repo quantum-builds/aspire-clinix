@@ -243,8 +243,21 @@ export const ENDPOINTS = {
     post: "/api/appointments",
     patch: (id: number | string) => `/api/appointments/${id}`,
     getById: (id: string) => `/api/appointments/${id}`,
-    getByPatientName: (patientName: string, practitionerId?: number | null) =>
-      `/api/appointments/patient?patientName=${encodeURIComponent(patientName)}${
+    // Dentally patients with a name close to the referral's (or the typed) name.
+    similarPatients: (params: {
+      referralRequestId?: string;
+      patientName?: string;
+    }) =>
+      `/api/appointments/patient/matches?${
+        params.patientName
+          ? `patientName=${encodeURIComponent(params.patientName)}`
+          : `referralRequestId=${encodeURIComponent(params.referralRequestId ?? "")}`
+      }`,
+    getByDentallyPatient: (
+      dentallyPatientId: number,
+      practitionerId?: number | null,
+    ) =>
+      `/api/appointments/patient?dentallyPatientId=${dentallyPatientId}${
         practitionerId ? `&practitionerId=${practitionerId}` : ""
       }`,
   },
@@ -352,8 +365,14 @@ export const DENTALLY_ENDPOINTS = {
     get: (patientId: string) => `/patients/${patientId}`,
     edit: (patientId: string) => `patients/${patientId}`,
     delete: (patientId: string) => `patients/${patientId}`,
-    list: (query?: string) =>
-      query ? `patients?query=${encodeURIComponent(query)}` : `patients`,
+    list: (query?: string, page?: number, perPage?: number) => {
+      const params = [
+        query ? `query=${encodeURIComponent(query)}` : "",
+        page ? `page=${page}` : "",
+        perPage ? `per_page=${perPage}` : "",
+      ].filter(Boolean);
+      return params.length ? `patients?${params.join("&")}` : `patients`;
+    },
   },
   practitioner: {
     get: (practitionerId: string) => `practitioners/${practitionerId}`,

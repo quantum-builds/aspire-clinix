@@ -22,18 +22,49 @@ export const useChangeAppointmentState = () => {
   });
 };
 
+export interface SimilarPatient {
+  dentallyPatientId: number;
+  name: string;
+  match: "EXACT" | "CLOSE";
+  score: number;
+}
+
+export interface SimilarPatientsResponse {
+  searchName: string;
+  patients: SimilarPatient[];
+}
+export const useGetSimilarPatients = (
+  referralRequestId: string,
+  patientName?: string,
+  enabled = true,
+) => {
+  return useQuery({
+    queryKey: ["appointments", "similarPatients", referralRequestId, patientName ?? ""],
+    queryFn: async () => {
+      const response = await axiosInstance.get(
+        ENDPOINTS.appointemt.similarPatients({ referralRequestId, patientName }),
+      );
+      return response.data.data as SimilarPatientsResponse;
+    },
+    enabled: enabled && (!!referralRequestId || !!patientName),
+  });
+};
+
 export const useGetAppointmentsByPatient = (
-  patientName: string,
+  dentallyPatientId: number | null,
   practitionerId?: number | null
 ) => {
   return useQuery({
-    queryKey: ["appointments", "patient", patientName, practitionerId],
+    queryKey: ["appointments", "patient", dentallyPatientId, practitionerId],
     queryFn: async () => {
       const response = await axiosInstance.get(
-        ENDPOINTS.appointemt.getByPatientName(patientName, practitionerId)
+        ENDPOINTS.appointemt.getByDentallyPatient(
+          dentallyPatientId as number,
+          practitionerId,
+        )
       );
       return response.data.data as TAppointment[];
     },
-    enabled: !!patientName && !!practitionerId,
+    enabled: !!dentallyPatientId && !!practitionerId,
   });
 };
