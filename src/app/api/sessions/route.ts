@@ -154,7 +154,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(
           createResponse(true, "Not eligible for plan booking", {
             status: "BREATHWORK_LIMIT_REACHED",
-            memberDiscountPercent,
+            // Breathwork is never discounted; paid at the original price.
+            memberDiscountPercent: null,
           }),
           { status: 200 },
         );
@@ -278,7 +279,7 @@ export async function POST(req: NextRequest) {
               status: isBreathwork
                 ? "BREATHWORK_LIMIT_REACHED"
                 : "PLAN_LIMIT_REACHED",
-              memberDiscountPercent,
+              memberDiscountPercent: isBreathwork ? null : memberDiscountPercent,
             }),
             { status: 200 },
           );
@@ -301,11 +302,13 @@ export async function POST(req: NextRequest) {
     const customer = await getOrCreateStripeCustomer(patient);
 
     // Re-checked here: the client's payWithStripe flag is not trusted.
-    const memberDiscount = membership
-      ? await getMemberExtraDiscount(patient.id, (m) =>
-          isSessionLimitReached(m, isBreathwork),
-        )
-      : null;
+    // Breathwork is never discounted; it is paid at the original price.
+    const memberDiscount =
+      membership && !isBreathwork
+        ? await getMemberExtraDiscount(patient.id, (m) =>
+            isSessionLimitReached(m, false),
+          )
+        : null;
 
     const checkoutSession = await stripe.checkout.sessions.create({
       customer,

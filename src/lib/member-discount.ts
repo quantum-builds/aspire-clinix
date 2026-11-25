@@ -8,8 +8,9 @@ import {
 
 export const MEMBER_DISCOUNT_PERCENT = 15;
 
-// Plans are identified by name (no tier column). Unlimited is not included.
-export const MEMBER_DISCOUNT_PLAN_NAMES = ["Essentials", "Perform"];
+// Plans are identified by name (no tier column). On Unlimited, treatments
+// never run out, so in practice only Hyperbaric (limit 8) gets the discount.
+export const MEMBER_DISCOUNT_PLAN_NAMES = ["Essentials", "Perform", "Unlimited"];
 
 export function getMemberDiscountPercent(
   planName: string | null | undefined,
