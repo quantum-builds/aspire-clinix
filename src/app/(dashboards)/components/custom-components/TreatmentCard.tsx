@@ -64,14 +64,17 @@ export default function TreatmentCard({
     // Each allowance controls its own treatments: Breathwork only its own
     // limit, Hyperbaric its limit or the treatment limit, others the
     // treatment limit. Same rule as the checkout.
+    const kind = getPlanAllowanceKind(treatment.id, treatment.name);
+
     showPrice = isPlanAllowanceUsed(
-      getPlanAllowanceKind(treatment.id, treatment.name),
+      kind,
       getPlanAllowanceCost(treatment.id),
       membership,
       plan,
     );
 
-    if (showPrice) {
+    // Breathwork is never discounted: shown and charged at the original price.
+    if (showPrice && kind !== "breathwork") {
       discountPercent = membership.memberDiscountPercent ?? null;
     }
   }
