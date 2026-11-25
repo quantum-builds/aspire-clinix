@@ -4,7 +4,6 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { listAppointment } from "@/dentallyHelpers/appointment";
 import { Appointment, TAppointment } from "@/types/appointment";
-import { getPatient } from "@/dentallyHelpers/patient";
 import prisma from "@/lib/db";
 
 /**
@@ -95,62 +94,22 @@ export async function GET(req: NextRequest) {
       });
     }
     const { searchParams } = new URL(req.url);
-    const patientName = searchParams.get("patientName") || "";
+    // The Dentally patient the admin picked from the similar-patients list
+    // (GET /api/appointments/patient/matches).
+    const dentallyPatientId = Number(searchParams.get("dentallyPatientId"));
     // Optional: restrict results to the referral's assigned dentist (Dentally practitioner id)
     const practitionerId = searchParams.get("practitionerId") || undefined;
-    const [firstName, lastName] = patientName.trim().split(/\s+/);
 
-    console.log("[/api/appointments/patient] patient id is ", patientName)
-    if (!firstName || !lastName) {
+    if (!Number.isInteger(dentallyPatientId) || dentallyPatientId <= 0) {
       return NextResponse.json(
-        createResponse(false, "Patient FirstName and LastName is required", null),
+        createResponse(false, "dentallyPatientId is required", null),
         { status: 400 }
       );
     }
 
-    const response = await getPatient({
-      firstName,
-      lastName,
-    });
-
-    if (response.isError) {
-      return NextResponse.json(
-        createResponse(false, "Failed to fetch patients from Dentally", null),
-        { status: 500 }
-      );
-    }
-
-    let activePatients = (response.response.patients ?? []).filter(
-      (patient: any) => patient.active && !patient.archivedReason,
-    );
-    if (activePatients.length > 0) {
-      const matchingPatients = activePatients.filter(
-        (patient: any) =>
-          (patient.firstName ?? "").trim() === firstName &&
-          (patient.lastName ?? "").trim() === lastName,
-      );
-
-      activePatients = matchingPatients;
-    }
-
-    if (activePatients.length === 0 || activePatients.length > 1) {
-      return NextResponse.json(
-        createResponse(
-          false,
-          "No Account found",
-          null,
-        ),
-        { status: 404 },
-      );
-    }
-
-    let active = activePatients[0];
-    console.log("[/api/appointments/patient] active patient is ", active)
-    console.log("[/api/appointments/patient] active patient id is ", active.id)
-
     // Fetch appointments from Dentally using the patient_id filter
     const appointmentRes = await listAppointment({
-      patientId: active.id,
+      patientId: String(dentallyPatientId),
       perPage: 100, // Get more appointments to show in the list
       practitionerId,
     });
