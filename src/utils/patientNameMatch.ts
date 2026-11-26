@@ -1,6 +1,6 @@
 
 import { Title } from "@/types/patient";
-export const NAME_MATCH_THRESHOLD = 0.70
+export const NAME_MATCH_THRESHOLD = 0.50
 export const MAX_NAME_MATCHES = 5;
 
 const TITLE_WORDS = new Set(
