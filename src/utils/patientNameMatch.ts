@@ -20,6 +20,11 @@ export function normalizeName(name: string | null | undefined): string[] {
 
   return withoutTitles.length > 0 ? withoutTitles : words;
 }
+// Matching uses only the first and last name; middle names are ignored.
+export function firstAndLastWords(words: string[]): string[] {
+  return words.length <= 2 ? words : [words[0], words[words.length - 1]];
+}
+
 export function jaroWinkler(a: string, b: string): number {
   if (a === b) return 1;
   if (!a.length || !b.length) return 0;
@@ -110,6 +115,51 @@ function wordSimilarity(a: string, b: string): number {
   const code = soundex(a);
   const soundsAlike = code !== "" && code === soundex(b);
   return soundsAlike ? Math.max(letters, SOUND_ALIKE_SCORE) : letters;
+}
+
+export interface WordMatchDetail {
+  word: string;
+  soundex: string;
+  bestMatch: string;
+  matchSoundex: string;
+  letters: number;
+  soundsAlike: boolean;
+  wordScore: number;
+}
+
+const round2 = (value: number) => Math.round(value * 100) / 100;
+
+// Debug: for each searched word, the patient word it paired with and why.
+// Uses the same wordSimilarity as the real score.
+export function explainWordMatches(
+  searchWords: string[],
+  candidateWords: string[],
+): WordMatchDetail[] {
+  return searchWords.map((word) => {
+    let bestMatch = "";
+    let bestScore = 0;
+
+    for (const other of candidateWords) {
+      const score = wordSimilarity(word, other);
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = other;
+      }
+    }
+
+    const code = soundex(word);
+    const matchCode = bestMatch ? soundex(bestMatch) : "";
+
+    return {
+      word,
+      soundex: code,
+      bestMatch,
+      matchSoundex: matchCode,
+      letters: round2(bestMatch ? jaroWinkler(word, bestMatch) : 0),
+      soundsAlike: code !== "" && code === matchCode,
+      wordScore: round2(bestScore),
+    };
+  });
 }
 
 function directionalScore(from: string[], to: string[]): number {
