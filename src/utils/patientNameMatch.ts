@@ -1,6 +1,6 @@
 
 import { Title } from "@/types/patient";
-export const NAME_MATCH_THRESHOLD = 0.72;
+export const NAME_MATCH_THRESHOLD = 0.70
 export const MAX_NAME_MATCHES = 5;
 
 const TITLE_WORDS = new Set(
@@ -20,6 +20,11 @@ export function normalizeName(name: string | null | undefined): string[] {
 
   return withoutTitles.length > 0 ? withoutTitles : words;
 }
+// Matching uses only the first and last name; middle names are ignored.
+export function firstAndLastWords(words: string[]): string[] {
+  return words.length <= 2 ? words : [words[0], words[words.length - 1]];
+}
+
 export function jaroWinkler(a: string, b: string): number {
   if (a === b) return 1;
   if (!a.length || !b.length) return 0;
@@ -66,9 +71,100 @@ export function jaroWinkler(a: string, b: string): number {
   return jaro + prefix * 0.1 * (1 - jaro);
 }
 
+// Minimum similarity for two words that sound the same (same Soundex code),
+// e.g. "mahammad"/"muhammad" or "musab"/"massab".
+export const SOUND_ALIKE_SCORE = 0.95;
+
+const SOUNDEX_CODES: Record<string, string> = {
+  b: "1", f: "1", p: "1", v: "1",
+  c: "2", g: "2", j: "2", k: "2", q: "2", s: "2", x: "2", z: "2",
+  d: "3", t: "3",
+  l: "4",
+  m: "5", n: "5",
+  r: "6",
+};
+
+// Standard Soundex: first letter + 3 digits for the consonant sounds.
+// Vowels separate repeated codes; "h" and "w" do not.
+export function soundex(word: string): string {
+  const letters = word.toLowerCase().replace(/[^a-z]/g, "");
+  if (!letters) return "";
+
+  let code = letters[0].toUpperCase();
+  let previous = SOUNDEX_CODES[letters[0]] ?? "";
+
+  for (const letter of letters.slice(1)) {
+    const digit = SOUNDEX_CODES[letter];
+
+    if (digit) {
+      if (digit !== previous) code += digit;
+      previous = digit;
+    } else if (letter !== "h" && letter !== "w") {
+      previous = "";
+    }
+
+    if (code.length === 4) break;
+  }
+
+  return code.padEnd(4, "0");
+}
+
+// Letter similarity, raised for words that sound the same.
+function wordSimilarity(a: string, b: string): number {
+  const letters = jaroWinkler(a, b);
+  const code = soundex(a);
+  const soundsAlike = code !== "" && code === soundex(b);
+  return soundsAlike ? Math.max(letters, SOUND_ALIKE_SCORE) : letters;
+}
+
+export interface WordMatchDetail {
+  word: string;
+  soundex: string;
+  bestMatch: string;
+  matchSoundex: string;
+  letters: number;
+  soundsAlike: boolean;
+  wordScore: number;
+}
+
+const round2 = (value: number) => Math.round(value * 100) / 100;
+
+// Debug: for each searched word, the patient word it paired with and why.
+// Uses the same wordSimilarity as the real score.
+export function explainWordMatches(
+  searchWords: string[],
+  candidateWords: string[],
+): WordMatchDetail[] {
+  return searchWords.map((word) => {
+    let bestMatch = "";
+    let bestScore = 0;
+
+    for (const other of candidateWords) {
+      const score = wordSimilarity(word, other);
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = other;
+      }
+    }
+
+    const code = soundex(word);
+    const matchCode = bestMatch ? soundex(bestMatch) : "";
+
+    return {
+      word,
+      soundex: code,
+      bestMatch,
+      matchSoundex: matchCode,
+      letters: round2(bestMatch ? jaroWinkler(word, bestMatch) : 0),
+      soundsAlike: code !== "" && code === matchCode,
+      wordScore: round2(bestScore),
+    };
+  });
+}
+
 function directionalScore(from: string[], to: string[]): number {
   const total = from.reduce(
-    (sum, word) => sum + Math.max(...to.map((other) => jaroWinkler(word, other))),
+    (sum, word) => sum + Math.max(...to.map((other) => wordSimilarity(word, other))),
     0,
   );
   return total / from.length;

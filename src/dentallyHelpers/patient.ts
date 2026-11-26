@@ -43,28 +43,48 @@ const PATIENT_SEARCH_PAGE_SIZE = 100;
 // Pages fetched at the same time, so Dentally isn't flooded with requests.
 const PATIENT_SEARCH_CONCURRENCY = 2;
 
-async function fetchPatientsPage(query: string, page: number) {
+async function fetchPatientsPage(query: string | undefined, page: number) {
   const response = await axiosDentallyInstance.get(
     DENTALLY_ENDPOINTS.patient.list(query, page, PATIENT_SEARCH_PAGE_SIZE),
   );
   return dentallyErrorHelper(response.data, DATA_TYPE.PATIENTS);
 }
 
-export async function searchAllPatients(query: string) {
+export async function searchAllPatients(query?: string) {
   const first = await fetchPatientsPage(query, 1);
   if (first.isError) return first;
 
   const patients = [...(first.response.patients ?? [])];
-  const totalPages = Number(first.response.meta?.totalPages) || 1;
+  const meta = first.response.meta ?? {};
+  const knownTotalPages =
+    Number(meta.totalPages) ||
+    Math.ceil(Number(meta.total) / PATIENT_SEARCH_PAGE_SIZE) ||
+    0;
+  let lastPageFull = patients.length === PATIENT_SEARCH_PAGE_SIZE;
 
-  for (let page = 2; page <= totalPages; page += PATIENT_SEARCH_CONCURRENCY) {
-    const batch = Array.from(
-      { length: Math.min(PATIENT_SEARCH_CONCURRENCY, totalPages - page + 1) },
-      (_, i) => fetchPatientsPage(query, page + i),
+  for (
+    let page = 2;
+    knownTotalPages ? page <= knownTotalPages : lastPageFull;
+    page += PATIENT_SEARCH_CONCURRENCY
+  ) {
+    const batchSize = knownTotalPages
+      ? Math.min(PATIENT_SEARCH_CONCURRENCY, knownTotalPages - page + 1)
+      : PATIENT_SEARCH_CONCURRENCY;
+
+    const results = await Promise.all(
+      Array.from({ length: batchSize }, (_, i) =>
+        fetchPatientsPage(query, page + i),
+      ),
     );
 
-    for (const result of await Promise.all(batch)) {
-      if (!result.isError) patients.push(...(result.response.patients ?? []));
+    lastPageFull = true;
+    for (const result of results) {
+      // A failed page is skipped; without a known count it also ends the loop.
+      const pagePatients = result.isError
+        ? []
+        : (result.response.patients ?? []);
+      patients.push(...pagePatients);
+      if (pagePatients.length < PATIENT_SEARCH_PAGE_SIZE) lastPageFull = false;
     }
   }
 
@@ -72,6 +92,19 @@ export async function searchAllPatients(query: string) {
     isError: false as const,
     response: { patients, meta: first.response.meta },
   };
+}
+
+// Every active, non-archived Dentally patient.
+export async function getAllActivePatients(): Promise<any[]> {
+  const result = await searchAllPatients();
+
+  if (result.isError) {
+    throw new Error("Failed to fetch patients from Dentally");
+  }
+
+  return (result.response.patients ?? []).filter(
+    (patient: any) => patient.active && !patient.archivedReason,
+  );
 }
 
 export async function getPatients() {
