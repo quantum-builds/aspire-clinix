@@ -2,7 +2,7 @@ import { TokenRoles } from "@/constants/UserRoles";
 import { createResponse } from "@/utils/createResponse";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import { searchAllPatients } from "@/dentallyHelpers/patient";
+import { getAllActivePatients } from "@/dentallyHelpers/patient";
 import prisma from "@/lib/db";
 import {
   MAX_NAME_MATCHES,
@@ -11,8 +11,6 @@ import {
   scoreCandidate,
   NameMatch,
 } from "@/utils/patientNameMatch";
-
-const SEARCH_PREFIX_LENGTH = 3;
 
 export interface SimilarPatient {
   dentallyPatientId: number;
@@ -67,39 +65,12 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const queries = Array.from(
-      new Set([
-        searchWords.join(" "),
-        ...searchWords,
-        ...searchWords
-          .filter((word) => word.length > SEARCH_PREFIX_LENGTH)
-          .map((word) => word.slice(0, SEARCH_PREFIX_LENGTH)),
-      ]),
-    );
+    // Dentally's own search only matches names that start with the query, so
+    // spelling variants ("Mahammad" vs "Muhammad") are missed. Instead we
+    // fuzzy-match against every active patient.
+    const allPatients = await getAllActivePatients();
 
-    const results = await Promise.all(
-      queries.map((query) => searchAllPatients(query)),
-    );
-
-    if (results.every((result) => result.isError)) {
-      return NextResponse.json(
-        createResponse(false, "Failed to fetch patients from Dentally", null),
-        { status: 500 },
-      );
-    }
-
-    const candidates = new Map<number, any>();
-
-    for (const result of results) {
-      if (result.isError) continue;
-
-      for (const patient of result.response.patients ?? []) {
-        if (!patient.active || patient.archivedReason) continue;
-        candidates.set(Number(patient.id), patient);
-      }
-    }
-
-    const scored: SimilarPatient[] = Array.from(candidates.values())
+    const scored: SimilarPatient[] = allPatients
       .map((patient) => {
         const name = [patient.firstName, patient.middleName, patient.lastName]
           .filter(Boolean)
@@ -119,9 +90,33 @@ export async function GET(req: NextRequest) {
       })
       .sort((a, b) => b.score - a.score);
 
-    const topPatients = scored
-      .filter((patient) => patient.score >= NAME_MATCH_THRESHOLD)
-      .slice(0, MAX_NAME_MATCHES);
+    const aboveThreshold = scored.filter(
+      (patient) => patient.score >= NAME_MATCH_THRESHOLD,
+    );
+    const topPatients = aboveThreshold.slice(0, MAX_NAME_MATCHES);
+
+    // Debug: match settings and the top scores.
+    console.log("[SIMILAR-PATIENTS] settings", {
+      searchName,
+      searchWords,
+      threshold: NAME_MATCH_THRESHOLD,
+      maxMatches: MAX_NAME_MATCHES,
+      totalPatients: allPatients.length,
+    });
+    console.table(
+      scored.slice(0, 20).map((patient) => ({
+        id: patient.dentallyPatientId,
+        name: patient.name,
+        match: patient.match,
+        score: patient.score,
+        threshold: NAME_MATCH_THRESHOLD,
+        kept: patient.score >= NAME_MATCH_THRESHOLD,
+      })),
+    );
+    console.log(
+      `[SIMILAR-PATIENTS] ${topPatients.length} shown in the modal ` +
+        `(${aboveThreshold.length} above threshold, max ${MAX_NAME_MATCHES})`,
+    );
 
     return NextResponse.json(
       createResponse(
