@@ -77,6 +77,23 @@ export const useAppointmentBindingMutation = () => {
   });
 };
 
+// Removes the bound appointment but keeps the referral assigned to its dentist.
+export const useUnbindAppointmentMutation = () => {
+  return useMutation({
+    mutationFn: async ({
+      referralRequestId,
+    }: {
+      referralRequestId: string;
+    }) => {
+      const response = await axiosInstance.patch(
+        ENDPOINTS.referralRequest.patch(referralRequestId),
+        { actionType: "APPOINTMENT_UNBIND" }
+      );
+      return response.data;
+    },
+  });
+};
+
 export const useAssignDentistMutation = () => {
   return useMutation({
     mutationFn: async ({

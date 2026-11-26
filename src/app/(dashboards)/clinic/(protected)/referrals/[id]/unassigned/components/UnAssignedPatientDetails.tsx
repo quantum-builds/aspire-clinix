@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/defaultToastOptions";
 import { useUnassignDentistMutation } from "@/services/referralRequest/referralRequestMutation";
 import { useQueryClient } from "@tanstack/react-query";
+import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
 
 interface PatientReferralDetailsProps {
   id: string;
@@ -73,6 +75,7 @@ export default function UnAssignedPatientDetails({
 
   const [isBindModalOpen, setIsBindModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isUnassignModalOpen, setIsUnassignModalOpen] = useState(false);
 
   const { mutate: unassignDentist, isPending: isUnassigning } =
     useUnassignDentistMutation();
@@ -87,6 +90,7 @@ export default function UnAssignedPatientDetails({
       { referralRequestId },
       {
         onSuccess: (data) => {
+          setIsUnassignModalOpen(false);
           if (data.status) {
             showToast("success", "Referral unassigned successfully");
             queryClient.invalidateQueries({ queryKey: ["referral-requests"] });
@@ -96,7 +100,11 @@ export default function UnAssignedPatientDetails({
           }
         },
         onError: (error) => {
-          showToast("error", error.message || "An error occurred");
+          setIsUnassignModalOpen(false);
+          showToast(
+            "error",
+            getAxiosErrorMessage(error) || "Failed to unassign referral",
+          );
         },
       },
     );
@@ -127,8 +135,7 @@ export default function UnAssignedPatientDetails({
             <CustomButton
               text="Unassign Referral"
               style="primary"
-              // handleOnClick={handleUnassign}
-              handleOnClick={() => setIsAssignModalOpen(true)}
+              handleOnClick={() => setIsUnassignModalOpen(true)}
             />
           )}
           {showBindBtn && (
@@ -255,6 +262,17 @@ export default function UnAssignedPatientDetails({
         practitionerId={assignedDentist?.dentallyId ?? null}
         referralRequestId={referralRequestId}
         onAppointmentBound={handleAppointmentBound}
+      />
+
+      <ConfirmationModal
+        isOpen={isUnassignModalOpen}
+        onClose={() => setIsUnassignModalOpen(false)}
+        onConfirm={handleUnassign}
+        isPending={isUnassigning}
+        title="Unassign Referral"
+        description="Are you sure you want to unassign this referral? The assigned dentist, their response and any bound appointment will be removed."
+        cancelText="No"
+        confirmText="Yes"
       />
 
       <AssignDentistModal

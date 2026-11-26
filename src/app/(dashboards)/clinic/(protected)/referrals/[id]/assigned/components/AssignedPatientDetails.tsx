@@ -3,7 +3,13 @@
 import SupportingDocumentsCard from "@/app/(dashboards)/components/SupportingDocumentsCard";
 import CustomButton from "@/app/(dashboards)/components/custom-components/CustomButton";
 import { ReadOnlyCheckbox } from "@/components/ReadOnlyCheckBox";
-import { usePathname } from "next/navigation";
+import ConfirmationModal from "@/app/(dashboards)/components/ConfirmationModal";
+import { useUnbindAppointmentMutation } from "@/services/referralRequest/referralRequestMutation";
+import { showToast } from "@/utils/defaultToastOptions";
+import { getAxiosErrorMessage } from "@/utils/getAxiosErrorMessage";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface PatientReferralDetailsProps {
   id: string;
@@ -50,8 +56,42 @@ export default function AssignedPatientDetails({
   assignedDentistDetails,
   referralDentistDetails,
 }: PatientReferralDetailsProps) {
-  const pathname = usePathname();
-  const modalUrl = `${pathname}?showModal=true`;
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isUnbindModalOpen, setIsUnbindModalOpen] = useState(false);
+
+  const { mutate: unbindAppointment, isPending: isUnbinding } =
+    useUnbindAppointmentMutation();
+
+  const handleUnbind = () => {
+    unbindAppointment(
+      { referralRequestId: id },
+      {
+        onSuccess: (data) => {
+          setIsUnbindModalOpen(false);
+          if (data.status) {
+            showToast("success", "Appointment unbound successfully");
+            queryClient.invalidateQueries({ queryKey: ["referral-requests"] });
+            queryClient.invalidateQueries({
+              queryKey: ["appointments", "patient"],
+            });
+            // The referral is back to ACCEPTED, which lives on the unassigned page.
+            router.replace(`/clinic/referrals/${id}/unassigned`);
+            router.refresh();
+          } else {
+            showToast("error", data.message || "Failed to unbind appointment");
+          }
+        },
+        onError: (error) => {
+          setIsUnbindModalOpen(false);
+          showToast(
+            "error",
+            getAxiosErrorMessage(error) || "Failed to unbind appointment",
+          );
+        },
+      },
+    );
+  };
 
   return (
     <div className="bg-white w-full rounded-2xl p-6 space-y-6">
@@ -61,13 +101,30 @@ export default function AssignedPatientDetails({
         </p>
 
         {appointmentId && (
-          <CustomButton
-            text="Create Report"
-            href={`/clinic/appointments/${appointmentId}/reports/new`}
-          />
+          <div className="flex gap-3">
+            <CustomButton
+              text="Unbind Appointment"
+              style="secondary"
+              handleOnClick={() => setIsUnbindModalOpen(true)}
+            />
+            <CustomButton
+              text="Create Report"
+              href={`/clinic/appointments/${appointmentId}/reports/new`}
+            />
+          </div>
         )}
-        
       </div>
+
+      <ConfirmationModal
+        isOpen={isUnbindModalOpen}
+        onClose={() => setIsUnbindModalOpen(false)}
+        onConfirm={handleUnbind}
+        isPending={isUnbinding}
+        title="Unbind Appointment"
+        description="Are you sure you want to unbind this appointment? The referral will stay assigned to the same dentist, and you can bind a different appointment afterwards."
+        cancelText="No"
+        confirmText="Yes"
+      />
 
       <div className="bg-gray p-6 space-y-5 rounded-2xl">
         <div className="flex items-center justify-between">

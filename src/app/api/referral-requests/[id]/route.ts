@@ -397,6 +397,35 @@ export async function PATCH(req: NextRequest) {
       actionType,
     } = body;
 
+    // --- UNBIND APPOINTMENT (keep the assigned dentist) ---
+    // Clears only the bound appointment and returns the referral to ACCEPTED,
+    // so the admin can bind a different appointment for the same dentist.
+    if (actionType === "APPOINTMENT_UNBIND") {
+      if (!referral.appointmentId) {
+        return NextResponse.json(
+          createResponse(
+            false,
+            "No appointment is bound to this referral.",
+            null,
+          ),
+          { status: 400 },
+        );
+      }
+
+      const updated = await prisma.referralRequest.update({
+        where: { id: referralRequestId },
+        data: {
+          appointmentId: null,
+          requestStatus: ReferralRequestStatus.ACCEPTED,
+        },
+      });
+
+      return NextResponse.json(
+        createResponse(true, "Appointment unbound successfully.", updated),
+        { status: 200 },
+      );
+    }
+
     // --- PURE ASSIGNMENT (no appointmentId) ---
     if (requestStatus === "PENDING_REVIEW") {
       let resolvedDentistId = assignedDentistId;
