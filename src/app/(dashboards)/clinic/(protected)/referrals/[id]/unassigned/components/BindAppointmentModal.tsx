@@ -19,7 +19,6 @@ import {
   useGetSimilarPatients,
 } from "@/services/appointments/appointmentMutation";
 import { useAppointmentBindingMutation } from "@/services/referralRequest/referralRequestMutation";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 interface BindAppointmentModalProps {
   isOpen: boolean;
@@ -41,13 +40,7 @@ export default function BindAppointmentModal({
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
     string | null
   >(null);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [pendingUnbindData, setPendingUnbindData] = useState<{
-    appointmentId: string;
-    practitionerId: number;
-  } | null>(null);
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   // Step 1: similar patient names. Step 2: the chosen patient's appointments.
   const [selectedPatient, setSelectedPatient] = useState<SimilarPatient | null>(
@@ -82,6 +75,13 @@ export default function BindAppointmentModal({
     practitionerId,
   );
 
+  // Only appointments not already bound to a referral can be bound here.
+  const availableAppointments = (appointments ?? []).filter(
+    (appointment) => appointment.bindStatus !== "BOUND",
+  );
+  const hasBoundOnly =
+    (appointments?.length ?? 0) > 0 && availableAppointments.length === 0;
+
   const handleSearch = (event: FormEvent) => {
     event.preventDefault();
     const text = searchText.trim();
@@ -94,14 +94,7 @@ export default function BindAppointmentModal({
   const handleSelectAppointment = (
     appointmentId: string,
     practitionerId: number,
-    action: "bind" | "unbind",
   ) => {
-    if (action === "unbind") {
-      setPendingUnbindData({ appointmentId, practitionerId });
-      setShowConfirmDialog(true);
-      return;
-    }
-
     setSelectedAppointmentId(appointmentId);
 
     updateAppointmentBinding(
@@ -134,48 +127,6 @@ export default function BindAppointmentModal({
         },
       },
     );
-  };
-
-  const handleConfirmUnbind = () => {
-    if (!pendingUnbindData) return;
-
-    setSelectedAppointmentId(pendingUnbindData.appointmentId);
-    setShowConfirmDialog(false);
-
-    updateAppointmentBinding(
-      {
-        referralRequestId,
-        appointmentId: pendingUnbindData.appointmentId,
-        requestStatus: "UNASSIGNED",
-      },
-      {
-        onSuccess: (data) => {
-          if (data.status) {
-            showToast("success", "Appointment unbound successfully");
-            queryClient.invalidateQueries({
-              queryKey: ["appointments", "patient"],
-            });
-            onClose();
-            onAppointmentBound();
-          } else {
-            showToast("error", data.message || "Failed to unbind appointment");
-            onClose();
-          }
-        },
-        onError: (error) => {
-          showToast(
-            "error",
-            error.message || "An error occurred while unbinding appointment",
-          );
-          onClose();
-        },
-      },
-    );
-  };
-
-  const handleCancelUnbind = () => {
-    setShowConfirmDialog(false);
-    setPendingUnbindData(null);
   };
 
   if (!isOpen) return null;
@@ -218,37 +169,6 @@ export default function BindAppointmentModal({
               <span className="text-sm font-medium text-dashboardTextBlack">
                 {selectedPatient.name}
               </span>
-            </div>
-          )}
-          {/* Confirmation Dialog */}
-          {showConfirmDialog && (
-            <div className="fixed inset-0 z-10 flex items-center justify-center rounded-2xl  bg-black/30 backdrop-blur-sm">
-              <div className="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full mx-4 border border-gray-200">
-                <h3 className="text-lg font-semibold text-dashboardTextBlack mb-2">
-                  Unbind Appointment
-                </h3>
-                <p className="text-sm text-gray-600 mb-6">
-                  Are you sure you want to unbind this appointment? This will
-                  remove the appointment assignment from the related referral
-                  request.
-                </p>
-                <div className="flex justify-end gap-3">
-                  <button
-                    onClick={handleCancelUnbind}
-                    disabled={isUpdatingBinding}
-                    className="px-4 py-2 bg-[#F3F5F7] text-gray-600 hover:text-gray-800 transition-colors rounded-lg disabled:opacity-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleConfirmUnbind}
-                    disabled={isUpdatingBinding}
-                    className="px-4 py-2 bg-green text-white rounded-lg hover:bg-greenHover transition-colors disabled:opacity-50"
-                  >
-                    {isUpdatingBinding ? "Unbinding..." : "Confirm Unbind"}
-                  </button>
-                </div>
-              </div>
             </div>
           )}
           {!practitionerId ? (
@@ -370,23 +290,27 @@ export default function BindAppointmentModal({
                 Retry
               </button>
             </div>
-          ) : !appointments || appointments.length === 0 ? (
+          ) : availableAppointments.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <p className="text-gray-500 mb-2">
-                No appointments found for this patient with the assigned dentist
+                {hasBoundOnly
+                  ? "All of this patient's appointments are already bound to other referrals"
+                  : "No appointments found for this patient with the assigned dentist"}
               </p>
               <p className="text-sm text-gray-400">
-                Appointments must be created in Dentally first
+                {hasBoundOnly
+                  ? "Book a new appointment in Dentally to bind it to this referral"
+                  : "Appointments must be created in Dentally first"}
               </p>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              {appointments.map((appointment: TAppointment) => (
+              {availableAppointments.map((appointment: TAppointment) => (
                 <AppointmentListItem
                   key={appointment.id}
                   appointment={appointment}
-                  onSelect={(id, practitionerId, action) =>
-                    handleSelectAppointment(id, practitionerId, action)
+                  onSelect={(id, practitionerId) =>
+                    handleSelectAppointment(id, practitionerId)
                   }
                   isLoading={
                     isUpdatingBinding &&
