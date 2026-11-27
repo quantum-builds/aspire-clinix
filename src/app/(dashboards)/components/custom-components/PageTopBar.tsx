@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, Suspense, useState } from "react";
+import { ReactNode, Suspense, useEffect, useRef, useState } from "react";
 import SearchBar from "./SearchBar";
 import PageHeading from "./PageHeading";
 import DateFilter from "../DateFilter";
@@ -11,6 +11,7 @@ import { BackButtonIcon } from "@/assets";
 import { useRouter } from "next/navigation";
 import Dropdown from "@/app/(dashboards)/components/custom-components/DropDown";
 import { cn } from "@/lib/utils";
+import { Check, ChevronDown, Users } from "lucide-react";
 
 interface PageTopBarProps {
   pageHeading: string;
@@ -56,7 +57,44 @@ export default function PageTopBar({
   note,
 }: PageTopBarProps) {
   const router = useRouter();
-  const [participantType, setParticipantType] = useState<string>("patient");
+  const [participantType, setParticipantType] = useState<string>("both");
+  const [recipientOpen, setRecipientOpen] = useState(false);
+  const recipientRef = useRef<HTMLDivElement>(null);
+
+  const recipientOptions = [
+    {
+      value: "dentist",
+      label: "Referring Dentist",
+      description: "Only the dentist gets the report",
+    },
+    {
+      value: "both",
+      label: "Patient & Referring Dentist",
+      description: "Both get a copy",
+    },
+  ];
+  const selectedRecipient = recipientOptions.find(
+    (o) => o.value === participantType
+  );
+
+  // close the recipient menu on outside click / Escape
+  useEffect(() => {
+    if (!recipientOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (!recipientRef.current?.contains(e.target as Node)) {
+        setRecipientOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setRecipientOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [recipientOpen]);
 
   const showBottomFilters = showFilters && filtersBelow;
   const showBottomRow = showBreathworkNote || showBottomFilters || !!note;
@@ -97,40 +135,91 @@ export default function PageTopBar({
               />
             )}
             {showDropdown && (
-              <div className="flex items-center gap-2">
-                <span className="whitespace-nowrap text-base font-medium leading-6 text-gray-800">
-                  Select whom to upload the report :
-                </span>
-
-                {/* black line directly under the dropdown text */}
-                <div className="border-b border-black text-gray-700">
-                  <Dropdown
-                    options={[
-                      { value: "patient", label: "Patient" },
-                      { value: "dentist", label: "Refering Dentist" },
-                    ]}
-                    value={participantType}
-                    onValueChange={(v) => {
-                      if (!v) return;
-                      const val = v as "patient" | "dentist";
-                      setParticipantType(val);
-                      try {
-                        const url = new URL(window.location.href);
-                        const recipient =
-                          val === "patient" ? "PATIENT" : "REFERRING_DENTIST";
-                        url.searchParams.set("recipientType", recipient);
-                        router.replace(url.pathname + url.search);
-                      } catch (e) {
-                        // ignore
-                      }
-                    }}
-                    placeholder="Patient"
-                    placeholderClassName="text-gray-600"
-                    triggerClassName="px-2 py-0 text-base leading-6 min-w-[100px] min-h-0 flex items-center justify-between"
-                    contentClassName="min-w-[160px] rounded-xl"
-                    showClearOption={false}
+              <div ref={recipientRef} className="relative">
+                <button
+                  type="button"
+                  aria-haspopup="listbox"
+                  aria-expanded={recipientOpen}
+                  onClick={() => setRecipientOpen((o) => !o)}
+                  className={cn(
+                    "flex min-w-[290px] items-center gap-3 rounded-full border bg-white py-1.5 pl-1.5 pr-4 text-left shadow-sm transition-colors",
+                    recipientOpen
+                      ? "border-green"
+                      : "border-[#D9CFC1] hover:border-green"
+                  )}
+                >
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-dashboardBarBackground text-green">
+                    <Users className="size-[18px]" strokeWidth={1.75} />
+                  </span>
+                  <span className="flex flex-1 flex-col leading-tight">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+                      Send report to
+                    </span>
+                    <span className="text-[15px] font-semibold text-gray-900">
+                      {selectedRecipient?.label ?? "Patient & Referring Dentist"}
+                    </span>
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      "size-[18px] text-green transition-transform duration-200",
+                      recipientOpen && "rotate-180"
+                    )}
+                    strokeWidth={2}
                   />
-                </div>
+                </button>
+
+                {recipientOpen && (
+                  <div
+                    role="listbox"
+                    className="absolute right-0 top-full z-50 mt-2 flex w-[300px] flex-col gap-0.5 rounded-2xl bg-white p-1.5 shadow-[0_12px_32px_rgba(29,18,12,0.12)]"
+                  >
+                    {recipientOptions.map((option) => {
+                      const active = option.value === participantType;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          role="option"
+                          aria-selected={active}
+                          onClick={() => {
+                            setRecipientOpen(false);
+                            if (active) return;
+                            const val = option.value as "dentist" | "both";
+                            setParticipantType(val);
+                            try {
+                              const url = new URL(window.location.href);
+                              const recipient =
+                                val === "both" ? "BOTH" : "REFERRING_DENTIST";
+                              url.searchParams.set("recipientType", recipient);
+                              router.replace(url.pathname + url.search);
+                            } catch (e) {
+                              // ignore
+                            }
+                          }}
+                          className={cn(
+                            "flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors",
+                            active ? "bg-[#F5F1EB]" : "hover:bg-[#F5F1EB]/60"
+                          )}
+                        >
+                          <span className="flex-1">
+                            <span className="block text-sm font-semibold text-gray-900">
+                              {option.label}
+                            </span>
+                            <span className="mt-0.5 block text-[13px] text-gray-500">
+                              {option.description}
+                            </span>
+                          </span>
+                          {active && (
+                            <Check
+                              className="size-[18px] text-green"
+                              strokeWidth={2.5}
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
             {extraBtns}

@@ -29,9 +29,12 @@ export async function notifyReportsCreated(
 
   const dentistName = `${dentist.firstName} ${dentist.lastName}`.trim();
 
-  const needsPatient = reports.some((r) => r.recipientType === "PATIENT");
+  const needsPatient = reports.some(
+    (r) => r.recipientType === "BOTH",
+  );
   const needsReferringDentist = reports.some(
-    (r) => r.recipientType === "REFERRING_DENTIST",
+    (r) =>
+      r.recipientType === "REFERRING_DENTIST" || r.recipientType === "BOTH",
   );
 
   let patientName: string | undefined;

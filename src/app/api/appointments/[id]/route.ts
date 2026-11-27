@@ -277,7 +277,7 @@ export async function GET(req: NextRequest) {
 
       const sessionRecipientWhere =
         token.role === TokenRoles.PATIENT
-          ? { recipientType: "PATIENT" as const }
+          ? { recipientType: { in: ["BOTH" as const] } }
           : {};
 
       const [patient, videos, pdfs] = await Promise.all([
@@ -370,9 +370,9 @@ export async function GET(req: NextRequest) {
 
     const recipientWhere: Record<string, any> = {};
     if (token?.role === TokenRoles.PATIENT) {
-      recipientWhere.recipientType = "PATIENT";
+      recipientWhere.recipientType = { in: ["PATIENT", "BOTH"] };
     } else if (token?.role === TokenRoles.REFERRING_DENTIST) {
-      recipientWhere.recipientType = "REFERRING_DENTIST";
+      recipientWhere.recipientType = { in: ["REFERRING_DENTIST", "BOTH"] };
     }
 
     console.log("Appointment ID:", appointmentId);

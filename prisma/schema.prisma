@@ -567,8 +567,9 @@ enum DentistResponseStatus {
 }
 
 enum ReportRecipient {
-  PATIENT
+
   REFERRING_DENTIST
+  BOTH
 }
 
 enum CallStatus {

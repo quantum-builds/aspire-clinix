@@ -1,5 +1,5 @@
 import { CalenderInputIconV2, TimeIconV2, VideoImage } from "@/assets";
-import { TReport } from "@/types/reports";
+import { REPORT_RECIPIENT_LABELS, TReport } from "@/types/reports";
 import { formatDate, formatTime } from "@/utils/formatDateTime";
 import Image from "next/image";
 import { VideoModal } from "./VideoModal";
@@ -95,7 +95,7 @@ export default function VideoReportCard({
       <p className="font-medium text-lg truncate w-full">{report.title}</p>
       <div className="flex items-center justify-between w-full">
         <p className="text-20px italic text-greenHover">
-          {report.recipientType === "PATIENT" ? "Patient" : "Referring Dentist"}
+          {REPORT_RECIPIENT_LABELS[String(report.recipientType)] ?? ""}
         </p>
 
         <div className="flex items-center gap-3">

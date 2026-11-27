@@ -28,6 +28,10 @@ export type TReportResponse = {
 };
 
 export enum ReportRecipient {
-  PATIENT = "PATIENT",
   REFERRING_DENTIST = "REFERRING_DENTIST",
+  BOTH = "BOTH",
 }
+
+export const REPORT_RECIPIENT_LABELS: Record<string, string> = {
+  REFERRING_DENTIST: "Referring Dentist",
+};
