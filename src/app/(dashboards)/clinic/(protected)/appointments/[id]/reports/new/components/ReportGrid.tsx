@@ -36,7 +36,7 @@ export default function ReportGrid({
   const [uploadedVideos, setUploadedVideos] = useState<File[]>([]);
   const searchParams = useSearchParams();
   const recipientTypeFromParams =
-    (searchParams?.get("recipientType") as string) ?? "PATIENT";
+    (searchParams?.get("recipientType") as string) ?? "BOTH";
 
   const handlePdfSelect = (files: File[]) => {
     setUploadedPdfs((prev) => [...prev, ...files]);

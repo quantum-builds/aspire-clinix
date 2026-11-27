@@ -17,10 +17,11 @@ export async function notifyAppointmentStatus(
   if (reports.length === 0) return;
 
   const needsPatient = reports.some(
-    (r) => r.recipientType === "PATIENT",
+    (r) =>  r.recipientType === "BOTH",
   );
   const needsReferringDentist = reports.some(
-    (r) => r.recipientType === "REFERRING_DENTIST",
+    (r) =>
+      r.recipientType === "REFERRING_DENTIST" || r.recipientType === "BOTH",
   );
 
   let patientName: string | undefined;
